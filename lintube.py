@@ -3,7 +3,7 @@ from math import *
 import numpy as n
 from var import *
 
-from materials import air
+from ..mat import air
 from testlinbc import *
 
 class segment:
@@ -69,7 +69,7 @@ class lintube(segment,testlinbc):
 		self.p=var(period,Nf,gridpoints,name="Pressure",initval=100000)
 
 		if x is None:
-			self.x=n.linspace(0,L,gridpoints)
+			self.x=n.linspace(L/gridpoints,L-L/gridpoints,gridpoints)
 			self.Sf=S*n.ones((self.gridpoints,self.Nf+1),float)
 			self.SfT=S*n.ones((self.gridpoints,self.Ns),float)
 		self.ndofs=gridpoints*3*self.Ns
@@ -140,20 +140,24 @@ class lintube(segment,testlinbc):
 			error[Ublk[0]]+=1j*self.U.zeroimag[i]
 		return error
 	def innerError(self,error):
-		#Can be parallellized:3
 		for i in xrange(1,self.gridpoints-1):
 			rhoblk,Ublk,pblk=self.blocks(i)
-			dUdt=1j*self.omega*self.U()[i]
-			drhodt=1j*self.omega*self.rho()[i]
-			Udotn=(self.U()[i+1]-self.U()[i-1])
-			Vi=self.x[i+1]-self.x[i-1]
-			error[rhoblk[0]:rhoblk[1]]=Vi*drhodt+1.2*Udotn
+			#Implementation continuity equation
+			Vi=0.5*(self.x[i+1]-self.x[i-1])
+			dmdt=1j*self.omega*self.rho()[i]*Vi
+			Udotn=0.5*(self.U()[i+1]-self.U()[i-1])
+			error[rhoblk[0]:rhoblk[1]]=dmdt+1.2*Udotn
 			error[rhoblk[0]]=self.rho()[i,0]-1.2
+
 			#Implementation of momentum equation
-			pdotn=(self.p()[i+1]-self.p()[i-1])
+			pdotn=0.5*(self.Sf[i+1]*self.p()[i+1]-self.Sf[i-1]*self.p()[i-1])
+			dUdt=1j*self.omega*self.U()[i]
 			error[Ublk[0]:Ublk[1]]=1.2*Vi*dUdt+pdotn
+
 			error[Ublk[0]]=self.U()[i,0]
-			error[pblk[0]:pblk[1]]=self.p()[i]-287*1.4*293.15*self.rho()[i]
+			#Implementation of equation of state
+			c0sq=287*1.4*293.15
+			error[pblk[0]:pblk[1]]=self.p()[i]-c0sq*self.rho()[i]
 			error[pblk[0]]=self.p()[i,0]-101325.
 		return error
 	def getError(self):

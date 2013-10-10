@@ -3,7 +3,7 @@ from math import *
 import numpy as n
 from var import *
 
-from materials import air
+from ..mat import air
 from testbc import *
 
 class segment:
@@ -72,11 +72,11 @@ class tube(segment,testing,testbc):
 
 		self.mf=var(period,Nf,gridpoints,name="Mass flow",initval=1)
 		self.momf=var(period,Nf,gridpoints,name="Momentum flow",initval=1)
-		self.Etot=var(period,Nf,gridpoints,name="Total energy",initval=self.m.e_T(293.15))
+		self.Etot=var(period,Nf,gridpoints,name="Total energy",initval=float(self.m.e(n.array([293.15]))))
 		self.Hf=var(period,Nf,gridpoints,name="Total enthalpy flow",initval=0)
 
 		if x is None:
-			self.x=n.linspace(0,L,gridpoints)
+			self.x=n.linspace(L/gridpoints,L-L/gridpoints,gridpoints)
 			self.Sf=S*n.ones((self.gridpoints,self.Nf+1),float)
 			self.SfT=S*n.ones((self.gridpoints,self.Ns),float)
 		self.ndofs=gridpoints*4*self.Ns
@@ -149,8 +149,14 @@ class tube(segment,testing,testbc):
 		self.momf.setTdata(self.mf.getTdata()*u)
 		# FIX THIS!!!
 		Ekin=0.5*u*u
-		self.Etot.setTdata(self.rho.getTdata()*(self.m.e_T(self.T.getTdata())+Ekin))
-		self.Hf.setTdata(self.mf.getTdata()*(self.m.h_T(self.T.getTdata())+Ekin))
+		e=n.zeros(self.rho.Tshape)
+		h=n.zeros(self.rho.Tshape)
+		for i in xrange(e.shape[0]):
+			e[i,:]=self.m.e(self.T.getTdata()[i,:])
+			h[i,:]=self.m.h(self.T.getTdata()[i,:])
+
+		self.Etot.setTdata(self.rho.getTdata()*(e+Ekin))
+		self.Hf.setTdata(self.mf.getTdata()*(h+Ekin))
 	def setImagzero(self,error):
 		for i in xrange(0,self.gridpoints):
 			rhoblk,Ublk,pblk,Tblk=self.blocks(i)
@@ -161,32 +167,29 @@ class tube(segment,testing,testbc):
 			error[Ublk[0]]+=1j*self.U.zeroimag[i]
 		return error
 	def innerError(self,error):
-		#Can be parallellized:3
 		for i in xrange(1,self.gridpoints-1):
 			rhoblk,Ublk,pblk,Tblk=self.blocks(i)
 			#Implementation of continuity equation
 			Vi=self.Sf[i]*0.5*(self.x[i+1]-self.x[i-1])
 			dmdt=1j*self.omega*self.rho()[i]*Vi
-
 			rhoudotn=0.5*(self.mf()[i+1]-self.mf()[i-1])
 			error[rhoblk[0]:rhoblk[1]]=dmdt+rhoudotn
 
 			#Implementation of momentum equation
 			dmfdt=1j*self.omega*self.mf()[i]*Vi
 			pdotn=0.5*(self.Sf[i+1]*self.p()[i+1]-self.Sf[i-1]*self.p()[i-1])
-
 			rhouudotn=0.5*(self.momf()[i+1]-self.momf()[i-1])
 			#FIXTHIS
 			error[Ublk[0]:Ublk[1]]=dmfdt+pdotn+rhouudotn
-
 			#Implementation of energy equation
 			dEtotdt=1j*self.omega*self.Etot()[i]*Vi
 			error[Tblk[0]:Tblk[1]]=dEtotdt+0.5*(self.Hf()[i+1]-self.Hf()[i-1])
 			error[Tblk[0]]=self.T()[i,0]-293.15
 
 			#Implementation of equation of state
-			#print self.dft(self.m.p_rho_T(self.rho.getTdata()[i], self.T.getTdata()[i]))
-			error[pblk[0]:pblk[1]]=self.p()[i]-self.dft(self.m.p_rho_T(self.rho.getTdata()[i], self.T.getTdata()[i]))
+			#print self.dft(self.m.p_rho(self.rho.getTdata()[i], self.T.getTdata()[i]))
+
+			error[pblk[0]:pblk[1]]=self.p()[i]-self.dft(self.m.p(self.T.getTdata()[i], self.rho.getTdata()[i]))
 
 		return error
 
@@ -214,7 +217,7 @@ class tube(segment,testing,testbc):
 # 		T0=293.15
 # 		p0=101325.
 #
-# 		#intcp_overTdT=self.dft(self.m.intcp_over_TdT(T0, self.T.getTdata()[i]))
+# 		#intcp_overTdT=self.dft(self.m.intcp_overdT(T0, self.T.getTdata()[i]))
 # 		#int1_overpdp=self.dft(n.log(self.p.getTdata()[i]/p0))
 #
 # 		#error[Tblk[0]:Tblk[1],0]=intcp_overTdT-int1_overpdp/self.m.Rs

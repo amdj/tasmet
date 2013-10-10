@@ -20,6 +20,7 @@ class var:
 		self.adata = self.dft(n.copy(self.tdata))
 		self.zeroimag=n.zeros((gridpoints,),float)
 		self.shape=(gridpoints,self.Nf+1)
+		self.Tshape=(gridpoints,2*self.Nf+1)
 
 	def __call__(self):
 		return self.adata

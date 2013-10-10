@@ -3,7 +3,7 @@ from math import *
 import numpy as n
 from var import *
 
-from materials import air
+from ..mat import air
 from testbc_constantcs import *
 
 class segment:
@@ -62,7 +62,7 @@ class tube_constantcs(segment,testing,testbc_constantcs):
 		self.omg0=2*pi/self.period
 
 		self.omega=n.zeros((1,Nf+1),float)
-		
+
 		for i in xrange(Nf+1):
 			self.omega[0,i]=self.omg0*i
 		self.m=air()
@@ -184,7 +184,7 @@ class tube_constantcs(segment,testing,testbc_constantcs):
 			#Implementation of energy equation
 			#dEtotdt=1j*self.omega*self.Etot()[i]*Vi
 			#error[Tblk[0]:Tblk[1]]=dEtotdt+0.5*(self.Hf()[i+1]-self.Hf()[i-1])
-			
+
 			#Implementation isentropic law
 			error[Tblk[0]:Tblk[1]]=self.T()[i]-self.Tm*self.dft((self.rho.getTdata()[i]/self.rhom)**(0.4))
 			error[Tblk[0]]=self.T()[i,0]-self.Tm
