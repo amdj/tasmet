@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<BrowseTracker_layout_file>
+	<ActiveTarget name="test_gas" />
+	<File name="lintube.h" open="0" top="0" tabpos="3">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="vtypes.h" open="1" top="0" tabpos="4">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="gd.cpp" open="0" top="0" tabpos="2">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="gd.h" open="0" top="0" tabpos="3">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="test_gas.cpp" open="0" top="0" tabpos="2">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="lintubefv.cpp" open="0" top="0" tabpos="1">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="main.cpp" open="0" top="0" tabpos="1">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="gas.cpp" open="0" top="0" tabpos="1">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="vvar.cpp" open="0" top="0" tabpos="3">
+		<Cursor position="0" topLine="0" />
+		<BrowseMarks positions="1045,1400" />
+	</File>
+	<File name="var.cpp" open="0" top="0" tabpos="4">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="isentropictube.cpp" open="1" top="0" tabpos="5">
+		<Cursor position="46" topLine="0" />
+		<BrowseMarks positions="46,3899" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="lintube_python.pyx" open="0" top="0" tabpos="5">
+		<Cursor position="0" topLine="0" />
+		<BrowseMarks positions="1077" />
+	</File>
+	<File name="isentropictube.h" open="0" top="0" tabpos="6">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="gas.h" open="0" top="0" tabpos="3">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="lintubefv.h" open="0" top="0" tabpos="2">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="inlinefcn.h" open="0" top="0" tabpos="2">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="test_lintube.cpp" open="0" top="0" tabpos="1">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="vvar.h" open="0" top="0" tabpos="2">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="tube.h" open="0" top="0" tabpos="7">
+		<Cursor position="0" topLine="0" />
+		<BrowseMarks positions="181" />
+	</File>
+	<File name="test_var.cpp" open="0" top="0" tabpos="7">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="tube_boost.cpp" open="0" top="0" tabpos="1">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="var.h" open="0" top="0" tabpos="3">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="tube.cpp" open="0" top="0" tabpos="1">
+		<Cursor position="0" topLine="0" />
+	</File>
+</BrowseTracker_layout_file>
