@@ -14,7 +14,7 @@ RM:=rm -f
 
 VPATH=%.cpp common common/bessel
 
-SOURCES=test.cpp globalconf.cpp material.cpp
+SOURCES=test.cpp globalconf.cpp material.cpp logger.cpp
 HEADERS: vtypes.h
 OBJS:=$(addprefix .obj/,$(notdir $(SOURCES:.cpp=.o)))
 
