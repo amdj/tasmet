@@ -4,6 +4,7 @@
  *  Created on: Oct 8, 2013
  *      Author: anne
  */
+#pragma once
 #ifndef VAR_H_
 #define VAR_H_
 #include "vtypes.h"
