@@ -32,20 +32,9 @@ tube::tube(us gp,us Nf): gp(gp),Nf(Nf)  {
 
 
 tube::~tube() {
-    // TODO Auto-generated destructor stub
-//    delete mat;
+
     unsigned i;
-//	for(i=0; i<gd.gp; i++) {
-//        delete rho[i];
-//        delete p[i];
-//        delete T[i];
-//        delete rhoU[i];
-//        delete rhoUu[i];
-//        delete Etot[i];
-//        delete Hf[i];
-//        delete U[i];
-//    }
-    //delete rho,p,U,T,rhoU,
+
 }
 
 } /* namespace tube */
