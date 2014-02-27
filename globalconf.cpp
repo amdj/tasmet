@@ -14,6 +14,7 @@ T0(T0),
 p0(p0),
 Mass(Mass)
 {
+  TRACE(10,"Globalconf constructor done");
 }
   Globalconf::~Globalconf(){}
 

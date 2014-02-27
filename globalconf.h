@@ -1,3 +1,4 @@
+#pragma once
 #include "common/vtypes.h"
 #include "common/material.h"
 
@@ -23,6 +24,7 @@ namespace globalconf{
     void setfreq(d freq){freq=freq; omg=2*pi*freq; }
     void setp0(d p) { p0=p;}
     void setgas(gases::Gas g){ gas=g;}
+    void show(){ }
     //    void setgas(string g){ gas(g);}
 
   }; /* Class Globalconf */
