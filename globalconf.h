@@ -1,6 +1,6 @@
 #pragma once
-#include "common/vtypes.h"
-#include "common/material.h"
+#include <vtypes.h>
+#include <material.h>
 
 namespace globalconf{
 

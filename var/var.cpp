@@ -23,11 +23,11 @@ namespace variable {
   //***************************************** The var class
   var::var(const varoperations& vop): var(vop,0.0) {  }
   var::var(const varoperations& vop,double initval) :vop(&vop),Nf(vop.Nf),Ns(vop.Ns) {
-    TRACE(0,"var constructor started");
-    TRACE(0,"var::var(const varoperations& vop)");
+    TRACE(0,"var::var(const varoperations& vop, double initval)");
     timedata=vd(Ns);
     amplitudedata=vd(Ns);
     settdata(initval);
+    TRACE(-2,"amplitudedata:"<<amplitudedata);
   }
   var& var::operator()(const var& v)
   {
@@ -66,6 +66,7 @@ namespace variable {
   void var::set(double val,us freqnr) { //Set result for specific frequency zero,real one, -imag one, etc
     amplitudedata[freqnr]=val;
     idft();
+    TRACE(-3,"var::set(d val,us freqnr) adata:"<<amplitudedata);
   }
   void var::set(const vc& res)
   {
@@ -152,6 +153,7 @@ namespace variable {
     return newvar;
   }
   var::~var() {// The destructor
+    TRACE(-5,"var destructor called");
   }
   //***************************************** End of the var class
 
@@ -353,15 +355,19 @@ namespace variable {
   }
   void varoperations::updateiomg(){
     TRACE(0,"varoperations::updateiomg()");
-    for(us i=1;i<=Nf;i++){
-      DDTfd(2*i-1,2*i  )=-double(i)*omg;
-      DDTfd(2*i  ,2*i-1)=double(i)*omg;
+    if(Nf!=0){
+      for(us i=1;i<=Nf;i++){
+	DDTfd(2*i-1,2*i  )=-double(i)*omg;
+	DDTfd(2*i  ,2*i-1)=double(i)*omg;
+      }
+      DDTtd=iDFT*DDTfd*fDFT;
+      ddt=DDTfd.submat(1,1,Ns-1,Ns-1);
+      //cout << "ddt:" << ddt << endl;
+      iddt=inv(ddt);
     }
-    DDTtd=iDFT*DDTfd*fDFT;
-    ddt=DDTfd.submat(1,1,Ns-1,Ns-1);
-    //cout << "ddt:" << ddt << endl;
-    iddt=inv(ddt);
-
+    else{
+      DDTfd(0,0)=0;
+    }
     omgvec=vd(Nf+1);
     for(us i=0; i<Nf+1;i++)
       omgvec(i)=omg*i;
@@ -369,7 +375,7 @@ namespace variable {
   }
   varoperations::~varoperations()
   {
-    //dtor
+    TRACE(-5,"varoperations destructor");
   }
 
 

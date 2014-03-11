@@ -7,7 +7,7 @@
 #pragma once
 #ifndef VAR_H_
 #define VAR_H_
-#include "../common/vtypes.h"
+#include <vtypes.h>
 #include <assert.h>
 
 namespace variable {
@@ -25,9 +25,12 @@ namespace variable {
     var& operator()(const var&); //Copy constructor
     // Get methods
     d operator()(us i) const {//Extract result at specific frequency
-      TRACELOG("var::operator(us i)");
+      TRACE(0,"var::operator(us i)");
+      TRACE(-3,"Ns: "<<Ns);
       assert(i<Ns);
-      return amplitudedata(i); }
+      TRACE(-1,"amplitudedata: "<<amplitudedata);
+      return amplitudedata(i);
+    }
     vd operator()() const { return amplitudedata;} //Extract result vector
     vd getResfluc() const { return amplitudedata.subvec(1,Ns-1);}
     vc getcRes() const; //Implementation for complex amplitude vector
@@ -60,8 +63,6 @@ namespace variable {
     void dft();
     void idft();
 
-
-
   };
 
   class varoperations
@@ -83,7 +84,6 @@ namespace variable {
     void updateiDFT();
     void updatefDFT();
     void updateiomg();
-
 
     d oldomg; //Previous omega
   private:
