@@ -6,7 +6,7 @@ namespace tube{
   class Solidenergy:public Equation
   {
   public:
-    Solidenergy(Tube* tube,TubeVertex* gp);
+    Solidenergy(const Tube& tube,const TubeVertex& gp);
     ~Solidenergy();
     dmat operator()();
     vd Error();			// Error in Solidenergy equation at node i

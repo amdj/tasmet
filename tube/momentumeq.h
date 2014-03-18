@@ -6,7 +6,7 @@ namespace tube{
   class Momentum:public Equation
   {
   public:
-    Momentum(Tube* tube,TubeVertex* gp);
+    Momentum(const Tube& tube,const TubeVertex& gp);
     ~Momentum();
     dmat operator()();	       // Link to Equation operator()
     vd Error();			// Error in momentum equation at node i

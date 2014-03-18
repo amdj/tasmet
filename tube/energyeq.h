@@ -6,7 +6,7 @@ namespace tube{
   class Energy:public Equation
   {
   public:
-    Energy(Tube* tube,TubeVertex* gp);
+    Energy(const Tube& tube,const TubeVertex& gp);
     ~Energy();
     dmat operator()();
     vd Error();			// Error in Energy equation at node i

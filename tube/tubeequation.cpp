@@ -1,36 +1,45 @@
 #include "tubeequation.h"
 #include "tube.h"
 #include "vertex.h"
+
+
 namespace tube{
-  Equation::Equation(Tube* tube,TubeVertex* tgp):tube(tube),vertex(tgp),vop(tube->vop),Ns(vop.Ns),geom(tube->geom){
+  Equation::Equation(const Tube& tube,const TubeVertex& tgp):tube(tube),vertex(tgp),vop(tube.vop),fDFT(vop.fDFT),iDFT(vop.iDFT),DDTfd(vop.DDTfd),Ns(vop.Ns),geom(tube.geom){
 // Sf=tA
     TRACE(0,"Equation constructor");
-    assert(vertex!=NULL);
-    i=vertex->i;
-    TRACE(-1,"vertex rho:"<<vertex->rho());
+    i=vertex.i;
+
+    vSf=vertex.vSf;
+    vSs=vertex.vSf;
+    vVf=vertex.vVf;
+    vVs=vertex.vVs;
+
+    wLl=vertex.wLl;
+    wLr=vertex.wLr;
+    wRl=vertex.wRl;
+    wRr=vertex.wRr;
+
+    SfL=tube.geom.Sf(i);
+    SfR=tube.geom.Sf(i+1);
+
+    
+    TRACE(-1,"vertex rho:"<<vertex.rho());
     TRACE(-1,"vertex i:"<<i);
-    TRACE(-1,"vertex density:"<<vertex->rho());
-    Sf=tube->geom.Sf(i);
-    TRACE(-1,"i in Equation constructor:" << i);
-    if(i>0 && i<tube->geom.gp-1){
-      dxm=tube->geom.x(i)-tube->geom.x(i-1);
-      dxp=tube->geom.x(i+1)-tube->geom.x(i);
-    }
-    else if(i==0){
-      dxp=tube->geom.x(i+1);
-      dxm=0;
-    }
-    else{
-      dxm=tube->geom.x(i)-tube->geom.x(i-1);
-      dxp=0;
-    }
-    TRACE(0,"Ns:"<<tube->gc.Ns);
-    zero=zeros<dmat>(tube->gc.Ns,tube->gc.Ns);
-}
+    TRACE(-1,"vertex density:"<<vertex.rho());
+    
+
+    // TRACE(0,"Ns:"<<tube.gc.Ns);
+    zero=zeros<dmat>(tube.gc.Ns,tube.gc.Ns);
+  }
+  dmat Equation::diagtmat(const variable::var& v){
+    dmat result(Ns,Ns,fillwith::zeros);
+    result.diag()=v.tdata();
+    return result;
+  }
   dmat  Equation::operator()(){
     // Compute the Jacobian for the subsystem around the current gridpoint
     TRACE(0,"Equation::operator()");
-    const variable::varoperations& vop=tube->vop; // Reference to variable operations
+    const variable::varoperations& vop=tube.vop; // Reference to variable operations
     us Ns=vop.Ns;		// Number of samples
     us bw=Ns-1;
     dmat result(Ns,15*Ns,fillwith::zeros);

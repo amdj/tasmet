@@ -9,15 +9,28 @@ namespace tube{
 
   class Equation{
   public:
-    Equation(Tube* tube,TubeVertex* gp);
+    Equation(const Tube& tube,const TubeVertex& gp);
     ~Equation();
-    d Sf,dxp,dxm;		// Fluid cs-area, dx+,dx-
+
+    d vSf;			// Vertex fluid cross-sectional area
+    d vSs;			// Vertex solid cross-sectional area
+    d vVf;			// Vertex cell fluid volume
+    d vVs;			// Vertex cell solid volume
+    // d xR;			// Position of right cell wall
+    // d xL;			// Position of left cell wall
+    d SfR;			// Cross-sectional area of right face
+    d SfL;			// Cross-sectional area of left  face
+    d wLl,wLr,wRl,wRr;	// Weight functions (see docs for info)
+
+    dmat diagtmat(const variable::var& v); // Create diagonal matrix with time domain data from variable
     us i; 			// Current node
-    Tube* tube;
-    TubeVertex* vertex;		// Reference to parent (current gridpoint)
+    const Tube& tube;
+    const TubeVertex& vertex;		// Reference to parent (current gridpoint)
     const variable::varoperations& vop;
+    dmat& fDFT,iDFT,DDTfd;	// forward, backward dicrete fourier transform, derivative to time matrix (freq domain)
     const us& Ns;
     const Geom& geom;
+    
     virtual vd Error()=0;
     virtual dmat operator()();		// Returns the local Jacobian of this equation
     dmat zero;			// Zeros matrix of right size

@@ -22,18 +22,18 @@ namespace tube{
 
   class TubeVertex:public Vertex{ //Gridpoint at a position in a Tube
   public:
-    TubeVertex(Tube* tube1,us i);
+    TubeVertex(const Tube& tube1,us i);
     ~TubeVertex();
     TubeVertex(const TubeVertex&); // The copy constructor.
     // TubeVertex* left;		// Left node pointer
     // TubeVertex* right;		// Right node pointer
-    TubeVertex operator()(const TubeVertex& tgp); // Error copy constructor
+ 
     vd Error();				  // Compute error for this gridpoint
     dmat Jacobian();			  // Fill complete Jacobian for this node
     void Set(vd res);			  // Set result vector to res
     vd Get();				  // Extract current result vector
-    void operator=(const TubeVertex& rhs);//Error operator=
-    Tube* tube;			// Pointer to parent tube
+
+    const Tube& tube;			// Pointer to parent tube
 
     us Ns;
     d vSf;			// Vertex fluid cross-sectional area
@@ -59,9 +59,4 @@ namespace tube{
     State s;			// State equation (ideal gas)
     Solidenergy se;		// Solid energy equation
   };				// TubeVertex class
-
-
-
-
-
 } // namespace tube

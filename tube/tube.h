@@ -38,7 +38,7 @@ namespace tube{
     variable::varoperations vop;
     Geom geom;			// The geometry
     gases::Gas& gas;		// The gas in the system. Reference variable to globalconf.gas
-    vector<TubeVertex*> gps;		// Vector of gridpoints
+    vector<TubeVertex> vvertex; // Vector of vertices
     dmat Jacobian();
     vd Get();
     vd Error();
@@ -48,7 +48,6 @@ namespace tube{
     friend class TubeVertex;
     friend class Continuity;
     friend class Momentum;
-
   };				// Tube class
 
 } /* namespace tube */

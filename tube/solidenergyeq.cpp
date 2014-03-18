@@ -4,7 +4,7 @@
 
 namespace tube{
 
-  Solidenergy::Solidenergy(Tube* tube,TubeVertex* gp):Equation(tube,gp){
+  Solidenergy::Solidenergy(const Tube& tube,const TubeVertex& gp):Equation(tube,gp){
     TRACE(0,"SolidSolidenergy constructor done");
   }
   dmat Solidenergy::operator()(){

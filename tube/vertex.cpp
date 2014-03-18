@@ -6,24 +6,24 @@ namespace tube{
   Vertex::Vertex(us i):i(i){}
   Vertex::~Vertex(){}
   
-  TubeVertex::TubeVertex(Tube* tube1,us i):Vertex(i),tube(tube1),Ns(tube->vop.Ns),rho(tube1->vop),U(tube1->vop),T(tube1->vop),
-				   p(tube1->vop),Ts(tube1->vop),c(tube1,this),
-				   m(tube1,this),e(tube1,this),s(tube1,this),se(tube1,this)
+  TubeVertex::TubeVertex(const Tube& tube1,us i):Vertex(i),tube(tube1),Ns(tube.vop.Ns),rho(tube1.vop),U(tube1.vop),T(tube1.vop),
+				   p(tube1.vop),Ts(tube1.vop),c(tube1,*this),
+				   m(tube1,*this),e(tube1,*this),s(tube1,*this),se(tube1,*this)
   {
     TRACE(0,"TubeVertex contructor");
 
     // Geometrical parameters
-    vSf=tube->geom.vSf(i);
-    vSs=tube->geom.vSs(i);
-    vVf=tube->geom.vVf(i);
-    vVs=tube->geom.vVs(i);
+    vSf=tube.geom.vSf(i);
+    vSs=tube.geom.vSs(i);
+    vVf=tube.geom.vVf(i);
+    vVs=tube.geom.vVs(i);
 
     wLl=wLr=wRl=wRr=0;		// Initialize weight functions to zero
-    d xR=tube->geom.x(i+1);		// Position of right cell wall
-    d xL=tube->geom.x(i);		// Position of left cell wall
-    vd& vx=tube->geom.vx;
-    d& vxi=vx(i);
-    const us& Ncells=tube->geom.Ncells;
+    d xR=tube.geom.x(i+1);		// Position of right cell wall
+    d xL=tube.geom.x(i);		// Position of left cell wall
+    const vd& vx=tube.geom.vx;
+    const d& vxi=vx(i);
+    const us& Ncells=tube.geom.Ncells;
     d vxip1=0;
     d vxim1=0;
     if(i>0){
@@ -37,9 +37,7 @@ namespace tube{
       wRl=(vxip1-xR)/(vxip1-vxi);
     }
     
-
-    TRACE(-1,"Testing tube pointer...");
-    assert(tube!=NULL);
+    
     eq[0]=&c;			// Continuity is first
     eq[1]=&m;
     eq[2]=&e;
@@ -53,16 +51,15 @@ namespace tube{
     vars[4]=&Ts;
     TRACE(0,"TubeVertex constructor done");
   }
-  TubeVertex  TubeVertex::operator()(const TubeVertex& tgp){
-    TRACE(10,"Error, no copies allowed of a TubeVertex, exiting");
-    exit(1);
+  TubeVertex::TubeVertex(const TubeVertex& tnew):TubeVertex(tnew.tube,tnew.i){
+    TRACE(0,"TubeVertex::operator(),tgp");
   }
   vd TubeVertex::Error()
   {
     TRACE(0,"TubeVertex::Error()");
     TRACE(-1,"Check for position i>0 && i<gp-1...");
-    assert(i>0 && i<tube->geom.gp-1);
-    const us Ns=tube->vop.Ns;
+    assert(i>0 && i<tube.geom.gp-1);
+    const us Ns=tube.vop.Ns;
     vd error(Neq*Ns);
     for(us k=0;k<Neq;k++)
       {
@@ -93,10 +90,10 @@ namespace tube{
     }
     return Jac;
   }
-  void TubeVertex::operator=(const TubeVertex& rhs){
-    TRACE(5,"Error: no copies allowed of TubeVertex");
-    exit(1);
-  }
+  // void TubeVertex::operator=(const TubeVertex& rhs){
+  //   TRACE(5,"Error: no copies allowed of TubeVertex");
+  //   exit(1);
+  // }
   TubeVertex::~TubeVertex(){
     TRACE(-5,"TubeVertex destructor");
   }

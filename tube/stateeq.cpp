@@ -4,7 +4,7 @@
 
 namespace tube{
 
-  State::State(Tube* tube,TubeVertex* gp):Equation(tube,gp){
+  State::State(const Tube& tube,const TubeVertex& gp):Equation(tube,gp){
     TRACE(0,"State constructor done");
   }
   dmat State::operator()(){
@@ -15,8 +15,8 @@ namespace tube{
   {
     TRACE(0,"State::Error()");
     vd error(Ns);
-    error+=vertex->p();
-    error+=-1.0*tube->gas.Rs()*vop.fDFT*(vertex->rho.tdata()%vertex->T.tdata());
+    error+=vertex.p();
+    error+=-1.0*tube.gas.Rs()*vop.fDFT*(vertex.rho.tdata()%vertex.T.tdata());
     return error;
   }
   dmat State::dpi()
@@ -28,15 +28,15 @@ namespace tube{
   {
     TRACE(0,"State::dTi()");
     dmat rhotidiag(Ns,Ns,fillwith::zeros);
-    rhotidiag.diag()=vertex->rho.tdata();
-    return -1.0*tube->gas.Rs()*vop.fDFT*rhotidiag*vop.iDFT;
+    rhotidiag.diag()=vertex.rho.tdata();
+    return -1.0*tube.gas.Rs()*vop.fDFT*rhotidiag*vop.iDFT;
   }
   dmat State::drhoi()
   {
     TRACE(0,"State::drhoi()");
     dmat Ttidiag(Ns,Ns,fillwith::zeros);
-    Ttidiag.diag()=vertex->T.tdata();
-    return -1.0*tube->gas.Rs()*vop.fDFT*Ttidiag*vop.iDFT;
+    Ttidiag.diag()=vertex.T.tdata();
+    return -1.0*tube.gas.Rs()*vop.fDFT*Ttidiag*vop.iDFT;
   }
   State::~State(){
     TRACE(-5,"State eq destructor");
