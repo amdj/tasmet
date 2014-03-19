@@ -14,7 +14,7 @@ namespace tube{
   vd Solidenergy::Error(){		// Error in momentum equation
     TRACE(0,"Solidenergy::Error()");
     vd error(Ns,fillwith::zeros);
-    error=vertex->Ts();
+    error=vertex.Ts();
     return error;
   }
   dmat Solidenergy::dTsi(){

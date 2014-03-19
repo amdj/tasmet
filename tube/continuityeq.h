@@ -8,7 +8,7 @@ namespace tube{
   public:
     Continuity(const Tube& tube,const TubeVertex& gp);
     ~Continuity();
-    dmat operator()();		// Link to Equation operator()()
+    //    dmat operator()();		// Link to Equation operator()()
     vd Error();			// Error in this equation at this node
     dmat drhoip1();	// Derivative of continuity equation to density at node i + 1
     dmat drhoi();	// Derivative of continuity equation to density at node i

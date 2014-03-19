@@ -11,25 +11,28 @@ namespace tube{
   public:
     Equation(const Tube& tube,const TubeVertex& gp);
     ~Equation();
-
-    d vSf;			// Vertex fluid cross-sectional area
-    d vSs;			// Vertex solid cross-sectional area
-    d vVf;			// Vertex cell fluid volume
-    d vVs;			// Vertex cell solid volume
-    // d xR;			// Position of right cell wall
-    // d xL;			// Position of left cell wall
-    d SfR;			// Cross-sectional area of right face
-    d SfL;			// Cross-sectional area of left  face
-    d wLl,wLr,wRl,wRr;	// Weight functions (see docs for info)
-
+    Equation(const Equation& other); // Copy constructor
+    
     dmat diagtmat(const variable::var& v); // Create diagonal matrix with time domain data from variable
-    us i; 			// Current node
+    const us& i; 			// Current node
     const Tube& tube;
     const TubeVertex& vertex;		// Reference to parent (current gridpoint)
     const variable::varoperations& vop;
-    dmat& fDFT,iDFT,DDTfd;	// forward, backward dicrete fourier transform, derivative to time matrix (freq domain)
+    const dmat& fDFT,iDFT,DDTfd;	// forward, backward dicrete fourier transform, derivative to time matrix (freq domain)
     const us& Ns;
     const Geom& geom;
+
+    const d& vSf;			// Vertex fluid cross-sectional area
+    const d& vSs;			// Vertex solid cross-sectional area
+    const d& vVf;			// Vertex cell fluid volume
+    const d& vVs;			// Vertex cell solid volume
+
+    d SfR;			// Cross-sectional area of right face
+    d SfL;			// Cross-sectional area of left  face
+    const d& wLl;	// Weight functions (see docs for info)
+    const d& wRr;	// Weight functions (see docs for info)
+    const d& wLr;	// Weight functions (see docs for info)
+    const d& wRl;	// Weight functions (see docs for info)
     
     virtual vd Error()=0;
     virtual dmat operator()();		// Returns the local Jacobian of this equation

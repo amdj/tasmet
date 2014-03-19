@@ -23,8 +23,10 @@ namespace tube {
   Tube::Tube(globalconf::Globalconf& g,Geom geom):Seg(g),vop(g.Nf,g.freq),geom(geom),gas(gc.gas),drag(*this){
     // Fill vector of gridpoints with data:
     TRACE(5,"Tube constructor started, filling gridpoints vector...");
+    TRACE(0,"Ncells:"<<geom.Ncells); 
+    vvertex.reserve(geom.Ncells);// Avoid unnecessary movements of space etc
     for(us i=0; i<geom.Ncells;i++){
-	  TRACE(-1,"i:"<<i);
+	  TRACE(-1,"Tube vvertex i:"<<i);
 	  TubeVertex t(*this,i);
 	  vvertex.push_back(t);
     }
@@ -34,7 +36,7 @@ namespace tube {
 
   vd Tube::Get(){
     TRACE(0,"Tube::Get()");
-    const us& Neq=(vvertex[0]).Neq;
+    // const us& Neq=TubeVertex::Neq;
     const us& Ns=vop.Ns;
     vd Result(geom.Ncells*vop.Ns*Neq);
     for(us k=0; k<geom.Ncells;k++)
@@ -45,7 +47,6 @@ namespace tube {
   }
   vd Tube::Error(){
     TRACE(0,"Tube::Error(), remember only interior nodes!");
-    const us& Neq=(vvertex[0]).Neq;
     const us& Ns=vop.Ns;
     vd error(geom.Ncells*vop.Ns*Neq,fillwith::zeros);
     for(us k=1; k<geom.Ncells-1;k++)
@@ -56,7 +57,7 @@ namespace tube {
   }
   void Tube::Set(vd res){
     TRACE(0,"Tube::Set");
-    const us& Neq=(vvertex[0]).Neq;
+    // const us& Neq=(vvertex[0]).Neq;
     const us& Ns=vop.Ns;
     for(us k=0; k<geom.Ncells;k++)
       {

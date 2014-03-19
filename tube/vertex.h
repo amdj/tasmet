@@ -8,13 +8,17 @@
 #include "energyeq.h"
 #include "stateeq.h"
 #include "solidenergyeq.h"
+
+#define Neq 5
+
+
 namespace tube{
   
   class Vertex{
   public:
     Vertex(us i);
     virtual ~Vertex();
-    const us i;			// The node number of this gridpoint
+    const us i;			// The node number of this vertex
     
   };
   
@@ -42,14 +46,15 @@ namespace tube{
     d vVs;			// Vertex cell solid volume
     // d xR;			// Position of right cell wall
     // d xL;			// Position of left cell wall
-    d wLl,wLr,wRl,wRr;		// Weight functions for equations
+    d wLl,wRr,wLr,wRl;		// Weight functions for equations
     
-    static const us Neq=5;	// Number of equations
+
     variable::var rho;		// Density
     variable::var U;		// Volume flow
     variable::var T;		// Temperature
     variable::var p;		// Pressure
     variable::var Ts;		// Solid temperature
+
     Equation* eq[Neq];		// Pointer array of all equations
     variable::var* vars[Neq];
 

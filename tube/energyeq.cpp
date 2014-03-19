@@ -10,10 +10,10 @@ namespace tube{
   vd Energy::Error(){		// Error in momentum equation
     TRACE(0,"Energy::Error()");
     vd error(Ns,fillwith::zeros);
-    d T0=vertex.T(0);
-    d gamma=tube.gas.gamma(T0);
+
+    d gamma=this->gamma();
     TRACE(-1,"gamma: " << gamma);
-    error+=tube.geom.Sf(i)*vop.DDTfd*vertex.p()/(gamma-1.0); // dpdt term
+
 
     vd ptip1=tube.vvertex[i+1].p.tdata();
     vd ptim1=tube.vvertex[i-1].p.tdata();
@@ -21,77 +21,144 @@ namespace tube{
     vd Utip1=tube.vvertex[i+1].U.tdata();
     vd Utim1=tube.vvertex[i-1].U.tdata();
     vd Uti=vertex.U.tdata();
-    error+=(gamma/(gamma-1.0))*vop.fDFT*(Utip1%ptip1)/(dxp+dxm); // Second term
-    error+=-1.0*(gamma/(gamma-1.0))*vop.fDFT*(Utim1%ptim1)/(dxp+dxm); // Third term
-    error+=-1.0*vop.fDFT*(Uti%(ptip1/(dxp+dxm)-ptim1/(dxp+dxm))); // Last term left hand side
+    vd pti=vertex.p.tdata();
 
+    error+=vVf*DDTfd*vertex.p()/(gamma-1.0);
+    error+=(wRl-wLr)*fDFT*(pti%Uti)/(gamma-1.0);
+    error+=wRr*fDFT*(ptip1%((gamma/(gamma-1))*Utip1-Uti));
+    error+=-1.0*wLl*fDFT*(ptim1%((gamma/(gamma-1.0))*Utim1-Uti));
+
+    // right boundary
+    d xip1=tube.geom.vx(i+1);
+    d xim1=tube.geom.vx(i-1);
+    d xi=tube.geom.vx(i);
+    d dxp=xip1-xi;
+    d dxm=xi-xim1;
+    vd Tip1=tube.vvertex[i+1].T.tdata();
+    vd Tim1=tube.vvertex[i-1].T.tdata();
+    vd Ti=vertex.T.tdata();
+    error+=     SfL*fDFT*((kappaL()/dxm)%(Ti-Tim1));
+    error+=-1.0*SfR*fDFT*((kappaR()/dxp)%(Tip1-Ti));
     return error;
   }
   dmat Energy::dpi(){
     TRACE(0,"Energy::dpi()");
     d T0=vertex.T(0);
     d gamma=tube.gas.gamma(T0);
-    return vertex.vSf*vop.DDTfd/(gamma-1.0);
+    dmat dpi=zero;
+    dpi+=(vVf/(gamma-1.0))*DDTfd;
+    dpi+=((wRl-wLr)/(gamma-1.0))*fDFT*diagtmat(vertex.U)*iDFT;
+    return dpi;
   }
-  dmat Energy::operator()(){
-    TRACE(0,"Energy::operator()");
-    return Equation::operator()();
-  }
+
   dmat Energy::dUi(){
     TRACE(0,"Energy::dUi()");
-    // dmat Utdiag(Ns,Ns,fillwith::zeros);
-    // dmat result(Ns,Ns,fillwith::zeros);
-    dmat dpdxtddiag(Ns,Ns,fillwith::zeros); // The derivative of the pressure in time domain
-    vd ptip1=tube.vvertex[i+1].p.tdata();
-    vd ptim1=tube.vvertex[i-1].p.tdata();
-    dpdxtddiag.diag()=(ptip1-ptim1)/(dxp+dxm);
-    return -1.0*vop.fDFT*dpdxtddiag*vop.iDFT;
-  }
-  dmat Energy::dUip1(){
-    TRACE(0,"Energy::dUip1()");
+    dmat dUi=zero;			    // Initialize with zeros
     d T0=vertex.T(0);
     d gamma=tube.gas.gamma(T0);
-    dmat pip1tdiag(Ns,Ns,fillwith::zeros); // The derivative of the pressure in time domain
-    vd ptip1=tube.vvertex[i+1].p.tdata();
-    pip1tdiag.diag()=ptip1;
-    return ((gamma-1.0)/(gamma*(dxp+dxm)))*vop.fDFT*pip1tdiag*vop.iDFT;
+    dUi+=((wRl-wLr)/(gamma-1.0))*fDFT*diagtmat(vertex.p)*iDFT;
+    dUi+=fDFT*diagmat(wLl*tube.vvertex[i-1].p.tdata()-wRr*tube.vvertex[i+1].p.tdata())*iDFT;
+    return dUi;
   }
-  dmat Energy::dUim1(){
-    TRACE(0,"Energy::dUim1()");
-    d T0=vertex.T(0);
-    d gamma=tube.gas.gamma(T0);
-    dmat pim1tdiag(Ns,Ns,fillwith::zeros); // The derivative of the pressure in time domain
-    vd ptim1=tube.vvertex[i+1].p.tdata();
-    pim1tdiag.diag()=ptim1;
-    return ((gamma-1.0)/(gamma*(dxp+dxm)))*vop.fDFT*pim1tdiag*vop.iDFT;
+  dmat Energy::dTi(){
+    TRACE(0,"Energy::dTi()");
+    dmat dTi=zero;
+
+    d xip1=tube.geom.vx(i+1);
+    d xim1=tube.geom.vx(i-1);
+    d xi=tube.geom.vx(i);
+    d dxp=xip1-xi;
+    d dxm=xi-xim1;
+    
+    dTi+=fDFT*((SfL/dxm)*diagmat(kappaL())+(SfR/dxp)*diagmat(kappaR()))*iDFT;
+    return dTi;
   }
   dmat Energy::dpip1(){
     TRACE(0,"Energy::dpip1()");
-    dmat term1(Ns,Ns,fillwith::zeros);
-    dmat term2(Ns,Ns,fillwith::zeros);
-    d T0=vertex.T(0);
-    d gamma=tube.gas.gamma(T0);
     vd Utip1=tube.vvertex[i+1].U.tdata();
     vd Uti=vertex.U.tdata();
+    dmat dpip1=zero;
+    d gamma=this->gamma();
+    dpip1+=wRr*fDFT*diagmat((gamma/(gamma-1))*Utip1-Uti)*iDFT;
+    return dpip1;
+  }
+  dmat Energy::dUip1(){
+    TRACE(0,"Energy::dUip1()");
+    d gamma=this->gamma();
+    vd ptip1=tube.vvertex[i+1].p.tdata();
+    dmat dUip1=zero;
+    dUip1+=(gamma/(gamma-1.0)*fDFT*diagmat(ptip1))*iDFT;
+    return dUip1;
+  }
+  dmat Energy::dTip1(){
+    TRACE(0,"Energy::dTip1()");
+    dmat dTip1=zero;
 
-    term1.diag()=(gamma-1.0)*Utip1/gamma;
-    term2.diag()=Uti;
-    return (1.0/(dxp+dxm))*vop.fDFT*(term1-term2)*vop.iDFT;
+    d xip1=tube.geom.vx(i+1);
+    d xim1=tube.geom.vx(i-1);
+    d xi=tube.geom.vx(i);
+    d dxp=xip1-xi;
+    d dxm=xi-xim1;
+    
+    dTip1+=-1.0*fDFT*diagmat(SfR*kappaR()/(dxp))*iDFT;
+    return dTip1;
   }
   dmat Energy::dpim1(){
     TRACE(0,"Energy::dpim1()");
-    dmat term1(Ns,Ns,fillwith::zeros);
-    dmat term2(Ns,Ns,fillwith::zeros);
-    d T0=vertex.T(0);
-    d gamma=tube.gas.gamma(T0);
     vd Utim1=tube.vvertex[i-1].U.tdata();
     vd Uti=vertex.U.tdata();
+    dmat dpip1=zero;
+    d gamma=this->gamma();
+    dpip1+=-wLl*fDFT*diagmat((gamma/(gamma-1))*Utim1-Uti)*iDFT;
+    return dpip1;
+  }
+  dmat Energy::dUim1(){
+    TRACE(0,"Energy::dUim1()");
+    d gamma=this->gamma();
+    vd ptim1=tube.vvertex[i-1].p.tdata();
+    dmat dUim1=zero;
+    dUim1+=-1.0*(gamma/(gamma-1.0)*fDFT*diagmat(ptim1))*iDFT;
+    return dUim1;
+    }
+  dmat Energy::dTim1(){
+    TRACE(0,"Energy::dTim1()");
+    dmat dTim1=zero;
 
-    term1.diag()=(gamma-1.0)*Utim1/gamma;
-    term2.diag()=Uti;
-    return (-1.0/(dxp+dxm))*vop.fDFT*(term1-term2)*vop.iDFT;
+    d xip1=tube.geom.vx(i+1);
+    d xim1=tube.geom.vx(i-1);
+    d xi=tube.geom.vx(i);
+    d dxp=xip1-xi;
+    d dxm=xi-xim1;
+    
+    dTim1+=fDFT*diagmat(SfL*kappaL()/(dxm))*iDFT;
+    return dTim1;
+  }    
+  vd Energy::kappaL(){
+    vd Tti=vertex.T.tdata();
+    vd kappait=tube.gas.kappa(Tti);
+    vd Ttim1=tube.vvertex[i-1].T.tdata();
+    vd kappaitm1=tube.gas.kappa(Ttim1);
+    vd kappaL=wLr*kappait+wLl*kappaitm1;	// Conductivity at the left boundary
+    return kappaL;
+  }
+  vd Energy::kappaR(){
+    vd Tti=vertex.T.tdata();
+    vd kappait=tube.gas.kappa(Tti);
+    vd Ttip1=tube.vvertex[i+1].T.tdata();
+    vd kappaitp1=tube.gas.kappa(Ttip1);    
+    vd kappaR=wRl*kappait+wRr*kappaitp1;	
+    return kappaR;
+  }
+  d Energy::gamma(){
+    d T0=vertex.T(0);
+    return tube.gas.gamma(T0);
   }
   Energy::~Energy(){
     TRACE(-5,"Energy destructor");
   }
+    
 } // namespace tube
+
+
+
+

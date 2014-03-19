@@ -15,23 +15,24 @@ namespace variable {
   class varoperations;
   class var;
 
-  var operator*(const var& var1,const var& var2);
+  var operator*(const double& d1,const var& var2);
 
   class var {
   public:
-    var(const varoperations&);
-    var(const varoperations&,double);
-    var& operator=(const var&);
-    var& operator()(const var&); //Copy constructor
+    var(const varoperations&);	// Initialize with zeros
+    var(const varoperations&,double); // Initialize with one time-average value
+    var(const varoperations&,const vd& timedata); // Initialize with timedata!!!!
+    var& operator=(const var&);			  // Assignment operator
+    var operator()(const var&); //Copy constructor
     // Get methods
-    d operator()(us i) const {//Extract result at specific frequency
-      TRACE(0,"var::operator(us i)");
-      TRACE(-3,"Ns: "<<Ns);
-      assert(i<Ns);
-      TRACE(-1,"amplitudedata: "<<amplitudedata);
-      return amplitudedata(i);
-    }
-    vd operator()() const { return amplitudedata;} //Extract result vector
+    d operator()(us i) const;				   // Extract amplitude data result at specific frequency
+    vd operator()() const { return amplitudedata;} //Extract result
+						   //vector
+    var operator*(const var& variable) const;		   // Multiply two variables in time domain
+    var operator*(const d& scalar) const;   // Multiply a variable with a scalar. This operation is possible for both
+				      // frequency and time domain data
+    
+
     vd getResfluc() const { return amplitudedata.subvec(1,Ns-1);}
     vc getcRes() const; //Implementation for complex amplitude vector
     vd tdata() const {return timedata; } //Get time data vector
@@ -45,21 +46,22 @@ namespace variable {
     void settdata(double value); //Set time data to specific value for all time
     void settdata(vd& values);
     //Show methods
-    void showtdata(); //Print time data to
-    void showRes();
+    void showtdata() const; //Print time data to
+    void showRes() const;
     // Operations
-    var ddt() const;
-    var operator/(const var& var2) const;
+    var ddt() const;			  // Derivative operator
+    var operator/(const var& var2) const; // Time-domain division operator
     var operator-(const var& var2) const; //Not yet implemented
-    vd prod(const vd&,const vd&);
-    vd dft_copy(const vd&);
-
-    virtual ~var();
+    var operator*(d scalar);			   // post-multiplication with
+						   // scalar. Note:
+						   // pre-multiplication is
+						   // defined outside of the class
+    ~var();
     const varoperations* vop; //Pointer to varoperations instance
     const us Nf,Ns;
 
   protected:
-    vd timedata,amplitudedata;
+    vd timedata,amplitudedata;	// The only real data in this class
     void dft();
     void idft();
 

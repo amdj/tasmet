@@ -3,7 +3,9 @@
 #include "tube.h"
 
 namespace tube{
-
+  Continuity::Continuity(const Tube& tube,const TubeVertex& gp):Equation(tube,gp){
+    TRACE(0,"Continuity constructor done");
+  }
   vd Continuity::Error(){	// Current error in continuity equation
     vd error(Ns,fillwith::zeros);
     error+=vVf*DDTfd*vertex.rho();

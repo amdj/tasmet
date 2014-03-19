@@ -7,17 +7,13 @@
 #include "var.h"
 
 namespace variable {
-
-  var operator*(const var& var1,const var& var2)
-  {
-    TRACE(0,"operator*(const var& var1,const var& var1) const");
-    TRACE(0,"var1.tdata:" << var1.tdata());
-    TRACE(0,"var2.tdata:" << var2.tdata());
-    vd tdata=var1.tdata()%var2.tdata();
-    var newvar(*(var1.vop));
-    newvar.settdata(tdata);
-    TRACE(0,"newvar.tdata:" << newvar.tdata());
-    return newvar;
+  //******************************************************************************** Operators
+  
+  var operator*(const double& scalar,const var& var1){ // Pre-multiplication with scalar
+    TRACE(0,"operator*(scalar,var)");
+    assert(var1.vop!=NULL);
+    vd newtdata=scalar*var1.tdata();
+    return var(*(var1.vop),newtdata);
   }
 
   //***************************************** The var class
@@ -27,19 +23,35 @@ namespace variable {
     timedata=vd(Ns);
     amplitudedata=vd(Ns);
     settdata(initval);
-    TRACE(-2,"amplitudedata:"<<amplitudedata);
   }
-  var& var::operator()(const var& v)
-  {
-    //Copy constructor
-    TRACE(0,"Variable copy constructor");
+  var::var(const varoperations& vop,const vd& timedata):var(vop){ // Create a variable and fill it with time data.
+    TRACE(0,"var::var(vop,timedata)");
+    this->timedata=timedata;
+    dft();
+  }
+  var var::operator()(const var& v) { //Copy constructor
+    TRACE(0,"var copy constructor");
     assert(v.vop!=NULL);
-    var result(*(v.vop));
     vd tdata=v.tdata();
-    result.settdata(tdata);
-    return result;
+    return var(*(this->vop),tdata);
+  }
+  var var::operator*(const var& var2) const { // Multiply two variables in timed
+    TRACE(0,"var::operator*(const var& var2) const");
+    vd tdata=this->tdata()%var2.tdata();
+    return var(*(this->vop),tdata);
+  }
+  var var::operator*(const d& scalar) const {	// Post-multiplication with scalar
+    assert(this->vop!=NULL);
+    vd thisadata=this->tdata();
+    return var(*(this->vop),scalar*thisadata);
   }
   // Get methods (which require implementation)
+  d var::operator()(us i) const {//Extract result at specific frequency
+      TRACE(0,"var::operator(us i)");
+      assert(i<Ns);
+      TRACE(-1,"amplitudedata: "<<amplitudedata);
+      return amplitudedata(i);
+    }
   vc var::getcRes() const
   {
     TRACE(0,"var::getcRes()");
@@ -101,7 +113,7 @@ namespace variable {
     TRACE(0,"var::settdata(vd& val) done.");
   }
   //Show methods
-  void var::showtdata() {
+  void var::showtdata() const {
     unsigned i;
     cout << "[" ;
     for(i=0; i<Ns-1; i++) {
@@ -110,7 +122,7 @@ namespace variable {
     cout << timedata[Ns-1] << "]\n";
 
   }
-  void var::showRes() {
+  void var::showRes() const {
     unsigned i;
     cout << "[" ;
     for(i=0; i<Ns-1; i++) {

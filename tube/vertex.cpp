@@ -18,7 +18,7 @@ namespace tube{
     vVf=tube.geom.vVf(i);
     vVs=tube.geom.vVs(i);
 
-    wLl=wLr=wRl=wRr=0;		// Initialize weight functions to zero
+    wLl=0; wLr=0; wRr=0; wRl=0;		// Initialize weight functions to zero
     d xR=tube.geom.x(i+1);		// Position of right cell wall
     d xL=tube.geom.x(i);		// Position of left cell wall
     const vd& vx=tube.geom.vx;
@@ -32,6 +32,9 @@ namespace tube{
       wLr=(xL-vxim1)/(vxi-vxim1);
     }
     if(i<Ncells-1){
+      TRACE(-1,"i:"<<i);
+      TRACE(0,"xR:"<<xR);
+      TRACE(0,"vxi"<<vxi)
       vxip1=vx(i+1);
       wRr=(xR-vxi)/(vxip1-vxi);
       wRl=(vxip1-xR)/(vxip1-vxi);
@@ -51,8 +54,9 @@ namespace tube{
     vars[4]=&Ts;
     TRACE(0,"TubeVertex constructor done");
   }
-  TubeVertex::TubeVertex(const TubeVertex& tnew):TubeVertex(tnew.tube,tnew.i){
+  TubeVertex::TubeVertex(const TubeVertex& told):TubeVertex(told.tube,told.i){
     TRACE(0,"TubeVertex::operator(),tgp");
+    TRACE(-1,"Copied TubeVertex i:"<<i);
   }
   vd TubeVertex::Error()
   {

@@ -4,32 +4,27 @@
 
 
 namespace tube{
-  Equation::Equation(const Tube& tube,const TubeVertex& tgp):tube(tube),vertex(tgp),vop(tube.vop),fDFT(vop.fDFT),iDFT(vop.iDFT),DDTfd(vop.DDTfd),Ns(vop.Ns),geom(tube.geom){
+
+  Equation::Equation(const Tube& tube,const TubeVertex& tgp):i(tgp.i),tube(tube),
+							     vertex(tgp),vop(tube.vop),fDFT(vop.fDFT),iDFT(vop.iDFT),
+							     DDTfd(vop.DDTfd),Ns(vop.Ns),geom(tube.geom),
+							     vSf(vertex.vSf),vSs(vertex.vSs),vVf(vertex.vVf),vVs(vertex.vVs),
+							     wLl(vertex.wLl),wRr(vertex.wRr),wLr(vertex.wLr),wRl(vertex.wRl){
 // Sf=tA
     TRACE(0,"Equation constructor");
-    i=vertex.i;
-
-    vSf=vertex.vSf;
-    vSs=vertex.vSf;
-    vVf=vertex.vVf;
-    vVs=vertex.vVs;
-
-    wLl=vertex.wLl;
-    wLr=vertex.wLr;
-    wRl=vertex.wRl;
-    wRr=vertex.wRr;
 
     SfL=tube.geom.Sf(i);
     SfR=tube.geom.Sf(i+1);
 
-    
-    TRACE(-1,"vertex rho:"<<vertex.rho());
     TRACE(-1,"vertex i:"<<i);
     TRACE(-1,"vertex density:"<<vertex.rho());
     
 
     // TRACE(0,"Ns:"<<tube.gc.Ns);
     zero=zeros<dmat>(tube.gc.Ns,tube.gc.Ns);
+  }
+  Equation::Equation(const Equation& other):Equation(other.tube,other.vertex){
+    TRACE(0,"Equation copy constructor");
   }
   dmat Equation::diagtmat(const variable::var& v){
     dmat result(Ns,Ns,fillwith::zeros);
