@@ -20,8 +20,9 @@ namespace tube{
     const variable::varoperations& vop;
     const dmat& fDFT,iDFT,DDTfd;	// forward, backward dicrete fourier transform, derivative to time matrix (freq domain)
     const us& Ns;
-    const Geom& geom;
 
+    const Geom& geom;
+    const us& Ncells;		// Number of cells
     const d& vSf;			// Vertex fluid cross-sectional area
     const d& vSs;			// Vertex solid cross-sectional area
     const d& vVf;			// Vertex cell fluid volume

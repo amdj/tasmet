@@ -47,7 +47,7 @@ namespace tube{
     d gamma=tube.gas.gamma(T0);
     dmat dpi=zero;
     dpi+=(vVf/(gamma-1.0))*DDTfd;
-    dpi+=((wRl-wLr)/(gamma-1.0))*fDFT*diagtmat(vertex.U)*iDFT;
+    dpi+=(gamma*(wRl-wLr)/(gamma-1.0))*fDFT*diagtmat(vertex.U)*iDFT;
     return dpi;
   }
 
@@ -56,7 +56,7 @@ namespace tube{
     dmat dUi=zero;			    // Initialize with zeros
     d T0=vertex.T(0);
     d gamma=tube.gas.gamma(T0);
-    dUi+=((wRl-wLr)/(gamma-1.0))*fDFT*diagtmat(vertex.p)*iDFT;
+    dUi+=(gamma*(wRl-wLr)/(gamma-1.0))*fDFT*diagtmat(vertex.p)*iDFT;
     dUi+=fDFT*diagmat(wLl*tube.vvertex[i-1].p.tdata()-wRr*tube.vvertex[i+1].p.tdata())*iDFT;
     return dUi;
   }

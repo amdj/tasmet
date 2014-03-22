@@ -19,13 +19,14 @@ namespace tube{
     vVs=tube.geom.vVs(i);
 
     wLl=0; wLr=0; wRr=0; wRl=0;		// Initialize weight functions to zero
-    d xR=tube.geom.x(i+1);		// Position of right cell wall
-    d xL=tube.geom.x(i);		// Position of left cell wall
+    xR=tube.geom.x(i+1);		// Position of right cell wall
+    xL=tube.geom.x(i);		// Position of left cell wall
     const vd& vx=tube.geom.vx;
     const d& vxi=vx(i);
     const us& Ncells=tube.geom.Ncells;
     d vxip1=0;
     d vxim1=0;
+
     if(i>0){
       vxim1=vx(i-1);
       wLl=(vxi-xL)/(vxi-vxim1);
@@ -39,8 +40,17 @@ namespace tube{
       wRr=(xR-vxi)/(vxip1-vxi);
       wRl=(vxip1-xR)/(vxip1-vxi);
     }
-    
-    
+    // special weight function part
+    wL0=WL1=wRnm1=wRNm2=0;	// Put these weight functions to zero
+    if(i==0){
+      wL0=vxip1/(vxip1-vxi);
+      wL1=-vxi/(vxip1-vxi);
+    }
+    if(i==Ncells-1){
+      wRNm1=(vxim1-xR)/(vxim1-vxi);
+      wRNm2=(xR-vxi)/(vxim1-vxi);
+    }
+    // end special weight function part
     eq[0]=&c;			// Continuity is first
     eq[1]=&m;
     eq[2]=&e;

@@ -38,14 +38,7 @@ int main() {
   TRACE(0,t1.vvertex[1].eq[0]->wRr);
   TRACE(0,t1.vvertex[1].eq[0]->wLr);
   TRACE(0,t1.vvertex[1].eq[0]->wRl);
-  // TRACE(0,t1.vvertex[0].wLl);
-  // TRACE(0,t1.vvertex[0].wRr);
-  // TRACE(0,t1.vvertex[0].wLr);
-  // TRACE(0,t1.vvertex[0].wRl);
-  // TRACE(0,t1.vvertex[0].eq[0]->wLl);
-  // TRACE(0,t1.vvertex[0].eq[0]->wRr);
-  // TRACE(0,t1.vvertex[0].eq[0]->wLr);
-  // TRACE(0,t1.vvertex[0].eq[0]->wRl);  //
+
   TRACE(0,"test2output"<<t1.vvertex[1].m());
   // TRACE(0,"t1.gps[1].rho()");
   // TRACE(0,t1.gps[1].rho());

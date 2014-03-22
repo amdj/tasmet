@@ -44,11 +44,10 @@ namespace tube{
     d vSs;			// Vertex solid cross-sectional area
     d vVf;			// Vertex cell fluid volume
     d vVs;			// Vertex cell solid volume
-    // d xR;			// Position of right cell wall
-    // d xL;			// Position of left cell wall
+    d xR;			// Position of right cell wall
+    d xL;			// Position of left cell wall
     d wLl,wRr,wLr,wRl;		// Weight functions for equations
-    
-
+    d wL0,wL1,wRNm1,wRNm2    	// Special boundary weight functions
     variable::var rho;		// Density
     variable::var U;		// Volume flow
     variable::var T;		// Temperature

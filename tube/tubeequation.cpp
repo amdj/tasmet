@@ -7,7 +7,7 @@ namespace tube{
 
   Equation::Equation(const Tube& tube,const TubeVertex& tgp):i(tgp.i),tube(tube),
 							     vertex(tgp),vop(tube.vop),fDFT(vop.fDFT),iDFT(vop.iDFT),
-							     DDTfd(vop.DDTfd),Ns(vop.Ns),geom(tube.geom),
+							     DDTfd(vop.DDTfd),Ns(vop.Ns),geom(tube.geom),Ncells(geom.Ncells),
 							     vSf(vertex.vSf),vSs(vertex.vSs),vVf(vertex.vVf),vVs(vertex.vVs),
 							     wLl(vertex.wLl),wRr(vertex.wRr),wLr(vertex.wLr),wRl(vertex.wRl){
 // Sf=tA

@@ -6,6 +6,10 @@ namespace tube{
 
   Momentum::Momentum(const Tube& tube,const TubeVertex& gp):Equation(tube,gp){
     TRACE(0,"Momentum constructor done");
+    // Standard boundary condition is an adiabatic no-slip wall
+    if(i==0){
+      
+    }
   }
   dmat Momentum::operator()(){
     TRACE(0,"Momentum::operator()");
@@ -15,26 +19,28 @@ namespace tube{
     TRACE(0,"Momentum::Error()");
     vd error(Ns,fillwith::zeros);
 
-    // WATCH IT! ABOVE TERMS ARE ALL TIME DOMAIN DATA!!
-    vd rhoi=vertex.rho.tdata();
-    vd Ui=vertex.U.tdata();
-    vd rhoip1=tube.vvertex[i+1].rho.tdata();
-    vd rhoim1=tube.vvertex[i-1].rho.tdata();
-    vd Uip1=tube.vvertex[i+1].U.tdata();
-    vd Uim1=tube.vvertex[i-1].U.tdata();
-    vd pim1=tube.vvertex[i-1].p.tdata();
-    vd pip1=tube.vvertex[i+1].p.tdata();
-    vd pit=vertex.p.tdata();	// pit because pi is already defined
+    // WATCH IT! BELOW TERMS ARE ALL TIME DOMAIN DATA!!
+    vd rhoti=vertex.rho.tdata();
+    vd Uti=vertex.U.tdata();
+    vd rhotip1=tube.vvertex[i+1].rho.tdata();
+    vd rhotim1=tube.vvertex[i-1].rho.tdata();
+    vd Uitp1=tube.vvertex[i+1].U.tdata();
+    vd Uitm1=tube.vvertex[i-1].U.tdata();
 
     error+=vVf*DDTfd*(vertex.U*vertex.rho).tdata()/vSf;
-    error+=(wRr/vSf)*fDFT*(rhoip1%Uip1%Uip1);
-    error+=(wRl/SfR-wLr/SfL)*fDFT*(rhoi%Ui%Ui);
-    error+=-1.0*(wLl/SfL)*fDFT*(rhoim1%Uim1%Uim1);
+    error+=Wuip1*fDFT*(rhoip1%Uip1%Uip1);
+    error+=Wui*fDFT*(rhoi%Ui%Ui);
+    error+=Wuim1*fDFT*(rhoim1%Uim1%Uim1);
 
-    // Pressure terms
-    error+=SfR*wRr*pip1;
-    error+=(SfR*(wRl+1.0)-SfL*(wLr+1.0))*pit;
-    error+=-1.0*SfL*wLl*pim1;
+    // Pressure terms    
+    // Frequency domain data
+    vd pim1=tube.vvertex[i-1].p();
+    vd pip1=tube.vvertex[i+1].p.tdata();
+    vd pip=vertex.p();	// pip because pi is already defined
+
+    error+=Wpip1*pip1;
+    error+=Wpi*pip;
+    error+=Wpim1*pim1;
     
     // Drag term
     error+=tube.drag(i);
@@ -42,13 +48,15 @@ namespace tube{
   }
   dmat Momentum::dUi(){
     TRACE(0,"Momentum::dUi()");
-    d fac1=(wRl/SfR-wLr/SfL);
-    dmat ddragdU=tube.drag.dUi(i);
-    return ddragdU+DDTfd*fDFT*diagtmat(vertex.rho)*iDFT+fac1*fDFT*(diagtmat(vertex.rho)*diagtmat(vertex.U));
+    dmat dUi=zero;
+    dmat dUi+=tube.drag.dUi(i);		       // Drag term
+    dUi+=DDTfd*fDFT*diagtmat(vertex.rho)*iDFT; // Time-derivative term
+    dUi+=2.0*Wui*fDFT*(diagtmat(vertex.rho)*diagtmat(vertex.U))*iDFT;
+    return dUi;
   }
   dmat Momentum::drhoi(){
     TRACE(0,"Momentum::drhoi()");
-    d fac1=(wRl/SfR-wLr/SfL);
+------------------------IK BEN HIER
     dmat Uid=diagtmat(vertex.U);
     return DDTfd*fDFT*Uid*iDFT+fac1*fDFT*Uid*Uid*iDFT;
   }

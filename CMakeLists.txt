@@ -1,15 +1,20 @@
 # CMakeList.txt for nonlinear code
 cmake_minimum_required (VERSION 2.6)
+#enable_testing()
 set(CMAKE_C_COMPILER gcc)
 set(CMAKE_CXX_COMPILER g++)
 set(CMAKE_VERBOSE_MAKEFILE on)
-set (CMAKE_CXX_FLAGS "-std=c++11 -g -Wall")
+set (CMAKE_CXX_FLAGS "-std=c++11 -fPIC -g -Wall -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr")
 #configure_file (logger.h.in  "${CMAKE_CURRENT_SOURCE_DIR}/logger.h")
 
-set (nonlinear_SRC globalconf.cpp tube/continuityeq.cpp tube/drag.cpp
-    tube/energyeq.cpp tube/geom.cpp tube/momentumeq.cpp
-    tube/solidenergyeq.cpp tube/stateeq.cpp tube/tube.cpp
-    tube/tubeequation.cpp tube/vertex.cpp var/var.cpp var/gasvar.cpp)
+AUX_SOURCE_DIRECTORY(tube tubesources)
+AUX_SOURCE_DIRECTORY(var varsources)
+set (nonlinear_SRC globalconf.cpp ${tubesources} ${varsources})
+
+#  tube/continuityeq.cpp tube/drag.cpp
+#    tube/energyeq.cpp tube/geom.cpp tube/momentumeq.cpp
+#    tube/solidenergyeq.cpp tube/stateeq.cpp tube/tube.cpp
+#    tube/tubeequation.cpp tube/vertex.cpp 
 
 
 # math_common should be linked to armadillo
@@ -17,7 +22,9 @@ add_executable(test test.cpp ${nonlinear_SRC})
 target_link_libraries(test math_common armadillo)
 
 # The headers which have to be installed
-set (math_common_HEADERS math_common.h logger.h vtypes.h material.h bessel.h)
+#set (math_common_HEADERS math_common.h logger.h vtypes.h material.h bessel.h)
+
+add_test(test_cpp test)
 
 #Install library to library directory
 #install(TARGETS math_common DESTINATION lib)
