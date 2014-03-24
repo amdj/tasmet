@@ -12,7 +12,7 @@ namespace tube{
     if(i==0){
       wim1=0;
       wi=wRl;
-      wip1=WRr;
+      wip1=wRr;
     }
     else if(i==Ncells-1){
       wi=-wLr;

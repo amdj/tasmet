@@ -40,19 +40,6 @@ int main() {
   TRACE(0,t1.vvertex[1].eq[0]->wRl);
 
   TRACE(0,"test2output"<<t1.vvertex[1].m());
-  // TRACE(0,"t1.gps[1].rho()");
-  // TRACE(0,t1.gps[1].rho());
-  // TRACE(0,t1.vvertex[1].p());
-  // TRACE(0,t1.geom.vSf);
-
-  // TRACE(0,"t1.gps[1].c.vertex.rho();"<<t1.gps[1].c.vertex.rho());
-  // TRACE(0,"Tube init starting...");
-  // t1.Init(293.15,101325);
-  // TRACE(10,"rho:"<<t1.gps[1].rho.tdata());
-
-  // cout <<  t1.gps[1].m.dUi();
-  // TRACE(10,"dmdpip1():");
-  // cout <<  t1.gps[1].m.dpip1();
 
 
   TRACE(0,"_-----------------------------------------");

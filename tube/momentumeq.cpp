@@ -7,8 +7,12 @@ namespace tube{
   Momentum::Momentum(const Tube& tube,const TubeVertex& gp):Equation(tube,gp){
     TRACE(0,"Momentum constructor done");
     // Standard boundary condition is an adiabatic no-slip wall
-    if(i==0){
+    if(i==0){			// Leftmost vertex
       
+    } else if(i==Ncells-1){	// Rightmost vertex
+
+    } else{			// Normal interior vertex
+
     }
   }
   dmat Momentum::operator()(){
@@ -56,40 +60,61 @@ namespace tube{
   }
   dmat Momentum::drhoi(){
     TRACE(0,"Momentum::drhoi()");
-------------------------IK BEN HIER
-    dmat Uid=diagtmat(vertex.U);
-    return DDTfd*fDFT*Uid*iDFT+fac1*fDFT*Uid*Uid*iDFT;
+    dmat drhoi=zero;
+    drhoi+=DDTfd*fDFT*Uid*iDFT;
+    drhoi+=Wui*fDFT*diagtmat(vertex.U)%diagtmat(vertex.U)*iDFT;
+    return drhoi;
   }
   dmat Momentum::dpi(){
     TRACE(0,"Momentum::dpi()");
     dmat I(Ns,Ns,fillwith::eye);
-    return (SfR*(wRl+1.0)-SfL*(wLr+1))*I;
+    dmat dpi=zero;
+    dpi+=wpi*I;
+    return dpi;
   }
   dmat Momentum::drhoim1(){
     TRACE(0,"Momentum::drhoim1()");
-    return -1.0*(wLl/SfL)*fDFT*diagtmat(tube.vvertex[i-1].U)*diagtmat(tube.vvertex[i-1].U)*iDFT;
+    dmat drhoim1=zero;
+    if(i>0)
+      drhoim1+=Wuim1*fDFT*diagtmat(tube.vvertex[i-1].U)*diagtmat(tube.vvertex[i-1].U)*iDFT;
+    return drhoim1;
   }
   dmat Momentum::dUim1(){
-    TRACE(0,"Momentum::dUim1()")    // Todo: add this term!;
-    return -2.0*(wLl/SfL)*fDFT*diagtmat(tube.vvertex[i-1].rho)*diagtmat(tube.vvertex[i-1].U)*iDFT;
+    TRACE(0,"Momentum::dUim1()");    // Todo: add this term!;
+    dmat dUim1=zero;
+    if(i>0)
+      dUim1+=-2.0*Wuim1*fDFT*diagtmat(tube.vvertex[i-1].rho)*diagtmat(tube.vvertex[i-1].U)*iDFT;
+    return dUim1;
   }
   dmat Momentum::dpim1(){
-    TRACE(0,"Momentum::dpim1()");;
+    TRACE(0,"Momentum::dpim1()");
+    dmat dpim1=zero;
     dmat I(Ns,Ns,fillwith::eye);
-    return -1.0*(wLl*SfL)*I;
+    if(i>0)
+      dpim1+=Wpim1*I;
+    return dpim1;
   }
   dmat Momentum::drhoip1(){
-    TRACE(0,"Momentum::drhoip1()")    // Todo: add this term!;
-    return 1.0*(wRr/SfR)*fDFT*diagtmat(tube.vvertex[i+1].U)*diagtmat(tube.vvertex[i+1].U)*iDFT;
+    TRACE(0,"Momentum::dhoip1()");    // Todo: add this term!;
+    dmat drhoip1=zero;
+    if(i<Ncells-1)
+      drhoip1+=Wuip1*fDFT*diagtmat(tube.vvertex[i+1].U)*diagtmat(tube.vvertex[i+1].U)*iDFT;
+    return drhoip1;
   }
   dmat Momentum::dUip1(){
-    TRACE(0,"Momentum::dUip1()")    // Todo: add this term!;
-    return 2.0*(wRr/SfR)*fDFT*diagtmat(tube.vvertex[i+1].rho)*diagtmat(tube.vvertex[i+1].U)*iDFT;
+    TRACE(0,"Momentum::dUip1()"); // Todo: add this term!;
+    dmat dUip1=zero;
+    if(i<Ncells-1)
+      2.0*fDFT*diagtmat(tube.vvertex[i+1].rho)*diagtmat(tube.vvertex[i+1].U)*iDFT;
+    return dUip1;
   }
   dmat Momentum::dpip1(){
     TRACE(0,"Momentum::dpip1()");
+    dmat dpip1=zero;
     dmat I(Ns,Ns,fillwith::eye);
-    return 1.0*(wRr*SfR)*I;
+    if(i<Ncells-1)
+      dpip1+=Wpip1*I;
+    return dpip1;
   }
   Momentum::~Momentum(){
     TRACE(-5,"Momentum destructor");
