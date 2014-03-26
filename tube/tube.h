@@ -20,27 +20,38 @@
 namespace segment{
   class Seg{
   public:
-    Seg(globalconf::Globalconf& gc); // nL,nR initiated as 0
-    ~Seg(){}
+    Seg(tasystem::Globalconf& gc); // nL,nR initiated as 0
+    virtual ~Seg(){}
     us nL,nR;
-    globalconf::Globalconf& gc;	// Global configuration of the system
+    tasystem::Globalconf& gc;	// Global configuration of the system
+    variable::varoperations vop;
+    virtual vd Error()=0;
+    virtual vd GetRes()=0;
+    virtual dmat Jac()=0;
     void setnodes(us n1,us n2){ nL=n1; nR=n2;}
+    Vertex** vvertex; // Vector of vertices
+    us Ncells;
   };
 
 } // Namespace segment
 
 namespace tube{
-  class Tube:public segment::Seg {
+  using segment::Seg;
+  using segment::Vertex;
+  class Tube:public Seg {
   public:
-    Tube(globalconf::Globalconf& g,Geom geom);
+    Tube(tasystem::Globalconf& g,Geom geom);
+    Tube(const Tube& othertube); // Copy constructor to copy vertex
+				 // vector ofpointers
     ~Tube();
     void Init(d T0,d p0);
-    variable::varoperations vop;
+
+    void setLeftbc(TubeVertex* v); // Set left boundary condition vertex
     Geom geom;			// The geometry
     gases::Gas& gas;		// The gas in the system. Reference variable to globalconf.gas
-    vector<TubeVertex> vvertex; // Vector of vertices
-    dmat Jacobian();
-    vd Get();
+
+    dmat Jac();
+    vd GetRes();
     vd Error();
     void Set(vd res);
   protected:
@@ -53,3 +64,9 @@ namespace tube{
 } /* namespace tube */
 
 #endif /* TUBE_H_ */
+
+
+
+
+
+

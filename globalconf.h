@@ -2,7 +2,7 @@
 #include <vtypes.h>
 #include <material.h>
 
-namespace globalconf{
+namespace tasystem{
 
   class Globalconf{
   public:
@@ -28,4 +28,4 @@ namespace globalconf{
     //    void setgas(string g){ gas(g);}
 
   }; /* Class Globalconf */
-}
+}    // namespace tasystem

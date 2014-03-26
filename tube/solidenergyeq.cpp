@@ -4,13 +4,10 @@
 
 namespace tube{
 
-  Solidenergy::Solidenergy(const Tube& tube,const TubeVertex& gp):Equation(tube,gp){
+  Solidenergy::Solidenergy(const Tube& tube,TubeVertex& gp):Equation(tube,gp){
     TRACE(0,"SolidSolidenergy constructor done");
   }
-  dmat Solidenergy::operator()(){
-    TRACE(0,"Solidenergy::operator()");
-    return Equation::operator()();
-  }
+
   vd Solidenergy::Error(){		// Error in momentum equation
     TRACE(0,"Solidenergy::Error()");
     vd error(Ns,fillwith::zeros);

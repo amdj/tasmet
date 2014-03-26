@@ -6,10 +6,10 @@ namespace tube{
   class Momentum:public Equation
   {
   public:
-    Momentum(const Tube& tube,const TubeVertex& gp);
+    Momentum(const Tube& tube,TubeVertex& gp);
     ~Momentum();
     d Wuim1,Wui,Wuip1,Wpim1,Wpi,Wpip1; // Weight functions
-    dmat operator()();	       // Link to Equation operator()
+
     vd Error();			// Error in momentum equation at node i
     dmat drhoi();
     dmat dUi();

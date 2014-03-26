@@ -11,67 +11,20 @@
 #include <assert.h>
 
 namespace variable {
-
-  class varoperations;
-  class var;
-
+  // void setfreq(d freq);
+  // void setNf(us Nf);
+  class var;			// Forward declaration
+  ostream& operator<< (ostream& out,var& v);
   var operator*(const double& d1,const var& var2);
 
-  class var {
-  public:
-    var(const varoperations&);	// Initialize with zeros
-    var(const varoperations&,double); // Initialize with one time-average value
-    var(const varoperations&,const vd& timedata); // Initialize with timedata!!!!
-    var& operator=(const var&);			  // Assignment operator
-    var operator()(const var&); //Copy constructor
-    // Get methods
-    d operator()(us i) const;				   // Extract amplitude data result at specific frequency
-    vd operator()() const { return amplitudedata;} //Extract result
-						   //vector
-    var operator*(const var& variable) const;		   // Multiply two variables in time domain
-    var operator*(const d& scalar) const;   // Multiply a variable with a scalar. This operation is possible for both
-				      // frequency and time domain data
-    
-
-    vd getResfluc() const { return amplitudedata.subvec(1,Ns-1);}
-    vc getcRes() const; //Implementation for complex amplitude vector
-    vd tdata() const {return timedata; } //Get time data vector
-    d tdata(d t) const; //Extract the estimated value for a given time t
-    //Set methods
-    void set(double,us); //Set result vector at specific frequency
-    void set(const vd& values); //Set result vector to these values
-    void set(const vc& values); //Set result vector to these values, complex numbers
-    void setResfluc(vd& values); //Set result vector for only unsteady Fourier components
-    // Specific methods to the result using time domain data
-    void settdata(double value); //Set time data to specific value for all time
-    void settdata(vd& values);
-    //Show methods
-    void showtdata() const; //Print time data to
-    void showRes() const;
-    // Operations
-    var ddt() const;			  // Derivative operator
-    var operator/(const var& var2) const; // Time-domain division operator
-    var operator-(const var& var2) const; //Not yet implemented
-    var operator*(d scalar);			   // post-multiplication with
-						   // scalar. Note:
-						   // pre-multiplication is
-						   // defined outside of the class
-    ~var();
-    const varoperations* vop; //Pointer to varoperations instance
-    const us Nf,Ns;
-
-  protected:
-    vd timedata,amplitudedata;	// The only real data in this class
-    void dft();
-    void idft();
-
-  };
-
+  
   class varoperations
   {
   public:
     varoperations(us Nf,d freq);
+    varoperations();
     virtual ~varoperations();
+    void set(us Nf,d freq);	// Set data for new frequency and number of samples
     void setfreq(d newfreq);
     dmat iDFT; //inverse discrete Fourier transform matrix
     dmat fDFT; //forward discrete Fourier transform matrix
@@ -91,43 +44,112 @@ namespace variable {
   private:
   };
 
-  ostream& operator<< (ostream& out,var& v);
 
-  class vvar { //variable container, including some methods to get and set the data simultaneously
+  class var {
   public:
-    vvar(string name,us,us,double); //name,gridpoints,number of frequencies, initvals
-    vvar(string name,us,us); //name,gridpoints,number of frequencies, initvals=0
-    vvar(); //empty constructor for stack allocation
+    var(const varoperations&);	// Initialize with zeros
+    var(const varoperations&,double); // Initialize with one time-average value
+    var(const varoperations&,const vd& timedata); // Initialize with timedata!!!!
+    // var& operator=(const var&);			  // Copy assignment operator
+    // var operator()(const var&); //Copy constructor
+    // Get methods
+    d& operator()(us i);				   // Extract amplitude data result at specific frequency
 
-    virtual ~vvar();
-    vd& getRes(); //Get complete result vector for this variable
-    vd getRes(us); //Get a result vector for specific frequency
-    void setRes(vd& res,us freq); //Set result for specific
-    void setRes(vd& res); //Set complete result vector
-    vd getTdata(); //Extract a vector with all time data
-    void setTdata(vd); //Set a complete time domain data vector
-    void showResult(); //Show result vector
+    vd operator()() const { return amplitudedata;} //Extract result
+						   //vector
+    var operator*(const var& variable) const;		   // Multiply two variables in time domain
+    var operator*(const d& scalar) const;   // Multiply a variable with a scalar. This operation is possible for both
+				      // frequency and time domain data
+    
 
-    var& operator[](us); //return reference to var at position given
-    vd ddx_central(us i,const vd& x) ; //Compute ddx of this variable in frequency domain using second order central difference method
-    vd ddx_forward(us i,const vd& x);
-    vd ddx_backward(us i,const vd& x);
-    //vd dotn(us,vd);
-    us size();
-    string name();
-    string Name; //Name string for this variable (density,pressure,etc)
-    //	dmat ddt;
-    //	dmat fF,iF; //Forward and inverse FFT matrices.
-    vd Error,Result; //Error vector for this variable, to r/w store info in
+    vd getResfluc() const { return amplitudedata.subvec(1,Ns-1);}
+    vc getcRes() const; //Implementation for complex amplitude vector
+    vd tdata() const  {return timedata; } //Get time data vector
+    d tdata(d t) const; //Extract the estimated value for a given time t
+    //Set methods
+    void set(double,us); //Set result vector at specific frequency
+    void set(const vd& values); //Set result vector to these values
+    void set(const vc& values); //Set result vector to these values, complex numbers
+    void setResfluc(vd& values); //Set result vector for only unsteady Fourier components
+    // Specific methods to the result using time domain data
+    void settdata(double value); //Set time data to specific value for all time
+    void settdata(vd& values);
+    //Show methods
+    void showtdata() const; //Print time data to
+    void showRes() const;
+    // Operations
+    var ddt() const;			  // Derivative operator
+    var operator/(const var& var2) const; // Time-domain division operator
+    var operator-(const var& var2) const; //Not yet implemented
+    var operator*(d scalar);			   // post-multiplication
+						   // with
+						   // scalar. Note:
+						   // pre-multiplication
+						   // is defined
+						   // outside of the
+						   // class
+    ~var();
+    const varoperations* vop;
+    us Nf,Ns;
+
   protected:
-    std::vector<var> data;	//The data at the gridpoints, cannot be accessed directly only via []
-
-    us gp,Nf,Ns,Dofs; //Degrees of freedom in variable, Number of time samples, Number of frequencies, number of gridpoints
-
-  private:
+    vd timedata,amplitudedata;	// The only real data in this class
+    void dft();
+    void idft();
+    void updateNf();
   };
+
+
+  // class vvar { //variable container, including some methods to get and set the data simultaneously
+  // public:
+  //   vvar(string name,us,us,double); //name,gridpoints,number of frequencies, initvals
+  //   vvar(string name,us,us); //name,gridpoints,number of frequencies, initvals=0
+  //   vvar(); //empty constructor for stack allocation
+
+  //   virtual ~vvar();
+  //   vd& getRes(); //Get complete result vector for this variable
+  //   vd getRes(us); //Get a result vector for specific frequency
+  //   void setRes(vd& res,us freq); //Set result for specific
+  //   void setRes(vd& res); //Set complete result vector
+  //   vd getTdata(); //Extract a vector with all time data
+  //   void setTdata(vd); //Set a complete time domain data vector
+  //   void showResult(); //Show result vector
+
+  //   var& operator[](us); //return reference to var at position given
+  //   vd ddx_central(us i,const vd& x) ; //Compute ddx of this variable in frequency domain using second order central difference method
+  //   vd ddx_forward(us i,const vd& x);
+  //   vd ddx_backward(us i,const vd& x);
+  //   //vd dotn(us,vd);
+  //   us size();
+  //   string name();
+  //   string Name; //Name string for this variable (density,pressure,etc)
+  //   //	dmat ddt;
+  //   //	dmat fF,iF; //Forward and inverse FFT matrices.
+  //   vd Error,Result; //Error vector for this variable, to r/w store info in
+  // protected:
+  //   std::vector<var> data;	//The data at the gridpoints, cannot be accessed directly only via []
+
+  //   us gp,Nf,Ns,Dofs; //Degrees of freedom in variable, Number of time samples, Number of frequencies, number of gridpoints
+
+  // private:
+  // };
 
 
 
 } /* namespace variable */
 #endif /* VAR_H_ */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

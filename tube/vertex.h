@@ -12,55 +12,68 @@
 #define Neq 5
 
 
-namespace tube{
+namespace segment{
   
   class Vertex{
   public:
-    Vertex(us i);
+    Vertex(us i,const variable::varoperations& v);
+    Vertex(const Vertex&);	// Copy constructor
+    Vertex& operator=(const Vertex& v2); // Copy assignment
     virtual ~Vertex();
+    
     const us i;			// The node number of this vertex
-    
-  };
-  
-    
+    const variable::varoperations& vop;
+    const us& Ns;			// Number of sample points reference
 
-  class TubeVertex:public Vertex{ //Gridpoint at a position in a Tube
-  public:
-    TubeVertex(const Tube& tube1,us i);
-    ~TubeVertex();
-    TubeVertex(const TubeVertex&); // The copy constructor.
-    // TubeVertex* left;		// Left node pointer
-    // TubeVertex* right;		// Right node pointer
- 
-    vd Error();				  // Compute error for this gridpoint
-    dmat Jacobian();			  // Fill complete Jacobian for this node
-    void Set(vd res);			  // Set result vector to res
-    vd Get();				  // Extract current result vector
+    virtual vd Error();				  // Compute error for this gridpoint
+    virtual dmat Jac();	       // Fill complete Jacobian for this node
+    virtual void Set(vd res);			  // Set result vector to res
+    virtual vd GetRes();				  // Extract current result vector
 
-    const Tube& tube;			// Pointer to parent tube
-
-    us Ns;
-    d vSf;			// Vertex fluid cross-sectional area
-    d vSs;			// Vertex solid cross-sectional area
-    d vVf;			// Vertex cell fluid volume
-    d vVs;			// Vertex cell solid volume
-    d xR;			// Position of right cell wall
-    d xL;			// Position of left cell wall
-    d wLl,wRr,wLr,wRl;		// Weight functions for equations
-    d wL0,wL1,wRNm1,wRNm2;    	// Special boundary weight functions
+    tube::Equation* eq[Neq];		// Pointer array of all equations
+    Vertex* left;
+    Vertex* right;
     variable::var rho;		// Density
     variable::var U;		// Volume flow
     variable::var T;		// Temperature
     variable::var p;		// Pressure
     variable::var Ts;		// Solid temperature
+    variable::var* vars[Neq];    
+  };
+} // namespace segment
 
-    Equation* eq[Neq];		// Pointer array of all equations
-    variable::var* vars[Neq];
+namespace tube{    
+
+  class TubeVertex:public segment::Vertex{ //Gridpoint at a position in a Tube
+  public:
+    TubeVertex(const Tube& tube1,us i);
+    TubeVertex(const TubeVertex&); // The copy constructor.
+    void operator=(const TubeVertex&);
+    virtual ~TubeVertex();
+
+    
+    // TubeVertex* left;		// Left node pointer
+    // TubeVertex* right;		// Right node pointer
+     
+    const Tube& tube;			// Pointer to parent tube
 
     Continuity c;		// Continuity equation
     Momentum m;			// Momentum equation
     Energy e;			// Energy equation
     State s;			// State equation (ideal gas)
     Solidenergy se;		// Solid energy equation
+
+    // These virtual functions are required such that boundary
+    // condition sources can be added in a later stage by inheriting
+    // from this TubeVertex. By default these sources are not a
+    // function of the dependent variables. That is why we do not have
+    // to add Jacobian terms.
+    virtual vd csource() const;	// Continuity source
+    virtual vd msource() const;	// Momentum source
+    virtual vd esource() const;	// Energy source
+    
   };				// TubeVertex class
 } // namespace tube
+
+
+

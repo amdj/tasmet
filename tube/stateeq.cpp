@@ -4,17 +4,14 @@
 
 namespace tube{
 
-  State::State(const Tube& tube,const TubeVertex& gp):Equation(tube,gp){
+  State::State(const Tube& tube,TubeVertex& gp):Equation(tube,gp){
     TRACE(0,"State constructor done");
   }
-  dmat State::operator()(){
-    TRACE(0,"State::operator()");
-    return Equation::operator()();
-  }
+
   vd State::Error()
   {
     TRACE(0,"State::Error()");
-    vd error(Ns);
+    vd error(Ns,fillwith::zeros);
     error+=vertex.p();
     error+=-1.0*tube.gas.Rs()*vop.fDFT*(vertex.rho.tdata()%vertex.T.tdata());
     return error;

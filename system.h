@@ -8,17 +8,40 @@
 // Jacobian.
 #include <vtypes.h>
 #include "tube/tube.h"
+#include "globalconf.h"
 
-namespace system{
-  class System{
+
+
+namespace tasystem{
+  using segment::Seg;
+  class TAsystem{
   public:
-    System(std::vector<segment::segment*> segs); // Initialize a
+    TAsystem(Globalconf& g); // Initialize a
 						 // System with a
 						 // vector of segments
 
-    ~System();
+    void addseg(Seg& s);
+    void delseg(us n);
+
+    dmat Jac();		// Return Jacobian matrix    
+    vd Error();			// Total error vector
+    vd GetRes();			// Extract result vector
+    void SetRes(vd resvec);	// Set result vector
+    Seg& operator[](us i);    
+    
+    ~TAsystem();
   protected:
     // A vector of boundary conditions is required
+    vector<segment::Seg*> segs;
+    vector<us> startdof;	// Vector containing the starting degree of freedom for segment number # 
+    vector<us> enddof;		// Vector containing the last dof belonging to segment number #
+
+    Globalconf& gc;
     us Nsegs;			// Number of segments
-  };
-} // namespace system
+    us Ndofs;
+    us& Ns;
+
+  };				// class System
+  
+} // namespace tasystem
+

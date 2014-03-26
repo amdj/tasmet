@@ -7,6 +7,88 @@
 #include "var.h"
 
 namespace variable {
+  varoperations::varoperations(){
+    set(0,0);
+  }
+  varoperations::varoperations(us Nf,d freq){
+    set(Nf,freq);
+  }
+  void varoperations::set(us Nf,d freq){
+    TRACE(0,"varoperations::set(Nf,freq)");
+    //ctor
+    this->Nf=Nf;
+    Ns=2*Nf+1;
+    // Reinitialize all operators
+    iDFT=zeros<dmat>(Ns,Ns);
+    fDFT=zeros<dmat>(Ns,Ns);
+
+
+    DDTfd=zeros<dmat>(Ns,Ns);
+    DDTtd=zeros<dmat>(Ns,Ns);
+    ddt=zeros<dmat>(Ns-1,Ns-1);
+    iddt=zeros<dmat>(Ns-1,Ns-1);
+    setfreq(freq);
+
+    TRACE(-1,"fDFT:" << fDFT);
+  }
+  void varoperations::setfreq(d freq)  {
+    oldomg=omg;
+    omg=2.0*pi*freq;
+    updateiDFT();
+    updatefDFT();
+    updateiomg();
+
+  }
+  void varoperations::updatefDFT(){
+    fDFT.row(0).fill(1.0);
+
+    for(us i=1;i<=Nf;i++){
+      //Row i (sine components)
+      for(us j=0; j<Ns;j++){
+	fDFT(2*i,j)=-2.0*sin(2.0*pi*double(i)*double(j)/Ns);
+      }
+      for(us j=0; j<Ns;j++){
+	fDFT(2*i-1,j)=2.0*cos(2.0*pi*double(i)*double(j)/Ns);
+      }
+      //Row i+1 (cosine components)
+    }
+    fDFT=fDFT/Ns;
+  }
+  void varoperations::updateiDFT(){
+    iDFT.col(0).fill(1.0);
+    for(us k=0;k<Ns;k++){
+      for (us n=1;n<=Nf;n++){
+	iDFT(k,2*n-1)=cos(2.0*pi*n*k/Ns);
+	iDFT(k,2*n)=-sin(2.0*pi*n*k/Ns);
+      }
+    }
+  }
+  void varoperations::updateiomg(){
+    TRACE(0,"varoperations::updateiomg()");
+    if(Nf!=0){
+      for(us i=1;i<=Nf;i++){
+	DDTfd(2*i-1,2*i  )=-double(i)*omg;
+	DDTfd(2*i  ,2*i-1)=double(i)*omg;
+      }
+      DDTtd=iDFT*DDTfd*fDFT;
+      ddt=DDTfd.submat(1,1,Ns-1,Ns-1);
+      //cout << "ddt:" << ddt << endl;
+      iddt=inv(ddt);
+    }
+    else{
+      DDTfd(0,0)=0;
+    }
+    omgvec=vd(Nf+1);
+    for(us i=0; i<Nf+1;i++)
+      omgvec(i)=omg*i;
+  }
+  varoperations::~varoperations()
+  {
+    TRACE(-5,"varoperations destructor");
+  }
+  
+  
+  
   //******************************************************************************** Operators
   
   var operator*(const double& scalar,const var& var1){ // Pre-multiplication with scalar
@@ -29,14 +111,41 @@ namespace variable {
     this->timedata=timedata;
     dft();
   }
-  var var::operator()(const var& v) { //Copy constructor
-    TRACE(0,"var copy constructor");
-    assert(v.vop!=NULL);
-    vd tdata=v.tdata();
-    return var(*(this->vop),tdata);
+  void var::updateNf(){
+    TRACE(0,"var::updateNf()");
+    if(this->Ns!=vop->Ns){
+      TRACE(5,"UPDATENF untested code");
+      assert((Ns%2)==1);	// Check if number of samples is not even
+      if(this->Ns>vop->Ns){
+	amplitudedata=amplitudedata.subvec(0,vop->Ns-1);
+      }
+      if(this->Ns<vop->Ns){
+	vd oldadata=amplitudedata;
+	amplitudedata=vd(vop->Ns,fillwith::zeros);
+	amplitudedata.subvec(0,this->Ns-1)=oldadata;
+      }
+      this->Ns=vop->Ns;		       // Update this number of samples
+      timedata=vd(Ns,fillwith::zeros); // Reinitialize timedata
+      idft();
+    }
   }
+  // var var::operator()(const var& v) { //Copy constructor
+  //   TRACE(0,"var copy constructor");
+  //   assert(v.vop!=NULL);
+  //   vd tdata=v.tdata();
+  //   return var(*(this->vop),tdata);
+  // }
+  // var& var::operator=(const var& v){
+  //   TRACE(0,"var::operator=(const var& v)");
+  //   this->timedata=v.timedata;
+  //   //	TRACE(0,"this->timedata:" <<this->timedata);
+  //   //	TRACE(0,"v.timedata:" <<v.timedata);
+  //   this->amplitudedata=v.amplitudedata;
+  //   return *this;
+  // }
   var var::operator*(const var& var2) const { // Multiply two variables in timed
     TRACE(0,"var::operator*(const var& var2) const");
+    assert(this->Ns==var2.Ns);
     vd tdata=this->tdata()%var2.tdata();
     return var(*(this->vop),tdata);
   }
@@ -46,7 +155,7 @@ namespace variable {
     return var(*(this->vop),scalar*thisadata);
   }
   // Get methods (which require implementation)
-  d var::operator()(us i) const {//Extract result at specific frequency
+  d& var::operator()(us i) {//Extract result at specific frequency
       TRACE(0,"var::operator(us i)");
       assert(i<Ns);
       TRACE(-1,"amplitudedata: "<<amplitudedata);
@@ -76,6 +185,7 @@ namespace variable {
 
   // Set methods
   void var::set(double val,us freqnr) { //Set result for specific frequency zero,real one, -imag one, etc
+    updateNf();
     amplitudedata[freqnr]=val;
     idft();
     TRACE(-3,"var::set(d val,us freqnr) adata:"<<amplitudedata);
@@ -83,6 +193,7 @@ namespace variable {
   void var::set(const vc& res)
   {
     TRACE(0,"var::set(const vc& res)");
+    updateNf();
     amplitudedata(0)=res(0).real();
     for(us i=1;i<Nf+1;i++){
       amplitudedata(2*i-1)=res(i).real();
@@ -91,6 +202,8 @@ namespace variable {
     idft();
   }
   void var::set(const vd& val) {
+    TRACE(0,"var::set(const vd& val)");
+    updateNf();
     amplitudedata=val;
     idft();
   }
@@ -99,18 +212,16 @@ namespace variable {
   }
   void var::settdata(double val) {
     TRACE(0,"var::settdata(double val)");
+    updateNf();
     timedata.fill(val);
     dft();
   }
   void var::settdata(vd& val) {
     TRACE(0,"var::settdata(vd& val)");
-    TRACE(0,"val.size():"<<val.size());
-
+    updateNf();
+    assert(val.size()==timedata.size());
     timedata=val;
-    TRACE(0,"timedata.size():"<<timedata.size());
-    TRACE(0,"vop.fDFT" << vop->fDFT);
     dft();
-    TRACE(0,"var::settdata(vd& val) done.");
   }
   //Show methods
   void var::showtdata() const {
@@ -140,14 +251,7 @@ namespace variable {
   void var::idft() { //Internal idft
     timedata=vop->iDFT*amplitudedata;
   }
-  var& var::operator=(const var& v){
-    TRACE(0,"var::operator=(const var& v)");
-    this->timedata=v.timedata;
-    //	TRACE(0,"this->timedata:" <<this->timedata);
-    //	TRACE(0,"v.timedata:" <<v.timedata);
-    this->amplitudedata=v.amplitudedata;
-    return *this;
-  }
+
   //Get a variable which is the time derivative of the current one
   var var::ddt() const {
     var result(*(this->vop));
@@ -177,222 +281,144 @@ namespace variable {
 
 
   //The vvar vlass
-  vvar::vvar() {	}
-  vvar::vvar(string name,us gp,us Nf): vvar(name,gp,Nf,0.0)  {}
-  vvar::vvar(string name,us gp,us Nf,double initv) :
-    Name(name),gp(gp),Nf(Nf) {
-    Ns=2*Nf+1; //Number of time samples
-    Dofs=Ns*gp;
-    TRACE(0,"Warning, vvar not changed for varoperations!!");
-    //for (us i=0;i<gp;i++) data.push_back(var(Nf,initv));
-    Error=vd(Dofs);
-    Result=vd(Dofs);
-  }
-  string vvar::name() {return Name;}
-  vd& vvar::getRes() {
-    //Create a column with all data ordered
-    for(us i=0;i<gp;i++) {
-      vd res=data[i]();
-      //cout << t.size() << endl;
-      //cout << res.size() << endl;
-      Result.subvec(i*Ns,(i+1)*Ns-1)=res;
-    }
-    return Result;
-  }
-  vd vvar::getRes(us freq) {
-    vd Res=vd(gp);
-    for(us i=0;i<gp;i++) {
-      Res[i]=data[i](freq);
-    }
-    return Res;
-  }
-  void vvar::setRes(vd& Res) {
-    for(us i=0;i<gp;i++){
-      vd resi=Res.subvec(i*Ns,(i+1)*Ns-1);
-      data[i].set(resi);
-    }
-  }
-  void vvar::setRes(vd& Res,us freqnr) {
-    for(us i=0;i<gp;i++){
-      data[i].set(Res[i],freqnr);
-    }
-  }
-  void vvar::showResult() {
-    unsigned i;
-    vd& result=getRes();
-    cout << "Total data for " << Name << endl;
-    cout << "[ " ;
-    for (i=0;i<Dofs-1;i++){
-      cout << result[i] << " ";
-    }
-    cout << result[Dofs-1] << " ]\n";
-  }
+  // vvar::vvar() {	}
+  // vvar::vvar(string name,us gp,us Nf): vvar(name,gp,Nf,0.0)  {}
+  // vvar::vvar(string name,us gp,us Nf,double initv) :
+  //   Name(name),gp(gp),Nf(Nf) {
+  //   Ns=2*Nf+1; //Number of time samples
+  //   Dofs=Ns*gp;
+  //   TRACE(0,"Warning, vvar not changed for varoperations!!");
+  //   //for (us i=0;i<gp;i++) data.push_back(var(Nf,initv));
+  //   Error=vd(Dofs);
+  //   Result=vd(Dofs);
+  // }
+  // string vvar::name() {return Name;}
+  // vd& vvar::getRes() {
+  //   //Create a column with all data ordered
+  //   for(us i=0;i<gp;i++) {
+  //     vd res=data[i]();
+  //     //cout << t.size() << endl;
+  //     //cout << res.size() << endl;
+  //     Result.subvec(i*Ns,(i+1)*Ns-1)=res;
+  //   }
+  //   return Result;
+  // }
+  // vd vvar::getRes(us freq) {
+  //   vd Res=vd(gp);
+  //   for(us i=0;i<gp;i++) {
+  //     Res[i]=data[i](freq);
+  //   }
+  //   return Res;
+  // }
+  // void vvar::setRes(vd& Res) {
+  //   for(us i=0;i<gp;i++){
+  //     vd resi=Res.subvec(i*Ns,(i+1)*Ns-1);
+  //     data[i].set(resi);
+  //   }
+  // }
+  // void vvar::setRes(vd& Res,us freqnr) {
+  //   for(us i=0;i<gp;i++){
+  //     data[i].set(Res[i],freqnr);
+  //   }
+  // }
+  // void vvar::showResult() {
+  //   unsigned i;
+  //   vd& result=getRes();
+  //   cout << "Total data for " << Name << endl;
+  //   cout << "[ " ;
+  //   for (i=0;i<Dofs-1;i++){
+  //     cout << result[i] << " ";
+  //   }
+  //   cout << result[Dofs-1] << " ]\n";
+  // }
 
 
-  //	vd vvar::dotn(us i,vd x) {
-  //		// dot n. For the boundaries, extrapolation is used
-  //		vd vi = data[i].getAdata();
-  //		vd vi_plus_half;
-  //		vd vi_min_half;
-  //		vd vip1;
-  //		vd vim1;
-  //		if(i>0 &&i<gp-1) {
-  //			vip1=data[i+1].getAdata();
-  //			vim1=data[i-1].getAdata();
-  //			vi_plus_half=0.5*(vip1+vi);
-  //			vi_min_half=0.5*(vi+vim1);
-  //		}
-  //		else if(i==0){
-  //			vip1=data[i+1].getAdata();
-  //			vi_plus_half=0.5*(vip1+vi);
-  //			vd dvdx_plus_half=(vip1-vi)/(x[i+1]-x[i]);
-  //			double h=(x[i+1]-x[i]);
-  //			vi_min_half=vi_plus_half-dvdx_plus_half*h;
-  //		}
-  //		else {
-  //			vim1=data[i-1].getAdata();
-  //			vi_min_half=0.5*(vim1+vi);
-  //			double h=(x[i]-x[i-1]);
-  //			vd dvdx_i_min_half=(vi-vim1)/h;
-  //			vi_plus_half=vi_min_half+dvdx_i_min_half*h;
-  //		}
-  //	return vi_plus_half-vi_min_half;
-  //	}
-  vd vvar::ddx_forward(us i,const vd& x){
-    vd result(Ns);
-    assert((i>=0) && (i<=gp));
-    if (i<gp-1){
-      result=(data[i+1]()-data[i]())/(x[i+1]-x[i]);
-      return result;
-    }
-    else{
-      result=(data[i]()-data[i-1]())/(x[i]-x[i-1]);
-      return result;
-    }
+  // //	vd vvar::dotn(us i,vd x) {
+  // //		// dot n. For the boundaries, extrapolation is used
+  // //		vd vi = data[i].getAdata();
+  // //		vd vi_plus_half;
+  // //		vd vi_min_half;
+  // //		vd vip1;
+  // //		vd vim1;
+  // //		if(i>0 &&i<gp-1) {
+  // //			vip1=data[i+1].getAdata();
+  // //			vim1=data[i-1].getAdata();
+  // //			vi_plus_half=0.5*(vip1+vi);
+  // //			vi_min_half=0.5*(vi+vim1);
+  // //		}
+  // //		else if(i==0){
+  // //			vip1=data[i+1].getAdata();
+  // //			vi_plus_half=0.5*(vip1+vi);
+  // //			vd dvdx_plus_half=(vip1-vi)/(x[i+1]-x[i]);
+  // //			double h=(x[i+1]-x[i]);
+  // //			vi_min_half=vi_plus_half-dvdx_plus_half*h;
+  // //		}
+  // //		else {
+  // //			vim1=data[i-1].getAdata();
+  // //			vi_min_half=0.5*(vim1+vi);
+  // //			double h=(x[i]-x[i-1]);
+  // //			vd dvdx_i_min_half=(vi-vim1)/h;
+  // //			vi_plus_half=vi_min_half+dvdx_i_min_half*h;
+  // //		}
+  // //	return vi_plus_half-vi_min_half;
+  // //	}
+  // vd vvar::ddx_forward(us i,const vd& x){
+  //   vd result(Ns);
+  //   assert((i>=0) && (i<=gp));
+  //   if (i<gp-1){
+  //     result=(data[i+1]()-data[i]())/(x[i+1]-x[i]);
+  //     return result;
+  //   }
+  //   else{
+  //     result=(data[i]()-data[i-1]())/(x[i]-x[i-1]);
+  //     return result;
+  //   }
 
-  }
-  vd vvar::ddx_backward(us i,const vd& x){
-    vd result(Ns);
-    assert((i>=0) && (i<=gp));
-    if (i==0){
-      result=(data[i+1]()-data[i]())/(x[i+1]-x[i]);
-      return result;
-    }
-    else{
-      result=(data[i]()-data[i-1]())/(x[i]-x[i-1]);
+  // }
+  // vd vvar::ddx_backward(us i,const vd& x){
+  //   vd result(Ns);
+  //   assert((i>=0) && (i<=gp));
+  //   if (i==0){
+  //     result=(data[i+1]()-data[i]())/(x[i+1]-x[i]);
+  //     return result;
+  //   }
+  //   else{
+  //     result=(data[i]()-data[i-1]())/(x[i]-x[i-1]);
 
-      return result;
-    }
+  //     return result;
+  //   }
 
-  }
+  // }
 
-  vd vvar::ddx_central(us i,const vd& x) {
-    vd result(Ns);
-    assert((i>=0) && (i<=gp));
-    if((i>0) && (i<gp-1)) {
-      result=(data[i+1]()-data[i-1]())/(x[i+1]-x[i-1]); //Central difference
-      return result;
-    }
-    else if(i==0) {
-      result=(4*data[1]()-3*data[0]()-data[2]())/(2*x[1]);
-      return result;
-    }
-    else {
-      result=(data[i-2]()-4*data[i-1]()+3*data[i]())/(2*(x[i]-x[i-1]));
-      return result;
-    }
+  // vd vvar::ddx_central(us i,const vd& x) {
+  //   vd result(Ns);
+  //   assert((i>=0) && (i<=gp));
+  //   if((i>0) && (i<gp-1)) {
+  //     result=(data[i+1]()-data[i-1]())/(x[i+1]-x[i-1]); //Central difference
+  //     return result;
+  //   }
+  //   else if(i==0) {
+  //     result=(4*data[1]()-3*data[0]()-data[2]())/(2*x[1]);
+  //     return result;
+  //   }
+  //   else {
+  //     result=(data[i-2]()-4*data[i-1]()+3*data[i]())/(2*(x[i]-x[i-1]));
+  //     return result;
+  //   }
 
-  }
-  us vvar::size() {return gp;}
-  var& vvar::operator[](us i) {return data[i]; } //Extract a variable
-  vvar::~vvar()
-  {
-    //dtor
-  }
+  // }
+  // us vvar::size() {return gp;}
+  // var& vvar::operator[](us i) {return data[i]; } //Extract a variable
+  // vvar::~vvar()
+  // {
+  //   //dtor
+  // }
 
-  varoperations::varoperations(us Nf,d freq): Nf(Nf){
-    TRACE(0,"varoperations::varoperations(Nf,freq)");
-    //ctor
-    Ns=2*Nf+1;
-    //    cout << "fop.Ns:" << Ns << endl;
-    //    cout << "fop.Nf:" << Nf << endl;
-
-    iDFT=zeros<dmat>(Ns,Ns);
-    fDFT=zeros<dmat>(Ns,Ns);
-
-
-    DDTfd=zeros<dmat>(Ns,Ns);
-    DDTtd=zeros<dmat>(Ns,Ns);
-    ddt=zeros<dmat>(Ns-1,Ns-1);
-    iddt=zeros<dmat>(Ns-1,Ns-1);
-    setfreq(freq);
-
-    TRACE(0,"fDFT:" << fDFT);
-  }
-  void varoperations::setfreq(d freq)  {
-    oldomg=omg;
-    omg=2.0*pi*freq;
-    updateiDFT();
-    updatefDFT();
-    updateiomg();
-
-  }
-  void varoperations::updatefDFT(){
-    fDFT.row(0).fill(1.0);
-
-    for(us i=1;i<=Nf;i++){
-      //Row i (sine components)
-
-      for(us j=0; j<Ns;j++){
-	fDFT(2*i,j)=-2.0*sin(2.0*pi*double(i)*double(j)/Ns);
-      }
-      for(us j=0; j<Ns;j++){
-	fDFT(2*i-1,j)=2.0*cos(2.0*pi*double(i)*double(j)/Ns);
-      }
-      //Row i+1 (cosine components)
-    }
-
-    fDFT=fDFT/Ns;
-
-  }
-  void varoperations::updateiDFT(){
-    iDFT.col(0).fill(1.0);
-    for(us k=0;k<Ns;k++){
-      for (us n=1;n<=Nf;n++){
-	iDFT(k,2*n-1)=cos(2.0*pi*n*k/Ns);
-	iDFT(k,2*n)=-sin(2.0*pi*n*k/Ns);
-      }
-
-    }
-  }
-  void varoperations::updateiomg(){
-    TRACE(0,"varoperations::updateiomg()");
-    if(Nf!=0){
-      for(us i=1;i<=Nf;i++){
-	DDTfd(2*i-1,2*i  )=-double(i)*omg;
-	DDTfd(2*i  ,2*i-1)=double(i)*omg;
-      }
-      DDTtd=iDFT*DDTfd*fDFT;
-      ddt=DDTfd.submat(1,1,Ns-1,Ns-1);
-      //cout << "ddt:" << ddt << endl;
-      iddt=inv(ddt);
-    }
-    else{
-      DDTfd(0,0)=0;
-    }
-    omgvec=vd(Nf+1);
-    for(us i=0; i<Nf+1;i++)
-      omgvec(i)=omg*i;
-
-  }
-  varoperations::~varoperations()
-  {
-    TRACE(-5,"varoperations destructor");
-  }
 
 
 
 
 } /* namespace variable */
+
 
 

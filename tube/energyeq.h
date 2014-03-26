@@ -6,8 +6,10 @@ namespace tube{
   class Energy:public Equation
   {
   public:
-    Energy(const Tube& tube,const TubeVertex& gp);
+    Energy(const Tube& tube,TubeVertex& gp);
     ~Energy();
+    d Whim1,Whi,Whip1,Wjim1,Wji,Wjip1; // Weight functions for terms in energy equation - except for conduction terms
+    d Wc1,Wc2,Wc3,Wc4;		// Weight functions for conduction
     vd Error();			// Error in Energy equation at node i
     dmat dpi();
     dmat dUi();

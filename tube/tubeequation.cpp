@@ -5,17 +5,54 @@
 
 namespace tube{
 
-  Equation::Equation(const Tube& tube,const TubeVertex& tgp):i(tgp.i),tube(tube),
-							     vertex(tgp),vop(tube.vop),fDFT(vop.fDFT),iDFT(vop.iDFT),
-							     DDTfd(vop.DDTfd),Ns(vop.Ns),geom(tube.geom),Ncells(geom.Ncells),
-							     vSf(vertex.vSf),vSs(vertex.vSs),vVf(vertex.vVf),vVs(vertex.vVs),
-							     wLl(vertex.wLl),wRr(vertex.wRr),wLr(vertex.wLr),wRl(vertex.wRl){
+  Equation::Equation(const Tube& tube,TubeVertex& tgp):i(tgp.i),tube(tube),vertex(tgp),left(vertex.left),right(vertex.right),vop(tube.vop),fDFT(vop.fDFT),iDFT(vop.iDFT),DDTfd(vop.DDTfd),Ns(vop.Ns),geom(tube.geom),Ncells(geom.Ncells)
+  {
 // Sf=tA
     TRACE(0,"Equation constructor");
+    // Geometrical parameters
 
-    SfL=tube.geom.Sf(i);
-    SfR=tube.geom.Sf(i+1);
+    TRACE(-1,"i:"<< i);
+    SfL=geom.Sf(i);
+    SfR=geom.Sf(i+1);
+    TRACE(-1,"SfL,SfR created");
+    vSf=geom.vSf(i);
+    vSs=geom.vSs(i);
+    vVf=geom.vVf(i);
+    vVs=geom.vVs(i);
 
+    wLl=0; wLr=0; wRr=0; wRl=0;		// Initialize weight functions to zero
+    xR=tube.geom.x(i+1);		// Position of right cell wall
+    xL=tube.geom.x(i);		// Position of left cell wall
+    const vd& vx=tube.geom.vx;
+    const d& vxi=vx(i);
+    const us& Ncells=tube.geom.Ncells;
+    d vxip1=0;
+    d vxim1=0;
+
+    if(i>0){
+      vxim1=vx(i-1);
+      wLl=(vxi-xL)/(vxi-vxim1);
+      wLr=(xL-vxim1)/(vxi-vxim1);
+    }
+    if(i<Ncells-1){
+      TRACE(-1,"i:"<<i);
+      TRACE(0,"xR:"<<xR);
+      TRACE(0,"vxi"<<vxi)
+      vxip1=vx(i+1);
+      wRr=(xR-vxi)/(vxip1-vxi);
+      wRl=(vxip1-xR)/(vxip1-vxi);
+    }
+    // special weight function part
+    wL0=wL1=wRNm1=wRNm2=0;	// Put these weight functions to zero
+    if(i==0){
+      wL0=vxip1/(vxip1-vxi);
+      wL1=-vxi/(vxip1-vxi);
+    }
+    if(i==Ncells-1){
+      wRNm1=(vxim1-xR)/(vxim1-vxi);
+      wRNm2=(xR-vxi)/(vxim1-vxi);
+    }
+    // end special weight function part
     TRACE(-1,"vertex i:"<<i);
     TRACE(-1,"vertex density:"<<vertex.rho());
     
@@ -26,18 +63,18 @@ namespace tube{
   Equation::Equation(const Equation& other):Equation(other.tube,other.vertex){
     TRACE(0,"Equation copy constructor");
   }
-  dmat Equation::diagtmat(const variable::var& v){
+  dmat Equation::diagtmat(variable::var& v){
     dmat result(Ns,Ns,fillwith::zeros);
     result.diag()=v.tdata();
     return result;
   }
-  dmat  Equation::operator()(){
+  dmat  Equation::Jac(){
     // Compute the Jacobian for the subsystem around the current gridpoint
-    TRACE(0,"Equation::operator()");
+    TRACE(0,"Equation::Jac()");
     const variable::varoperations& vop=tube.vop; // Reference to variable operations
     us Ns=vop.Ns;		// Number of samples
     us bw=Ns-1;
-    dmat result(Ns,15*Ns,fillwith::zeros);
+    dmat result(Ns,3*Neq*Ns,fillwith::zeros);
     // Order is: rho,U,T,p,Tw
     TRACE(-1,"Ns:" << Ns);
     // TRACE(-1,"rhoim1 size:"<< rhoim1);
@@ -76,28 +113,55 @@ namespace tube{
     result.submat(0,13*Ns,bw,13*Ns+bw)=dpip1();
     TRACE(-1,"Filling dTsip1");
     result.submat(0,14*Ns,bw,14*Ns+bw)=dTsip1();
-
+    TRACE(-1,"Equation Jac done");
     return result;
   }
   dmat Equation::drhoim1(){
     TRACE(-1,"Equation::drhoim1()");
     return zero;}
-  dmat Equation::dUim1(){return zero;}
-  dmat Equation::dTim1(){return zero;}
-  dmat Equation::dpim1(){return zero;}
-  dmat Equation::dTsim1(){return zero;}
+  dmat Equation::dUim1(){
+    TRACE(0,"Equation::dUim1()");
+    return zero;}
+  dmat Equation::dTim1(){
+    TRACE(0,"Equation::dTim1()");
+    return zero;}
+  dmat Equation::dpim1(){
+    TRACE(0,"Equation::dpim1()");
+    return zero;}
+  dmat Equation::dTsim1(){
+    TRACE(0,"Equation::dTsim1()");
+    return zero;}
 
-  dmat Equation::drhoi(){ return zero;}
-  dmat Equation::dUi(){return zero;}
-  dmat Equation::dTi(){return zero;}
-  dmat Equation::dpi(){return zero;}
-  dmat Equation::dTsi(){return zero;}
-
-  dmat Equation::drhoip1(){return zero;}
-  dmat Equation::dUip1(){return zero;}
-  dmat Equation::dTip1(){return zero;}
-  dmat Equation::dpip1(){return zero;}
-  dmat Equation::dTsip1(){return zero;}
+  dmat Equation::drhoi(){
+    TRACE(0,"Equation::drhoi()");
+    return zero;}
+  dmat Equation::dUi(){
+    TRACE(0,"Equation::dUi()");
+    return zero;}
+  dmat Equation::dTi(){
+    TRACE(0,"Equation::dTi()");
+    return zero;}
+  dmat Equation::dpi(){
+    TRACE(0,"Equation::dpi()");
+    return zero;}
+  dmat Equation::dTsi(){
+    TRACE(0,"Equation::dTsi()");
+    return zero;}
+  dmat Equation::drhoip1(){
+    TRACE(0,"Equation::drhoip1()");
+    return zero;}
+  dmat Equation::dUip1(){
+    TRACE(0,"Equation::dUip1()");
+    return zero;}
+  dmat Equation::dTip1(){
+    TRACE(0,"Equation::dTip1()");
+    return zero;}
+  dmat Equation::dpip1(){
+    TRACE(0,"Equation::dpip1()");
+    return zero;}
+  dmat Equation::dTsip1(){
+    TRACE(0,"Equation::dTsip1()");
+    return zero;}
 
   Equation::~Equation(){}
 } // namespace tube

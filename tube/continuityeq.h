@@ -6,12 +6,12 @@ namespace tube{
 
   class Continuity:public Equation{	// Tube continuity equation 
   public:
-    Continuity(const Tube& tube,const TubeVertex& gp);
+    Continuity(const Tube& tube,TubeVertex& gp);
     ~Continuity();
 
-    d wim1,wi,wip1;		// Weight functions for relative
+    d Wim1,Wi,Wip1;		// Weight functions for relative
 				// contribution to the equations.
-    //    dmat operator()();		// Link to Equation operator()()
+
     vd Error();			// Error in this equation at this node
     dmat drhoip1(); // Derivative of continuity equation to density at node
 		    // i + 1
@@ -28,3 +28,4 @@ namespace tube{
 
   };				// Continuity class
 }				// Namespace tube
+
