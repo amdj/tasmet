@@ -21,27 +21,37 @@ namespace tasystem{
     
     vd Res(Ndofs);
     for(us i=0;i<Nsegs;i++){
-      Res.subvec(startdof.at(0),enddof.at(0))=segs[i]->GetRes();
+      Res.subvec(startdof.at(i),enddof.at(i))=segs[i]->GetRes();
     }
     return Res;
   }
+  void TAsystem::SetRes(vd Res){
+    TRACE(0,"TAsystem::SetRes(vd res)");
+    for(us i=0;i<Nsegs;i++){
+      segs[i]->SetRes(Res.subvec(startdof.at(i),enddof.at(i)));
+    }
+  }
   dmat TAsystem::Jac(){
-    TRACE(0,"TAsystem::operator()() return Jacobian matrix");
+    TRACE(1,"TAsystem::operator()() return Jacobian matrix");
     // Something interesting has to be done here later on to connect
     // the different segments in the sense that blocks of Jacobian
     // matrix parts have to be moved to the right place etc. To be
     // continued...
+    TRACE(-1,"Ndofs:"<<Ndofs);
+
     dmat jac(Ndofs,Ndofs,fillwith::zeros);
     for(us j=0;j<Nsegs;j++){
       dmat segjac=segs[j]->Jac();
+      TRACE(0,"Seg jacobian size:"<<segjac.n_cols);
+      us thisndofs=gc.Ns*Neq*segs[j]->Ncells;
+      us frow=j*thisndofs;
+      us fcol=j*thisndofs;
+      us lrow=(j+1)*thisndofs-1;
+      us lcol=(j+1)*thisndofs-1;
+      jac.submat(frow,fcol,lrow,lcol)=segjac;
     }
     return jac;
   }
-  void TAsystem::SetRes(vd resvec){
-
-
-  }
-
   
 
 

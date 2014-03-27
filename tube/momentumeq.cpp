@@ -45,7 +45,8 @@ namespace tube{
 
     vd rhoti=vertex.rho.tdata();
     vd Uti=vertex.U.tdata();
-    error+=vVf*DDTfd*(vertex.U*vertex.rho).tdata()/vSf;
+    error+=vVf*DDTfd*(Uti%rhoti)/vSf;
+    TRACE(-1,"Inbetween momentum error:"<< error);
     error+=Wui*fDFT*(rhoti%Uti%Uti);
     
     // Pressure terms    
@@ -58,7 +59,7 @@ namespace tube{
       error+=Wuim1*fDFT*(rhotim1%Utim1%Utim1);
       
       // Pressure terms   
-      vd pim1=left->p.tdata();
+      vd pim1=left->p();
       error+=Wpim1*pim1;
 
     }
@@ -68,7 +69,7 @@ namespace tube{
       error+=Wuip1*fDFT*(rhotip1%Utip1%Utip1);
 
       // Pressure terms    
-      vd pip1=right->p.tdata();
+      vd pip1=right->p();
       error+=Wpip1*pip1;
     }
 

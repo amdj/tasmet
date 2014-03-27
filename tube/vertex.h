@@ -27,7 +27,7 @@ namespace segment{
 
     virtual vd Error();				  // Compute error for this gridpoint
     virtual dmat Jac();	       // Fill complete Jacobian for this node
-    virtual void Set(vd res);			  // Set result vector to res
+    virtual void SetRes(vd res);			  // Set result vector to res
     virtual vd GetRes();				  // Extract current result vector
 
     tube::Equation* eq[Neq];		// Pointer array of all equations

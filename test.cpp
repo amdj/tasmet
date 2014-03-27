@@ -9,14 +9,14 @@ using namespace tasystem;
 
 int main() {
   cout <<  "Running test..." << endl;
-  initlog(-2);
-  us gp=11; gp=3;
-  us Nf=0;
+  initlog(15);
+  us gp=100;
+  us Nf=5;
   us Ns=2*Nf+1;
-  double f=100;
+  double f=10;
   double omg=2*pi*f;
   double T=1/f;
-  d L=1;
+  d L=0.01;
   d rtube=1e-3;
   d S=pi*pow(rtube,2);
   d phi=1.0;
@@ -29,40 +29,47 @@ int main() {
   tube::Tube t1(gc,geom1);
   // segment::Seg t1(gc);
   variable::var presLeft(t1.vop);
-  presLeft.set(p0-1,0);
-  TRACE(0,presLeft.tdata());
+  presLeft.set(p0,0);
+  if (Nf>0)
+    presLeft.set(1,1);	// One oscillation
+  TRACE(10,presLeft.tdata());
   tube::LeftPressure* bcleft=new tube::LeftPressure(t1,presLeft,T0);
-  cout << bcleft->esource();
+  // cout << bcleft->esource();
   t1.setLeftbc(bcleft);  
 
   t1.Init(T0,p0);
-  TRACE(0,"-----------------------------------------");
-  dmat j=t1.Jac();
-  vd err=t1.Error();
-  TRACE(0,"Error"<<endl<<err);
-  TRACE(0,"Jacobian:"<<endl<<j);
-  TRACE(0,"Determinant of Jacobian:"<< det(j));
+  TRACE(10,"-----------------------------------------");
+
+  // dmat j=t1.Jac();
   
-  vd dx=-solve(j,err);
-  TRACE(0,"dx:"<<endl<<dx);
+  
+  // TRACE(10,"Jacobian:"<<endl<<j);
+  // TRACE(10,"Determinant of Jacobian:"<< det(j));
+  
 
-  // TRACE(0,j.row(2));
-  // TRACE(0,j.row(7));
-  // TRACE(0,j.row(12));  
+
+
+  // TRACE(10,j.row(2));
+  // TRACE(10,j.row(7));
+  // TRACE(10,j.row(12));  
     //-------------------------------------------------    
-  // TAsystem sys(gc);
-  // sys.addseg(t1);
-  // vd err=sys.Error();
-  // vd res=sys.GetRes();
-  // cout << err;
-  // TRACE(0,"Result:"<<res);
-  // dmat Jac=sys.Jac();
-  // cout << Jac;
+  TAsystem sys(gc);
+  sys.addseg(t1);
+  vd err=sys.Error();
+  dmat j=sys.Jac();
 
 
+  vd dx=-solve(j,err);
+  vd xold=sys.GetRes();
+  vd xnew=xold+dx;
+  sys.SetRes(xnew);
+  TRACE(10,"err:"<<endl<<err);
+  
+  TRACE(10,"xold:"<<endl<<xold);
+  TRACE(10,"dx:"<<endl<<dx);  
+  TRACE(10,"xnew:"<<endl<<xnew);
 
-
-  TRACE(0,"_----------------------------------------");
+  TRACE(10,"-----------------------------------------");
 
   return 0;
 }

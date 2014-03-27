@@ -51,7 +51,7 @@ namespace segment{
     }
     return res;
   }
-  void Vertex::Set(vd res){
+  void Vertex::SetRes(vd res){
     TRACE(0,"Vertex::Set()");
     for(us k=0;k<Neq;k++){
       vars[k]->set(res.subvec(k*Ns,k*Ns+Ns-1));
@@ -64,10 +64,14 @@ namespace segment{
     dmat Jac(Neq*Ns,3*Neq*Ns,fillwith::zeros);
     for(us k=0;k<Neq;k++){
       TRACE(-1,"Equation number:"<<k)
-      us firstrow=k*Ns; cout << firstrow << " ";
-      us firstcol=0; cout << firstcol << " ";
-      us lastrow=firstrow+Ns-1; cout << lastrow << " ";
-      us lastcol=Jac.n_cols-1; cout << lastcol << " ";
+	us firstrow=k*Ns;
+      // cout << firstrow << " ";
+      us firstcol=0;
+      // cout << firstcol << " ";
+      us lastrow=firstrow+Ns-1;
+      // cout << lastrow << " ";
+      us lastcol=Jac.n_cols-1;
+      // cout << lastcol << " ";
 	
       dmat eqJac=eq[k]->Jac();
       // if(k==2)

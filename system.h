@@ -19,14 +19,14 @@ namespace tasystem{
     TAsystem(Globalconf& g); // Initialize a
 						 // System with a
 						 // vector of segments
+    vd Error();			// Total error vector
+    vd GetRes();			// Extract result vector
+    void SetRes(vd resvec);	// Set result vector
 
     void addseg(Seg& s);
     void delseg(us n);
 
     dmat Jac();		// Return Jacobian matrix    
-    vd Error();			// Total error vector
-    vd GetRes();			// Extract result vector
-    void SetRes(vd resvec);	// Set result vector
     Seg& operator[](us i);    
     
     ~TAsystem();

@@ -21,16 +21,18 @@ namespace segment{
   class Seg{
   public:
     Seg(tasystem::Globalconf& gc); // nL,nR initiated as 0
-    virtual ~Seg(){}
+    virtual ~Seg();
     us nL,nR;
     tasystem::Globalconf& gc;	// Global configuration of the system
     variable::varoperations vop;
-    virtual vd Error()=0;
-    virtual vd GetRes()=0;
-    virtual dmat Jac()=0;
+    vd Error();
+    vd GetRes();
+    dmat Jac();
+    void SetRes(vd res);
+    
     void setnodes(us n1,us n2){ nL=n1; nR=n2;}
     Vertex** vvertex; // Vector of vertices
-    us Ncells;
+    us Ndofs,Ncells;
   };
 
 } // Namespace segment
@@ -45,15 +47,11 @@ namespace tube{
 				 // vector ofpointers
     ~Tube();
     void Init(d T0,d p0);
-
     void setLeftbc(TubeVertex* v); // Set left boundary condition vertex
     Geom geom;			// The geometry
     gases::Gas& gas;		// The gas in the system. Reference variable to globalconf.gas
 
-    dmat Jac();
-    vd GetRes();
-    vd Error();
-    void Set(vd res);
+
   protected:
     LaminarDragResistance drag;
     friend class TubeVertex;
