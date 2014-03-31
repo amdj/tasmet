@@ -13,45 +13,32 @@ cdef extern from "vvar.h" namespace "vvar":
 		vvar() except +
 		vector[double] getResult(unsigned)
 		void setResult(vector[double],unsigned)
-cdef extern from "isentropictube.h" namespace "tube":
-	cdef cppclass isentropictube:
-		isentropictube(unsigned,unsigned,double,double,double,double) except +
-		vector[double] getResult()
-		void setResult(vector[double])
-# 		cppclass vvar:
-# 			vector[double] getResult(unsigned)
-		vvar p
-		vvar U
-		vvar rho
-# 		vector[double] getUResult()
-# 		vector[double] getpResult(int)
-# 		vector[double] getUResult(int)
-		vector[double] getError()
-		vector[double] getx()
 
 
-cdef ToVec(n.ndarray[n.float64_t,ndim=1] Array):
-	cdef int size=Array.shape[0]
-	cdef n.ndarray[double, ndim=1, mode="c"] gArray
-	gArray=n.ascontiguousarray(Array,dtype=n.float64)
-	cdef vector[double] res
-	for i in xrange(size):
-		res.push_back(gArray[i])
-	return res
+# cdef extern from "globalconf.h" namespace "tasystem"
+# cdef extern from "tube/tube.h" namespace "tube":
+# 	cdef cppclass tube:
 
-cdef ToArray(vector[double] Vec):
-	cdef int size=Vec.size()
-	cdef n.ndarray[n.float64_t,ndim=1] Array = n.zeros((size))
-	for i in xrange(size):
-		Array[i]=Vec[i]
-	return Array
+# 		vector[double] getResult()
+# 		void setResult(vector[double])
+# # 		cppclass vvar:
+# # 			vector[double] getResult(unsigned)
+# 		vvar p
+# 		vvar U
+# 		vvar rho
+# # 		vector[double] getUResult()
+# # 		vector[double] getpResult(int)
+# # 		vector[double] getUResult(int)
+# 		vector[double] getError()
+# 		vector[double] getx()
+
 
 cdef class tube_py:
-	cdef isentropictube* thisl
+	# cdef tube* tube1
 	cpdef int Nf,gp
 	cpdef double freq,Up
-	def __cinit__(self,int gp,int Nf,double freq,double Up):
-		self.thisl=new isentropictube(gp,Nf,1.,1.,freq,Up)
+	def __cinit__(self,int gp,int Nf,double freq,double p1):
+		# self.thisl=new isentropictube(gp,Nf,1.,1.,freq,Up)
 		self.Nf=Nf
 		self.freq=freq
 		self.Up=Up
