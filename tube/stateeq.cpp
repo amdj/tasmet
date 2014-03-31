@@ -13,7 +13,7 @@ namespace tube{
     TRACE(0,"State::Error()");
     vd error(Ns,fillwith::zeros);
     error+=vertex.p();
-    error+=-1.0*tube.gas.Rs()*vop.fDFT*(vertex.rho.tdata()%vertex.T.tdata());
+    error+=-1.0*tube.gas.Rs()*fDFT*(vertex.rho.tdata()%vertex.T.tdata());
     return error;
   }
   dmat State::dpi()
@@ -24,15 +24,13 @@ namespace tube{
   dmat State::dTi()
   {
     TRACE(0,"State::dTi()");
-    dmat rhotidiag(Ns,Ns,fillwith::zeros);
-    rhotidiag.diag()=vertex.rho.tdata();
+    dmat rhotidiag=diagmat(vertex.rho.tdata());
     return -1.0*tube.gas.Rs()*vop.fDFT*rhotidiag*vop.iDFT;
   }
   dmat State::drhoi()
   {
     TRACE(0,"State::drhoi()");
-    dmat Ttidiag(Ns,Ns,fillwith::zeros);
-    Ttidiag.diag()=vertex.T.tdata();
+    dmat Ttidiag=diagmat(vertex.T.tdata());
     return -1.0*tube.gas.Rs()*vop.fDFT*Ttidiag*vop.iDFT;
   }
   State::~State(){

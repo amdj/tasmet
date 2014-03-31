@@ -90,13 +90,13 @@ namespace segment{
 
 namespace tube{
   
-  TubeVertex::TubeVertex(const Tube& tube1,us i):Vertex(i,tube1.vop),tube(tube1),c(tube,*this),m(tube,*this),e(tube,*this),s(tube,*this),se(tube,*this)
+  TubeVertex::TubeVertex(const Tube& tube1,us i):Vertex(i,tube1.vop),tube(tube1),c(tube,*this),m(tube,*this),e(tube,*this),s(tube,*this),se(tube,*this),is(tube,*this)
   {
     TRACE(0,"TubeVertex contructor");
 
     eq[0]=&this->c;			// Continuity is first
     eq[1]=&this->m;
-    eq[2]=&e;
+    eq[2]=&is; 			// Changed to isentropic
     eq[3]=&s;
     eq[4]=&se;
 

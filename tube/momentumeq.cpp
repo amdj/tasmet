@@ -45,7 +45,7 @@ namespace tube{
 
     vd rhoti=vertex.rho.tdata();
     vd Uti=vertex.U.tdata();
-    error+=vVf*DDTfd*(Uti%rhoti)/vSf;
+    error+=vVf*DDTfd*fDFT*(Uti%rhoti)/vSf;
     TRACE(-1,"Inbetween momentum error:"<< error);
     error+=Wui*fDFT*(rhoti%Uti%Uti);
     
@@ -75,7 +75,7 @@ namespace tube{
 
     
     // Drag term
-    error+=tube.drag(i);
+    error+=vVf*tube.drag(i)/vSf;
 
     // (Boundary) source term
     error+=vertex.msource();
@@ -84,15 +84,15 @@ namespace tube{
   dmat Momentum::dUi(){
     TRACE(0,"Momentum::dUi()");
     dmat dUi=zero;
-    dUi+=tube.drag.dUi(i);		       // Drag term
-    dUi+=DDTfd*fDFT*diagtmat(vertex.rho)*iDFT; // Time-derivative term
+    dUi+=vVf*tube.drag.dUi(i)/vSf;		       // Drag term
+    dUi+=vVf*DDTfd*fDFT*diagtmat(vertex.rho)*iDFT/vSf; // Time-derivative term
     dUi+=2.0*Wui*fDFT*(diagtmat(vertex.rho)*diagtmat(vertex.U))*iDFT;
     return dUi;
   }
   dmat Momentum::drhoi(){
     TRACE(0,"Momentum::drhoi()");
     dmat drhoi=zero;
-    drhoi+=DDTfd*fDFT*diagtmat(vertex.U)*iDFT;
+    drhoi+=vVf*DDTfd*fDFT*diagtmat(vertex.U)*iDFT/vSf;
     drhoi+=Wui*fDFT*diagtmat(vertex.U)%diagtmat(vertex.U)*iDFT;
     return drhoi;
   }

@@ -68,6 +68,7 @@ namespace tube{
     d vxi=tube.geom.vx(0);
     vd TLt=TL.tdata();
     vd kappaL=tube.gas.kappa(TLt);
+    // TRACE(10,"Important: put esource on when going back to full energy eq!");
     esource+=-1.0*e.SfL*(e.fDFT*(kappaL%TLt))/vxi;
     TRACE(-1,"esource:"<<esource);
     return esource;    

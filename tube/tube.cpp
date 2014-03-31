@@ -88,6 +88,7 @@ namespace segment{
       }
     return Result;
   }
+
   vd Seg::Error(){
     TRACE(0,"Seg::Error()");
     const us& Ns=vop.Ns;
@@ -155,7 +156,29 @@ namespace tube {
     vvertex[0]->right=vvertex[1];
     vvertex[1]->left=vvertex[0];
   }
+  void Tube::DoIter(){
+    // Do an iteration
+    vd err=Error();
+    dmat jac=Jac();
+    vd oldx=Seg::GetRes();
+    try{
+      vd dx=-solve(jac,err);
+      SetRes(oldx+dx);
+    }
+    catch(...)
+      {
+	
+      }
 
+  }
+  vd Tube::GetResAt(us varnr,us freqnr){
+    vd res(Ncells);
+    assert(varnr<Neq);
+    for(us i=0;i<Ncells;i++){
+      res(i)=vvertex[i]->vars[varnr]->operator()(freqnr);
+    }
+    return res;
+  }
   void Tube::Init(d T0,d p0){
     TRACE(0,"Tube::Init()");
     Vertex** v=vvertex;

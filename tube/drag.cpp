@@ -85,6 +85,7 @@ vc LaminarDragResistance::ComplexResistancecoef(us i) const {
       return 2*mu/pow(rh,2);
     }
     d zerodrag_blapprox(d mu,d rh){ return 0; }
+    
     ZerofreqDrag::ZerofreqDrag(const Tube& t): tube(t){
       TRACE(0,"ZerofreqDrag::ZerofreqDrag()");
       if(tube.geom.shape=="vert")
@@ -95,8 +96,9 @@ vc LaminarDragResistance::ComplexResistancecoef(us i) const {
 	zerodrag_funptr=&zerodrag_blapprox;
       else
 	{
-	  TRACE(10,"Warning: tube.geom.shape unknown for zerofreqdrag, exiting");
-	  exit(1);
+	  // TRACE(10,"Warning: tube.geom.shape unknown for zerofreqdrag, using");
+	  zerodrag_funptr=&zerodrag_blapprox;
+
 	}
     }
     ZerofreqDrag::~ZerofreqDrag(){}

@@ -50,7 +50,8 @@ namespace tube{
     void setLeftbc(TubeVertex* v); // Set left boundary condition vertex
     Geom geom;			// The geometry
     gases::Gas& gas;		// The gas in the system. Reference variable to globalconf.gas
-
+    void DoIter();
+    vd GetResAt(us varnr,us freqnr);
 
   protected:
     LaminarDragResistance drag;

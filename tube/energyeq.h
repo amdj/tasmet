@@ -29,4 +29,13 @@ namespace tube{
 				// boundary of the vertex
     d gamma();			// Time-avg ratio of specific heats
   };
+  class Isentropic:public Equation{
+  public:
+    Isentropic(const Tube& tube,TubeVertex& gp);
+    ~Isentropic();
+    vd Error();			// Error in Energy equation at node i
+    dmat dpi();
+    dmat dTi();
+
+  };
 }

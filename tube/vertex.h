@@ -62,7 +62,7 @@ namespace tube{
     Energy e;			// Energy equation
     State s;			// State equation (ideal gas)
     Solidenergy se;		// Solid energy equation
-
+    Isentropic is;
     // These virtual functions are required such that boundary
     // condition sources can be added in a later stage by inheriting
     // from this TubeVertex. By default these sources are not a

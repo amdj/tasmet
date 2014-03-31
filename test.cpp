@@ -9,11 +9,11 @@ using namespace tasystem;
 
 int main() {
   cout <<  "Running test..." << endl;
-  initlog(15);
-  us gp=100;
-  us Nf=5;
+  initlog(0);
+  us gp=4;
+  us Nf=2;
   us Ns=2*Nf+1;
-  double f=10;
+  double f=100;
   double omg=2*pi*f;
   double T=1/f;
   d L=0.01;
@@ -40,34 +40,23 @@ int main() {
   t1.Init(T0,p0);
   TRACE(10,"-----------------------------------------");
 
-  // dmat j=t1.Jac();
-  
-  
-  // TRACE(10,"Jacobian:"<<endl<<j);
-  // TRACE(10,"Determinant of Jacobian:"<< det(j));
-  
 
-
-
-  // TRACE(10,j.row(2));
-  // TRACE(10,j.row(7));
-  // TRACE(10,j.row(12));  
     //-------------------------------------------------    
   TAsystem sys(gc);
   sys.addseg(t1);
   vd err=sys.Error();
   dmat j=sys.Jac();
 
-
+  // TRACE(0,"Jac:"<<endl<<j);
   vd dx=-solve(j,err);
   vd xold=sys.GetRes();
   vd xnew=xold+dx;
-  sys.SetRes(xnew);
-  TRACE(10,"err:"<<endl<<err);
-  
-  TRACE(10,"xold:"<<endl<<xold);
-  TRACE(10,"dx:"<<endl<<dx);  
-  TRACE(10,"xnew:"<<endl<<xnew);
+  // sys.SetRes(xnew);
+  // TRACE(10,"err:"<<endl<<err);
+  TRACE(0,"ddtfd:"<< t1.vop.DDTfd);  
+  // TRACE(10,"xold:"<<endl<<xold);
+  // TRACE(10,"dx:"<<endl<<dx);  
+  // TRACE(10,"xnew:"<<endl<<xnew);
 
   TRACE(10,"-----------------------------------------");
 

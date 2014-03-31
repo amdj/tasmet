@@ -242,7 +242,35 @@ namespace tube{
   Energy::~Energy(){
     TRACE(-5,"Energy destructor");
   }
-    
+
+  Isentropic::Isentropic(const Tube& tube,TubeVertex& gp):Equation(tube,gp){
+  }
+  Isentropic::~Isentropic(){}
+  vd Isentropic::Error(){
+    TRACE(0,"Isentropic::Error()");
+    vd err(Ns,fillwith::zeros);
+    d T0=tube.gc.T0;
+    d p0=tube.gc.p0;
+    d gamma=tube.gas.gamma(T0);
+    err+=vertex.p()/p0;
+    err+=-1.0*fDFT*pow(vertex.T.tdata()/T0,gamma/(gamma-1.0));
+    return err;
+  }
+  dmat Isentropic::dpi(){
+    TRACE(0,"Isentropic::dpi()");
+    dmat dpi(Ns,Ns,fillwith::eye);
+    d p0=tube.gc.p0;    
+    dpi=dpi/p0;
+    return dpi;
+  }
+  dmat Isentropic::dTi(){
+    TRACE(0,"Isentropic::dTi()");    
+    dmat dTi(Ns,Ns,fillwith::zeros);
+    d T0=tube.gc.T0;    
+    d gamma=tube.gas.gamma(T0);
+    dTi+=-1.0*(gamma/((gamma-1.0)*T0))*fDFT*diagmat(pow(vertex.T.tdata()/T0,-1.0/gamma))*iDFT;
+    return dTi;
+  }
 } // namespace tube
 
 
