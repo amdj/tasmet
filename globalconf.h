@@ -13,7 +13,10 @@ namespace tasystem{
     gases::Gas gas;
     double freq;
     double omg;		// The "base" frequency in rad/s
+    d S0;		// Typical cross-sectional area
+    d dx;		// Typical grid spacing
 
+    
     d T0,p0;			/* Reference temperature and pressure (used to initialize a lot of variables. */
     d Mass;			/* Fluid mass in the system (should remain constant) */
 

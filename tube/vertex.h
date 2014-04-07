@@ -3,7 +3,6 @@
 #include "../var/var.h"
 #include "geom.h"
 #include "continuityeq.h"
-
 #include "momentumeq.h"
 #include "energyeq.h"
 #include "stateeq.h"

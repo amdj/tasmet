@@ -3,7 +3,6 @@
 #include "../var/var.h"
 namespace segment{
 
-
   Vertex::Vertex(us i,const variable::varoperations& vop1):i(i),vop(vop1),Ns(vop.Ns),rho(vop),U(vop),T(vop),p(vop),Ts(vop){
     TRACE(0,"Vertex constructor");
 
