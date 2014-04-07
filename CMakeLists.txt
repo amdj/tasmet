@@ -27,6 +27,7 @@ include_directories(
   /usr/include/python2.7
   /usr/include/eigen3
   /usr/local/include
+  /usr/local/include/eigen3
   )
 
 # math_common should be linked to armadillo
