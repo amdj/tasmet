@@ -1,6 +1,9 @@
 #pragma once
-#include "tubeequation.h"
 
+#define MOM_SCALE (1e6)
+
+#include "tubeequation.h"
+#include "drag.h"
 
 namespace tube{
   class Momentum:public Equation

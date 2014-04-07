@@ -33,7 +33,7 @@ namespace variable {
   }
   void varoperations::setfreq(d freq)  {
     oldomg=omg;
-    omg=2.0*pi*freq;
+    omg=2.0*number_pi*freq;
     updateiDFT();
     updatefDFT();
     updateiomg();
@@ -45,10 +45,10 @@ namespace variable {
     for(us i=1;i<=Nf;i++){
       //Row i (sine components)
       for(us j=0; j<Ns;j++){
-	fDFT(2*i,j)=-2.0*sin(2.0*pi*double(i)*double(j)/Ns);
+	fDFT(2*i,j)=-2.0*sin(2.0*number_pi*double(i)*double(j)/Ns);
       }
       for(us j=0; j<Ns;j++){
-	fDFT(2*i-1,j)=2.0*cos(2.0*pi*double(i)*double(j)/Ns);
+	fDFT(2*i-1,j)=2.0*cos(2.0*number_pi*double(i)*double(j)/Ns);
       }
       //Row i+1 (cosine components)
     }
@@ -58,8 +58,8 @@ namespace variable {
     iDFT.col(0).fill(1.0);
     for(us k=0;k<Ns;k++){
       for (us n=1;n<=Nf;n++){
-	iDFT(k,2*n-1)=cos(2.0*pi*n*k/Ns);
-	iDFT(k,2*n)=-sin(2.0*pi*n*k/Ns);
+	iDFT(k,2*n-1)=cos(2.0*number_pi*n*k/Ns);
+	iDFT(k,2*n)=-sin(2.0*number_pi*n*k/Ns);
       }
     }
   }

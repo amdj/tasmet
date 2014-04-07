@@ -14,6 +14,7 @@
 
 namespace tasystem{
   using segment::Seg;
+  using arma::sp_mat;
   class TAsystem{
   public:
     TAsystem(Globalconf& g); // Initialize a
@@ -26,7 +27,7 @@ namespace tasystem{
     void addseg(Seg& s);
     void delseg(us n);
 
-    dmat Jac();		// Return Jacobian matrix    
+    sdmat Jac();		// Return Jacobian matrix    
     Seg& operator[](us i);    
     
     ~TAsystem();

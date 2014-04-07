@@ -12,7 +12,7 @@ namespace segment{
     vars[2]=&T;
     vars[3]=&p;
     vars[4]=&Ts;
-    
+   
   }
   Vertex::Vertex(const Vertex& v2):Vertex(v2.i,v2.vop){
     this->rho=v2.rho;
@@ -27,13 +27,14 @@ namespace segment{
     this->T=v2.T;
     this->p=v2.p;
     this->Ts=v2.Ts;
+
     return *this;
 
   }
   vd Vertex::Error()
   {
     TRACE(0,"Vertex::Error()");
-    TRACE(-1,"Check for position i>0 && i<gp-1...");
+    // TRACE(-1,"Check for position i>0 && i<gp-1...");
     // assert(i>0 && i<tube.geom.gp-1);
     const us Ns=vop.Ns;
     vd error(Neq*Ns);
@@ -58,7 +59,7 @@ namespace segment{
     }
   }
   dmat Vertex::Jac(){		// Return Jacobian
-    TRACE(0,"Vertex::Jac()");
+    TRACE(0," Vertex::Jac()...");
     TRACE(-1,"Ns:"<<Ns);
     TRACE(-1,"Neq:"<<Neq);    
     dmat Jac(Neq*Ns,3*Neq*Ns,fillwith::zeros);
@@ -97,6 +98,7 @@ namespace tube{
     eq[0]=&this->c;			// Continuity is first
     eq[1]=&this->m;
     eq[2]=&is; 			// Changed to isentropic
+    // eq[2]=&e; 			// Full energy
     eq[3]=&s;
     eq[4]=&se;
 

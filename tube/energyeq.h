@@ -1,6 +1,6 @@
 #pragma once
 #include "tubeequation.h"
-
+#define ENERGY_SCALE (1e-5)
 
 namespace tube{
   class Energy:public Equation
@@ -8,7 +8,7 @@ namespace tube{
   public:
     Energy(const Tube& tube,TubeVertex& gp);
     ~Energy();
-    d Whim1,Whi,Whip1,Wjim1,Wji,Wjip1; // Weight functions for terms in energy equation - except for conduction terms
+    d Wgim1,Wgi,Wgip1,Wjim1,Wji,Wjip1; // Weight functions for terms in energy equation - except for conduction terms
     d Wc1,Wc2,Wc3,Wc4;		// Weight functions for conduction
     vd Error();			// Error in Energy equation at node i
     dmat dpi();
