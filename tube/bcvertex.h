@@ -17,7 +17,7 @@ namespace tube{
   {
   public:
     LeftPressure(const Tube& t);
-    LeftPressure(const Tube&t,variable::var& pres,d T0);
+    LeftPressure(const Tube&t,variable::var& pres);
     LeftPressure(const Tube&t,variable::var& pres,variable::var& temp);
 
     ~LeftPressure();
@@ -29,14 +29,26 @@ namespace tube{
     variable::var TL;			// Temperature boundary conditions
   };
 
-  class MomentumLeftPressure:public Momentum{
+  class RightImpedanceMomentumEq:public Momentum{
   public:
-    MomentumLeftPressure(const Tube& tube,TubeVertex& gp);
-    ~MomentumLeftPressure();
+    RightImpedanceMomentumEq(const Tube&,TubeVertex&,vd& Z);
+    ~RightImpedanceMomentumEq();
+    vd Error();
+    dmat dUi();
+    dmat dUim1();
+    vd& Z;
     
-  };				// MomentumLeftPressure
-  
+  }; 
 
+  class RightImpedance:public TubeVertex // Adiabatic impedance boundary condition
+  {
+  public:
+    RightImpedance(const Tube& t,vd Z);
+    ~RightImpedance();
+    vd Z;			// The impedance
+    RightImpedanceMomentumEq mright; // Completely adjusted equation
+
+  };
 
 
 

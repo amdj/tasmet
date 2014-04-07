@@ -5,18 +5,18 @@ project(nonlinear_tmtubes)
 # 'include()' command, 'find_package()' command.
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_LIST_DIR}/cmake )
 include(UseCython)
-
+add_definitions(-DEIGEN_NO_DEBUG -DARMA_NO_DEBUG)
 #enable_testing()
 set(CMAKE_C_COMPILER gcc)
 set(CMAKE_CXX_COMPILER g++)
 set(CMAKE_VERBOSE_MAKEFILE on)
-set (CMAKE_CXX_FLAGS "-std=c++11 -fPIC -Wall -Wno-unused-function -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp -Wno-address")
+set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -O2 -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp -Wno-address")
 #configure_file (logger.h.in  "${CMAKE_CURRENT_SOURCE_DIR}/logger.h")
 
 AUX_SOURCE_DIRECTORY(tube tubesources)
 AUX_SOURCE_DIRECTORY(var varsources)
 
-set (nonlinear_SRC globalconf.cpp system.cpp ${tubesources} ${varsources})
+set (nonlinear_SRC globalconf.cpp ${tubesources} ${varsources})
 
 #  tube/continuityeq.cpp tube/drag.cpp
 #    tube/energyeq.cpp tube/geom.cpp tube/momentumeq.cpp
@@ -25,9 +25,13 @@ set (nonlinear_SRC globalconf.cpp system.cpp ${tubesources} ${varsources})
 
 include_directories(
   /usr/include/python2.7
+  /usr/include/eigen3
+  /usr/local/include
   )
 
 # math_common should be linked to armadillo
+set(PYTHON_LIBRARIES libpython2.7.so)
+set(PYTHON_LIBRARY libpython2.7.so)
 add_executable(test test.cpp ${nonlinear_SRC})
 # If the pyx file is a C++ file, we should specify that here.
 set_source_files_properties(
@@ -36,7 +40,7 @@ set_source_files_properties(
   tube.pyx
   PROPERTIES CYTHON_IS_CXX TRUE )
 set(CYTHON_CXX_EXTENSION cpp)
-set(CYTHON_FLAGS -I/usr/local/include)
+set(CYTHON_FLAGS -I/usr/local/include --timestamps)
 cython_add_module(tube tube.pyx ${nonlinear_SRC})
 target_link_libraries(tube math_common armadillo)
 #add_library(pytube SHARED pytube.cpp)

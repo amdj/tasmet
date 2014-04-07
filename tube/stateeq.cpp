@@ -1,7 +1,7 @@
 #include "stateeq.h"
 #include "vertex.h"
 #include "tube.h"
-
+#include "../var/var.h"
 namespace tube{
 
   State::State(const Tube& tube,TubeVertex& gp):Equation(tube,gp){
@@ -12,8 +12,13 @@ namespace tube{
   {
     TRACE(0,"State::Error()");
     vd error(Ns,fillwith::zeros);
-    error+=vertex.p();
+    vd p0=getp0();
+    // TRACE(-1,"State p0:"<<p0);
+    error+=p0+vertex.p();
+    // TRACE(-1,"state error:"<<error);    
+    // TRACE(-1,"T0:"<<tube.gas.Rs()*fDFT*(vertex.T.tdata()%vertex.rho.tdata()));    
     error+=-1.0*tube.gas.Rs()*fDFT*(vertex.rho.tdata()%vertex.T.tdata());
+    // TRACE(-1,"state error:"<<error);
     return error;
   }
   dmat State::dpi()

@@ -32,7 +32,7 @@ namespace tube{
       Wuip1=wRr/SfR;
 
       Wpim1=-SfL*wLl;
-      Wpi=SfL*(1.0-wLr)+SfR*(wRl-1.0);
+      Wpi  = SfL*(1.0-wLr)+SfR*(wRl-1.0);
       Wpip1=SfR*wRr;
     }
     TRACE(0,"Momentum constructor done");
@@ -79,7 +79,7 @@ namespace tube{
 
     // (Boundary) source term
     error+=vertex.msource();
-    return error;
+    return MOM_SCALE*error;
   }
   dmat Momentum::dUi(){
     TRACE(0,"Momentum::dUi()");
@@ -87,35 +87,35 @@ namespace tube{
     dUi+=vVf*tube.drag.dUi(i)/vSf;		       // Drag term
     dUi+=vVf*DDTfd*fDFT*diagtmat(vertex.rho)*iDFT/vSf; // Time-derivative term
     dUi+=2.0*Wui*fDFT*(diagtmat(vertex.rho)*diagtmat(vertex.U))*iDFT;
-    return dUi;
+    return MOM_SCALE*dUi;
   }
   dmat Momentum::drhoi(){
     TRACE(0,"Momentum::drhoi()");
     dmat drhoi=zero;
     drhoi+=vVf*DDTfd*fDFT*diagtmat(vertex.U)*iDFT/vSf;
     drhoi+=Wui*fDFT*diagtmat(vertex.U)%diagtmat(vertex.U)*iDFT;
-    return drhoi;
+    return MOM_SCALE*drhoi;
   }
   dmat Momentum::dpi(){
     TRACE(0,"Momentum::dpi()");
     dmat I(Ns,Ns,fillwith::eye);
     dmat dpi=zero;
     dpi+=Wpi*I;
-    return dpi;
+    return MOM_SCALE*dpi;
   }
   dmat Momentum::drhoim1(){
     TRACE(0,"Momentum::drhoim1()");
     dmat drhoim1=zero;
     if(i>0)
       drhoim1+=Wuim1*fDFT*diagtmat(left->U)*diagtmat(left->U)*iDFT;
-    return drhoim1;
+    return MOM_SCALE*drhoim1;
   }
   dmat Momentum::dUim1(){
     TRACE(0,"Momentum::dUim1()");    // Todo: add this term!;
     dmat dUim1=zero;
     if(i>0)
       dUim1+=2.0*Wuim1*fDFT*diagtmat(left->rho)*diagtmat(left->U)*iDFT;
-    return dUim1;
+    return MOM_SCALE*dUim1;
   }
   dmat Momentum::dpim1(){
     TRACE(0,"Momentum::dpim1()");
@@ -123,21 +123,21 @@ namespace tube{
     dmat I(Ns,Ns,fillwith::eye);
     if(i>0)
       dpim1+=Wpim1*I;
-    return dpim1;
+    return MOM_SCALE*dpim1;
   }
   dmat Momentum::drhoip1(){
     TRACE(0,"Momentum::dhoip1()");    // Todo: add this term!;
     dmat drhoip1=zero;
     if(i<Ncells-1)
       drhoip1+=Wuip1*fDFT*diagtmat(right->U)*diagtmat(right->U)*iDFT;
-    return drhoip1;
+    return MOM_SCALE*drhoip1;
   }
   dmat Momentum::dUip1(){
     TRACE(0,"Momentum::dUip1()"); // Todo: add this term!;
     dmat dUip1=zero;
     if(i<Ncells-1)
       dUip1+=2.0*Wuip1*fDFT*diagtmat(right->rho)*diagtmat(right->U)*iDFT;
-    return dUip1;
+    return MOM_SCALE*dUip1;
   }
   dmat Momentum::dpip1(){
     TRACE(0,"Momentum::dpip1()");
@@ -145,12 +145,18 @@ namespace tube{
     dmat I(Ns,Ns,fillwith::eye);
     if(i<Ncells-1)
       dpip1+=Wpip1*I;
-    return dpip1;
+    return MOM_SCALE*dpip1;
   }
   Momentum::~Momentum(){
     TRACE(-5,"Momentum destructor");
 }
 } // namespace tube
+
+
+
+
+
+
 
 
 

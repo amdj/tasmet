@@ -17,7 +17,13 @@
 #include <material.h>
 #include <math_common.h>
 
+#include <Eigen/SparseCore>
+
+
+
 namespace segment{
+typedef Eigen::SparseMatrix<double> SpMat;
+
   class Seg{
   public:
     Seg(tasystem::Globalconf& gc); // nL,nR initiated as 0
@@ -27,7 +33,7 @@ namespace segment{
     variable::varoperations vop;
     vd Error();
     vd GetRes();
-    dmat Jac();
+    sdmat Jac();		// Sparse matrix
     void SetRes(vd res);
     
     void setnodes(us n1,us n2){ nL=n1; nR=n2;}
@@ -38,6 +44,8 @@ namespace segment{
 } // Namespace segment
 
 namespace tube{
+
+  using arma::sp_mat;  
   using segment::Seg;
   using segment::Vertex;
   class Tube:public Seg {
@@ -46,14 +54,16 @@ namespace tube{
     Tube(const Tube& othertube); // Copy constructor to copy vertex
 				 // vector ofpointers
     ~Tube();
-    void Init(d T0,d p0);
+
     void setLeftbc(TubeVertex* v); // Set left boundary condition vertex
+    void setRightbc(TubeVertex* v); // Set left boundary condition vertex    
     Geom geom;			// The geometry
     gases::Gas& gas;		// The gas in the system. Reference variable to globalconf.gas
-    void DoIter();
+    void DoIter(d dampfac=1.0);		// And damp with a factor
     vd GetResAt(us varnr,us freqnr);
 
   protected:
+    void Init();
     LaminarDragResistance drag;
     friend class TubeVertex;
     friend class Continuity;

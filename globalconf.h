@@ -6,9 +6,7 @@ namespace tasystem{
 
   class Globalconf{
   public:
-    Globalconf(us Nf,d freq);
-    Globalconf(us Nf,d freq,string Gas);
-    Globalconf(us Nf,d freq,string Gas,d T0,d p0,d Mass);
+    Globalconf(us Nf,d freq,string Gas="air",d T0=293.15,d p0=101325.0,d Mass=0.0);
     ~Globalconf();
     us Nf;			// Number of frequencies
     us Ns;			// Corresponding number of time samples
@@ -21,7 +19,7 @@ namespace tasystem{
 
 
     void setMass(d mass){ Mass=mass;}
-    void setfreq(d freq){freq=freq; omg=2*pi*freq; }
+    void setfreq(d freq){freq=freq; omg=2*number_pi*freq; }
     void setp0(d p) { p0=p;}
     void setgas(gases::Gas g){ gas=g;}
     void show(){ }

@@ -29,7 +29,8 @@ namespace tube{
     const variable::varoperations& vop;
     const dmat& fDFT,iDFT,DDTfd;	// forward, backward dicrete fourier transform, derivative to time matrix (freq domain)
     const us& Ns;
-
+    vd getp0(); 		// Create a vector of zero-pressure data
+    vd getp0t();   		// Same, but then time domain data
     const Geom& geom;
     const us& Ncells;		// Number of cells
     d vSf;			// Vertex fluid cross-sectional area
@@ -66,6 +67,26 @@ namespace tube{
     virtual dmat dTip1();
     virtual dmat dpip1();
     virtual dmat dTsip1();
+
+    // dmat drhoim1();	// Derivative of current equation to density at node i-1
+    // dmat dUim1();	// Etc
+    // dmat dTim1();
+    // dmat dpim1();
+    // dmat dTsim1();
+
+    // dmat drhoi();	// Derivative of current equation to density at node i
+    // dmat dUi();		// Etc
+    // dmat dTi();
+    // dmat dpi();
+    // dmat dTsi();
+
+    // dmat drhoip1();	// Derivative of current equation to pressure
+    // dmat dUip1();
+    // dmat dTip1();
+    // dmat dpip1();
+    // dmat dTsip1();
+    
+    
   };				// class Equation
 
 } // namespace tube

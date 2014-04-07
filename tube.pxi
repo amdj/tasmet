@@ -19,6 +19,7 @@ cdef extern from "var/var.h" namespace "variable":
         varoperations(us,d)
     cdef cppclass var:
         var(varoperations&,double)   #Initialize with constant value
+        var(varoperations&)   #Initialize with zeros
         void set(double,us) #Set frequency us to double
 
         
@@ -28,11 +29,13 @@ cdef extern from "tube/tube.h" namespace "tube":
         void Init(d T0,d p0)
         us Ncells
         Geom geom
-        void setLeftbc(Vertex* v)    
+        void setLeftbc(Vertex* v)
+        void setRightbc(Vertex* v)                
         varoperations vop    
         vd Error()
         vd GetRes()
-        void DoIter()
+        void SetRes(vd res)    
+        void DoIter(d)
         vd GetResAt(us varnr,us freqnr)
 cdef extern from "tube/vertex.h":
     cdef cppclass Vertex:
@@ -42,8 +45,21 @@ cdef extern from "tube/vertex.h":
 
 cdef extern from "tube/bcvertex.h" namespace "tube":
     cdef cppclass LeftPressure(TubeVertex):
-        LeftPressure(Tube,var pres,d T0)
-            
-    
+        LeftPressure(Tube,var pres)
+    cdef cppclass RightImpedance(TubeVertex):        
+        RightImpedance(Tube,vd Z)    
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

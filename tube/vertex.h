@@ -38,7 +38,8 @@ namespace segment{
     variable::var T;		// Temperature
     variable::var p;		// Pressure
     variable::var Ts;		// Solid temperature
-    variable::var* vars[Neq];    
+    variable::var* vars[Neq];
+  
   };
 } // namespace segment
 

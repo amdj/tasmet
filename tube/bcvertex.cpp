@@ -14,15 +14,17 @@ namespace tube{
     TRACE(0,"LeftPressure full constructor");
     Init();
   }
-  LeftPressure::LeftPressure(const Tube& t,variable::var& pres,d T0):TubeVertex(t,0),pL(pres),TL(vop){
+  LeftPressure::LeftPressure(const Tube& t,variable::var& pres):TubeVertex(t,0),pL(pres),TL(vop){
     TRACE(0,"LeftPressure constructor for given pressure. Temperature computed");    
-    
-    d gamma=e.gamma();
-    d p0=pL(0);
-
-    vd TLt=T0*pow((pL.tdata()/p0),(gamma-1.0)/gamma);		// Adiabatic compression/expansion
-    TRACE(-1,"TLt:"<<pL.tdata());
+    d T0=tube.gc.T0;
+    d gamma=tube.gas.gamma(T0);
+    vd p0(Ns,fillwith::ones); p0*=tube.gc.p0;
+    // TRACE(-1,"p0:"<<p0);
+    vd TLt=T0*pow((p0+pL.tdata())/p0,(gamma-1.0)/gamma);		// Adiabatic compression/expansion
+    // TRACE(-1,"TLt:"<<TLt);
     TL.settdata(TLt);
+
+    // TRACE(-1,"rho:"<<rho());
     Init();
   }
   void LeftPressure::Init(){
@@ -37,9 +39,9 @@ namespace tube{
     m.Wpi=m.wRl*m.SfR+m.SfL-m.SfR;
     m.Wpip1=m.SfR*m.wRr;
     // Change energy equation for open boundary and prescribed pressure
-    e.Whim1=0;
-    e.Whi=e.wRl-e.wL0;
-    e.Whip1=e.wRr-e.wL1;
+    e.Wgim1=0;
+    e.Wgi=e.wRl-e.wL0;
+    e.Wgip1=e.wRr-e.wL1;
 
     e.Wjim1=0;
     e.Wji=e.wL0-e.wRl;
@@ -60,6 +62,7 @@ namespace tube{
     TRACE(0,"LeftPressure::msource()");
     vd msource(Ns,fillwith::ones);
     msource=-1.0*e.SfL*pL();
+    TRACE(-1,"msource:"<<msource);
     return msource;
   }
   vd LeftPressure::esource() const {
@@ -77,6 +80,84 @@ namespace tube{
     TRACE(-5,"LeftPressure destructor");
   }
 
+  RightImpedanceMomentumEq::RightImpedanceMomentumEq(const Tube& t,TubeVertex& tv,vd& Z):Momentum(t,tv),Z(Z){
+    TRACE(0,"RightImpedanceMomentumEq::RightImpedanceMomentumEq()");
+  }
+  vd RightImpedanceMomentumEq::Error(){
+    TRACE(0,"RightImpedanceMomentumEq::Error()");
+    vd error(Ns,fillwith::zeros);
+    // Add the normal stuff
+    error+=Momentum::Error();
+    // And add the right pressure as being an impedance times the
+    // velocity:
+    error+=MOM_SCALE*SfR*Z%(wRNm1*vertex.U()+wRNm2*left->U());	// And
+    return error;
+  }
+  dmat RightImpedanceMomentumEq::dUi(){
+    TRACE(0,"RightImpedanceMomentumEq::dUi()");
+    dmat dUi=Momentum::dUi();
+    dUi+=MOM_SCALE*wRNm1*SfR*diagmat(Z);
+    return dUi;
+  }
 
+  dmat RightImpedanceMomentumEq::dUim1(){
+    TRACE(0,"RightImpedanceMomentumEq::dUim1()");
+    dmat dUim1=Momentum::dUim1();    
+    dUim1+=MOM_SCALE*wRNm2*SfR*diagmat(Z);
+    return dUim1;
+  }
+  RightImpedanceMomentumEq::~RightImpedanceMomentumEq(){}
+  RightImpedance::RightImpedance(const Tube& t,vd Z1):TubeVertex(t,t.Ncells-1),Z(Z1),mright(t,*this,Z){
+    TRACE(-5,"RightImpedance constructor");
+    // Change continuity equation for open boundary
+    c.Wim1=c.wRNm2-c.wLl;
+    c.Wi  =c.wRNm1-c.wLr;
+    c.Wip1=0;
+
+    // Change momentum eq for open boundary
+    mright.Wuim1=-c.wLl/c.SfL+c.wRNm2/c.SfR;
+    mright.Wui  =-c.wLr/c.SfL+c.wRNm1/c.SfR;
+    mright.Wuip1=0;
+
+    mright.Wpim1=-c.SfL*c.wLl;
+    mright.Wpi  =-c.SfL*c.wLr+(m.SfL-m.SfR);
+    mright.Wpip1=0;
+    
+    e.Wgim1=-e.wLl+e.wRNm2;
+    e.Wgi  =-e.wLr+e.wRNm1;
+    e.Wgip1=0;
+    
+    e.Wjim1=e.wLl-e.wRNm2;
+    e.Wji  =e.wLr-e.wRNm1;
+    e.Wjip1=0;
+    
+    d xi=tube.geom.vx(i);
+    d xim1=tube.geom.vx(i-1);    
+    d dxm=xi-xim1;
+    e.Wc1=-e.SfL/dxm;
+    e.Wc2= e.SfL/dxm;
+    e.Wc3=0;
+    e.Wc4=0;
+
+    // Last but not least: point momentum eq to new equation!
+    eq[1]=&mright;
+    // Conduction terms are not changed.
+    
+  }
+  RightImpedance::~RightImpedance(){
+    TRACE(-5,"RightImpedance destructor");
+  }
 
 } // namespace tube
+
+
+
+
+
+
+
+
+
+
+
+

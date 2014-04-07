@@ -21,7 +21,7 @@ vc LaminarDragResistance::ComplexResistancecoef(us i) const {
     const us& Nf=vop.Nf;
     d T0=tube.vvertex[i]->T(0);	// Time-averaged temperature
     d mu0=tube.gas.mu(T0);
-    d p0=tube.vvertex[i]->p(0);
+    d p0=tube.vvertex[i]->p(0)+tube.gc.p0;
     d rho0=tube.gas.rho(T0,p0);
 
     const d& rh=tube.geom.rh(i);
@@ -54,7 +54,8 @@ vc LaminarDragResistance::ComplexResistancecoef(us i) const {
     const us& Nf=vop.Nf;
     dmat dDdU=dUi(i);
     vd drag=dDdU*tube.vvertex[i]->U();
-    return drag;
+    // VERY IMPORTANT: NOM
+    return drag; 		// No momentum scale here, since this is already done in dUi!!!!
   }
   dmat LaminarDragResistance::dUi(us i) const { // Derivative of drag resistance to velocity
     TRACE(0,"LaminarDragResistance::dUi()");

@@ -31,7 +31,7 @@ namespace tasystem{
       segs[i]->SetRes(Res.subvec(startdof.at(i),enddof.at(i)));
     }
   }
-  dmat TAsystem::Jac(){
+  sdmat TAsystem::Jac(){
     TRACE(1,"TAsystem::operator()() return Jacobian matrix");
     // Something interesting has to be done here later on to connect
     // the different segments in the sense that blocks of Jacobian
@@ -39,10 +39,10 @@ namespace tasystem{
     // continued...
     TRACE(-1,"Ndofs:"<<Ndofs);
 
-    dmat jac(Ndofs,Ndofs,fillwith::zeros);
+    sdmat jac(Ndofs,Ndofs);
     for(us j=0;j<Nsegs;j++){
-      dmat segjac=segs[j]->Jac();
-      TRACE(0,"Seg jacobian size:"<<segjac.n_cols);
+      sdmat segjac=segs[j]->Jac();
+      // TRACE(0,"Seg jacobian size:"<<segjac.n_cols);
       us thisndofs=gc.Ns*Neq*segs[j]->Ncells;
       us frow=j*thisndofs;
       us fcol=j*thisndofs;

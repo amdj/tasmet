@@ -5,6 +5,7 @@ cdef class tube:
     cdef Globalconf* gc
     cdef Tube* tube1
     cdef LeftPressure* lp
+    cdef RightImpedance* ri
     cdef var* pL
     cpdef int Nf,gp
     cpdef double freq,Up
@@ -25,15 +26,21 @@ cdef class tube:
         print "cshape:",cshape
         self.geom1=new Geom(gp,L,S,phi,rh,cshape)
         self.gc=new Globalconf(Nf,freq)
+        
         self.tube1=new Tube(self.gc[0],self.geom1[0])
 
-        self.pL=new var(self.tube1.vop,p0)
-        self.pL.set(p1,1)
-        self.lp=new LeftPressure(self.tube1[0],self.pL[0],T0)
+        self.pL=new var(self.tube1.vop)
+        if(Nf>0):
+            self.pL.set(p1,1)
+        self.lp=new LeftPressure(self.tube1[0],self.pL[0])
         del self.pL
         self.tube1.setLeftbc(self.lp)     #tube1 owns the bc vertex, so do not delete the memory!
-        self.tube1.Init(T0,p0)
+
         print "Tube __cinit__ done"
+    cpdef setRightImpedance(self,n.ndarray[n.float64_t,ndim=1] Z):
+        cdef vd Zvec=dndtovec(Z)
+        self.ri=new RightImpedance(self.tube1[0],Zvec)
+        self.tube1.setRightbc(self.ri)
     def __dealloc__(self):
         del self.tube1
         del self.gc
@@ -48,8 +55,10 @@ cdef class tube:
         return dvectond(self.tube1.Error())
     cpdef GetRes(self):
         return dvectond(self.tube1.GetRes())
-    cpdef DoIter(self):
-        self.tube1.DoIter()
+    cpdef DoIter(self,d relaxfac):
+        self.tube1.DoIter(relaxfac)
+    cpdef SetRes(self,n.ndarray[n.float64_t,ndim=1] res):
+        self.tube1.SetRes(dndtovec(res))
     cpdef GetResVar(self,_type,freqnr):
         if _type=='pres':
             return dvectond(self.tube1.GetResAt(3,freqnr))

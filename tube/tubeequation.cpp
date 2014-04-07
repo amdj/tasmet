@@ -68,6 +68,18 @@ namespace tube{
     result.diag()=v.tdata();
     return result;
   }
+  vd Equation::getp0(){
+    TRACE(0,"Equation::getp0()");
+    vd p0(Ns,fillwith::zeros);
+    p0(0)=tube.gc.p0;
+    return p0;
+  }
+  vd Equation::getp0t(){
+    TRACE(0,"Equation::getp0t()");
+    vd p0(Ns,fillwith::ones);
+    p0*=tube.gc.p0;
+    return p0;
+  }
   dmat  Equation::Jac(){
     // Compute the Jacobian for the subsystem around the current gridpoint
     TRACE(0,"Equation::Jac()");
@@ -80,44 +92,44 @@ namespace tube{
     // TRACE(-1,"rhoim1 size:"<< rhoim1);
     TRACE(-2,"vop dft size:"<< vop.fDFT.size());
     // submat: first row,first col,last row, last col
-    TRACE(-1,"Filling drhoim1");
+    TRACE(-2,"Filling drhoim1");
     result.submat(0,  0 ,bw,     bw)=drhoim1();
-    TRACE(-1,"Filling dUim1");
+    TRACE(-2,"Filling dUim1");
     result.submat(0,Ns,bw,  Ns+bw)=dUim1();
-    TRACE(-1,"Filling dTim1");
+    TRACE(-2,"Filling dTim1");
     result.submat(0,2*Ns,bw,2*Ns+bw)=dTim1();
-    TRACE(-1,"Filling dpim1");
+    TRACE(-2,"Filling dpim1");
     result.submat(0,3*Ns,bw,3*Ns+bw)=dpim1();
-    TRACE(-1,"Filling dTsim1");
+    TRACE(-2,"Filling dTsim1");
     result.submat(0,4*Ns,bw,4*Ns+bw)=dTsim1();
 
 
-    TRACE(-1,"Filling drhoi");
+    TRACE(-2,"Filling drhoi");
     result.submat(0,5*Ns,bw,5*Ns+bw)=drhoi();
-    TRACE(-1,"Filling dUi");
+    TRACE(-2,"Filling dUi");
     result.submat(0,6*Ns,bw,6*Ns+bw)=dUi();
-    TRACE(-1,"Filling dTi");
+    TRACE(-2,"Filling dTi");
     result.submat(0,7*Ns,bw,7*Ns+bw)=dTi();
-    TRACE(-1,"Filling dpi");
+    TRACE(-2,"Filling dpi");
     result.submat(0,8*Ns,bw,8*Ns+bw)=dpi();
-    TRACE(-1,"Filling dTsi");
+    TRACE(-2,"Filling dTsi");
     result.submat(0,9*Ns,bw,9*Ns+bw)=dTsi();
 
-    TRACE(-1,"Filling drhoip1");
+    TRACE(-2,"Filling drhoip1");
     result.submat(0,10*Ns,bw,10*Ns+bw)=drhoip1();
-    TRACE(-1,"Filling dUip1");
+    TRACE(-2,"Filling dUip1");
     result.submat(0,11*Ns,bw,11*Ns+bw)=dUip1();
-    TRACE(-1,"Filling dTip1");
+    TRACE(-2,"Filling dTip1");
     result.submat(0,12*Ns,bw,12*Ns+bw)=dTip1();
-    TRACE(-1,"Filling dpip1");
+    TRACE(-2,"Filling dpip1");
     result.submat(0,13*Ns,bw,13*Ns+bw)=dpip1();
-    TRACE(-1,"Filling dTsip1");
+    TRACE(-2,"Filling dTsip1");
     result.submat(0,14*Ns,bw,14*Ns+bw)=dTsip1();
-    TRACE(-1,"Equation Jac done");
+    TRACE(-2,"Equation Jac done");
     return result;
   }
   dmat Equation::drhoim1(){
-    TRACE(-1,"Equation::drhoim1()");
+    TRACE(0,"Equation::drhoim1()");
     return zero;}
   dmat Equation::dUim1(){
     TRACE(0,"Equation::dUim1()");
