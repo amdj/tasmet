@@ -36,15 +36,12 @@ namespace segment{
     
     dmat vJacs[Ncells];
 
-    TRACE(9,"Filling Jacobian terms...");
+    // TRACE(9,"Computing all Jacobian submatrices...");
+
+    TRACE(9,"Filling Segment Jacobian matrix...");
     #pragma omp parallel for
-    for(us l=0;l<Ncells;l++){
-      TRACE(0,"Current cell number:"<<l);
-      vJacs[l]=vvertex[l]->Jac();
-    }
-    TRACE(9,"Computing Jacobian matrix...");
-    // #pragma omp parallel for
     for(us j=0;j<Ncells;j++){			   // Fill the Jacobian
+      vJacs[j]=vvertex[j]->Jac();
       dmat& vJac=vJacs[j];
       us firstrow,firstcol,lastrow,lastcol;
       // The row height of a vertex jacobian matrix is Neq*Ns, The
