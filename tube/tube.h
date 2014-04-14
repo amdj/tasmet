@@ -17,7 +17,7 @@
 #include <material.h>
 #include <math_common.h>
 
-#include <Eigen/SparseCore>
+#include <Eigen/Sparse>
 
 
 
@@ -30,7 +30,6 @@ typedef Eigen::SparseMatrix<double> SpMat;
     virtual ~Seg();
     us nL,nR;
     tasystem::Globalconf& gc;	// Global configuration of the system
-    variable::varoperations vop;
     vd Error();
     vd GetRes();
     sdmat Jac();		// Sparse matrix
@@ -58,7 +57,7 @@ namespace tube{
     void setLeftbc(TubeVertex* v); // Set left boundary condition vertex
     void setRightbc(TubeVertex* v); // Set left boundary condition vertex    
     Geom geom;			// The geometry
-    gases::Gas& gas;		// The gas in the system. Reference variable to globalconf.gas
+    gases::Gas& gas;		// The gas in the system. Reference variable to gc.gas
     void DoIter(d dampfac=1.0);		// And damp with a factor
     vd GetResAt(us varnr,us freqnr);
 

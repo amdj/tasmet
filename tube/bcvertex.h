@@ -1,4 +1,4 @@
-// file: tubebc.h, created March 20th, 2014
+// file: bcvertex.h, created March 20th, 2014
 // Author: J.A. de Jong
 
 // bcvertex.h: external boundary conditions for tubes. This file
@@ -7,13 +7,19 @@
 // adiabatic open pressure boundary conditions.
 
 #include "tube.h"
+#include "../var/var.h"
 #include "vertex.h"
-#include "continuityeq.h"
 #include "momentumeq.h"
-#include "energyeq.h"
-
 namespace tube{
-  class LeftPressure:public TubeVertex
+  class TubeBcVertex:public TubeVertex
+  {
+  public:
+    TubeBcVertex(const Tube&t,us vertexnr);
+    virtual ~TubeBcVertex();
+  };
+
+  
+  class LeftPressure:public TubeBcVertex
   {
   public:
     LeftPressure(const Tube& t);
@@ -31,16 +37,20 @@ namespace tube{
 
   class RightImpedanceMomentumEq:public Momentum{
   public:
-    RightImpedanceMomentumEq(const Tube&,TubeVertex&,vd& Z);
+    RightImpedanceMomentumEq(const Tube&,TubeBcVertex&,vd& Z);
     ~RightImpedanceMomentumEq();
     vd Error();
     dmat dUi();
     dmat dUim1();
+    dmat dpi();
+    dmat dpim1();
+    dmat drhoim1();
+    dmat drhoi();
     vd& Z;
     
   }; 
 
-  class RightImpedance:public TubeVertex // Adiabatic impedance boundary condition
+  class RightImpedance:public TubeBcVertex // Adiabatic impedance boundary condition
   {
   public:
     RightImpedance(const Tube& t,vd Z);

@@ -1,7 +1,7 @@
 #pragma once
 #include "../var/var.h"
 #include <math_common.h>
-
+#include "../globalconf.h"
 
 //Drag parameter (flow resistance in a tube)
 
@@ -33,7 +33,7 @@ namespace tube{
     virtual dmat dUi(us i) const;
   protected:
     const Tube& tube;
-    const variable::varoperations& vop;
+    const tasystem::Globalconf& gc;
 
   };
 

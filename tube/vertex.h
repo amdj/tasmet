@@ -15,13 +15,13 @@ namespace segment{
   
   class Vertex{
   public:
-    Vertex(us i,const variable::varoperations& v);
+    Vertex(us i,const tasystem::Globalconf& v);
     Vertex(const Vertex&);	// Copy constructor
     Vertex& operator=(const Vertex& v2); // Copy assignment
     virtual ~Vertex();
     
     const us i;			// The node number of this vertex
-    const variable::varoperations& vop;
+    const tasystem::Globalconf& gc;
     const us& Ns;			// Number of sample points reference
 
     virtual vd Error();				  // Compute error for this gridpoint

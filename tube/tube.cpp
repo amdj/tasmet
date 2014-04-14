@@ -19,7 +19,7 @@
   // precisely, in the final solution the continuity, momentum, energy
   // and a suitable equation of state should hold.
 namespace segment{
-  Seg::Seg(tasystem::Globalconf& g):gc(g),vop(g.Nf,g.freq){
+  Seg::Seg(tasystem::Globalconf& g):gc(g){
     TRACE(0,"Seg::Seg()");
     Ndofs=Ncells=0;
     nL=0; nR=0;
@@ -39,7 +39,7 @@ namespace segment{
     // TRACE(9,"Computing all Jacobian submatrices...");
 
     TRACE(9,"Filling Segment Jacobian matrix...");
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for(us j=0;j<Ncells;j++){			   // Fill the Jacobian
       vJacs[j]=vvertex[j]->Jac();
       dmat& vJac=vJacs[j];
@@ -51,29 +51,20 @@ namespace segment{
       firstrow=j*Neq*Ns;
       lastrow=(j+1)*Neq*Ns-1;
 
-      if(j==0){
+      if(j==0 && vvertex[j]->left==NULL){
 	firstcol=0;
-	lastcol=2*Neq*Ns-1;
-	Jac.submat(firstrow,firstcol,lastrow,lastcol)=vJac.submat(0,Neq*Ns,Neq*Ns-1,3*Neq*Ns-1);
-
+	lastcol=3*Neq*Ns-1;
+	Jac.submat(firstrow,firstcol,lastrow,lastcol)=vJac;
       }
-      else if(j==Ncells-1){
-	firstcol=(Ncells-2)*Neq*Ns;
+      else if(j==Ncells-1 && vvertex[j]->right==NULL){
+	firstcol=(Ncells-3)*Neq*Ns;
 	lastcol=Jac.n_cols-1;//(Ncells-1)*Neq*Ns-1;
-	// TRACE(-1,firstrow<< " "<< firstcol << " " << lastrow << " " << lastcol);
-	Jac.submat(firstrow,firstcol,lastrow,lastcol)=vJac.submat(0,0,Neq*Ns-1,2*Neq*Ns-1);
+	Jac.submat(firstrow,firstcol,lastrow,lastcol)=vJac;
       }
       else{
 	// TRACE(-2,"interior vertex jacobian, j="<<j);
 	firstcol=(j-1)*Neq*Ns;
 	lastcol=(j+2)*Neq*Ns-1;
-
-	// TRACE(-1,"Jac rows"<<Jac.n_rows);
-	// TRACE(-1,"Jac ncols"<<Jac.n_cols);     	
-
-	// TRACE(0,firstrow<< " "<< firstcol << " " << lastrow << " " << lastcol);
-	// TRACE(-1,"vJac nrows:"<<vJac.n_rows);   
-	// TRACE(-1,"vJac ncols:"<<vJac.n_cols);   
 	Jac.submat(firstrow,firstcol,lastrow,lastcol)=vJac;
 	// TRACE(-1,"submat nrows:"<< Jac.submat(firstrow,firstcol,lastrow,lastcol).n_rows);
 	// TRACE(-1,"submat ncols:"<< Jac.submat(firstrow,firstcol,lastrow,lastcol).n_cols);
@@ -86,7 +77,7 @@ namespace segment{
   vd Seg::GetRes(){
     TRACE(0,"Seg::Get()");
     // const us& Neq=TubeVertex::Neq;
-    const us& Ns=vop.Ns;
+    const us& Ns=gc.Ns;
     vd Result(Ndofs,fillwith::zeros);
     for(us k=0; k<Ncells;k++)
       {
@@ -97,7 +88,7 @@ namespace segment{
 
   vd Seg::Error(){
     TRACE(0,"Seg::Error()");
-    const us& Ns=vop.Ns;
+    const us& Ns=gc.Ns;
     vd error(Ndofs,fillwith::zeros);
     for(us k=0; k<Ncells;k++)
       {
@@ -108,7 +99,7 @@ namespace segment{
   void Seg::SetRes(vd res){
     TRACE(0,"Seg::SetRes()");
     // const us& Neq=(vvertex[0]).Neq;
-    const us& Ns=vop.Ns;
+    const us& Ns=gc.Ns;
     for(us k=0; k<Ncells;k++)
       {
 	vvertex[k]->SetRes(res.subvec(k*Ns*Neq,k*Ns*Neq+Ns*Neq-1));
@@ -124,7 +115,7 @@ namespace tube {
     TRACE(5,"Tube constructor started, filling gridpoints vector...");
 
     Ncells=geom.Ncells;
-    Ndofs=Ncells*vop.Ns*Neq;
+    Ndofs=Ncells*gc.Ns*Neq;
     TRACE(0,"Ncells:"<<Ncells);
     vvertex=new Vertex*[Ncells];
     for(us i=0; i<Ncells;i++){

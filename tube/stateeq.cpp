@@ -1,7 +1,9 @@
 #include "stateeq.h"
-#include "vertex.h"
 #include "tube.h"
-#include "../var/var.h"
+#include "vertex.h"
+
+#define STATE_SCALE (1.0)
+
 namespace tube{
 
   State::State(const Tube& tube,TubeVertex& gp):Equation(tube,gp){
@@ -19,24 +21,24 @@ namespace tube{
     // TRACE(-1,"T0:"<<tube.gas.Rs()*fDFT*(vertex.T.tdata()%vertex.rho.tdata()));    
     error+=-1.0*tube.gas.Rs()*fDFT*(vertex.rho.tdata()%vertex.T.tdata());
     // TRACE(-1,"state error:"<<error);
-    return error;
+    return STATE_SCALE*error;
   }
   dmat State::dpi()
   {
     TRACE(0,"State::dpi");
-    return eye<dmat>(Ns,Ns);
+    return STATE_SCALE*eye<dmat>(Ns,Ns);
   }
   dmat State::dTi()
   {
     TRACE(0,"State::dTi()");
     dmat rhotidiag=diagmat(vertex.rho.tdata());
-    return -1.0*tube.gas.Rs()*vop.fDFT*rhotidiag*vop.iDFT;
+    return -1.0*STATE_SCALE*tube.gas.Rs()*gc.fDFT*rhotidiag*gc.iDFT;
   }
   dmat State::drhoi()
   {
     TRACE(0,"State::drhoi()");
     dmat Ttidiag=diagmat(vertex.T.tdata());
-    return -1.0*tube.gas.Rs()*vop.fDFT*Ttidiag*vop.iDFT;
+    return -1.0*STATE_SCALE*tube.gas.Rs()*gc.fDFT*Ttidiag*gc.iDFT;
   }
   State::~State(){
     TRACE(-5,"State eq destructor");

@@ -1,6 +1,6 @@
 #pragma once
 #include "tubeequation.h"
-#define ENERGY_SCALE (1e-5)
+
 
 namespace tube{
   class Energy:public Equation

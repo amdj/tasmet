@@ -5,21 +5,17 @@ cdef extern from "logger.h" namespace "":
 
 cdef extern from "globalconf.h" namespace "tasystem":
     cdef cppclass Globalconf:
-        Globalconf(us Nf,d freq)
-        Globalconf(us Nf,d freq,string Gas,d T0,d p0,d Mass)
+        Globalconf(us Nf,d freq,string Gas,d T0,d p0,d Mach,d S,d dx,d Mass,d kappa)
 
 cdef extern from "tube/geom.h" namespace "tube":
     cdef cppclass Geom:
         Geom(us gp,d L,d S,d phi,d rh,string cshape) except +
         vd vx
 
-
 cdef extern from "var/var.h" namespace "variable":
-    cdef cppclass varoperations:
-        varoperations(us,d)
     cdef cppclass var:
-        var(varoperations&,double)   #Initialize with constant value
-        var(varoperations&)   #Initialize with zeros
+        var(Globalconf&,double)   #Initialize with constant value
+        var(Globalconf&)   #Initialize with zeros
         void set(double,us) #Set frequency us to double
 
         
@@ -29,9 +25,9 @@ cdef extern from "tube/tube.h" namespace "tube":
         void Init(d T0,d p0)
         us Ncells
         Geom geom
+        Globalconf& gc
         void setLeftbc(Vertex* v)
         void setRightbc(Vertex* v)                
-        varoperations vop    
         vd Error()
         vd GetRes()
         void SetRes(vd res)    

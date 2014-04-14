@@ -9,7 +9,7 @@ cdef class tube:
     cdef var* pL
     cpdef int Nf,gp
     cpdef double freq,Up
-    def __cinit__(self,us gp,us Nf,d freq,d L,d S,d T0,d p0,d p1,string cshape,us loglevel):
+    def __cinit__(self,us gp,us Nf,d freq,d L,d S,d T0,d p0,d p1,string cshape,us loglevel,d kappa):
         # self.thisl=new isentropictube(gp,Nf,1.,1.,freq,Up)
         print "New tube initialized"
         initlog(loglevel)
@@ -22,14 +22,19 @@ cdef class tube:
         cdef d phi=1.0
         cdef d R=n.sqrt(S/n.pi)
         cdef d rh=S/(2*n.pi*R)
+        cdef d Mach=p1/p0
         # print "rh:",rh
         print "cshape:",cshape
         self.geom1=new Geom(gp,L,S,phi,rh,cshape)
-        self.gc=new Globalconf(Nf,freq)
-        
+        cdef d Mass=0
+        cdef d dx=L/float(gp)
+        print "dx:", dx
+        print "kappa:",kappa
+        # cdef d S
+        self.gc=new Globalconf(Nf,freq,"air",T0,p0,Mach,S,dx,Mass,kappa)
         self.tube1=new Tube(self.gc[0],self.geom1[0])
 
-        self.pL=new var(self.tube1.vop)
+        self.pL=new var(self.gc[0])
         if(Nf>0):
             self.pL.set(p1,1)
         self.lp=new LeftPressure(self.tube1[0],self.pL[0])

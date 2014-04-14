@@ -7,133 +7,52 @@
 #include "var.h"
 
 namespace variable {
-  varoperations::varoperations(){
-    set(0,0);
-  }
-  varoperations::varoperations(us Nf,d freq){
-    set(Nf,freq);
-  }
-  void varoperations::set(us Nf,d freq){
-    TRACE(0,"varoperations::set(Nf,freq)");
-    //ctor
-    this->Nf=Nf;
-    Ns=2*Nf+1;
-    // Reinitialize all operators
-    iDFT=zeros<dmat>(Ns,Ns);
-    fDFT=zeros<dmat>(Ns,Ns);
-
-
-    DDTfd=zeros<dmat>(Ns,Ns);
-    DDTtd=zeros<dmat>(Ns,Ns);
-    ddt=zeros<dmat>(Ns-1,Ns-1);
-    iddt=zeros<dmat>(Ns-1,Ns-1);
-    setfreq(freq);
-
-    TRACE(-1,"fDFT:" << fDFT);
-  }
-  void varoperations::setfreq(d freq)  {
-    oldomg=omg;
-    omg=2.0*number_pi*freq;
-    updateiDFT();
-    updatefDFT();
-    updateiomg();
-
-  }
-  void varoperations::updatefDFT(){
-    fDFT.row(0).fill(1.0);
-
-    for(us i=1;i<=Nf;i++){
-      //Row i (sine components)
-      for(us j=0; j<Ns;j++){
-	fDFT(2*i,j)=-2.0*sin(2.0*number_pi*double(i)*double(j)/Ns);
-      }
-      for(us j=0; j<Ns;j++){
-	fDFT(2*i-1,j)=2.0*cos(2.0*number_pi*double(i)*double(j)/Ns);
-      }
-      //Row i+1 (cosine components)
-    }
-    fDFT=fDFT/Ns;
-  }
-  void varoperations::updateiDFT(){
-    iDFT.col(0).fill(1.0);
-    for(us k=0;k<Ns;k++){
-      for (us n=1;n<=Nf;n++){
-	iDFT(k,2*n-1)=cos(2.0*number_pi*n*k/Ns);
-	iDFT(k,2*n)=-sin(2.0*number_pi*n*k/Ns);
-      }
-    }
-  }
-  void varoperations::updateiomg(){
-    TRACE(0,"varoperations::updateiomg()");
-    if(Nf!=0){
-      for(us i=1;i<=Nf;i++){
-	DDTfd(2*i-1,2*i  )=-double(i)*omg;
-	DDTfd(2*i  ,2*i-1)=double(i)*omg;
-      }
-      DDTtd=iDFT*DDTfd*fDFT;
-      ddt=DDTfd.submat(1,1,Ns-1,Ns-1);
-      //cout << "ddt:" << ddt << endl;
-      iddt=inv(ddt);
-    }
-    else{
-      DDTfd(0,0)=0;
-    }
-    omgvec=vd(Nf+1);
-    for(us i=0; i<Nf+1;i++)
-      omgvec(i)=omg*i;
-  }
-  varoperations::~varoperations()
-  {
-    TRACE(-5,"varoperations destructor");
-  }
-  
-  
   
   //******************************************************************************** Operators
   
   var operator*(const double& scalar,const var& var1){ // Pre-multiplication with scalar
     TRACE(0,"operator*(scalar,var)");
-    assert(var1.vop!=NULL);
+    assert(var1.gc!=NULL);
     vd newtdata=scalar*var1.tdata();
-    return var(*(var1.vop),newtdata);
+    return var(*(var1.gc),newtdata);
   }
 
   //***************************************** The var class
-  var::var(const varoperations& vop): var(vop,0.0) {  }
-  var::var(const varoperations& vop,double initval) :vop(&vop),Nf(vop.Nf),Ns(vop.Ns) {
-    TRACE(0,"var::var(const varoperations& vop, double initval)");
+  var::var(const Globalconf& gc): var(gc,0.0) {  }
+  var::var(const Globalconf& gc,double initval) :gc(&gc),Nf(gc.Nf),Ns(gc.Ns) {
+    TRACE(0,"var::var(const Globalconf& gc, double initval)");
     timedata=vd(Ns);
     amplitudedata=vd(Ns);
     settdata(initval);
   }
-  var::var(const varoperations& vop,const vd& timedata):var(vop){ // Create a variable and fill it with time data.
-    TRACE(0,"var::var(vop,timedata)");
+  var::var(const Globalconf& gc,const vd& timedata):var(gc){ // Create a variable and fill it with time data.
+    TRACE(0,"var::var(gc,timedata)");
     this->timedata=timedata;
     dft();
   }
   void var::updateNf(){
     TRACE(0,"var::updateNf()");
-    if(this->Ns!=vop->Ns){
+    if(this->Ns!=gc->Ns){
       TRACE(5,"UPDATENF untested code");
       assert((Ns%2)==1);	// Check if number of samples is not even
-      if(this->Ns>vop->Ns){
-	amplitudedata=amplitudedata.subvec(0,vop->Ns-1);
+      if(this->Ns>gc->Ns){
+	amplitudedata=amplitudedata.subvec(0,gc->Ns-1);
       }
-      if(this->Ns<vop->Ns){
+      if(this->Ns<gc->Ns){
 	vd oldadata=amplitudedata;
-	amplitudedata=vd(vop->Ns,fillwith::zeros);
+	amplitudedata=vd(gc->Ns,fillwith::zeros);
 	amplitudedata.subvec(0,this->Ns-1)=oldadata;
       }
-      this->Ns=vop->Ns;		       // Update this number of samples
+      this->Ns=gc->Ns;		       // Update this number of samples
       timedata=vd(Ns,fillwith::zeros); // Reinitialize timedata
       idft();
     }
   }
   // var var::operator()(const var& v) { //Copy constructor
   //   TRACE(0,"var copy constructor");
-  //   assert(v.vop!=NULL);
+  //   assert(v.gc!=NULL);
   //   vd tdata=v.tdata();
-  //   return var(*(this->vop),tdata);
+  //   return var(*(this->gc),tdata);
   // }
   // var& var::operator=(const var& v){
   //   TRACE(0,"var::operator=(const var& v)");
@@ -147,12 +66,12 @@ namespace variable {
     TRACE(0,"var::operator*(const var& var2) const");
     assert(this->Ns==var2.Ns);
     vd tdata=this->tdata()%var2.tdata();
-    return var(*(this->vop),tdata);
+    return var(*(this->gc),tdata);
   }
   var var::operator*(const d& scalar) const {	// Post-multiplication with scalar
-    assert(this->vop!=NULL);
+    assert(this->gc!=NULL);
     vd thisadata=this->tdata();
-    return var(*(this->vop),scalar*thisadata);
+    return var(*(this->gc),scalar*thisadata);
   }
   // Get methods (which require implementation)
   d& var::operator()(us i) {//Extract result at specific frequency
@@ -178,7 +97,7 @@ namespace variable {
     vc cres=getcRes();
     for(us n=0;n<Nf+1;n++)
       {
-	result+=real(cres(n)*exp(I*double(n)*vop->omg*t));
+	result+=real(cres(n)*exp(I*double(n)*gc->omg*t));
       }
     return result;
   }
@@ -246,16 +165,16 @@ namespace variable {
   // Internal methods for syncing time and amplitude data
   void var::dft() {
     TRACE(0,"var::dft()");
-    amplitudedata=vop->fDFT*timedata;
+    amplitudedata=gc->fDFT*timedata;
   }
   void var::idft() { //Internal idft
-    timedata=vop->iDFT*amplitudedata;
+    timedata=gc->iDFT*amplitudedata;
   }
 
   //Get a variable which is the time derivative of the current one
   var var::ddt() const {
-    var result(*(this->vop));
-    vd newadata=vop->DDTfd*amplitudedata;
+    var result(*(this->gc));
+    vd newadata=gc->DDTfd*amplitudedata;
     result.set(newadata);
     return result;
   }
@@ -264,7 +183,7 @@ namespace variable {
   var var::operator/(const var& var2) const
   {
     vd tdata=this->tdata()/var2.tdata();
-    var newvar(*(this->vop));
+    var newvar(*(this->gc));
     newvar.settdata(tdata);
     return newvar;
   }
@@ -287,7 +206,7 @@ namespace variable {
   //   Name(name),gp(gp),Nf(Nf) {
   //   Ns=2*Nf+1; //Number of time samples
   //   Dofs=Ns*gp;
-  //   TRACE(0,"Warning, vvar not changed for varoperations!!");
+  //   TRACE(0,"Warning, vvar not changed for Globalconf!!");
   //   //for (us i=0;i<gp;i++) data.push_back(var(Nf,initv));
   //   Error=vd(Dofs);
   //   Result=vd(Dofs);

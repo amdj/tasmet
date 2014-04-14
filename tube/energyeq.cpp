@@ -2,15 +2,15 @@
 #include "vertex.h"
 #include "tube.h"
 
+#define ENERGY_SCALE (1.0) //(gc.p0) //(1/gc.omg)
+#define ENERGY_SCALE0 (1.0)//(1.0/pow(gc.M,2)) //(1/gc.omg)
+
 namespace tube{
 
   Energy::Energy(const Tube& tube,TubeVertex& gp):Equation(tube,gp){
     // Standard boundary condition is adiabatic-no-slip-wall
     if(i==0){			// Leftmost vertex
       TRACE(-1,"Leftmost vertex");
-      d xip1=tube.geom.vx(i+1);
-      d xi=tube.geom.vx(i);
-      d dxp=xip1-xi;
 
       Wgim1=0;
       Wgi=wRl;
@@ -28,10 +28,6 @@ namespace tube{
     } else if(i==Ncells-1){	// Rightmost vertex
       TRACE(-1,"Rightmost vertex");
 
-      d xim1=tube.geom.vx(i-1);
-      d xi=tube.geom.vx(i);
-      d dxm=xi-xim1;
-
       Wgim1=-wLl;
       Wgi=-wLr;
       Wgip1=0;
@@ -47,12 +43,6 @@ namespace tube{
 
     } else{			// Normal interior vertex
 
-      d xip1=tube.geom.vx(i+1);
-      d xim1=tube.geom.vx(i-1);
-      d xi=tube.geom.vx(i);
-      d dxp=xip1-xi;
-      d dxm=xi-xim1;
-      
       Wgim1=-wLl;
       Wgi=wRl-wLr;
       Wgip1=wRr;
@@ -102,9 +92,10 @@ namespace tube{
     TRACE(-1,"vertex.esource called from Vertex object..."<<vertex.esource());
     
     error+=vertex.esource();
-
+    error(0)*=ENERGY_SCALE0;
     return ENERGY_SCALE*error;
   }
+
   dmat Energy::dpi(){
     TRACE(0,"Energy::dpi()");
     d T0=vertex.T(0);
@@ -114,6 +105,7 @@ namespace tube{
     dpi+=(vVf/(gamma-1.0))*DDTfd;
     dpi+=Wgi*(gamma/(gamma-1.0))*fDFT*diagUt*iDFT;
     dpi+=Wji*fDFT*diagUt*iDFT;    
+    dpi.row(0)*=ENERGY_SCALE0;
     return ENERGY_SCALE*dpi;
   }
 
@@ -130,12 +122,14 @@ namespace tube{
       dUi+=Wjim1*fDFT*diagmat(left->p.tdata()+getp0t())*iDFT;
     if(i<Ncells-1)
       dUi+=Wjip1*fDFT*diagmat(right->p.tdata()+getp0t())*iDFT;
+    dUi.row(0)*=ENERGY_SCALE0;
     return ENERGY_SCALE*dUi;
   }
   dmat Energy::dTi(){
     TRACE(0,"Energy::dTi()");
     dmat dTi=zero;
     dTi+=fDFT*(Wc2*diagmat(kappaL())+Wc3*diagmat(kappaR()))*iDFT;
+    dTi.row(0)*=ENERGY_SCALE0;
     return ENERGY_SCALE*dTi;
   }
   dmat Energy::dpip1(){
@@ -149,6 +143,7 @@ namespace tube{
       vd Utip1=right->U.tdata();
       dpip1+=Wgip1*(gamma/(gamma-1))*fDFT*diagmat(Utip1)*iDFT;
     }
+    dpip1.row(0)*=ENERGY_SCALE0;
     return ENERGY_SCALE*dpip1;
   }
   dmat Energy::dUip1(){
@@ -158,6 +153,7 @@ namespace tube{
     if(i<Ncells-1){
       dUip1+=Wgip1*(gamma/(gamma-1.0))*fDFT*diagmat(getp0t()+right->p.tdata())*iDFT;
     }
+    dUip1.row(0)*=ENERGY_SCALE0;
     return ENERGY_SCALE*dUip1;
   }
   dmat Energy::dTip1(){
@@ -165,6 +161,7 @@ namespace tube{
     dmat dTip1=zero;
     if(i<Ncells-1)    
       dTip1+=Wc4*fDFT*diagmat(kappaR())*iDFT;
+    dTip1.row(0)*=ENERGY_SCALE0;
     return ENERGY_SCALE*dTip1;
   }
   dmat Energy::dpim1(){
@@ -178,6 +175,7 @@ namespace tube{
       vd Utim1=left->U.tdata();
       dpim1+=Wgim1*(gamma/(gamma-1))*fDFT*diagmat(Utim1)*iDFT;
     }
+    dpim1.row(0)*=ENERGY_SCALE0;
     return ENERGY_SCALE*dpim1;
   }
   dmat Energy::dUim1(){
@@ -188,6 +186,7 @@ namespace tube{
     if(i>0){
       dUim1+=Wgim1*(gamma/(gamma-1.0))*fDFT*diagmat(getp0t()+left->p.tdata())*iDFT;
     }
+    dUim1.row(0)*=ENERGY_SCALE0;
     return ENERGY_SCALE*dUim1;
     }
   dmat Energy::dTim1(){
@@ -195,8 +194,11 @@ namespace tube{
     dmat dTim1=zero;
     if(i>0)    
       dTim1+=Wc1*fDFT*diagmat(kappaL())*iDFT;
+    dTim1.row(0)*=ENERGY_SCALE0;
     return ENERGY_SCALE*dTim1;
-  }    
+  }
+
+  // From here on, auxiliary functions
   vd Energy::kappaL(){
     TRACE(0,"Energy::kappaL()");
     
@@ -256,21 +258,21 @@ namespace tube{
     d gamma=tube.gas.gamma(T0);
     err+=(getp0()+vertex.p())/p0;
     err+=-1.0*fDFT*pow(vertex.T.tdata()/T0,gamma/(gamma-1.0));
-    return err;
+    return ENERGY_SCALE*err;
   }
   dmat Isentropic::dpi(){
     TRACE(0,"Isentropic::dpi()");
     dmat dpi(Ns,Ns,fillwith::eye);
     d p0=tube.gc.p0;    
     dpi=dpi/p0;
-    return dpi;
+    return ENERGY_SCALE*dpi;
   }
   dmat Isentropic::dTi(){
     TRACE(0,"Isentropic::dTi()");    
     dmat dTi(Ns,Ns,fillwith::zeros);
     d T0=tube.gc.T0;    
     d gamma=tube.gas.gamma(T0);
-    dTi+=-1.0*(gamma/((gamma-1.0)*T0))*fDFT*diagmat(pow(vertex.T.tdata()/T0,-1.0/gamma))*iDFT;
+    dTi+=-1.0*ENERGY_SCALE*(gamma/((gamma-1.0)*T0))*fDFT*diagmat(pow(vertex.T.tdata()/T0,-1.0/gamma))*iDFT;
     return dTi;
   }
 } // namespace tube

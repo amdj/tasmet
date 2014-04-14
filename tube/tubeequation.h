@@ -26,9 +26,11 @@ namespace tube{
     segment::Vertex*& left;
     segment::Vertex*& right;
     
-    const variable::varoperations& vop;
+    const tasystem::Globalconf& gc;
+
     const dmat& fDFT,iDFT,DDTfd;	// forward, backward dicrete fourier transform, derivative to time matrix (freq domain)
     const us& Ns;
+    
     vd getp0(); 		// Create a vector of zero-pressure data
     vd getp0t();   		// Same, but then time domain data
     const Geom& geom;
@@ -43,6 +45,8 @@ namespace tube{
 
     d xR;			// Position of right cell wall
     d xL;			// Position of left cell wall
+    d dxp;			// Distance to nearby right node
+    d dxm;			// Distance to nearby left node
     d wLl,wRr,wLr,wRl;		// Weight functions for equations
     d wL0,wL1,wRNm1,wRNm2;    	// Special boundary weight functions
 
@@ -50,6 +54,13 @@ namespace tube{
     virtual vd Error()=0;
     virtual dmat Jac();		// Returns the local Jacobian of this equation
     dmat zero;			// Zeros matrix of right size
+    virtual dmat drhoim2();	// Derivative of current equation to density at node i-2
+    virtual dmat dUim2();	// Etc
+    virtual dmat dTim2();
+    virtual dmat dpim2();
+    virtual dmat dTsim2();
+
+    
     virtual dmat drhoim1();	// Derivative of current equation to density at node i-1
     virtual dmat dUim1();	// Etc
     virtual dmat dTim1();
@@ -68,25 +79,16 @@ namespace tube{
     virtual dmat dpip1();
     virtual dmat dTsip1();
 
-    // dmat drhoim1();	// Derivative of current equation to density at node i-1
-    // dmat dUim1();	// Etc
-    // dmat dTim1();
-    // dmat dpim1();
-    // dmat dTsim1();
+    virtual dmat drhoip2();	// Derivative of current equation to pressure
+    virtual dmat dUip2();
+    virtual dmat dTip2();
+    virtual dmat dpip2();
+    virtual dmat dTsip2();
 
-    // dmat drhoi();	// Derivative of current equation to density at node i
-    // dmat dUi();		// Etc
-    // dmat dTi();
-    // dmat dpi();
-    // dmat dTsi();
-
-    // dmat drhoip1();	// Derivative of current equation to pressure
-    // dmat dUip1();
-    // dmat dTip1();
-    // dmat dpip1();
-    // dmat dTsip1();
-    
-    
+    dmat D_r(); 		// Artificial viscosity right side
+    dmat D_l();			// Artificial viscosity left size
+    vd nu();			// Function of d^2p/dx^2
   };				// class Equation
 
 } // namespace tube
+

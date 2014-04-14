@@ -5,7 +5,8 @@ project(nonlinear_tmtubes)
 # 'include()' command, 'find_package()' command.
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_LIST_DIR}/cmake )
 include(UseCython)
-add_definitions(-DEIGEN_NO_DEBUG -DARMA_NO_DEBUG)
+#add_definitions(-DEIGEN_NO_DEBUG -DARMA_NO_DEBUG)
+
 #enable_testing()
 set(CMAKE_C_COMPILER gcc)
 set(CMAKE_CXX_COMPILER g++)

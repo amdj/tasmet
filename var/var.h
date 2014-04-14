@@ -9,47 +9,23 @@
 #define VAR_H_
 #include <vtypes.h>
 #include <assert.h>
+#include "../globalconf.h"
+
 
 namespace variable {
   // void setfreq(d freq);
   // void setNf(us Nf);
+  using namespace tasystem;
   class var;			// Forward declaration
   ostream& operator<< (ostream& out,var& v);
   var operator*(const double& d1,const var& var2);
 
-  
-  class varoperations
-  {
-  public:
-    varoperations(us Nf,d freq);
-    varoperations();
-    virtual ~varoperations();
-    void set(us Nf,d freq);	// Set data for new frequency and number of samples
-    void setfreq(d newfreq);
-    dmat iDFT; //inverse discrete Fourier transform matrix
-    dmat fDFT; //forward discrete Fourier transform matrix
-    dmat DDTfd;//Derivative in frequency domain
-    dmat DDTtd;//Derivative in time domain
-    dmat ddt; //Derivative matrix only nonzero frequency components
-    dmat iddt; //Inverse of derivative matrix only nonzero frequency components
-    d omg;
-    us Nf,Ns;
-    vd omgvec;
-  protected:
-    void updateiDFT();
-    void updatefDFT();
-    void updateiomg();
-
-    d oldomg; //Previous omega
-  private:
-  };
-
 
   class var {
   public:
-    var(const varoperations&);	// Initialize with zeros
-    var(const varoperations&,double); // Initialize with one time-average value
-    var(const varoperations&,const vd& timedata); // Initialize with timedata!!!!
+    var(const Globalconf&);	// Initialize with zeros
+    var(const Globalconf&,double); // Initialize with one time-average value
+    var(const Globalconf&,const vd& timedata); // Initialize with timedata!!!!
     // var& operator=(const var&);			  // Copy assignment operator
     // var operator()(const var&); //Copy constructor
     // Get methods
@@ -89,7 +65,7 @@ namespace variable {
 						   // outside of the
 						   // class
     ~var();
-    const varoperations* vop;
+    const Globalconf* gc;
     us Nf,Ns;
 
   protected:

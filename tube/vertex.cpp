@@ -3,9 +3,10 @@
 #include "../var/var.h"
 namespace segment{
 
-  Vertex::Vertex(us i,const variable::varoperations& vop1):i(i),vop(vop1),Ns(vop.Ns),rho(vop),U(vop),T(vop),p(vop),Ts(vop){
+  Vertex::Vertex(us i,const tasystem::Globalconf& gc1):i(i),gc(gc1),Ns(gc.Ns),rho(gc),U(gc),T(gc),p(gc),Ts(gc){
     TRACE(0,"Vertex constructor");
-
+    left=NULL;
+    right=NULL;
     vars[0]=&rho;
     vars[1]=&U;
     vars[2]=&T;
@@ -13,7 +14,7 @@ namespace segment{
     vars[4]=&Ts;
    
   }
-  Vertex::Vertex(const Vertex& v2):Vertex(v2.i,v2.vop){
+  Vertex::Vertex(const Vertex& v2):Vertex(v2.i,v2.gc){
     this->rho=v2.rho;
     this->U=v2.U;
     this->T=v2.T;
@@ -35,7 +36,7 @@ namespace segment{
     TRACE(0,"Vertex::Error()");
     // TRACE(-1,"Check for position i>0 && i<gp-1...");
     // assert(i>0 && i<tube.geom.gp-1);
-    const us Ns=vop.Ns;
+    const us Ns=gc.Ns;
     vd error(Neq*Ns);
     for(us k=0;k<Neq;k++)
       {
@@ -63,8 +64,8 @@ namespace segment{
     TRACE(-1,"Neq:"<<Neq);    
     dmat Jac(Neq*Ns,3*Neq*Ns,fillwith::zeros);
     for(us k=0;k<Neq;k++){
-      TRACE(-1,"Equation number:"<<k)
-	us firstrow=k*Ns;
+      TRACE(-1,"Equation number:"<<k);
+      us firstrow=k*Ns;
       // cout << firstrow << " ";
       us firstcol=0;
       // cout << firstcol << " ";
@@ -78,7 +79,7 @@ namespace segment{
 	// eqJac*=1e6;		// Rescaling of momentum equation
       Jac.submat(firstrow,firstcol,lastrow,lastcol)=eqJac;
       TRACE(-1,"Eqjac returns");
-
+      
     }
     return Jac;
   }  
@@ -90,7 +91,7 @@ namespace segment{
 
 namespace tube{
   
-  TubeVertex::TubeVertex(const Tube& tube1,us i):Vertex(i,tube1.vop),tube(tube1),c(tube,*this),m(tube,*this),e(tube,*this),s(tube,*this),se(tube,*this),is(tube,*this)
+  TubeVertex::TubeVertex(const Tube& tube1,us i):Vertex(i,tube1.gc),tube(tube1),c(tube,*this),m(tube,*this),e(tube,*this),s(tube,*this),se(tube,*this),is(tube,*this)
   {
     TRACE(0,"TubeVertex contructor");
 

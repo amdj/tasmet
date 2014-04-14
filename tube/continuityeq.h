@@ -25,7 +25,8 @@ namespace tube{
 			// at node i + 1
     dmat dUim1();	// Derivative of continuity equation to Volume flow
 			// at node i - 1
-
+    dmat drhoip2();
+    dmat drhoim2();
   };				// Continuity class
 }				// Namespace tube
 
