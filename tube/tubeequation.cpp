@@ -257,25 +257,25 @@ namespace tube{
       pip1=right->p();
       pim1=left->p();
     } else if(i==0){
-      pim1=vertex.p();
-      pi=right->p();
-      pip1=tube.vvertex[2]->p();
+      pi=vertex.p();
+      pim1=right->p();
+      pip1=right->right->p();
     }
     else{
       pi=left->p();
-      pip1=vertex.p();
-      pim1=tube.vvertex[i-2]->p();
+      pip1=left->p();
+      pim1=left->left->p();
     } // Last node
       // return ones<vd>(Ns);
     vd half=vd(Ns); half.fill(0.5);
     vd denominator=abs(pim1+2*pi+pip1);
-    vd numerator=((pim1-pi)+(pip1-pi)*dxm/dxp);
+    vd numerator=(pim1-2*pi+pip1);
     vd num_over_denom(Ns);
     for(us k=0;k<Ns;k++){
       // if(abs(denominator(k))<=1e-10) // Safe from division by zero??
-	// num_over_denom(k)=0;
+	// num_over_denom(k)=0.01;
       // else
-      // num_over_denom(k)=numerator(k)/denominator(k);
+	// num_over_denom(k)=numerator(k)/denominator(k);
       num_over_denom(k)=0.1;
     }
     return min(half,num_over_denom);    

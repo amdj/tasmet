@@ -17,7 +17,7 @@ cdef extern from "var/var.h" namespace "variable":
         var(Globalconf&,double)   #Initialize with constant value
         var(Globalconf&)   #Initialize with zeros
         void set(double,us) #Set frequency us to double
-
+        void set(vd) #Set frequency us to double
         
 cdef extern from "tube/tube.h" namespace "tube":
     cdef cppclass Tube:

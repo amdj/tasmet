@@ -44,8 +44,8 @@ namespace variable {
     d tdata(d t) const; //Extract the estimated value for a given time t
     //Set methods
     void set(double,us); //Set result vector at specific frequency
-    void set(const vd& values); //Set result vector to these values
-    void set(const vc& values); //Set result vector to these values, complex numbers
+    void set(const vd values); //Set result vector to these values
+    void set(const vc values); //Set result vector to these values, complex numbers
     void setResfluc(vd& values); //Set result vector for only unsteady Fourier components
     // Specific methods to the result using time domain data
     void settdata(double value); //Set time data to specific value for all time

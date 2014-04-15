@@ -109,7 +109,7 @@ namespace variable {
     idft();
     TRACE(-3,"var::set(d val,us freqnr) adata:"<<amplitudedata);
   }
-  void var::set(const vc& res)
+  void var::set(const vc res)
   {
     TRACE(0,"var::set(const vc& res)");
     updateNf();
@@ -120,7 +120,7 @@ namespace variable {
     }
     idft();
   }
-  void var::set(const vd& val) {
+  void var::set(const vd val) {
     TRACE(0,"var::set(const vd& val)");
     updateNf();
     amplitudedata=val;

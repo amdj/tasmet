@@ -54,7 +54,6 @@ namespace tube{
     TRACE(0,"Momentum::Error()");
     vd error(Ns,fillwith::zeros);
 
-
     vd rhoti=vertex.rho.tdata();
     vd Uti=vertex.U.tdata();
     error+=vVf*DDTfd*fDFT*(Uti%rhoti)/vSf;
@@ -155,12 +154,6 @@ namespace tube{
     dmat drhoim1=zero;
     if(i>0)
       drhoim1+=Wuim1*fDFT*diagtmat(left->U)*diagtmat(left->U)*iDFT;
-    // #ifdef MOM_VISCOSITY
-    // Artificial viscosity terms
-    // if(i>0 && i<Ncells-1){
-      // drhoim1+=-(vVf/vSf)*D_l()*fDFT*diagtmat(left->U)*iDFT;
-    // }
-    // #endif
     drhoim1.row(0)*=MOM_SCALE0;
     return MOM_SCALE*drhoim1;
   }

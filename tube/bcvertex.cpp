@@ -117,17 +117,17 @@ namespace tube{
 
     
     // Pressure zero
-    error(0)=MOM_SCALE0*MOM_SCALE*vertex.p(0);
+    // error(0)=MOM_SCALE0*MOM_SCALE*vertex.p(0);
 
 
     return error;
   }
   dmat RightImpedanceMomentumEq::dpi(){
     dmat dpi=Momentum::dpi();
-    dpi.row(0).zeros();
+    // dpi.row(0).zeros();
 
     // Set mean pressure to zero on last node
-    dpi(0,0)=MOM_SCALE*MOM_SCALE0;
+    // dpi(0,0)=MOM_SCALE*MOM_SCALE0;
     return dpi;
   }
   dmat RightImpedanceMomentumEq::dUi(){
@@ -138,7 +138,7 @@ namespace tube{
     dUi+=adddUi;
 
     // For pressure boundary condition
-    dUi.row(0).zeros();
+    // dUi.row(0).zeros();
     
     // For velocity boundary condition
     // dUi.row(0).zeros();
@@ -164,7 +164,7 @@ namespace tube{
     dmat dpim1=Momentum::dpim1();
 
     // For velocity and pressure boundary condition
-    dpim1.row(0).zeros();
+    // dpim1.row(0).zeros();
 
     return dpim1;
   }
@@ -173,7 +173,7 @@ namespace tube{
     dmat drhoi=Momentum::drhoi();
 
     // For velocity and pressure boundary condition
-    drhoi.row(0).zeros();
+    // drhoi.row(0).zeros();
     return drhoi;
   }
 

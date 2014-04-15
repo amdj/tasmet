@@ -151,7 +151,8 @@ namespace tube{
     d gamma=this->gamma();
     dmat dUip1=zero;
     if(i<Ncells-1){
-      dUip1+=Wgip1*(gamma/(gamma-1.0))*fDFT*diagmat(getp0t()+right->p.tdata())*iDFT;
+      dUip1+=Wgip1*(gamma/(gamma-1.0))*
+	fDFT*diagmat(getp0t()+right->p.tdata())*iDFT;
     }
     dUip1.row(0)*=ENERGY_SCALE0;
     return ENERGY_SCALE*dUip1;
@@ -184,7 +185,8 @@ namespace tube{
 
     dmat dUim1=zero;
     if(i>0){
-      dUim1+=Wgim1*(gamma/(gamma-1.0))*fDFT*diagmat(getp0t()+left->p.tdata())*iDFT;
+      dUim1+=Wgim1*(gamma/(gamma-1.0))*
+	fDFT*diagmat(getp0t()+left->p.tdata())*iDFT;
     }
     dUim1.row(0)*=ENERGY_SCALE0;
     return ENERGY_SCALE*dUim1;
