@@ -30,7 +30,7 @@ namespace tube{
       Wi=wRl-wLr;
       Wip1=wRr;
     }
-    TRACE(5,"Continuity zero scale:"<<CONT_SCALE0);
+    // TRACE(5,"Continuity zero scale:"<<CONT_SCALE0);
   }
   vd Continuity::Error(){	// Current error in continuity equation
     vd error(Ns,fillwith::zeros);
@@ -52,10 +52,6 @@ namespace tube{
       error+=Wip1*fDFT*(rhoip1%Uip1);
     }
 
-    // Artificial viscosity term
-    // TRACE(10,D_l());
-    // TRACE(10,D_r());
-    
     #ifdef CONT_VISCOSITY
     if(i>0 && i<Ncells-1){
       error+=-D_r()*(right->rho() -vertex.rho())*vSf;

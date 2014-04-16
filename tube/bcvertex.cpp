@@ -25,7 +25,7 @@ namespace tube{
      d gamma=tube.gas.gamma(T0);
      vd p0(Ns,fillwith::ones); p0*=tube.gc.p0;
      // TRACE(-1,"p0:"<<p0);
-     vd TLt=T0*pow((p0+pL.tdata())/p0,(gamma-1.0)/gamma);		// Adiabatic compression/expansion
+     vd TLt=T0*pow((p0+pL.tdata())/p0,gamma/(gamma-1.0));		// Adiabatic compression/expansion
      // TRACE(-1,"TLt:"<<TLt);
      TL.settdata(TLt);
 
@@ -41,6 +41,7 @@ namespace tube{
      m.Wuim1=0;
      m.Wui=m.wRl-m.wL0;
      m.Wuip1=m.wRr-m.wL1;
+
      m.Wpi=m.wRl*m.SfR+m.SfL-m.SfR;
      m.Wpip1=m.SfR*m.wRr;
      // Change energy equation for open boundary and prescribed pressure
@@ -67,8 +68,8 @@ namespace tube{
      TRACE(0,"LeftPressure::msource()");
      vd msource(Ns,fillwith::ones);
      msource=-1.0*e.SfL*pL();
- // This one should not yet be scaled. The scaling is done in the
- // error term after adding this source.
+     // This one should not yet be scaled. The scaling is done in the
+     // error term after adding this source.
     TRACE(-1,"msource:"<<msource);
     return msource;
   }
@@ -155,7 +156,7 @@ namespace tube{
     dUim1+=adddUim1;
 
     // For velocity boundary condition
-    dUim1.row(0).zeros();
+    // dUim1.row(0).zeros();
     
     return dUim1;
   }
@@ -182,7 +183,7 @@ namespace tube{
     dmat drhoim1=Momentum::drhoim1();
 
     // For velocity and pressure boundary condition
-    drhoim1.row(0).zeros();
+    // drhoim1.row(0).zeros();
     return drhoim1;
   }
 

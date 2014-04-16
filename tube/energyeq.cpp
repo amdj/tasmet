@@ -2,11 +2,43 @@
 #include "vertex.h"
 #include "tube.h"
 
-#define ENERGY_SCALE (1.0) //(gc.p0) //(1/gc.omg)
+#define ENERGY_SCALE  (gc.p0) //(1/gc.omg)
 #define ENERGY_SCALE0 (1.0)//(1.0/pow(gc.M,2)) //(1/gc.omg)
 
 namespace tube{
+  Isentropic::Isentropic(const Tube& tube,TubeVertex& gp):Equation(tube,gp){
+  }
+  Isentropic::~Isentropic(){}
+  vd Isentropic::Error(){
+    TRACE(0,"Isentropic::Error()");
+    vd err(Ns,fillwith::zeros);
+    d T0=tube.gc.T0;
+    d p0=tube.gc.p0;
+    d rho0=tube.gas.rho(T0,p0);
+    d gamma=tube.gas.gamma(T0);
+    err+=(getp0()+vertex.p())/p0;
+    err+=-1.0*fDFT*pow(vertex.rho.tdata()/rho0,gamma);
+    return ENERGY_SCALE*err;
+  }
+  dmat Isentropic::dpi(){
+    TRACE(0,"Isentropic::dpi()");
+    dmat dpi(Ns,Ns,fillwith::eye);
+    d p0=tube.gc.p0;    
+    dpi=dpi/p0;
+    return ENERGY_SCALE*dpi;
+  }
+  dmat Isentropic::drhoi(){
+    TRACE(0,"Isentropic::drhoi()");    
+    dmat drhoi(Ns,Ns,fillwith::zeros);
+    d T0=tube.gc.T0;
+    d p0=tube.gc.p0;
+    d rho0=tube.gas.rho(T0,p0);
 
+    d gamma=tube.gas.gamma(T0);
+    drhoi+=-1.0*ENERGY_SCALE*(gamma/rho0)*fDFT*
+      diagmat(pow(vertex.rho.tdata()/rho0,(gamma-1.0)))*iDFT;
+    return drhoi;
+  }
   Energy::Energy(const Tube& tube,TubeVertex& gp):Equation(tube,gp){
     // Standard boundary condition is adiabatic-no-slip-wall
     if(i==0){			// Leftmost vertex
@@ -249,36 +281,4 @@ namespace tube{
     TRACE(-5,"Energy destructor");
   }
 
-  Isentropic::Isentropic(const Tube& tube,TubeVertex& gp):Equation(tube,gp){
-  }
-  Isentropic::~Isentropic(){}
-  vd Isentropic::Error(){
-    TRACE(0,"Isentropic::Error()");
-    vd err(Ns,fillwith::zeros);
-    d T0=tube.gc.T0;
-    d p0=tube.gc.p0;
-    d gamma=tube.gas.gamma(T0);
-    err+=(getp0()+vertex.p())/p0;
-    err+=-1.0*fDFT*pow(vertex.T.tdata()/T0,gamma/(gamma-1.0));
-    return ENERGY_SCALE*err;
-  }
-  dmat Isentropic::dpi(){
-    TRACE(0,"Isentropic::dpi()");
-    dmat dpi(Ns,Ns,fillwith::eye);
-    d p0=tube.gc.p0;    
-    dpi=dpi/p0;
-    return ENERGY_SCALE*dpi;
-  }
-  dmat Isentropic::dTi(){
-    TRACE(0,"Isentropic::dTi()");    
-    dmat dTi(Ns,Ns,fillwith::zeros);
-    d T0=tube.gc.T0;    
-    d gamma=tube.gas.gamma(T0);
-    dTi+=-1.0*ENERGY_SCALE*(gamma/((gamma-1.0)*T0))*fDFT*diagmat(pow(vertex.T.tdata()/T0,-1.0/gamma))*iDFT;
-    return dTi;
-  }
 } // namespace tube
-
-
-
-

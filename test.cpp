@@ -9,7 +9,7 @@ using namespace tasystem;
 
 int main() {
   cout <<  "Running test..." << endl;
-  initlog(3);
+  initlog(2);
   us gp=4;
   us Nf=2;
   us Ns=2*Nf+1;
@@ -33,12 +33,14 @@ int main() {
 
   variable::var U(gc);
   // U.set(1e-2,1);
-  U.set(1e-2,2);  
-  TRACE(10,"U:"<<gc.fDFT*U.tdata());  
-  // TRACE(10,endl<<gc.fDFT*gc.iDFT);
+
+  U.set(1e0,3);    
+  // U.set(1e0,2);
+  TRACE(10,"U:"<<gc.fDFT*(U.tdata()));  
+  TRACE(10,endl<<gc.iDFT);
   TRACE(10,"Usq::"<<(U*U)());
 
-
+  TRACE(10,gc.DDTfd);
   // tube::Geom geom1(gp,L,S,phi,rh,"inviscid");
   // tube::Tube t1(gc,geom1);
 
@@ -58,7 +60,7 @@ int main() {
   // // t1.setRightbc(bcright);
   // // // TRACE(0,bcright->Z);  
 
-  // vd x=t1.GetRes();
+  // vd x=t1.GetRmomes();
   // vd er=t1.Error();
   // TRACE(10,"-----------------------------------------");
   // dmat jac=dmat(t1.Jac());

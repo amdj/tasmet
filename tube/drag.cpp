@@ -46,6 +46,7 @@ vc LaminarDragResistance::ComplexResistancecoef(us i) const {
 }
   LaminarDragResistance::LaminarDragResistance(const Tube&t):DragResistance(t),zfd(t){
     rf=math_common::rottfuncs(tube.geom.shape); // Reinitialize thermoviscous functions with right shape
+    
   }
   vd LaminarDragResistance::operator()(us i) const {
 
@@ -111,3 +112,11 @@ vc LaminarDragResistance::ComplexResistancecoef(us i) const {
     }
   } // namespace laminardrag
 } // namespace tube
+
+
+
+
+
+
+
+

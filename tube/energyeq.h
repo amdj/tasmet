@@ -35,7 +35,7 @@ namespace tube{
     ~Isentropic();
     vd Error();			// Error in Energy equation at node i
     dmat dpi();
-    dmat dTi();
+    dmat drhoi();
 
   };
 }

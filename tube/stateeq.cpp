@@ -16,7 +16,7 @@ namespace tube{
     vd error(Ns,fillwith::zeros);
     vd p0=getp0();
     // TRACE(-1,"State p0:"<<p0);
-    error+=p0+vertex.p();
+    error+=(p0+vertex.p());
     // TRACE(-1,"state error:"<<error);    
     // TRACE(-1,"T0:"<<tube.gas.Rs()*fDFT*(vertex.T.tdata()%vertex.rho.tdata()));    
     error+=-1.0*tube.gas.Rs()*fDFT*(vertex.rho.tdata()%vertex.T.tdata());

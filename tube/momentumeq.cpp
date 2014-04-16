@@ -19,12 +19,6 @@ namespace tube{
       Wpim1=0;
       Wpi=SfR*wRl-SfL*wL0;
       Wpip1=SfR*wRr-SfL*wL1;
-
-      // Momentum diffusion terms
-      Wd1=0;
-      Wd2=0;
-      Wd3=0;//dxp;
-      Wd4=0;//-dxp;
       
     } else if(i==Ncells-1){	// Rightmost vertex
       Wuim1=-wLl/SfL;
@@ -104,7 +98,7 @@ namespace tube{
     }
     #endif
     // Drag term
-    error+=vVf*tube.drag(i)/vSf;
+    // error+=vVf*tube.drag(i)/vSf;
 
     
     // (Boundary) source term
@@ -115,7 +109,7 @@ namespace tube{
   dmat Momentum::dUi(){
     TRACE(0,"Momentum::dUi()");
     dmat dUi=zero;
-    dUi+=vVf*tube.drag.dUi(i)/vSf;		       // Drag term
+    // dUi+=vVf*tube.drag.dUi(i)/vSf;		       // Drag term
     dUi+=vVf*DDTfd*fDFT*diagtmat(vertex.rho)*iDFT/vSf; // Time-derivative term
     dUi+=2.0*Wui*fDFT*(diagtmat(vertex.rho)*diagtmat(vertex.U))*iDFT;
 

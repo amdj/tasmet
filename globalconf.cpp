@@ -47,26 +47,23 @@ namespace tasystem{
     updateiomg();
   }
   void Globalconf::updatefDFT(){
-    fDFT.row(0).fill(1.0);
+    fDFT.row(0).fill(1.0/double(Ns));
 
     for(us i=1;i<=Nf;i++){
-      //Row i (sine components)
       for(us j=0; j<Ns;j++){
-	fDFT(2*i,j)=-2.0*sin(2.0*number_pi*double(i)*double(j)/Ns);
+	//Row i+1 (cosine components)
+	fDFT(2*i-1,j)=2.0*cos(2.0*number_pi*double(i)*double(j)/double(Ns))/double(Ns);
+	//Row i (sine components)
+	fDFT(2*i,j)=-2.0*sin(2.0*number_pi*double(i)*double(j)/double(Ns))/double(Ns);
       }
-      for(us j=0; j<Ns;j++){
-	fDFT(2*i-1,j)=2.0*cos(2.0*number_pi*double(i)*double(j)/Ns);
-      }
-      //Row i+1 (cosine components)
     }
-    fDFT=fDFT/Ns;
   }
   void Globalconf::updateiDFT(){
-    iDFT.col(0).fill(1.0);
+    iDFT.col(0).fill(1.0);	// Steady part
     for(us k=0;k<Ns;k++){
       for (us n=1;n<=Nf;n++){
-	iDFT(k,2*n-1)=cos(2.0*number_pi*n*k/Ns);
-	iDFT(k,2*n)=-sin(2.0*number_pi*n*k/Ns);
+	iDFT(k,2*n-1)=cos(2.0*number_pi*double(n)*double(k)/Ns);
+	iDFT(k,2*n)=-sin(2.0*number_pi*double(n)*double(k)/Ns);
       }
     }
   }

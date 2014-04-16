@@ -11,7 +11,6 @@ namespace tube{
     Momentum(const Tube& tube,TubeVertex& gp);
     ~Momentum();
     d Wuim1,Wui,Wuip1,Wpim1,Wpi,Wpip1; // Weight functions
-    d Wd1,Wd2,Wd3,Wd4;		       // Momentum diffusion weight factors
     vd Error();			// Error in momentum equation at node i
     dmat drhoi();
     dmat dUi();
