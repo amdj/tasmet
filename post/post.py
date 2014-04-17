@@ -27,6 +27,5 @@ class nonlpost:
                 self.iDFT[k,2*r-1]=n.cos(2.0*n.pi*r*k/Ns)
                 self.iDFT[k,2*r]=-n.sin(2.0*n.pi*r*k/Ns)                
         # self.iDFT[:,0]=1.
-print "bla"
 
 
