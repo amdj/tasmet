@@ -41,6 +41,7 @@ int main() {
   TRACE(10,"Usq::"<<(U*U)());
 
   TRACE(10,gc.DDTfd);
+  TRACE(10,"bla");
   // tube::Geom geom1(gp,L,S,phi,rh,"inviscid");
   // tube::Tube t1(gc,geom1);
 
