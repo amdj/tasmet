@@ -11,8 +11,11 @@ include(UseCython)
 set(CMAKE_C_COMPILER gcc)
 set(CMAKE_CXX_COMPILER g++)
 set(CMAKE_VERBOSE_MAKEFILE on)
-set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -O2 -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address")
-#set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -fPIC -Wall -Wno-unused-function  #-Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr #-Wno-cpp -Wno-address")
+# set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -O2 -fPIC -Wall
+# -Wno-unused-function  -Wno-unused-variable
+# -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp
+# -Wno-address")
+set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp -Wno-address")
 #configure_file (logger.h.in  "${CMAKE_CURRENT_SOURCE_DIR}/logger.h")
 
 AUX_SOURCE_DIRECTORY(tube tubesources)
