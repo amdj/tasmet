@@ -3,6 +3,7 @@
 
 
 namespace tube{
+  SPOILNAMESPACE
   class Energy:public Equation
   {
   public:

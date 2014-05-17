@@ -1,6 +1,6 @@
 #include "globalconf.h"
 
-
+LOGTHIS
 namespace tasystem{
   
   Globalconf::Globalconf(us Nf,d freq,string gas,d T0,d p0,d Mach,d S0,d dx,d Mass,d kappa):

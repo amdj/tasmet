@@ -3,6 +3,7 @@
 
 
 namespace tube {
+  SPOILNAMESPACE
   class Geom{
   public:
     Geom(us gp,d L,d S,d phi,d rh,string cshape);

@@ -6,6 +6,7 @@
 //Drag parameter (flow resistance in a tube)
 
 namespace tube{
+  SPOILNAMESPACE
   class Tube;
   namespace laminardrag{
     // Resistance force for laminar flow for the zero-frequency. 

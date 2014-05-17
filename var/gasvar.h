@@ -1,8 +1,10 @@
 #pragma once
+#include <logger.h>
 #include <material.h>
 #include "var.h"
 
 namespace gases{
+  SPOILNAMESPACE
   using variable::var;
   class Gasvar:public Gas{
   public:

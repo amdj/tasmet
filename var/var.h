@@ -13,6 +13,7 @@
 
 
 namespace variable {
+  SPOILNAMESPACE
   // void setfreq(d freq);
   // void setNf(us Nf);
   using namespace tasystem;

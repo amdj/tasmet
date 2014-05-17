@@ -12,7 +12,7 @@
 
 
 namespace segment{
-  
+  SPOILNAMESPACE
   class Vertex{
   public:
     Vertex(us i,const tasystem::Globalconf& v);

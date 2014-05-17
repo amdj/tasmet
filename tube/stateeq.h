@@ -4,6 +4,7 @@
 
 
 namespace tube{
+  SPOILNAMESPACE
   class State:public Equation
   {
   public:

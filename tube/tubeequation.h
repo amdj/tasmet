@@ -8,7 +8,7 @@ namespace segment{
 }
 
 namespace tube{
-  
+  SPOILNAMESPACE  
 
   class Tube;
   class TubeVertex;

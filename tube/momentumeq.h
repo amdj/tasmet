@@ -5,6 +5,7 @@
 #include "drag.h"
 
 namespace tube{
+  SPOILNAMESPACE
   class Momentum:public Equation
   {
   public:

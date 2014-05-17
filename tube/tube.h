@@ -43,7 +43,7 @@ typedef Eigen::SparseMatrix<double> SpMat;
 } // Namespace segment
 
 namespace tube{
-
+  SPOILNAMESPACE
   using arma::sp_mat;  
   using segment::Seg;
   using segment::Vertex;

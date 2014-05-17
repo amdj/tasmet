@@ -6,11 +6,15 @@ project(nonlinear_tmtubes)
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_LIST_DIR}/cmake )
 include(UseCython)
 #add_definitions(-DEIGEN_NO_DEBUG -DARMA_NO_DEBUG)
-
+add_definitions(-DLogLevel=nonlinearlogger)
 #enable_testing()
 set(CMAKE_C_COMPILER gcc)
 set(CMAKE_CXX_COMPILER g++)
-set(CMAKE_VERBOSE_MAKEFILE on)
+
+######################### VERBOSE MAKEFILE
+#set(CMAKE_VERBOSE_MAKEFILE on)
+##########################################
+
 set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -O2 -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address")
 #set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -fPIC -Wall -Wno-unused-function  #-Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr #-Wno-cpp -Wno-address")
 #configure_file (logger.h.in  "${CMAKE_CURRENT_SOURCE_DIR}/logger.h")
@@ -35,17 +39,25 @@ include_directories(
 # math_common should be linked to armadillo
 set(PYTHON_LIBRARIES libpython2.7.so)
 set(PYTHON_LIBRARY libpython2.7.so)
-add_executable(test test.cpp ${nonlinear_SRC})
+
+add_library(tubelib ${nonlinear_SRC})
+
+add_executable(test test.cpp)
+target_link_libraries(test tubelib math_common armadillo)
+
 # If the pyx file is a C++ file, we should specify that here.
 set_source_files_properties(
 #  ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/src/rect.pyx
 #  ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/src/pi_calculator.pyx
   tube.pyx
   PROPERTIES CYTHON_IS_CXX TRUE )
+
 set(CYTHON_CXX_EXTENSION cpp)
 set(CYTHON_FLAGS -I/usr/local/include --timestamps)
-cython_add_module(tube tube.pyx ${nonlinear_SRC})
-target_link_libraries(tube math_common armadillo)
+cython_add_module(tube tube.pyx)
+set_target_properties(tube PROPERTIES COMPILE_FLAGS "-Wno-cpp -Wno-strict-aliasing")
+
+target_link_libraries(tube tubelib math_common armadillo)
 #add_library(pytube SHARED pytube.cpp)
 #set_target_properties(pytube PROPERTIES PREFIX "")
 target_link_libraries(test math_common armadillo)
