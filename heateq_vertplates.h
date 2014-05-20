@@ -29,9 +29,7 @@ class heateq_vertplates
 		vd Cerr(const vd& C);
 		d y0,rho0,mu0;
 	protected:
-		vc hnu_n(d y);
 
-		us Nf,Ns;
 		vd s; //Shear wave number for each frequency
 		var A,uB,C,rho,mu,Tw_over_T,T;
 		const varoperations& vop;

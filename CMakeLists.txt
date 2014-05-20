@@ -6,7 +6,7 @@ project(nonlinear_tmtubes)
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_LIST_DIR}/cmake )
 include(UseCython)
 #add_definitions(-DEIGEN_NO_DEBUG -DARMA_NO_DEBUG)
-add_definitions(-DLogLevel=nonlinearlogger)
+add_definitions(-DLOGLEVEL=nonlinearlogger)
 #enable_testing()
 set(CMAKE_C_COMPILER gcc)
 set(CMAKE_CXX_COMPILER g++)
@@ -15,7 +15,7 @@ set(CMAKE_CXX_COMPILER g++)
 #set(CMAKE_VERBOSE_MAKEFILE on)
 ##########################################
 
-set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -O2 -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address")
+set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -O2 -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address  -ffunction-sections -fdata-sections")
 #set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -fPIC -Wall -Wno-unused-function  #-Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr #-Wno-cpp -Wno-address")
 #configure_file (logger.h.in  "${CMAKE_CURRENT_SOURCE_DIR}/logger.h")
 
