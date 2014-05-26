@@ -9,7 +9,7 @@ namespace tasystem{
     Globalconf(us Nf,d freq,string Gas="air",d T0=293.15,d p0=101325.0,d Mach=1.0,d S0=1.0,d dx=1.0,d Mass=0.0,d kappa=0.25);
     ~Globalconf();
     gases::Gas gas;
-    us Nf;			// Number of frequencies
+    us Nf;			// Number of frequencies to solve for
     us Ns;			// Corresponding number of time samples
 
     d freq;

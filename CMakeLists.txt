@@ -22,7 +22,7 @@ set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -O2 -fPIC -Wall -Wno-unused-function  
 AUX_SOURCE_DIRECTORY(tube tubesources)
 AUX_SOURCE_DIRECTORY(var varsources)
 
-set (nonlinear_SRC globalconf.cpp ${tubesources} ${varsources})
+set (nonlinear_SRC globalconf.cpp common/rottfuncs.cpp ${tubesources} ${varsources})
 
 #  tube/continuityeq.cpp tube/drag.cpp
 #    tube/energyeq.cpp tube/geom.cpp tube/momentumeq.cpp

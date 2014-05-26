@@ -2,7 +2,7 @@
 #include "../var/var.h"
 #include <math_common.h>
 #include "../globalconf.h"
-
+#include "../common/rottfuncs.h"
 //Drag parameter (flow resistance in a tube)
 
 namespace tube{
@@ -47,7 +47,7 @@ namespace tube{
   private:
     vc ComplexResistancecoef(us i) const; // Returns a complex vector of size Ns with drag resistance coefficients for every nonzero frequency (1..Nf)
     laminardrag::ZerofreqDrag zfd;
-    math_common::rottfuncs rf;
+    rottfuncs::rottfuncs rf;
   };
 
 } // namespace tube
