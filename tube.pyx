@@ -5,6 +5,8 @@ include "tube.pxi"
 cdef class tube:
     cdef Geom* geom1
     cdef Globalconf* gc
+    cdef TAsystem* sys
+    cdef Solver* sol
     cdef Tube* tube1
     cdef LeftPressure* lp
     cdef RightImpedance* ri
@@ -49,7 +51,12 @@ cdef class tube:
         cdef vd Zvec=dndtovec(Z)
         self.ri=new RightImpedance(self.tube1[0],Zvec)
         self.tube1.setRightbc(self.ri)
+        self.sys=new TAsystem(self.gc[0])
+        self.sys.addseg(<Seg&> self.tube1[0])
+        self.sol=new Solver(self.sys[0])
     def __dealloc__(self):
+        del self.sol
+        del self.sys
         del self.tube1
         del self.gc
         del self.geom1
@@ -60,11 +67,11 @@ cdef class tube:
     cpdef getx(self):
         return dvectond(self.tube1.geom.vx)
     cpdef Error(self):
-        return dvectond(self.tube1.Error())
+        return dvectond(self.sys.Error())
     cpdef GetRes(self):
-        return dvectond(self.tube1.GetRes())
+        return dvectond(self.sys.GetRes())
     cpdef DoIter(self,d relaxfac):
-        self.tube1.DoIter(relaxfac)
+        self.sol.DoIter(relaxfac)
     cpdef SetRes(self,n.ndarray[n.float64_t,ndim=1] res):
         self.tube1.SetRes(dndtovec(res))
     cpdef GetResVar(self,_type,freqnr):

@@ -9,6 +9,7 @@
 #ifndef TUBE_H_
 #define TUBE_H_
 #include "../globalconf.h"
+#include "seg.h"
 #include "geom.h"
 #include "drag.h"
 #include "vertex.h"
@@ -21,26 +22,6 @@
 
 
 
-namespace segment{
-typedef Eigen::SparseMatrix<double> SpMat;
-
-  class Seg{
-  public:
-    Seg(tasystem::Globalconf& gc); // nL,nR initiated as 0
-    virtual ~Seg();
-    us nL,nR;
-    tasystem::Globalconf& gc;	// Global configuration of the system
-    vd Error();
-    vd GetRes();
-    sdmat Jac();		// Sparse matrix
-    void SetRes(vd res);
-    
-    void setnodes(us n1,us n2){ nL=n1; nR=n2;}
-    Vertex** vvertex; // Vector of vertices
-    us Ndofs,Ncells;
-  };
-
-} // Namespace segment
 
 namespace tube{
   SPOILNAMESPACE
@@ -58,8 +39,7 @@ namespace tube{
     void setRightbc(TubeVertex* v); // Set left boundary condition vertex    
     Geom geom;			// The geometry
     gases::Gas& gas;		// The gas in the system. Reference variable to gc.gas
-    void DoIter(d dampfac=1.0);		// And damp with a factor
-    vd GetResAt(us varnr,us freqnr);
+    vd GetResAt(us varnr,us freqnr); // Extrect a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
 
   protected:
     void Init();
@@ -67,6 +47,8 @@ namespace tube{
     friend class TubeVertex;
     friend class Continuity;
     friend class Momentum;
+  private:
+
   };				// Tube class
 
 } /* namespace tube */

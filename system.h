@@ -6,6 +6,16 @@
 // instance combines segments and boundary conditions, such that a
 // full error vector can be created, a right hand side and the
 // Jacobian.
+
+#pragma once
+
+#ifndef _SYSTEM_H_
+#define _SYSTEM_H_
+
+
+
+
+
 #include <vtypes.h>
 #include "tube/tube.h"
 #include "globalconf.h"
@@ -15,6 +25,8 @@
 namespace tasystem{
   using segment::Seg;
   using arma::sp_mat;
+  using math_common::esdmat;
+  
   class TAsystem{
   public:
     TAsystem(Globalconf& g); // Initialize a
@@ -23,26 +35,28 @@ namespace tasystem{
     vd Error();			// Total error vector
     vd GetRes();			// Extract result vector
     void SetRes(vd resvec);	// Set result vector
+    void addseg(Seg& s);	// Add a segment to the system
+    void delseg(us n); // Not yet implementen. Delete a segment from the system (we have to determine how elaborated the API has to be.)
 
-    void addseg(Seg& s);
-    void delseg(us n);
-
-    sdmat Jac();		// Return Jacobian matrix    
+    dmat Jac();		// Return Jacobian matrix    
     Seg& operator[](us i);    
-    
-    ~TAsystem();
-  protected:
+
+  private:
     // A vector of boundary conditions is required
+    void setnodes(us segnr,us nL,us nR);
     vector<segment::Seg*> segs;
+    const Globalconf& gc;
+    const us& Ns;
+
     vector<us> startdof;	// Vector containing the starting degree of freedom for segment number # 
     vector<us> enddof;		// Vector containing the last dof belonging to segment number #
 
-    Globalconf& gc;
     us Nsegs;			// Number of segments
     us Ndofs;
-    us& Ns;
+
 
   };				// class System
   
 } // namespace tasystem
 
+#endif /* _SYSTEM_H_ */

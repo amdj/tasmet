@@ -15,14 +15,16 @@ set(CMAKE_CXX_COMPILER g++)
 #set(CMAKE_VERBOSE_MAKEFILE on)
 ##########################################
 
-set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -O2 -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address  -ffunction-sections -fdata-sections")
-#set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -fPIC -Wall -Wno-unused-function  #-Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr #-Wno-cpp -Wno-address")
+set (CMAKE_CXX_FLAGS "-std=c++11 -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address  -ffunction-sections -fdata-sections")
+#set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -O2 -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address  -ffunction-sections -fdata-sections")
+
 #configure_file (logger.h.in  "${CMAKE_CURRENT_SOURCE_DIR}/logger.h")
 
 AUX_SOURCE_DIRECTORY(tube tubesources)
 AUX_SOURCE_DIRECTORY(var varsources)
 
-set (nonlinear_SRC globalconf.cpp common/rottfuncs.cpp ${tubesources} ${varsources})
+set (nonlinear_SRC globalconf.cpp common/rottfuncs.cpp ${tubesources}
+${varsources} system.cpp solver.cpp)
 
 #  tube/continuityeq.cpp tube/drag.cpp
 #    tube/energyeq.cpp tube/geom.cpp tube/momentumeq.cpp
@@ -44,6 +46,8 @@ add_library(tubelib ${nonlinear_SRC})
 
 add_executable(test test.cpp)
 target_link_libraries(test tubelib math_common armadillo)
+add_executable(tubemodel tubemodel.cpp)
+target_link_libraries(tubemodel tubelib math_common armadillo)
 
 # If the pyx file is a C++ file, we should specify that here.
 set_source_files_properties(
@@ -58,9 +62,13 @@ cython_add_module(tube tube.pyx)
 set_target_properties(tube PROPERTIES COMPILE_FLAGS "-Wno-cpp -Wno-strict-aliasing")
 
 target_link_libraries(tube tubelib math_common armadillo)
+
+target_link_libraries(test math_common armadillo)
+
+
 #add_library(pytube SHARED pytube.cpp)
 #set_target_properties(pytube PROPERTIES PREFIX "")
-target_link_libraries(test math_common armadillo)
+
 #target_link_libraries(pytube python2.7)
 # The headers which have to be installed
 #set (math_common_HEADERS math_common.h logger.h vtypes.h material.h bessel.h)
