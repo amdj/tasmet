@@ -26,16 +26,16 @@ namespace tube {
     Ncells=geom.Ncells;
     Ndofs=Ncells*gc.Ns*Neq;
     TRACE(0,"Ncells:"<<Ncells);
-    vvertex=new Vertex*[Ncells];
+    // vvertex=new Vertex*[Ncells];
     for(us i=0; i<Ncells;i++){
       TRACE(-1,"Tube vvertex i:"<<i);
-      vvertex[i]=new TubeVertex(*this,i);
+      vvertex.push_back(vertexptr(new TubeVertex(*this,i)));
       // Link the array
       if(i>0){
 	TRACE(-1,"Tube vvertex i-1:"<<i-1);
-	vvertex[i]->left=vvertex[i-1];
+	vvertex[i]->left=vvertex[i-1].get();
 	TRACE(-1,"Add right pointer to this one: " << vvertex[i]);
-	vvertex[i-1]->right=vvertex[i];
+	vvertex[i-1]->right=vvertex[i].get();
       }
 
     }
@@ -46,19 +46,19 @@ namespace tube {
   }
   void Tube::Init(){
     TRACE(0,"Tube::Init()");
-    Vertex** v=vvertex;
+    // Vertex** v=vvertex;
     for (us i=0;i<Ncells;i++){
       TRACE(-1,"i:"<<i);
-      (*v)->T.set(gc.T0,0);
-      (*v)->rho.set(gas.rho(gc.T0,gc.p0),0);
-      v++;
+      vvertex[i]->T.set(gc.T0,0);
+      vvertex[i]->rho.set(gas.rho(gc.T0,gc.p0),0);
+      // v++;
     }
   }
 
   Tube::Tube(const Tube& o):Tube(o.gc,o.geom){
     TRACE(0,"Tube copy constructor");
     for(us i=0; i<Ncells;i++){
-      *this->vvertex[i]=*o.vvertex[i];
+      // this->vvertex[i].reset(new TubeVertex(*(o.vvertex[i])));
     }
     // for this, we need to add to tubevertex copy constructor.
 		// rule of Three
@@ -67,20 +67,22 @@ namespace tube {
 		// copy assignment operator
       // TODO fill this
   }
-  void Tube::setLeftbc(TubeVertex* v){
+  void Tube::setLeftbc(vertexptr v){
     TRACE(0,"Tube::setLeftbc()");
-    delete vvertex[0];
+    // delete vvertex[0];
     vvertex[0]=v;
-    vvertex[0]->right=vvertex[1];
-    vvertex[1]->left=vvertex[0];
+    vvertex[0]->right=vvertex[1].get();
+    vvertex[1]->left=vvertex[0].get();
     Init();
   }
-  void Tube::setRightbc(TubeVertex* v){
+  void Tube::setLeftbc(Vertex* v){ setLeftbc(vertexptr(v));}
+  void Tube::setRightbc(Vertex* v){ setRightbc(vertexptr(v));}
+  void Tube::setRightbc(vertexptr v){
     TRACE(0,"Tube::setRightbc()");
-    delete vvertex[Ncells-1];
+    // delete vvertex[Ncells-1];
     vvertex[Ncells-1]=v;
-    vvertex[Ncells-2]->right=v;
-    vvertex[Ncells-1]->left=vvertex[Ncells-2];
+    vvertex[Ncells-2]->right=v.get();
+    vvertex[Ncells-1]->left=vvertex[Ncells-2].get();
     Init();
   }  
   vd Tube::GetResAt(us varnr,us freqnr){
@@ -93,15 +95,15 @@ namespace tube {
   }
   Tube::~Tube(){
     TRACE(-5,"Tube destructor started");
-    if(Ncells>0){
-      Vertex* v=vvertex[0];
-      for (us i=0;i<Ncells;i++){
-	TRACE(-6,"Deleting vertex..");
-	delete vvertex[i];
-      }
-	TRACE(-6,"Deleting vertex array..");
-      delete vvertex;  
-    }
+    // if(Ncells>0){
+      // Vertex* v=vvertex[0];
+      // for (us i=0;i<Ncells;i++){
+	// TRACE(-6,"Deleting vertex..");
+	// delete vvertex[i];
+      // }
+	// TRACE(-6,"Deleting vertex array..");
+      // delete vvertex;  
+    // }
 
   }
   

@@ -17,7 +17,6 @@
 #include <vtypes.h>
 #include <material.h>
 #include <math_common.h>
-
 #include <Eigen/Sparse>
 
 
@@ -26,8 +25,11 @@
 namespace tube{
   SPOILNAMESPACE
   using arma::sp_mat;  
-  using segment::Seg;
-  using segment::Vertex;
+  
+  using namespace segment;
+
+
+  
   class Tube:public Seg {
   public:
     Tube(tasystem::Globalconf& g,Geom geom);
@@ -35,8 +37,10 @@ namespace tube{
 				 // vector ofpointers
     ~Tube();
 
-    void setLeftbc(TubeVertex* v); // Set left boundary condition vertex
-    void setRightbc(TubeVertex* v); // Set left boundary condition vertex    
+    void setLeftbc(vertexptr v); // Set left boundary condition vertex
+    void setRightbc(vertexptr v); // Set left boundary condition vertex    
+    void setLeftbc(Vertex* v); // Set left boundary condition vertex, takes over ownership of object
+    void setRightbc(Vertex* v); // Set right boundary condition vertex, takes over ownership of object
     Geom geom;			// The geometry
     gases::Gas& gas;		// The gas in the system. Reference variable to gc.gas
     vd GetResAt(us varnr,us freqnr); // Extrect a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
