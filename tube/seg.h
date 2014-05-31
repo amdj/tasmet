@@ -3,10 +3,13 @@
 #define _SEG_H_
 #include "vertex.h"
 #include <vtypes.h>
+#include <memory>
 
 namespace segment{
 typedef Eigen::SparseMatrix<double> SpMat;
   SPOILNAMESPACE
+  typedef std::shared_ptr<Vertex> vertexptr;
+  
   class Seg;
 
   enum SegCoupling{
@@ -30,7 +33,8 @@ typedef Eigen::SparseMatrix<double> SpMat;
     dmat Jac();		// Sparse matrix
     void SetRes(vd res);
     void setnodes(us n1,us n2){ nL=n1; nR=n2;}
-    Vertex** vvertex; // Vector of vertices
+    std::vector<vertexptr> vvertex;
+    // Vertex** vvertex; // Vector of vertices
     us Ndofs,Ncells;
     const us& Ns;
   protected:

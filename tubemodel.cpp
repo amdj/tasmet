@@ -4,6 +4,7 @@
 int main(int argc, char *argv[])
 {
   SPOILNAMESPACE
+    using segment::vertexptr;
     using math_common::esdmat;
     initlog(10);
   us Nf=0;
@@ -17,13 +18,13 @@ int main(int argc, char *argv[])
   // us gp=120;
   us gp=4;
   tasystem::Globalconf gc(Nf,freq);
-
   tube::Geom g1(gp,L,S,1.0,S/PI,"circ");
   tube::Tube t1(gc,g1);
   variable::var presLeft(t1.gc);
   if (Nf>0)
     presLeft.set(1.0,1);	// One oscillation
-  tube::LeftPressure* bcleft=new tube::LeftPressure(t1,presLeft);
+
+  vertexptr bcleft(new tube::LeftPressure(t1,presLeft));
   t1.setLeftbc(bcleft);
 
   vd Z=(415/S)*ones<vd>(Ns);
