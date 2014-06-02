@@ -52,26 +52,26 @@ include_directories(
 set(PYTHON_LIBRARIES libpython2.7.so)
 set(PYTHON_LIBRARY libpython2.7.so)
 
-add_library(tubelib ${nonlinear_SRC})
+add_library(nonlin ${nonlinear_SRC})
 
 add_executable(test test.cpp)
-target_link_libraries(test tubelib math_common armadillo)
+target_link_libraries(test nonlin math_common armadillo)
 add_executable(multitube multitube.cpp)
-target_link_libraries(multitube tubelib math_common armadillo)
+target_link_libraries(multitube nonlin math_common armadillo)
 
 # If the pyx file is a C++ file, we should specify that here.
 set_source_files_properties(
 #  ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/src/rect.pyx
 #  ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/src/pi_calculator.pyx
-  tube.pyx
+  pytube.pyx
   PROPERTIES CYTHON_IS_CXX TRUE )
 
 set(CYTHON_CXX_EXTENSION cpp)
 set(CYTHON_FLAGS -I/usr/local/include --timestamps)
-cython_add_module(tube tube.pyx)
-set_target_properties(tube PROPERTIES COMPILE_FLAGS "-Wno-cpp -Wno-strict-aliasing")
+cython_add_module(pytube pytube.pyx)
+set_target_properties(pytube PROPERTIES COMPILE_FLAGS "-Wno-cpp -Wno-strict-aliasing")
 
-target_link_libraries(tube tubelib math_common armadillo)
+target_link_libraries(pytube nonlin math_common armadillo)
 
 target_link_libraries(test math_common armadillo)
 

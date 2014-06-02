@@ -12,12 +12,12 @@
 #include "seg.h"
 #include "geom.h"
 #include "drag.h"
-#include "vertex.h"
+#include "tubevertex.h"
 #include "var.h"
 #include <vtypes.h>
 #include <material.h>
 #include <math_common.h>
-#include <Eigen/Sparse>
+// #include <Eigen/Sparse>
 
 
 
@@ -32,18 +32,14 @@ namespace tube{
   
   class Tube:public Seg {
   public:
-    Tube(tasystem::Globalconf& g,Geom geom);
+    Tube(const tasystem::Globalconf& g,Geom geom);
     Tube(const Tube& othertube); // Copy constructor to copy vertex
 				 // vector ofpointers
     ~Tube();
 
-    void setLeftbc(vertexptr v); // Set left boundary condition vertex
-    void setRightbc(vertexptr v); // Set left boundary condition vertex    
-    void setLeftbc(Vertex* v); // Set left boundary condition vertex, takes over ownership of object
-    void setRightbc(Vertex* v); // Set right boundary condition vertex, takes over ownership of object
     Geom geom;			// The geometry
-    gases::Gas& gas;		// The gas in the system. Reference variable to gc.gas
-    vd GetResAt(us varnr,us freqnr); // Extrect a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
+    const gases::Gas& gas;		// The gas in the system. Reference variable to gc.gas
+    vd GetResAt(us varnr,us freqnr); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
 
   protected:
     void Init();

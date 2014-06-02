@@ -19,10 +19,10 @@
   // precisely, in the final solution the continuity, momentum, energy
   // and a suitable equation of state should hold.
 namespace tube {
-  Tube::Tube(tasystem::Globalconf& g,Geom geom):Seg(g),geom(geom),gas(gc.gas),drag(*this){
+  Tube::Tube(const tasystem::Globalconf& g,Geom geom):Seg(g),geom(geom),gas(g.gas),drag(*this){
     // Fill vector of gridpoints with data:
     TRACE(5,"Tube constructor started, filling gridpoints vector...");
-
+    type="Tube";
     Ncells=geom.Ncells;
     Ndofs=Ncells*gc.Ns*Neq;
     TRACE(0,"Ncells:"<<Ncells);
@@ -67,24 +67,7 @@ namespace tube {
 		// copy assignment operator
       // TODO fill this
   }
-  void Tube::setLeftbc(vertexptr v){
-    TRACE(0,"Tube::setLeftbc()");
-    // delete vvertex[0];
-    vvertex[0]=v;
-    vvertex[0]->right=vvertex[1].get();
-    vvertex[1]->left=vvertex[0].get();
-    Init();
-  }
-  void Tube::setLeftbc(Vertex* v){ setLeftbc(vertexptr(v));}
-  void Tube::setRightbc(Vertex* v){ setRightbc(vertexptr(v));}
-  void Tube::setRightbc(vertexptr v){
-    TRACE(0,"Tube::setRightbc()");
-    // delete vvertex[Ncells-1];
-    vvertex[Ncells-1]=v;
-    vvertex[Ncells-2]->right=v.get();
-    vvertex[Ncells-1]->left=vvertex[Ncells-2].get();
-    Init();
-  }  
+
   vd Tube::GetResAt(us varnr,us freqnr){
     vd res(Ncells);
     assert(varnr<Neq);

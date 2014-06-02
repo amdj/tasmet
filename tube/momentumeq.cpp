@@ -1,5 +1,5 @@
 #include "momentumeq.h"
-#include "vertex.h"
+#include "tubevertex.h"
 #include "tube.h"
 
 #include "momscale.h"
@@ -7,7 +7,7 @@
 
 namespace tube{
 
-  Momentum::Momentum(const Tube& tube,TubeVertex& gp):Equation(tube,gp){
+  Momentum::Momentum(const Tube& tube,TubeVertex& gp):TubeEquation(tube,gp){
     TRACE(0,"Momentum constructor...");
     // Standard boundary condition is an adiabatic no-slip wall
 

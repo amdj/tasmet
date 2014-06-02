@@ -33,9 +33,9 @@ namespace segment{
       seg1.setLeft(seg2);
       seg2.setRight(seg1);
     }
-      }
+  } // coupleSegs()
   
-  Seg::Seg(tasystem::Globalconf& g):gc(g),Ns(gc.Ns){
+  Seg::Seg(const tasystem::Globalconf& g):gc(g),Ns(gc.Ns){
     TRACE(0,"Seg::Seg()");
     number=totalnumber;
     totalnumber++;
@@ -47,12 +47,36 @@ namespace segment{
     // us& Ns=gc.Ns;
 
   } // Seg constructor
-  bool Seg::operator==(const Seg& other){return (this->number==other.number);}
+  bool Seg::operator==(const Seg& other) const {return (this->number==other.number);}
   void Seg::setLeft(const Seg& Left){
     TRACE(0,"Seg::SetLeft()");
     left=&Left;
   }
-  void Seg::setRight(const Seg& Right){right=&Right;}
+  void Seg::setRight(const Seg& Right){
+    TRACE(0,"Seg::SetRight()");
+    right=&Right;
+  }
+  void Seg::setLeftbc(vertexptr v){
+    TRACE(0,"Seg::setLeftbc()");
+    // delete vvertex[0];
+    assert(Ncells>0);
+    vvertex[0]=v;
+    vvertex[0]->right=vvertex[1].get();
+    vvertex[1]->left=vvertex[0].get();
+    Init();
+  }
+  void Seg::setLeftbc(Vertex* v){ setLeftbc(vertexptr(v));}
+  void Seg::setRightbc(Vertex* v){ setRightbc(vertexptr(v));}
+  void Seg::setRightbc(vertexptr v){
+    TRACE(0,"Seg::setRightbc()");
+    // delete vvertex[Ncells-1];
+    assert(Ncells>0);
+    vvertex[Ncells-1]=v;
+    vvertex[Ncells-2]->right=v.get();
+    vvertex[Ncells-1]->left=vvertex[Ncells-2].get();
+    Init();
+  }    
+  
   dmat Seg::Jac(){			// Return Jacobian matrix of error operator
     // sdmat Seg::Jac(){			// Return Jacobian matrix of error operator    
     TRACE(0," Seg::Jac().. ");
@@ -111,8 +135,6 @@ namespace segment{
   }
   vd Seg::GetRes(){
     TRACE(0,"Seg::Get()");
-    // const us& Neq=TubeVertex::Neq;
-    const us& Ns=gc.Ns;
     vd Result(Ndofs,fillwith::zeros);
     for(us k=0; k<Ncells;k++)
       {

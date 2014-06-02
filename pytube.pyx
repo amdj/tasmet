@@ -1,8 +1,8 @@
-include "tube.pxi"
+include "pytube.pxi"
 
 
 
-cdef class tube:
+cdef class pytube:
     cdef Geom* geom1
     cdef Globalconf* gc
     cdef TAsystem* sys

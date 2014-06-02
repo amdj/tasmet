@@ -30,7 +30,8 @@ namespace variable {
     // var& operator=(const var&);			  // Copy assignment operator
     // var operator()(const var&); //Copy constructor
     // Get methods
-    d& operator()(us i);				   // Extract amplitude data result at specific frequency
+    const d& operator()(us i) const;				   // Extract amplitude data result at specific frequency
+    d& operator()(us i);				   // Extract amplitude data result at specific frequency    
 
     vd operator()() const { return amplitudedata;} //Extract result
 						   //vector

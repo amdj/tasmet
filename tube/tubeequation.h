@@ -1,11 +1,8 @@
 #pragma once
-#include "var.h"
-#include <math_common.h>
-#include "geom.h"
+#ifndef _TUBEEQUATION_H_
+#define _TUBEEQUATION_H_
 
-namespace segment{
-  class Vertex;
-}
+#include "equation.h"
 
 namespace tube{
   SPOILNAMESPACE  
@@ -13,23 +10,21 @@ namespace tube{
   class Tube;
   class TubeVertex;
 
-  class Equation{
+  
+  class TubeEquation:public segment::Equation{
   public:
-    Equation(const Tube& tube,TubeVertex& gp);
-    ~Equation();
-    Equation(const Equation& other); // Copy constructor
-    dmat diagtmat(variable::var& v); // Create diagonal matrix with time domain data from variable
+    TubeEquation(const Tube& tube,TubeVertex& gp);
+    ~TubeEquation();
+    TubeEquation(const TubeEquation& other); // Copy constructor
+    dmat diagtmat(const variable::var& v); // Create diagonal matrix with time domain data from variable
     const us& i; 			// Current node
     const Tube& tube;
+
     TubeVertex& vertex;		// Reference to parent (current gridpoint)
-
-    segment::Vertex*& left;
-    segment::Vertex*& right;
+    const segment::Vertex*& left;
+    const segment::Vertex*& right;
     
-    const tasystem::Globalconf& gc;
-
     const dmat& fDFT,iDFT,DDTfd;	// forward, backward dicrete fourier transform, derivative to time matrix (freq domain)
-    const us& Ns;
     
     vd getp0(); 		// Create a vector of zero-pressure data
     vd getp0t();   		// Same, but then time domain data
@@ -50,8 +45,6 @@ namespace tube{
     d wLl,wRr,wLr,wRl;		// Weight functions for equations
     d wL0,wL1,wRNm1,wRNm2;    	// Special boundary weight functions
 
-    
-    virtual vd Error()=0;
     virtual dmat Jac();		// Returns the local Jacobian of this equation
     dmat zero;			// Zeros matrix of right size
     virtual dmat drhoim2();	// Derivative of current equation to density at node i-2
@@ -88,7 +81,8 @@ namespace tube{
     dmat D_r(); 		// Artificial viscosity right side
     dmat D_l();			// Artificial viscosity left size
     vd nu();			// Function of d^2p/dx^2
-  };				// class Equation
+  };				// class TubeEquation
 
 } // namespace tube
 
+#endif /* _TUBEEQUATION_H_ */

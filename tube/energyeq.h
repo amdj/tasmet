@@ -4,7 +4,7 @@
 
 namespace tube{
   SPOILNAMESPACE
-  class Energy:public Equation
+  class Energy:public TubeEquation
   {
   public:
     Energy(const Tube& tube,TubeVertex& gp);
@@ -30,7 +30,7 @@ namespace tube{
 				// boundary of the vertex
     d gamma();			// Time-avg ratio of specific heats
   };
-  class Isentropic:public Equation{
+  class Isentropic:public TubeEquation{
   public:
     Isentropic(const Tube& tube,TubeVertex& gp);
     ~Isentropic();

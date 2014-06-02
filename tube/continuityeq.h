@@ -4,7 +4,7 @@
 namespace tube{
 
 
-  class Continuity:public Equation{	// Tube continuity equation 
+  class Continuity:public TubeEquation{	// Tube continuity equation 
   public:
     Continuity(const Tube& tube,TubeVertex& gp);
     ~Continuity();

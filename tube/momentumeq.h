@@ -6,7 +6,7 @@
 
 namespace tube{
   SPOILNAMESPACE
-  class Momentum:public Equation
+  class Momentum:public TubeEquation
   {
   public:
     Momentum(const Tube& tube,TubeVertex& gp);

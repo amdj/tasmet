@@ -15,7 +15,7 @@ namespace tasystem{
     us startdof=0;
 
     for(us i=0;i<Nsegs;i++){
-      segdofs=segs[i]->Ncells*Ns*Neq;
+      segdofs=segs[i]->getNcells()*Ns*Neq;
       Error.subvec(startdof,startdof+segdofs-1)=segs[i]->Error();
       startdof=startdof+segdofs;
     }
@@ -32,7 +32,7 @@ namespace tasystem{
     us segdofs;
     us startdof=0;
     for(us i=0;i<Nsegs;i++){
-      segdofs=segs[i]->Ncells*Ns*Neq;
+      segdofs=segs[i]->getNcells()*Ns*Neq;
       Res.subvec(startdof,startdof+segdofs-1)=segs[i]->GetRes();
       startdof=startdof+segdofs;
     }
@@ -44,7 +44,7 @@ namespace tasystem{
     us startdof=0;
 
     for(us i=0;i<Nsegs;i++){
-      segdofs=segs[i]->Ncells*Ns*Neq;
+      segdofs=segs[i]->getNcells()*Ns*Neq;
       segs[i]->SetRes(Res.subvec(startdof,startdof+segdofs-1));
     }
   }
@@ -60,12 +60,22 @@ namespace tasystem{
     for(us j=0;j<Nsegs;j++){
       segment::Seg& curseg=*segs[j];
       dmat segjac=curseg.Jac();
-      us thisndofs=gc.Ns*Neq*curseg.Ncells;
+      us thisndofs=gc.Ns*Neq*curseg.getNcells();
       us frow=j*thisndofs;
       us fcol=j*thisndofs;	 // First col
       us lrow=(j+1)*thisndofs-1; // last row
       us lcol=(j+1)*thisndofs-1;
       jac.submat(frow,fcol,lrow,lcol)=segjac.cols(Neq*gc.Ns,segjac.n_cols-Neq*Ns);
+      if(curseg.Left()!=NULL){
+	// Couple Jacobian terms
+	us othernr=curseg.Left()->getNumber();
+	// Find out if other segment is coupled to the left, or to the right
+	if(*curseg.Left()->Right()==curseg) // tailhead coupling
+	  {}
+	else			// headhead coupling
+	  {}
+      }
+      
     }
     return jac;
   }
@@ -74,7 +84,7 @@ namespace tasystem{
     TRACE(1,"TAsystem::addseg()");
     // Put the segment in the array
     segs.push_back(&s);
-    Ndofs+=s.Ncells*gc.Ns*Neq;	// number of cells times number of equations times number of time samples
+    Ndofs+=s.getNcells()*gc.Ns*Neq;	// number of cells times number of equations times number of time samples
     // if(Nsegs==0){
       // startdof.push_back(0);
     // }

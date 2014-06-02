@@ -7,8 +7,8 @@
 // adiabatic open pressure boundary conditions.
 
 #include "tube.h"
-#include "../var/var.h"
-#include "vertex.h"
+#include "var.h"
+#include "tubevertex.h"
 #include "momentumeq.h"
 namespace tube{
 

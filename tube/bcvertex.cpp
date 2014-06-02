@@ -189,7 +189,7 @@ namespace tube{
 
   
   RightImpedanceMomentumEq::~RightImpedanceMomentumEq(){}
-  RightImpedance::RightImpedance(const Tube& t,vd Z1):TubeBcVertex(t,t.Ncells-1),Z(Z1),mright(t,*this,Z){
+  RightImpedance::RightImpedance(const Tube& t,vd Z1):TubeBcVertex(t,t.getNcells()-1),Z(Z1),mright(t,*this,Z){
     TRACE(-5,"RightImpedance constructor");
     // Change continuity equation for open boundary
     c.Wim1=c.wRNm2-c.wLl;
