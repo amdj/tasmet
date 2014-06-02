@@ -3,36 +3,49 @@
 namespace tasystem{
 
   TAsystem::TAsystem(Globalconf& g):gc(g),Ns(g.Ns){
-    TRACE(0,"TAsystem::TAsystem(SegArray)");
+    TRACE(1,"TAsystem::TAsystem(SegArray)");
     Nsegs=0;
     Ndofs=0;
   }
   vd TAsystem::Error(){
-    TRACE(0,"TAsystem::Error()");
+    TRACE(1,"TAsystem::Error()");
     
     vd Error(Ndofs);
+    us segdofs;
+    us startdof=0;
+
     for(us i=0;i<Nsegs;i++){
-      Error.subvec(startdof.at(i),enddof.at(i))=segs[i]->Error();
+      segdofs=segs[i]->Ncells*Ns*Neq;
+      Error.subvec(startdof,startdof+segdofs-1)=segs[i]->Error();
+      startdof=startdof+segdofs;
     }
     return Error;
   }
   void TAsystem::setnodes(us segnr,us nl,us nr){
-    TRACE(0,"TAsystem::setnodes");
+    TRACE(1,"TAsystem::setnodes");
     assert(segnr>0 && segnr<Nsegs);
     segs[segnr]->setnodes(nl,nr);
   }
   vd TAsystem::GetRes(){
-    TRACE(0,"TAsystem::GetRes()");
+    TRACE(1,"TAsystem::GetRes()");
     vd Res(Ndofs);
+    us segdofs;
+    us startdof=0;
     for(us i=0;i<Nsegs;i++){
-      Res.subvec(startdof.at(i),enddof.at(i))=segs[i]->GetRes();
+      segdofs=segs[i]->Ncells*Ns*Neq;
+      Res.subvec(startdof,startdof+segdofs-1)=segs[i]->GetRes();
+      startdof=startdof+segdofs;
     }
     return Res;
   }
   void TAsystem::SetRes(vd Res){
-    TRACE(0,"TAsystem::SetRes(vd res)");
+    TRACE(1,"TAsystem::SetRes(vd res)");
+    us segdofs;
+    us startdof=0;
+
     for(us i=0;i<Nsegs;i++){
-      segs[i]->SetRes(Res.subvec(startdof.at(i),enddof.at(i)));
+      segdofs=segs[i]->Ncells*Ns*Neq;
+      segs[i]->SetRes(Res.subvec(startdof,startdof+segdofs-1));
     }
   }
   dmat TAsystem::Jac(){
@@ -58,17 +71,17 @@ namespace tasystem{
   }
 
   void TAsystem::addseg(Seg& s){
-    TRACE(0,"TAsystem::addseg()");
+    TRACE(1,"TAsystem::addseg()");
     // Put the segment in the array
     segs.push_back(&s);
     Ndofs+=s.Ncells*gc.Ns*Neq;	// number of cells times number of equations times number of time samples
-    if(Nsegs==0){
-      startdof.push_back(0);
-    }
-    else{
-      startdof.push_back(startdof[Nsegs]);
-    }
-    enddof.push_back(s.Ncells*Neq*gc.Ns-1);
+    // if(Nsegs==0){
+      // startdof.push_back(0);
+    // }
+    // else{
+      // startdof.push_back(enddof[Nsegs]+1);
+    // }
+    // enddof.push_back(s.Ncells*Neq*gc.Ns-1);
     Nsegs++;			// Update number of segments    
   }
   Seg& TAsystem::operator[](us i){

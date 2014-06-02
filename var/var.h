@@ -9,7 +9,7 @@
 #define VAR_H_
 #include <vtypes.h>
 #include <assert.h>
-#include "../globalconf.h"
+#include "globalconf.h"
 
 
 namespace variable {

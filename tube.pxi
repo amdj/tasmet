@@ -7,7 +7,7 @@ cdef extern from "globalconf.h" namespace "tasystem":
     cdef cppclass Globalconf:
         Globalconf(us Nf,d freq,string Gas,d T0,d p0,d Mach,d S,d dx,d Mass,d kappa)
 
-cdef extern from "tube/seg.h" namespace "segment":
+cdef extern from "seg.h" namespace "segment":
     cdef cppclass Seg:
         Seg(Globalconf& gc)
         
@@ -24,12 +24,12 @@ cdef extern from "solver.h" namespace "tasystem":
         void DoIter(d dampfac)
     
 
-cdef extern from "tube/geom.h" namespace "tube":
+cdef extern from "geom.h" namespace "tube":
     cdef cppclass Geom:
         Geom(us gp,d L,d S,d phi,d rh,string cshape) except +
         vd vx
 
-cdef extern from "var/var.h" namespace "variable":
+cdef extern from "var.h" namespace "variable":
     cdef cppclass var:
         var(Globalconf&,double)   #Initialize with constant value
         var(Globalconf&)   #Initialize with zeros
@@ -37,7 +37,7 @@ cdef extern from "var/var.h" namespace "variable":
         void set(vd) #Set frequency us to double
 
 
-cdef extern from "tube/tube.h" namespace "tube":
+cdef extern from "tube.h" namespace "tube":
     cdef cppclass Tube:
         Tube(Globalconf& gc,Geom g)
         Seg(Globalconf& gc)    
@@ -51,13 +51,13 @@ cdef extern from "tube/tube.h" namespace "tube":
         vd GetRes()
         void SetRes(vd res)    
         vd GetResAt(us varnr,us freqnr)
-cdef extern from "tube/vertex.h":
+cdef extern from "vertex.h":
     cdef cppclass Vertex:
         pass
     cdef cppclass TubeVertex(Vertex):
         pass
 
-cdef extern from "tube/bcvertex.h" namespace "tube":
+cdef extern from "bcvertex.h" namespace "tube":
     cdef cppclass LeftPressure(TubeVertex):
         LeftPressure(Tube,var pres)
     cdef cppclass RightImpedance(TubeVertex):        

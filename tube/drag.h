@@ -1,8 +1,8 @@
 #pragma once
 #include "../var/var.h"
 #include <math_common.h>
-#include "../globalconf.h"
-#include "../common/rottfuncs.h"
+#include "globalconf.h"
+#include "rottfuncs.h"
 //Drag parameter (flow resistance in a tube)
 
 namespace tube{

@@ -8,12 +8,12 @@
 #pragma once
 #ifndef TUBE_H_
 #define TUBE_H_
-#include "../globalconf.h"
+#include "globalconf.h"
 #include "seg.h"
 #include "geom.h"
 #include "drag.h"
 #include "vertex.h"
-#include "../var/var.h"
+#include "var.h"
 #include <vtypes.h>
 #include <material.h>
 #include <math_common.h>

@@ -16,15 +16,15 @@ typedef Eigen::SparseMatrix<double> SpMat;
     headhead,tailtail,headtail,tailhead
   };
 
-  void coupleSegs(Seg* seg1,Seg* seg2,SegCoupling); // Couple two segments
+  void coupleSegs(Seg& seg1,Seg& seg2,SegCoupling); // Couple two segments
   
   class Seg{
   public:
     friend void coupleSegs(Seg*,Seg*,SegCoupling);
     
     Seg(tasystem::Globalconf& gc); // nL,nR initiated as 0
-    void setRight(Seg*);	   // Couple segment to some segment on left side
-    void setLeft(Seg*);		   // Couple segment to some segment on right side
+    virtual void setRight(const Seg&);	   // Couple segment to some segment on left side
+    virtual void setLeft(const Seg&);		   // Couple segment to some segment on right side
     bool operator==(const Seg& seg2); // Check if two segments are the same
     us nL,nR;
     tasystem::Globalconf& gc;	// Global configuration of the system
@@ -37,8 +37,9 @@ typedef Eigen::SparseMatrix<double> SpMat;
     // Vertex** vvertex; // Vector of vertices
     us Ndofs,Ncells;
     const us& Ns;
+    virtual ~Seg() {}
   protected:
-    Seg *left,*right;    
+    Seg const *left,*right;    
   private:
     us number;
   };
@@ -49,3 +50,6 @@ typedef Eigen::SparseMatrix<double> SpMat;
 
 
 #endif /* _SEG_H_ */
+
+
+

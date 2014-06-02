@@ -13,13 +13,9 @@
 #define _SYSTEM_H_
 
 
-
-
-
 #include <vtypes.h>
-#include "tube/tube.h"
+#include "tube.h"
 #include "globalconf.h"
-
 
 
 namespace tasystem{
@@ -48,8 +44,8 @@ namespace tasystem{
     const Globalconf& gc;
     const us& Ns;
 
-    vector<us> startdof;	// Vector containing the starting degree of freedom for segment number # 
-    vector<us> enddof;		// Vector containing the last dof belonging to segment number #
+    // vector<us> startdof;	// Vector containing the starting degree of freedom for segment number # 
+    // vector<us> enddof;		// Vector containing the last dof belonging to segment number #
 
     us Nsegs;			// Number of segments
     us Ndofs;

@@ -3,26 +3,35 @@
 namespace segment{
   static us totalnumber=0;
   
-  void coupleSegs(Seg* seg1,Seg* seg2,SegCoupling coupling){
-
+  void coupleSegs(Seg& seg1,Seg& seg2,SegCoupling coupling){
+    us seg1size=seg1.vvertex.size();
+    us seg2size=seg2.vvertex.size();
+    assert(seg1size>0);
+    assert(seg2size>0);
     if (coupling==tailhead){
       // Seg1 is coupled with its tail to Seg2's head
-      seg1->right=seg2;
-      seg2->left=seg1;
+      TRACE(3,"Coupling seg1 with its tail to the head of seg2");
+      seg1.setRight(seg2);
+      seg2.setLeft(seg1);
+
+      seg1.vvertex[seg1size-1]->right=seg2.vvertex[0].get();
+      seg2.vvertex[0]->left=seg1.vvertex[seg1size-1].get();
+
     }
     else if(coupling==headtail){
       // Seg2 is coupled with its tail to Seg1's head
-      seg1->left=seg2;
-      seg2->right=seg1;
+      TRACE(3,"Coupling seg1 with its head to the tail of seg2");
+      seg1.setLeft(seg2);
+      seg2.setRight(seg1);
     }
     else if(coupling==tailtail){
-      seg1->right=seg2;
-      seg2->right=seg1;
+      seg1.setRight(seg2);
+      seg2.setRight(seg1);
     }
     else {
       // Coupling is headhead
-      seg1->left=seg2;
-      seg2->right=seg1;
+      seg1.setLeft(seg2);
+      seg2.setRight(seg1);
     }
       }
   
@@ -38,8 +47,12 @@ namespace segment{
     // us& Ns=gc.Ns;
 
   } // Seg constructor
-  void Seg::setLeft(Seg* Left){left=Left;}
-  void Seg::setRight(Seg* Right){right=Right;}
+  bool Seg::operator==(const Seg& other){return (this->number==other.number);}
+  void Seg::setLeft(const Seg& Left){
+    TRACE(0,"Seg::SetLeft()");
+    left=&Left;
+  }
+  void Seg::setRight(const Seg& Right){right=&Right;}
   dmat Seg::Jac(){			// Return Jacobian matrix of error operator
     // sdmat Seg::Jac(){			// Return Jacobian matrix of error operator    
     TRACE(0," Seg::Jac().. ");

@@ -22,9 +22,13 @@ set (CMAKE_CXX_FLAGS "-std=c++11 -fPIC -Wall -Wno-unused-function  -Wno-unused-v
 
 AUX_SOURCE_DIRECTORY(tube tubesources)
 AUX_SOURCE_DIRECTORY(var varsources)
-
-set (nonlinear_SRC globalconf.cpp common/rottfuncs.cpp ${tubesources}
-${varsources} system.cpp solver.cpp)
+AUX_SOURCE_DIRECTORY(seg segsources)
+AUX_SOURCE_DIRECTORy(sys syssources)
+AUX_SOURCE_DIRECTORy(sol solsources)
+AUX_SOURCE_DIRECTORy(common commonsources)
+set (nonlinear_SRC ${tubesources} ${varsources} ${segsources}
+${syssources} ${solsources}
+${varsources} ${commonsources})
 
 #  tube/continuityeq.cpp tube/drag.cpp
 #    tube/energyeq.cpp tube/geom.cpp tube/momentumeq.cpp
@@ -36,6 +40,12 @@ include_directories(
   /usr/include/eigen3
   /usr/local/include
   /usr/local/include/eigen3
+  sol
+  sys
+  seg
+  var
+  tube
+  common
   )
 
 # math_common should be linked to armadillo
@@ -46,8 +56,8 @@ add_library(tubelib ${nonlinear_SRC})
 
 add_executable(test test.cpp)
 target_link_libraries(test tubelib math_common armadillo)
-add_executable(tubemodel tubemodel.cpp)
-target_link_libraries(tubemodel tubelib math_common armadillo)
+add_executable(multitube multitube.cpp)
+target_link_libraries(multitube tubelib math_common armadillo)
 
 # If the pyx file is a C++ file, we should specify that here.
 set_source_files_properties(
