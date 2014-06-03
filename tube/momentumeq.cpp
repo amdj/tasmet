@@ -9,7 +9,6 @@ namespace tube{
 
   Momentum::Momentum(const Tube& tube,TubeVertex& gp):TubeEquation(tube,gp){
     TRACE(0,"Momentum constructor...");
-
   }
   vd Momentum::Error(){		// Error in momentum equation
     TRACE(0,"Momentum::Error()");

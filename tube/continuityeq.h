@@ -9,7 +9,7 @@ namespace tube{
 
     Continuity(const Tube& tube,TubeVertex& gp);
     ~Continuity();
-    void updateW();		// Update weight functions
+  
     vd Error();			// Error in this equation at this node
     dmat drhoip1(); // Derivative of continuity equation to density at node
 		    // i + 1

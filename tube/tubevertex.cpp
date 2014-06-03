@@ -142,13 +142,14 @@ namespace tube{
       c.Wim1=-UsignL*wLl;
       c.Wi=UsignR*wRl-UsignL*wLr;
       c.Wip1=UsignR*wRr;
-      
+
+      m.Wuim1=-wLl/SfL;
       m.Wui=wRl/SfR-wLr/SfL;
       m.Wuip1=wRr/SfR;
 
       m.Wpim1=-SfL*wLl;
       m.Wpi  = SfR*wRl-SfL*wLr;
-      m.Wpip1=SfR*wRr;
+      m.Wpip1= SfR*wRr;
 
       e.Wgim1=-wLl;
       e.Wgi=wRl-wLr;
@@ -171,6 +172,7 @@ namespace tube{
       m.Wuim1=0;
       m.Wui=wRl/SfR;
       m.Wuip1=wRr/SfR;
+      
       m.Wpim1=0;
       m.Wpi=SfR*wRl-SfL*wL0;
       m.Wpip1=SfR*wRr-SfL*wL1;
@@ -196,6 +198,7 @@ namespace tube{
       m.Wuim1=-wLl/SfL;
       m.Wui=-wLr/SfL;
       m.Wuip1=0;
+      
       m.Wpim1=-SfL*wLl+SfR*wRNm2;
       m.Wpi=-SfL*wLr+SfR*wRNm1;
       m.Wpip1=0;
