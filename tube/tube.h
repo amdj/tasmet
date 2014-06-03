@@ -37,7 +37,7 @@ namespace tube{
 				 // vector ofpointers
     ~Tube();
 
-    Geom geom;			// The geometry
+  
     const gases::Gas& gas;		// The gas in the system. Reference variable to gc.gas
     vd GetResAt(us varnr,us freqnr); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
 

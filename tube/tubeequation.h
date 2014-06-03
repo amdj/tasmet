@@ -6,6 +6,7 @@
 
 namespace tube{
   SPOILNAMESPACE  
+  using namespace segment;
 
   class Tube;
   class TubeVertex;
@@ -30,20 +31,6 @@ namespace tube{
     vd getp0t();   		// Same, but then time domain data
     const Geom& geom;
     const us& Ncells;		// Number of cells
-    d vSf;			// Vertex fluid cross-sectional area
-    d vSs;			// Vertex solid cross-sectional area
-    d vVf;			// Vertex cell fluid volume
-    d vVs;			// Vertex cell solid volume
-
-    d SfR;			// Cross-sectional area of right face
-    d SfL;			// Cross-sectional area of left  face
-
-    d xR;			// Position of right cell wall
-    d xL;			// Position of left cell wall
-    d dxp;			// Distance to nearby right node
-    d dxm;			// Distance to nearby left node
-    d wLl,wRr,wLr,wRl;		// Weight functions for equations
-    d wL0,wL1,wRNm1,wRNm2;    	// Special boundary weight functions
 
     virtual dmat Jac();		// Returns the local Jacobian of this equation
     dmat zero;			// Zeros matrix of right size

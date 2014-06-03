@@ -11,6 +11,7 @@ namespace tube{
     ~Energy();
     d Wgim1,Wgi,Wgip1,Wjim1,Wji,Wjip1; // Weight functions for terms in energy equation - except for conduction terms
     d Wc1,Wc2,Wc3,Wc4;		// Weight functions for conduction
+    d Wddt;
     vd Error();			// Error in Energy equation at node i
     dmat dpi();
     dmat dUi();

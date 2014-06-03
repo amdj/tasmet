@@ -9,57 +9,7 @@ namespace tube{
     TRACE(0,"TubeEquation constructor");
     // Geometrical parameters
 
-    TRACE(-1,"i:"<< i);
-    // Left and right cross-sectional area
-    SfL=geom.Sf(i);
-    SfR=geom.Sf(i+1);
-    // Geometric parameters
-    vSf=geom.vSf(i);
-    vSs=geom.vSs(i);
-    vVf=geom.vVf(i);
-    vVs=geom.vVs(i);
 
-    // Initialize weight functions to zero
-    wLl=0; wLr=0; wRr=0; wRl=0;
-    
-    xR=tube.geom.x(i+1);		// Position of right cell wall
-    xL=tube.geom.x(i);			// Position of left cell wall
-    
-    const vd& vx=tube.geom.vx;
-    const d& vxi=vx(i);
-    d vxip1=0;
-    d vxim1=0;
-    // Initialize distances to next node to zero
-    dxm=dxp=0;
-
-    if(i>0){
-      vxim1=vx(i-1);
-      dxm=vxi-vxim1;
-      // Left weight functions
-      wLl=(vxi-xL)/(vxi-vxim1);
-      wLr=(xL-vxim1)/(vxi-vxim1);
-    }
-    if(i<Ncells-1){
-      vxip1=vx(i+1);
-      dxp=vxip1-vxi;
-      // Right weight functions
-      wRr=(xR-vxi)/(vxip1-vxi);
-      wRl=(vxip1-xR)/(vxip1-vxi);
-    }
-    // special weight function part
-    wL0=wL1=wRNm1=wRNm2=0;	// Put these weight functions to zero
-    if(i==0){
-      wL0=vxip1/(vxip1-vxi);
-      wL1=-vxi/(vxip1-vxi);
-    }
-    if(i==Ncells-1){
-      wRNm1=(vxim1-xR)/(vxim1-vxi);
-      wRNm2=(xR-vxi)/(vxim1-vxi);
-    }
-    // end special weight function part
-    // TRACE(-1,"vertex i:"<<i);
-    // TRACE(-1,"vertex density:"<<vertex.rho());
-    // TRACE(0,"Ns:"<<tube.gc.Ns);
     zero=zeros<dmat>(tube.gc.Ns,tube.gc.Ns);
   }
   TubeEquation::TubeEquation(const TubeEquation& other):TubeEquation(other.tube,other.vertex){
@@ -232,7 +182,7 @@ namespace tube{
     else {
       dmat Dr(Ns,Ns,fillwith::zeros);
       // Wesselings book: rj+0.5=speed of sound
-      Dr.diag()=gc.c0*gc.kappa*nu()*gc.dx/dxp;
+      Dr.diag()=gc.c0*gc.kappa*nu()*gc.dx/vertex.dxp;
       return Dr;
     }
   }
@@ -243,7 +193,7 @@ namespace tube{
     else{
       dmat Dl(Ns,Ns,fillwith::zeros);
       // Wesselings book: rj+0.5=speed of sound
-      Dl.diag()=gc.c0*gc.kappa*nu()*gc.dx/dxm;
+      Dl.diag()=gc.c0*gc.kappa*nu()*gc.dx/vertex.dxm;
       return Dl;
     }
   }

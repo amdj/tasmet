@@ -14,13 +14,8 @@ namespace segment{
     vars[4]=&Ts;
    
   }
-  // Vertex::Vertex(const Vertex& v2):Vertex(v2.i,v2.gc){
-  //   this->rho=v2.rho;
-  //   this->U=v2.U;
-  //   this->T=v2.T;
-  //   this->p=v2.p;
-  //   this->Ts=v2.Ts;
-  // }
+  void Vertex::updateW()  {
+  }
   Vertex&  Vertex::operator=(const Vertex& v2){ // Copy assignment
     this->rho=v2.rho;
     this->U=v2.U;

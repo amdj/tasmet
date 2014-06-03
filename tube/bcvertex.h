@@ -5,41 +5,30 @@
 // contains the implementation of typical external boundary conditions
 // for tubes as a custom vertex. Examples are adiabatic walls, isothermal walls and an
 // adiabatic open pressure boundary conditions.
+#pragma once
+#ifndef _BCVERTEX_H_
+#define _BCVERTEX_H_
+
+
+
 
 #include "tube.h"
 #include "var.h"
-#include "tubevertex.h"
 #include "momentumeq.h"
 namespace tube{
-
+  class TubeVertex;
   class TubeBcVertex:public TubeVertex
   {
   public:
     TubeBcVertex(const Tube&t,us vertexnr);
     virtual ~TubeBcVertex();
   };
-
   
-  class LeftPressure:public TubeBcVertex
-  {
-  public:
-    LeftPressure(const Tube& t);
-    LeftPressure(const Tube&t,variable::var& pres);
-    LeftPressure(const Tube&t,variable::var& pres,variable::var& temp);
-
-    ~LeftPressure();
-    void Init();
-    // virtual vd cbcsource();
-    virtual vd msource() const;	// Prescribed left pressure
-    virtual vd esource() const;	// Same
-    variable::var pL;			// Pressure boundary condition
-    variable::var TL;			// Temperature boundary conditions
-  };
 
   class RightImpedanceMomentumEq:public Momentum{
   public:
     RightImpedanceMomentumEq(const Tube&,TubeBcVertex&,vd& Z);
-    ~RightImpedanceMomentumEq();
+    ~RightImpedanceMomentumEq(){}
     vd Error();
     dmat dUi();
     dmat dUim1();
@@ -55,7 +44,8 @@ namespace tube{
   {
   public:
     RightImpedance(const Tube& t,vd Z);
-    ~RightImpedance();
+    ~RightImpedance(){}
+    void updateW();
     vd Z;			// The impedance
     RightImpedanceMomentumEq mright; // Completely adjusted equation
 
@@ -65,3 +55,4 @@ namespace tube{
 
 } // namespace tube
 
+#endif /* _BCVERTEX_H_ */

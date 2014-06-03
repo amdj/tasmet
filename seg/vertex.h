@@ -7,13 +7,21 @@
 #include "geom.h"
 #include "equation.h"
 
-
-
 #define Neq (5)
 
 
 namespace segment{
   SPOILNAMESPACE
+
+  
+class VertexW
+  {
+  public:
+    VertexW();
+    
+    virtual ~VertexW();
+  };  
+  
   
   class Seg;  
   class Vertex{
@@ -27,10 +35,12 @@ namespace segment{
     const tasystem::Globalconf& gc;
     const us& Ns;			// Number of sample points reference
 
+    virtual void updateW();	       // Update weight functions of equations
     virtual vd Error();				  // Compute error for this gridpoint
     virtual dmat Jac();	       // Fill complete Jacobian for this node
     virtual void SetRes(vd res);			  // Set result vector to res
     virtual vd GetRes();				  // Extract current result vector
+
 
     segment::Equation* eq[Neq];		// Pointer array of all equations
     const Vertex* left;

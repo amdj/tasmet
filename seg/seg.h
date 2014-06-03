@@ -4,7 +4,10 @@
 #include "vertex.h"
 #include <vtypes.h>
 #include <memory>
-
+#include "geom.h"
+namespace tube{
+  class TubeVertex;
+}
 namespace segment{
 
   SPOILNAMESPACE
@@ -17,15 +20,18 @@ namespace segment{
   };
 
   void coupleSegs(Seg& seg1,Seg& seg2,SegCoupling); // Couple two segments  
-  
+
   class Seg{
   public:
     friend void coupleSegs(Seg&,Seg&,SegCoupling);
+    friend class Vertex;
+    friend class tube::TubeVertex;
     
-    Seg(const tasystem::Globalconf& gc); // nL,nR initiated as 0
+    Seg(const tasystem::Globalconf& gc,Geom geom); // nL,nR initiated as 0
+
     virtual void setRight(const Seg&);	   // Couple segment to some segment on left side
     virtual void setLeft(const Seg&);		   // Couple segment to some segment on right side
-    virtual void Init()=0;			   // Initializer method. Different for each segment type
+    virtual void Init();			   // Initializer method. Different for each segment type
     const Seg* Right() const {return right;}
     const Seg* Left()const {return left;}
     const us& getNumber() const {return number;}
@@ -43,19 +49,20 @@ namespace segment{
     
     const string& gettype() const {return type;}
     bool operator==(const Seg& seg2) const; // Check if two segments are the same
-
-    const tasystem::Globalconf& gc;	// Global configuration of the system
     vd Error();			// Return error vector for this segment
     vd GetRes();		// Return result vector for this segment
     dmat Jac();			// Return Jacobian matrix
     void SetRes(vd res);
     void setnodes(us n1,us n2){ nL=n1; nR=n2;}
-
+    virtual ~Seg(){}
+    
+    const tasystem::Globalconf& gc;	// Global configuration of the system
+    Geom geom;			// The geometry
     const us& Ns;
-    virtual ~Seg() {}
 
-  protected:
     std::vector<vertexptr> vvertex;
+  protected:
+
     us Ndofs,Ncells;
     string type;
     us nL,nR;

@@ -35,7 +35,7 @@ namespace segment{
     }
   } // coupleSegs()
   
-  Seg::Seg(const tasystem::Globalconf& g):gc(g),Ns(gc.Ns){
+  Seg::Seg(const tasystem::Globalconf& g,Geom geom):gc(g),geom(geom),Ns(gc.Ns){
     TRACE(0,"Seg::Seg()");
     number=totalnumber;
     totalnumber++;
@@ -47,6 +47,12 @@ namespace segment{
     // us& Ns=gc.Ns;
 
   } // Seg constructor
+  void Seg::Init(){
+    assert(Ncells>0);
+    for(us i=0;i<Ncells;i++){
+      vvertex[i]->updateW();
+    }      
+  }
   bool Seg::operator==(const Seg& other) const {return (this->number==other.number);}
   void Seg::setLeft(const Seg& Left){
     TRACE(0,"Seg::SetLeft()");
@@ -63,7 +69,6 @@ namespace segment{
     vvertex[0]=v;
     vvertex[0]->right=vvertex[1].get();
     vvertex[1]->left=vvertex[0].get();
-    Init();
   }
   void Seg::setLeftbc(Vertex* v){ setLeftbc(vertexptr(v));}
   void Seg::setRightbc(Vertex* v){ setRightbc(vertexptr(v));}
@@ -74,7 +79,6 @@ namespace segment{
     vvertex[Ncells-1]=v;
     vvertex[Ncells-2]->right=v.get();
     vvertex[Ncells-1]->left=vvertex[Ncells-2].get();
-    Init();
   }    
   
   dmat Seg::Jac(){			// Return Jacobian matrix of error operator

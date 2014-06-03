@@ -1,5 +1,5 @@
 #include "geom.h"
-namespace tube{
+namespace segment{
 
   Geom::Geom(us gp,d L,d Sprismatic,d phiprismatic,d rhprismatic,string shape):shape(shape),gp(gp),Ncells(gp-1){
     TRACE(0,"Geom constructor");
@@ -42,4 +42,4 @@ namespace tube{
   }
   
   Geom::~Geom(){}
-} // namespace tube
+} // namespace segment

@@ -19,7 +19,7 @@
   // precisely, in the final solution the continuity, momentum, energy
   // and a suitable equation of state should hold.
 namespace tube {
-  Tube::Tube(const tasystem::Globalconf& g,Geom geom):Seg(g),geom(geom),gas(g.gas),drag(*this){
+  Tube::Tube(const tasystem::Globalconf& g,Geom geom):Seg(g,geom),gas(g.gas),drag(*this){
     // Fill vector of gridpoints with data:
     TRACE(5,"Tube constructor started, filling gridpoints vector...");
     type="Tube";
@@ -42,16 +42,14 @@ namespace tube {
     TRACE(5,"Tube constructor done");
     // globalconf instance is put in reference variable gc in
     // inherited class Seg
-    Init();
   }
   void Tube::Init(){
     TRACE(0,"Tube::Init()");
-    // Vertex** v=vvertex;
+    Seg::Init();
     for (us i=0;i<Ncells;i++){
-      TRACE(-1,"i:"<<i);
+      // TRACE(-1,"i:"<<i);
       vvertex[i]->T.set(gc.T0,0);
       vvertex[i]->rho.set(gas.rho(gc.T0,gc.p0),0);
-      // v++;
     }
   }
 

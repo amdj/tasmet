@@ -2,7 +2,7 @@
 #include <vtypes.h>
 
 
-namespace tube {
+namespace segment {
   SPOILNAMESPACE
   class Geom{
   public:
@@ -12,7 +12,7 @@ namespace tube {
     
     const us gp;         // Number of cell walls
     const us Ncells;	 // Number of cells
-    d L;		 //Length of the Tube
+    d L;		 //Length of the Segment
     vd x;		 // Position of cell walls
 
     vd S;		 // Cross sectional area as a function of x
@@ -34,5 +34,5 @@ namespace tube {
   private:
     void Celldata();		// Compute all cell data
   };                            /* class Geom */
-}                               // namespace tube
+}                               // namespace segment
 // 

@@ -6,6 +6,7 @@ namespace tasystem{
     TRACE(1,"TAsystem::TAsystem(SegArray)");
     Nsegs=0;
     Ndofs=0;
+    
   }
   vd TAsystem::Error(){
     TRACE(1,"TAsystem::Error()");
@@ -15,7 +16,8 @@ namespace tasystem{
     us startdof=0;
 
     for(us i=0;i<Nsegs;i++){
-      segdofs=segs[i]->getNcells()*Ns*Neq;
+      segdofs=segndofs(i);
+      startdof=segfirstcol(i);
       Error.subvec(startdof,startdof+segdofs-1)=segs[i]->Error();
       startdof=startdof+segdofs;
     }
@@ -57,6 +59,7 @@ namespace tasystem{
     TRACE(-1,"Ndofs:"<<Ndofs);
     const us& Ns=gc.Ns;
     dmat jac(Ndofs,Ndofs);
+    us cellblock=Neq*Ns;
     for(us j=0;j<Nsegs;j++){
       segment::Seg& curseg=*segs[j];
       dmat segjac=curseg.Jac();
@@ -65,33 +68,58 @@ namespace tasystem{
       us fcol=j*thisndofs;	 // First col
       us lrow=(j+1)*thisndofs-1; // last row
       us lcol=(j+1)*thisndofs-1;
-      jac.submat(frow,fcol,lrow,lcol)=segjac.cols(Neq*gc.Ns,segjac.n_cols-Neq*Ns);
+      jac.submat(frow,fcol,lrow,lcol)=		\
+	segjac.cols(Neq*gc.Ns,segjac.n_cols-Neq*Ns);
+
       if(curseg.Left()!=NULL){
+	TRACE(10,"Coupling to left segment..");
 	// Couple Jacobian terms
 	us othernr=curseg.Left()->getNumber();
+	us firstcol=segfirstcol(othernr);
+	us otherndofs=segndofs(othernr);
 	// Find out if other segment is coupled to the left, or to the right
-	if(*curseg.Left()->Right()==curseg) // tailhead coupling
-	  {}
-	else			// headhead coupling
-	  {}
-      }
+	if(*curseg.Left()->Right()==curseg){
+	  // tail of left segment coupled to head of current segment
+	  jac.submat(frow,firstcol+otherndofs-cellblock,lrow,firstcol+otherndofs-1)= \
+	    segjac.cols(0,cellblock-1);
+	}    
+	else{			// headhead coupling
+
+	} // 
+      }	  // curseg.Left()!=NULL
+      if(curseg.Right()!=NULL){
+	// Couple Jacobian terms
+	TRACE(10,"Coupling to right segment..");
+	us othernr=curseg.Right()->getNumber();
+	us firstcol=segfirstcol(othernr);
+	us otherndofs=segndofs(othernr);
+	// Find out if other segment is coupled to the left, or to the right
+	if(*(curseg.Right()->Left())==curseg){
+	  // tail of left segment coupled to head of current segment
+	  jac.submat(frow,firstcol,lrow,firstcol+cellblock-1)=	\
+	    segjac.cols(segjac.n_cols-cellblock,segjac.n_cols-1);
+	}    
+	else{			// headhead coupling
+
+	} // 
+      }	  // curseg.Right()!=NULL
       
-    }
+    } // end for loop
     return jac;
   }
 
   void TAsystem::addseg(Seg& s){
-    TRACE(1,"TAsystem::addseg()");
+    TRACE(10,"TAsystem::addseg()");
+    if(Nsegs==MAXSEGS){
+      TRACE(0,"Warning: maximum segments reached");
+      return;
+    }
     // Put the segment in the array
     segs.push_back(&s);
+    s.Init();
+    segfirstcol(Nsegs)=Ndofs;
     Ndofs+=s.getNcells()*gc.Ns*Neq;	// number of cells times number of equations times number of time samples
-    // if(Nsegs==0){
-      // startdof.push_back(0);
-    // }
-    // else{
-      // startdof.push_back(enddof[Nsegs]+1);
-    // }
-    // enddof.push_back(s.Ncells*Neq*gc.Ns-1);
+    segndofs(Nsegs)=(s.getNcells()*gc.Ns*Neq);
     Nsegs++;			// Update number of segments    
   }
   Seg& TAsystem::operator[](us i){
