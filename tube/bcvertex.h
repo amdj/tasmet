@@ -10,46 +10,18 @@
 #define _BCVERTEX_H_
 
 
-
-
 #include "tube.h"
 #include "var.h"
-#include "momentumeq.h"
+
 namespace tube{
   class TubeVertex;
   class TubeBcVertex:public TubeVertex
   {
   public:
     TubeBcVertex(const Tube&t,us vertexnr);
-    virtual ~TubeBcVertex();
+    virtual ~TubeBcVertex(){}
   };
   
-
-  class RightImpedanceMomentumEq:public Momentum{
-  public:
-    RightImpedanceMomentumEq(const Tube&,TubeBcVertex&,vd& Z);
-    ~RightImpedanceMomentumEq(){}
-    vd Error();
-    dmat dUi();
-    dmat dUim1();
-    dmat dpi();
-    dmat dpim1();
-    dmat drhoim1();
-    dmat drhoi();
-    vd& Z;
-    
-  }; 
-
-  class RightImpedance:public TubeBcVertex // Adiabatic impedance boundary condition
-  {
-  public:
-    RightImpedance(const Tube& t,vd Z);
-    ~RightImpedance(){}
-    void updateW();
-    vd Z;			// The impedance
-    RightImpedanceMomentumEq mright; // Completely adjusted equation
-
-  };
 
 
 

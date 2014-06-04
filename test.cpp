@@ -2,8 +2,10 @@
 
 #include "globalconf.h"
 #include "tube/tube.h"
-#include "tube/bcvertex.h"
-
+#include "pressurebc.h"
+#include "impedancebc.h"
+#include "system.h"
+#include "solver.h"
 using namespace std;
 using namespace tasystem;
 
@@ -11,7 +13,7 @@ int main() {
   cout <<  "Running test..." << endl;
   initlog(2);
   us gp=4;
-  us Nf=2;
+  us Nf=0;
   us Ns=2*Nf+1;
   double f=100;
   double omg=2*number_pi*f;
@@ -40,41 +42,44 @@ int main() {
   TRACE(10,endl<<gc.iDFT);
   TRACE(10,"Usq::"<<(U*U)());
 
-  TRACE(10,gc.DDTfd);
-  // tube::Geom geom1(gp,L,S,phi,rh,"inviscid");
-  // tube::Tube t1(gc,geom1);
+  // TRACE(10,gc.DDTfd);
+  tube::Geom geom1(gp,L,S,phi,rh,"inviscid");
+  tube::Tube t1(gc,geom1);
 
-  // variable::var presLeft(t1.gc);
-  // if (Nf>0)
-  //   presLeft.set(1.0,1);	// One oscillation
+  variable::var presLeft(t1.gc);
+  if (Nf>0)
+    presLeft.set(1.0,1);	// One oscillation
   // TRACE(10,presLeft.tdata());
-  // tube::LeftPressure* bcleft=new tube::LeftPressure(t1,presLeft);
+  tube::LeftPressure* bcleft=new tube::LeftPressure(t1,presLeft);
   // vd Z=(415/S)*ones<vd>(Ns);
 
 
-  // t1.setLeftbc(bcleft);
-
+  t1.setLeftbc(bcleft);
   // TRACE(10,"Dl:"<<endl<<t1.vvertex[1]->eq[0]->D_l());
   // TRACE(10,"-Dr:"<<endl<<-t1.vvertex[1]->eq[0]->D_r());  
-  // // tube::RightImpedance* bcright=new tube::RightImpedance(t1,Z);
-  // // t1.setRightbc(bcright);
+  tube::RightImpedance* bcright=new tube::RightImpedance(t1,Z);
+  t1.setRightbc(bcright);
+  tasystem::TAsystem sys(gc);
+  sys.addseg(t1);
+
   // // // TRACE(0,bcright->Z);  
 
   // vd x=t1.GetRmomes();
   // vd er=t1.Error();
   // TRACE(10,"-----------------------------------------");
-  // dmat jac=dmat(t1.Jac());
+  dmat jac=sys.Jac();
   // for(us h=0;h<2;h++)
     // t1.DoIter();
   // vd dx=-solve(jac,er);
   
-  // vd errnew=t1.Error();
-  // jac=dmat(t1.Jac());
+  vd errnew=sys.Error();
+  tasystem::Solver sol(sys);
+  sol.DoIter();
   // dx+=-solve(jac,er);  
   // TRACE(10,"Previous error:"<< endl<< errold);
   // TRACE(10,"New error:"<<endl<<errnew);
   // TRACE(10,"xold:"<<endl<<x);
-  // TRACE(0,"Jac:"<<endl<<jac);
+  TRACE(10,"Jac:"<<endl<<jac);
 
 
   // TRACE(10,"xnew:"<<endl<<x+dx);

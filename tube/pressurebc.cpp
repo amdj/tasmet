@@ -18,6 +18,7 @@ namespace tube{
    }
    void LeftPressure::updateW(){
      // Change continuity equation for an open boundary
+     TRACE(1,"LeftPressure::updateW()");
      TubeVertex::updateW();
      c.Wim1=0;
      c.Wi=wRl-wL0;

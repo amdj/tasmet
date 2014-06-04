@@ -87,6 +87,8 @@ namespace tasystem{
 
 	} // 
       }	  // curseg.Left()!=NULL
+
+      
       if(curseg.Right()!=NULL){
 	// Couple Jacobian terms
 	TRACE(10,"Coupling to right segment..");

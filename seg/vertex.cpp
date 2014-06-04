@@ -15,6 +15,7 @@ namespace segment{
    
   }
   void Vertex::updateW()  {
+    TRACE(0,"Vertex::updateW()");
   }
   Vertex&  Vertex::operator=(const Vertex& v2){ // Copy assignment
     this->rho=v2.rho;

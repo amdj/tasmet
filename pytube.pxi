@@ -62,6 +62,7 @@ cdef extern from "bcvertex.h" namespace "tube":
 cdef extern from "pressurebc.h" namespace "tube":
     cdef cppclass LeftPressure(TubeVertex):
         LeftPressure(Tube,var pres)
+cdef extern from "impedancebc.h" namespace "tube":
     cdef cppclass RightImpedance(TubeVertex):        
         RightImpedance(Tube,vd Z)    
 

@@ -1,7 +1,7 @@
 #include "solver.h"
 #include "var/var.h"
 #include "pressurebc.h"
-
+#include "impedancebc.h"
 #include "seg.h"
 SPOILNAMESPACE
 int main(int argc, char *argv[])
@@ -57,11 +57,11 @@ int main(int argc, char *argv[])
   // TRACE(10,"segfirstcol:"<<sys.segfirstcol);
   TRACE(10,"size:"<<sys.segfirstcol.size());
   // TRACE(15,"Error:"<< sys.Error());
-  TRACE(15,"Error:"<< arma::norm(sys.Error(),2));
-  sol.DoIter();
-  TRACE(15,"Error:"<< arma::norm(sys.Error(),2));
-  sol.DoIter();
-  TRACE(15,"Error:"<< arma::norm(sys.Error(),2));
+  // TRACE(15,"Error:"<< arma::norm(sys.Error(),2));
+  // sol.DoIter();
+  // TRACE(15,"Error:"<< arma::norm(sys.Error(),2));
+  // sol.DoIter();
+  // TRACE(15,"Error:"<< arma::norm(sys.Error(),2));
 
   return 0;
 }
