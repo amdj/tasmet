@@ -78,7 +78,7 @@ int main(int argc,char* argv[]) {
   // dmat fjac=t1.vvertex[0]->Jac();
   // dmat ljac=t1.vvertex[2]->Jac();
 
-  TRACE(20,"c.Wddt:"<< ((tube::TubeVertex*) t1.vvertex[1].get())->c.Wddt);
+  TRACE(20,"vSf:"<< ((tube::TubeVertex*) t1.vvertex[1].get())->vSf);
   // for(us h=0;h<2;h++)
     // t1.DoIter();
   // vd dx=-solve(jac,er);
