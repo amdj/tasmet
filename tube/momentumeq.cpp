@@ -3,7 +3,7 @@
 #include "tube.h"
 
 #include "momscale.h"
-#define MOM_VISCOSITY
+// #define MOM_VISCOSITY
 
 namespace tube{
 

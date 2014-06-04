@@ -37,7 +37,7 @@ int main(int argc,char* argv[]) {
   d S0=S;
 
   d Mach=0.1;
-  d kappa=0.25;kappa=0;
+  d kappa=0.25;
   tasystem::Globalconf gc(Nf,f,"air",T0,p0,Mach,S0,griddx,0,kappa);
 
   variable::var U(gc);
@@ -65,7 +65,7 @@ int main(int argc,char* argv[]) {
   // TRACE(10,"Dl:"<<endl<<t1.vvertex[1]->eq[0]->D_l());
   // TRACE(10,"-Dr:"<<endl<<-t1.vvertex[1]->eq[0]->D_r());  
   tube::RightImpedance* bcright=new tube::RightImpedance(t1,Z);
-  // t1.setRightbc(bcright);
+  t1.setRightbc(bcright);
   tasystem::TAsystem sys(gc);
   sys.addseg(t1);
 
@@ -85,14 +85,14 @@ int main(int argc,char* argv[]) {
   
   vd err=sys.Error();
   tasystem::Solver sol(sys);
-  sol.DoIter();
-  // TRACE(10,"detJ:\n"<<arma::det(jac));
+  // sol.DoIter();
+  TRACE(10,"detJ:\n"<<arma::det(jac));
   
   // vd dx=-arma::solve(jac,err);  
   // TRACE(10,"Previous error:"<< endl<< err);
   // TRACE(10,"New error:"<<endl<<errnew);
   // TRACE(10,"xold:"<<endl<<x);
-  // TRACE(5,"Jac:"<<endl<<jac);
+  TRACE(5,"Jac:"<<endl<<jac);
   // TRACE(5,"First Jac:"<<endl<<fjac);
   // TRACE(5,"Last Jac:"<<endl<<ljac);
 
