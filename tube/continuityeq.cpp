@@ -37,7 +37,6 @@ namespace tube{
     }
 
 #ifdef CONT_VISCOSITY
-    const d& vVf=vertex.vVf;
     const d& vSf=vertex.vSf;
     if(i>0 && i<Ncells-1){
       error+=-D_r()*(right->rho() -vertex.rho())*vSf;
@@ -111,7 +110,6 @@ namespace tube{
 
     // Artificial viscosity terms
 #ifdef CONT_VISCOSITY    
-    const d& vVf=vertex.vVf;
     const d& vSf=vertex.vSf;
     if(i>0 && i<Ncells-1){
       drhoip1+=-D_r()*vSf;
@@ -131,17 +129,15 @@ namespace tube{
       drhoim1+=Wim1*fDFT*diagtmat(left->U)*iDFT;
 
     // Artificial viscosity terms
-#ifdef CONT_VISCOSITY
-    const d& vVf=vertex.vVf;
+    #ifdef CONT_VISCOSITY
     const d& vSf=vertex.vSf;
-
     if(i>0 && i<Ncells-1){
       drhoim1+=-D_l()*vSf;
     }
     else if(i==Ncells-1){		// Last vertex
       drhoim1+=(D_l()+D_r())*vSf;
     }
-#endif
+    #endif
 
     drhoim1.row(0)*=CONT_SCALE0;
     return CONT_SCALE*drhoim1;
@@ -149,17 +145,14 @@ namespace tube{
   dmat Continuity::drhoim2(){
     dmat drhoim2=zero;
     if(i==Ncells-1 && right==NULL){
-      const d& vVf=vertex.vVf;
       const d& vSf=vertex.vSf;
       drhoim2+=-D_l()*vSf;
     }
     return drhoim2;
   }
   dmat Continuity::drhoip2(){
-
     dmat drhoip2=zero;
     if(i==0 && left==NULL){
-      const d& vVf=vertex.vVf;
       const d& vSf=vertex.vSf;
       drhoip2+=-D_r()*vSf;
     }
