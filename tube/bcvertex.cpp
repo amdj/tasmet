@@ -39,8 +39,8 @@ namespace tube{
 
      // Change momentum equation for open boundary, and prescribed pressure
      m.Wuim1=0;
-     m.Wui=m.wRl-m.wL0;
-     m.Wuip1=m.wRr-m.wL1;
+     m.Wui=m.wRl/m.SfR-m.wL0/m.SfL;
+     m.Wuip1=m.wRr/m.SfR-m.wL1/m.SfL;
 
      m.Wpi=m.wRl*m.SfR+m.SfL-m.SfR;
      m.Wpip1=m.SfR*m.wRr;
