@@ -41,9 +41,9 @@ int main() {
   TRACE(10,"Usq::"<<(U*U)());
 
   TRACE(10,gc.DDTfd);
-  // tube::Geom geom1(gp,L,S,phi,rh,"inviscid");
-  // tube::Tube t1(gc,geom1);
-
+  tube::Geom geom1(gp,L,S,phi,rh,"inviscid");
+  tube::Tube t1(gc,geom1);
+  TRACE(10,"vSf:"<<((tube::TubeVertex*) t1.vvertex[1].get())->c.vSf);
   // variable::var presLeft(t1.gc);
   // if (Nf>0)
   //   presLeft.set(1.0,1);	// One oscillation
