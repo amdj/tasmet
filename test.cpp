@@ -75,10 +75,10 @@ int main(int argc,char* argv[]) {
   // vd er=t1.Error();
   // TRACE(10,"-----------------------------------------");
   dmat jac=sys.Jac();
-  dmat fjac=t1.vvertex[0]->Jac();
-  dmat ljac=t1.vvertex[2]->Jac();
+  // dmat fjac=t1.vvertex[0]->Jac();
+  // dmat ljac=t1.vvertex[2]->Jac();
 
-  // TRACE(20,"wRl:"<< ((tube::TubeVertex*) t1.vvertex[1].get())->wRl);
+  TRACE(20,"c.Wddt:"<< ((tube::TubeVertex*) t1.vvertex[1].get())->c.Wddt);
   // for(us h=0;h<2;h++)
     // t1.DoIter();
   // vd dx=-solve(jac,er);
