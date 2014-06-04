@@ -156,12 +156,14 @@ namespace tube{
     return drhoim2;
   }
   dmat Continuity::drhoip2(){
+
     dmat drhoip2=zero;
     if(i==0 && left==NULL){
       const d& vVf=vertex.vVf;
       const d& vSf=vertex.vSf;
       drhoip2+=-D_r()*vSf;
     }
+    // TRACE(10,"D_r():\n"<<D_r());
     return drhoip2;
 
   }

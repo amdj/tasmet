@@ -23,50 +23,29 @@ namespace tube{
     TRACE(1,"TubeVertex::updateW()");
     Vertex::updateW();
     const us& Ncells=tube.Ncells;
-    const Geom& geom=tube.geom;
-    
-    const vd& vx=tube.geom.vx;
-    const d& vxi=vx(i);
-    d vxip1=0;
-    d vxim1=0;
-    // Initialize distances to next node to zero
-    dxm=dxp=0;
-
-    // Left and right cross-sectional area
-    SfL=geom.Sf(i);
-    SfR=geom.Sf(i+1);
-    // Geometric parameters
-    vSf=geom.vSf(i);
-    vSs=geom.vSs(i);
-    vVf=geom.vVf(i);
-    vVs=geom.vVs(i);
-
-    xR=tube.geom.x(i+1);		// Position of right cell wall
-    xL=tube.geom.x(i);			// Position of left cell wall
-
-    int UsignL=1;    
-    int UsignR=1;    
+    const Geom& geom=seg.geom;
 
     // Initialize weight functions to zero
     wLl=0; wLr=0; wRr=0; wRl=0;
     wL0=wL1=wRNm1=wRNm2=0;	// Put these weight functions to zero
 
-    // ****************************** Initalization of vxipm and dxpm
     if(i>0){
-      vxim1=vx(i-1);
-      dxm=vxi-vxim1;
       // Left weight functions
       wLl=(vxi-xL)/(vxi-vxim1);
       wLr=(xL-vxim1)/(vxi-vxim1);
+      // TRACE(20,"wLl:"<<wLl);
+      // TRACE(20,"wLr:"<<wLr);      
     }
+    // ****************************** Initalization of vxipm and dxpm
     if(i<Ncells-1){
-      vxip1=vx(i+1);
-      dxp=vxip1-vxi;
       // Right weight functions
       wRr=(xR-vxi)/(vxip1-vxi);
       wRl=(vxip1-xR)/(vxip1-vxi);
+      // TRACE(20,"wRl:"<<wRl);
+      // TRACE(20,"wRr:"<<wRr);      
     }
-    // ****************************** End initialization
+
+
     // ****************************** Initialization special weight functions
     if(i==Ncells-1){
       wRNm1=(vxim1-xR)/(vxim1-vxi);
@@ -78,7 +57,11 @@ namespace tube{
     }
     // ****************************** End Special weight functions
 
+    int UsignL=1;    
+    int UsignR=1;    
+
     if(i==0 && left!=NULL){
+      TRACE(10,"Jacobian evaluation requires coupling of segments...");
       if(left->seg.gettype().compare("Tube")==0){ // Its a Tube
 	if(*left->seg.right==seg){
 	  TRACE(5,"Connected current head to left segment's tail");
@@ -107,6 +90,7 @@ namespace tube{
     } // i==0 and left!=NULL
     
     else if((i==Ncells-1) && right!=NULL) {
+      TRACE(10,"Jacobian evaluation requires coupling of segments...");
       if(right->seg.gettype().compare("Tube")==0){ // Its a Tube
 	if(*right->seg.left==seg){
 	  TRACE(5,"Connected current tail to right segment's head");

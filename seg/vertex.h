@@ -32,10 +32,11 @@ class VertexW
     virtual ~Vertex();
     const Seg& seg;
     const us i;			// The node number of this vertex
+
     const tasystem::Globalconf& gc;
     const us& Ns;			// Number of sample points reference
 
-    virtual void updateW();	       // Update weight functions of equations
+
     virtual vd Error();				  // Compute error for this gridpoint
     virtual dmat Jac();	       // Fill complete Jacobian for this node
     virtual void SetRes(vd res);			  // Set result vector to res
@@ -51,7 +52,22 @@ class VertexW
     variable::var p;		// Pressure
     variable::var Ts;		// Solid temperature
     variable::var* vars[Neq];
-  
+
+    virtual void updateW();	       // Update weight functions of equations
+    d vSf;			// Vertex fluid cross-sectional area
+    d vSs;			// Vertex solid cross-sectional area
+    d vVf;			// Vertex cell fluid volume
+    d vVs;			// Vertex cell solid volume
+
+    d SfR;			// Cross-sectional area of right face
+    d SfL;			// Cross-sectional area of left  face
+
+    d xR;			// Position of right cell wall
+    d xL;			// Position of left cell wall
+    d dxp;			// Distance to nearby right node
+    d dxm;			// Distance to nearby left node
+
+    d vxim1,vxi,vxip1;    		// Vertex position of left and right vertex
   };
 } // namespace segment
 
