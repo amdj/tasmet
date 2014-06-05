@@ -182,6 +182,7 @@ namespace tube{
     else {
       dmat Dr(Ns,Ns,fillwith::zeros);
       // Wesselings book: rj+0.5=speed of sound
+      // TRACE(25,"dxp:"<<vertex.dxp);
       Dr.diag()=gc.c0*gc.kappa*nu()*gc.dx/vertex.dxp;
       return Dr;
     }
@@ -193,6 +194,7 @@ namespace tube{
     else{
       dmat Dl(Ns,Ns,fillwith::zeros);
       // Wesselings book: rj+0.5=speed of sound
+      // TRACE(25,"dxm:"<<vertex.dxm);
       Dl.diag()=gc.c0*gc.kappa*nu()*gc.dx/vertex.dxm;
       return Dl;
     }

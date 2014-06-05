@@ -15,7 +15,7 @@ namespace segment{
    
   }
   void Vertex::updateW()  {
-    TRACE(0,"Vertex::updateW()");
+    TRACE(1,"Vertex::updateW()");
     const us& Ncells=seg.Ncells;
     const Geom& geom=seg.geom;
     

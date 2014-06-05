@@ -13,7 +13,7 @@ namespace tube{
     ~Momentum();
     d Wuim1,Wui,Wuip1,Wpim1,Wpi,Wpip1; // Weight functions
     d Wddt;			       // Time-derivative weight function
-    vd Error();			// Error in momentum equation at node i
+    virtual vd Error();			// Error in momentum equation at node i
     dmat drhoi();
     dmat dUi();
     dmat dpi();

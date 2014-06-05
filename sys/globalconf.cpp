@@ -40,6 +40,7 @@ namespace tasystem{
     TRACE(-1,"fDFT:" << fDFT);
   }
   void Globalconf::setfreq(d freq)  {
+    this->freq=freq;
     oldomg=omg;
     omg=2.0*number_pi*freq;
     updateiDFT();
