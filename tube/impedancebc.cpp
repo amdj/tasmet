@@ -7,7 +7,7 @@
 
 namespace tube{
   RightImpedance::RightImpedance(const Tube& t,vd Z1):TubeBcVertex(t,t.getNcells()-1),Z(Z1),mright(t,*this,Z){
-    TRACE(5,"RightImpedance constructor");
+    TRACE(2,"RightImpedance constructor");
     // Change continuity equation for open boundary
   }
   void RightImpedance::updateW(){
@@ -23,7 +23,7 @@ namespace tube{
     // TRACE(20,"wRNm2:"<<wRNm2);
 
     // Change momentum eq for open boundary
-    mright.Wddt=vVf/vSf;
+    mright.Wddt=vVf/vSf;	// VERY IMPORTANT: update this!! (Is still zero)
     mright.Wuim1=-wLl/SfL+wRNm2/SfR;
     mright.Wui	=-wLr/SfL+wRNm1/SfR;
     mright.Wuip1=0;
@@ -93,7 +93,7 @@ namespace tube{
     return error;
   }
   dmat RightImpedanceMomentumEq::dpi(){
-    TRACE(10,"RightImpedanceMomentumEq::dpi()");
+    TRACE(1,"RightImpedanceMomentumEq::dpi()");
     dmat dpi=Momentum::dpi();
     // dpi.row(0).zeros();
 
@@ -102,7 +102,7 @@ namespace tube{
     return dpi;
   }
   dmat RightImpedanceMomentumEq::dUi(){
-    TRACE(10,"RightImpedanceMomentumEq::dUi()");
+    TRACE(1,"RightImpedanceMomentumEq::dUi()");
     dmat dUi=Momentum::dUi();
     dmat adddUi=MOM_SCALE*vertex.wRNm1*vertex.SfR*diagmat(Z);
     adddUi.row(0)*=MOM_SCALE0;
@@ -119,7 +119,7 @@ namespace tube{
   }
 
   dmat RightImpedanceMomentumEq::dUim1(){
-    TRACE(10,"RightImpedanceMomentumEq::dUim1()");
+    TRACE(1,"RightImpedanceMomentumEq::dUim1()");
     dmat dUim1=Momentum::dUim1();    
     dmat adddUim1=MOM_SCALE*vertex.wRNm2*vertex.SfR*diagmat(Z);
     adddUim1.row(0)*=MOM_SCALE0;
@@ -130,21 +130,21 @@ namespace tube{
   }
 
   dmat RightImpedanceMomentumEq::dpim1(){
-    TRACE(10,"RightImpedanceMomentumEq::dpim1()");
+    TRACE(1,"RightImpedanceMomentumEq::dpim1()");
     dmat dpim1=Momentum::dpim1();
     // For velocity and pressure boundary condition
     // dpim1.row(0).zeros();
     return dpim1;
   }
   dmat RightImpedanceMomentumEq::drhoi(){
-    TRACE(10,"RightImpedanceMomentumEq::drhoi()");
+    TRACE(1,"RightImpedanceMomentumEq::drhoi()");
     dmat drhoi=Momentum::drhoi();
     // For velocity and pressure boundary condition
     // drhoi.row(0).zeros();
     return drhoi;
   }
   dmat RightImpedanceMomentumEq::drhoim1(){
-    TRACE(10,"RightImpedanceMomentumEq::drhoim1()");
+    TRACE(1,"RightImpedanceMomentumEq::drhoim1()");
     dmat drhoim1=Momentum::drhoim1();
     // For velocity and pressure boundary condition
     // drhoim1.row(0).zeros();
