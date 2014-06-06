@@ -13,25 +13,19 @@
 #define _SYSTEM_H_
 
 
-
-
-
 #include <vtypes.h>
-#include "tube/tube.h"
+#include "tube.h"
 #include "globalconf.h"
-
-
+#define MAXSEGS 30
 
 namespace tasystem{
   using segment::Seg;
-  using arma::sp_mat;
-  using math_common::esdmat;
   
   class TAsystem{
   public:
     TAsystem(Globalconf& g); // Initialize a
-						 // System with a
-						 // vector of segments
+    // System with a
+    // vector of segments
     vd Error();			// Total error vector
     vd GetRes();			// Extract result vector
     void SetRes(vd resvec);	// Set result vector
@@ -40,6 +34,8 @@ namespace tasystem{
 
     dmat Jac();		// Return Jacobian matrix    
     Seg& operator[](us i);    
+    arma::uvec segfirstcol=zeros<arma::uvec>(MAXSEGS);
+    arma::uvec segndofs=zeros<arma::uvec>(MAXSEGS);
 
   private:
     // A vector of boundary conditions is required
@@ -48,8 +44,8 @@ namespace tasystem{
     const Globalconf& gc;
     const us& Ns;
 
-    vector<us> startdof;	// Vector containing the starting degree of freedom for segment number # 
-    vector<us> enddof;		// Vector containing the last dof belonging to segment number #
+    // vector<us> startdof;	// Vector containing the starting degree of freedom for segment number # 
+    // vector<us> enddof;		// Vector containing the last dof belonging to segment number #
 
     us Nsegs;			// Number of segments
     us Ndofs;

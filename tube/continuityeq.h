@@ -4,14 +4,12 @@
 namespace tube{
 
 
-  class Continuity:public Equation{	// Tube continuity equation 
+  class Continuity:public TubeEquation{	// Tube continuity equation 
   public:
+
     Continuity(const Tube& tube,TubeVertex& gp);
     ~Continuity();
-
-    d Wim1,Wi,Wip1;		// Weight functions for relative
-				// contribution to the equations.
-
+  
     vd Error();			// Error in this equation at this node
     dmat drhoip1(); // Derivative of continuity equation to density at node
 		    // i + 1
@@ -27,6 +25,10 @@ namespace tube{
 			// at node i - 1
     dmat drhoip2();
     dmat drhoim2();
+
+    d Wim1,Wi,Wip1;		// Weight functions for relative
+				// contribution to the equations.
+    d Wddt;  			// Weight function time-derivative term
   };				// Continuity class
 }				// Namespace tube
 

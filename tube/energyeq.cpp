@@ -1,12 +1,12 @@
 #include "energyeq.h"
-#include "vertex.h"
+#include "tubevertex.h"
 #include "tube.h"
 
 #define ENERGY_SCALE  (gc.p0) //(1/gc.omg)
 #define ENERGY_SCALE0 (1.0)//(1.0/pow(gc.M,2)) //(1/gc.omg)
 
 namespace tube{
-  Isentropic::Isentropic(const Tube& tube,TubeVertex& gp):Equation(tube,gp){
+  Isentropic::Isentropic(const Tube& tube,TubeVertex& gp):TubeEquation(tube,gp){
   }
   Isentropic::~Isentropic(){}
   vd Isentropic::Error(){
@@ -39,54 +39,18 @@ namespace tube{
       diagmat(pow(vertex.rho.tdata()/rho0,(gamma-1.0)))*iDFT;
     return drhoi;
   }
-  Energy::Energy(const Tube& tube,TubeVertex& gp):Equation(tube,gp){
+  Energy::Energy(const Tube& tube,TubeVertex& gp):TubeEquation(tube,gp){
     // Standard boundary condition is adiabatic-no-slip-wall
     if(i==0){			// Leftmost vertex
       TRACE(-1,"Leftmost vertex");
 
-      Wgim1=0;
-      Wgi=wRl;
-      Wgip1=wRr;
-
-      Wjim1=0;
-      Wji=wL0-wRl;
-      Wjip1=wL1-wRr;
-      
-      Wc1=0;
-      Wc2=0;
-      Wc3=SfR/dxp;
-      Wc4=-SfR/dxp;
       
     } else if(i==Ncells-1){	// Rightmost vertex
       TRACE(-1,"Rightmost vertex");
 
-      Wgim1=-wLl;
-      Wgi=-wLr;
-      Wgip1=0;
-
-      Wjim1=wLl-wRNm2;
-      Wji=wLr-wRNm1;
-      Wjip1=0;
-
-      Wc1=-SfL/dxm;
-      Wc2=SfL/dxm;
-      Wc3=0;
-      Wc4=0;
 
     } else{			// Normal interior vertex
 
-      Wgim1=-wLl;
-      Wgi=wRl-wLr;
-      Wgip1=wRr;
-
-      Wjim1=wLl;
-      Wji=wLr-wRl;
-      Wjip1=-wRr;
-      
-      Wc1=-SfL/dxm;
-      Wc2=SfL/dxm;
-      Wc3=SfR/dxp;
-      Wc4=-SfR/dxp;
     }
     TRACE(0,"Energy constructor done");
   }
@@ -98,7 +62,7 @@ namespace tube{
     vd Uti=vertex.U.tdata();
     vd pti=vertex.p.tdata()+getp0t();
     vd Tti=vertex.T.tdata();
-    error+=vVf*DDTfd*vertex.p()/(gamma-1.0);
+    error+=Wddt*DDTfd*vertex.p()/(gamma-1.0);
     error+=Wgi*gamma*fDFT*(pti%Uti)/(gamma-1.0);
     error+=Wji*fDFT*(pti%Uti);
     error+=fDFT*(Wc2*kappaL()%Tti+Wc3*kappaR()%Tti);
@@ -134,7 +98,7 @@ namespace tube{
     d gamma=tube.gas.gamma(T0);
     dmat dpi=zero;
     dmat diagUt=diagtmat(vertex.U);
-    dpi+=(vVf/(gamma-1.0))*DDTfd;
+    dpi+=(Wddt/(gamma-1.0))*DDTfd;
     dpi+=Wgi*(gamma/(gamma-1.0))*fDFT*diagUt*iDFT;
     dpi+=Wji*fDFT*diagUt*iDFT;    
     dpi.row(0)*=ENERGY_SCALE0;
@@ -243,12 +207,12 @@ namespace tube{
     if(i==0){
       vd Ttip1=right->T.tdata();
       vd kappaitp1=tube.gas.kappa(Ttip1);
-      kappaL=wL1*kappaitp1+wL0*kappait;
+      kappaL=vertex.wL1*kappaitp1+vertex.wL0*kappait;
     }
     else{
       vd Ttim1=left->T.tdata();
       vd kappaitm1=tube.gas.kappa(Ttim1);
-      kappaL=wLr*kappait+wLl*kappaitm1;
+      kappaL=vertex.wLr*kappait+vertex.wLl*kappaitm1;
       }
     // kappaL.zeros();		// WARNING
     return kappaL;
@@ -263,12 +227,12 @@ namespace tube{
     if(i==Ncells-1){
       vd Ttim1=left->T.tdata();
       vd kappaitm1=tube.gas.kappa(Ttim1);
-      kappaR=wRNm2*kappaitm1+wRNm1*kappait;
+      kappaR=vertex.wRNm2*kappaitm1+vertex.wRNm1*kappait;
     }
     else{
       vd Ttip1=right->T.tdata();
       vd kappaitp1=tube.gas.kappa(Ttip1);
-      kappaR=wRl*kappait+wRr*kappaitp1;
+      kappaR=vertex.wRl*kappait+vertex.wRr*kappaitp1;
     }
     // kappaR.zeros();		// WARNING!!
     return kappaR;

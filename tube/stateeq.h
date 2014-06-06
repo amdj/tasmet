@@ -5,7 +5,7 @@
 
 namespace tube{
   SPOILNAMESPACE
-  class State:public Equation
+  class State:public TubeEquation
   {
   public:
     State(const Tube& tube,TubeVertex& gp);

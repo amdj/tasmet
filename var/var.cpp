@@ -75,12 +75,18 @@ namespace variable {
     return var(*(this->gc),scalar*thisadata);
   }
   // Get methods (which require implementation)
+  const d& var::operator()(us i) const {//Extract result at specific frequency
+      TRACE(0,"var::operator(us i)");
+      assert(i<Ns);
+      TRACE(-1,"amplitudedata: "<<amplitudedata);
+      return amplitudedata(i);
+  }
   d& var::operator()(us i) {//Extract result at specific frequency
       TRACE(0,"var::operator(us i)");
       assert(i<Ns);
       TRACE(-1,"amplitudedata: "<<amplitudedata);
       return amplitudedata(i);
-    }
+    }  
   vc var::getcRes() const
   {
     TRACE(0,"var::getcRes()");

@@ -1,9 +1,9 @@
 #include "vertex.h"
-#include "tube.h"
-#include "../var/var.h"
+#include "var.h"
+#include "seg.h"
 namespace segment{
 
-  Vertex::Vertex(us i,const tasystem::Globalconf& gc1):i(i),gc(gc1),Ns(gc.Ns),rho(gc),U(gc),T(gc),p(gc),Ts(gc){
+  Vertex::Vertex(const Seg& seg,us i):seg(seg),i(i),gc(seg.gc),Ns(gc.Ns),rho(gc),U(gc),T(gc),p(gc),Ts(gc){
     TRACE(0,"Vertex constructor");
     left=NULL;
     right=NULL;
@@ -14,12 +14,41 @@ namespace segment{
     vars[4]=&Ts;
    
   }
-  Vertex::Vertex(const Vertex& v2):Vertex(v2.i,v2.gc){
-    this->rho=v2.rho;
-    this->U=v2.U;
-    this->T=v2.T;
-    this->p=v2.p;
-    this->Ts=v2.Ts;
+  void Vertex::updateW()  {
+    TRACE(1,"Vertex::updateW()");
+    const us& Ncells=seg.Ncells;
+    const Geom& geom=seg.geom;
+    
+    const vd& vx=seg.geom.vx;
+    vxi=vx(i);
+    vxip1=0;
+    vxim1=0;
+    // Initialize distances to next node to zero
+    dxm=dxp=0;
+    if(i>0){
+      vxim1=vx(i-1);
+      dxm=vxi-vxim1;
+    }
+    // ****************************** Initalization of vxipm and dxpm
+    if(i<Ncells-1){
+      vxip1=vx(i+1);
+      dxp=vxip1-vxi;
+    }
+      
+    xR=geom.x(i+1);		// Position of right cell wall
+    xL=geom.x(i);			// Position of left cell wall
+    // Left and right cross-sectional area
+    SfL=geom.Sf(i);
+    SfR=geom.Sf(i+1);
+    // Geometric parameters
+    vSf=geom.vSf(i);
+    vSs=geom.vSs(i);
+    vVf=geom.vVf(i);
+    vVs=geom.vVs(i);
+
+
+    // ****************************** End initialization
+    
   }
   Vertex&  Vertex::operator=(const Vertex& v2){ // Copy assignment
     this->rho=v2.rho;
@@ -35,7 +64,7 @@ namespace segment{
   {
     TRACE(0,"Vertex::Error()");
     // TRACE(-1,"Check for position i>0 && i<gp-1...");
-    // assert(i>0 && i<tube.geom.gp-1);
+    // assert(i>0 && i<seg.geom.gp-1);
     const us Ns=gc.Ns;
     vd error(Neq*Ns);
     for(us k=0;k<Neq;k++)
@@ -73,7 +102,6 @@ namespace segment{
       // cout << lastrow << " ";
       us lastcol=Jac.n_cols-1;
       // cout << lastcol << " ";
-	
       dmat eqJac=eq[k]->Jac();
       // if(k==2)
 	// eqJac*=1e6;		// Rescaling of momentum equation
@@ -89,46 +117,3 @@ namespace segment{
 
 } // namespace segment
 
-namespace tube{
-  
-  TubeVertex::TubeVertex(const Tube& tube1,us i):Vertex(i,tube1.gc),tube(tube1),c(tube,*this),m(tube,*this),e(tube,*this),s(tube,*this),se(tube,*this),is(tube,*this)
-  {
-    TRACE(0,"TubeVertex contructor");
-
-    eq[0]=&this->c;			// Continuity is first
-    eq[1]=&this->m;
-    eq[2]=&is; 			// Changed to isentropic
-    // eq[2]=&e; 			// Full energy
-    eq[3]=&s;
-    eq[4]=&se;
-
-    TRACE(0,"TubeVertex constructor done");
-  }
-  TubeVertex::TubeVertex(const TubeVertex& told):TubeVertex(told.tube,told.i){
-    TRACE(0,"TubeVertex::operator(),tgp");
-    TRACE(-1,"Copied TubeVertex i:"<<i);
-    
-  }
-  // void TubeVertex::operator=(const TubeVertex& rhs){
-  //   TRACE(5,"Error: no copies allowed of TubeVertex");
-  //   exit(1);
-  // }
-  vd  TubeVertex::csource() const {
-    TRACE(0,"TubeVertex::csource()");
-    return zeros(Ns);}
-  vd  TubeVertex::msource() const {
-    TRACE(0,"TubeVertex::msource()");
-    return zeros(Ns);}
-  vd  TubeVertex::esource() const {
-    TRACE(0,"TubeVertex::esource()");
-    return zeros(Ns);}    
-    
-    TubeVertex::~TubeVertex(){
-    TRACE(-5,"TubeVertex destructor");
-  }
-
- 
-
-
-
-} // namespace tube

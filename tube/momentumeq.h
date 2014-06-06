@@ -6,13 +6,14 @@
 
 namespace tube{
   SPOILNAMESPACE
-  class Momentum:public Equation
+  class Momentum:public TubeEquation
   {
   public:
     Momentum(const Tube& tube,TubeVertex& gp);
     ~Momentum();
     d Wuim1,Wui,Wuip1,Wpim1,Wpi,Wpip1; // Weight functions
-    vd Error();			// Error in momentum equation at node i
+    d Wddt;			       // Time-derivative weight function
+    virtual vd Error();			// Error in momentum equation at node i
     dmat drhoi();
     dmat dUi();
     dmat dpi();

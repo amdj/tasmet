@@ -3,7 +3,7 @@
 
 
 namespace tube{
-  class Solidenergy:public Equation
+  class Solidenergy:public TubeEquation
   {
   public:
     Solidenergy(const Tube& tube,TubeVertex& gp);

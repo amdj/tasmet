@@ -15,16 +15,20 @@ set(CMAKE_CXX_COMPILER g++)
 #set(CMAKE_VERBOSE_MAKEFILE on)
 ##########################################
 
-set (CMAKE_CXX_FLAGS "-std=c++11 -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address  -ffunction-sections -fdata-sections")
-#set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -O2 -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address  -ffunction-sections -fdata-sections")
+# set (CMAKE_CXX_FLAGS "-std=c++11 -ggdb -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address  -ffunction-sections -fdata-sections")
+set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -O2 -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address  -ffunction-sections -fdata-sections")
 
 #configure_file (logger.h.in  "${CMAKE_CURRENT_SOURCE_DIR}/logger.h")
 
 AUX_SOURCE_DIRECTORY(tube tubesources)
 AUX_SOURCE_DIRECTORY(var varsources)
-
-set (nonlinear_SRC globalconf.cpp common/rottfuncs.cpp ${tubesources}
-${varsources} system.cpp solver.cpp)
+AUX_SOURCE_DIRECTORY(seg segsources)
+AUX_SOURCE_DIRECTORy(sys syssources)
+AUX_SOURCE_DIRECTORy(sol solsources)
+AUX_SOURCE_DIRECTORy(common commonsources)
+set (nonlinear_SRC ${tubesources} ${varsources} ${segsources}
+${syssources} ${solsources}
+${varsources} ${commonsources})
 
 #  tube/continuityeq.cpp tube/drag.cpp
 #    tube/energyeq.cpp tube/geom.cpp tube/momentumeq.cpp
@@ -36,32 +40,38 @@ include_directories(
   /usr/include/eigen3
   /usr/local/include
   /usr/local/include/eigen3
+  sol
+  sys
+  seg
+  var
+  tube
+  common
   )
 
 # math_common should be linked to armadillo
 set(PYTHON_LIBRARIES libpython2.7.so)
 set(PYTHON_LIBRARY libpython2.7.so)
 
-add_library(tubelib ${nonlinear_SRC})
+add_library(nonlin ${nonlinear_SRC})
 
 add_executable(test test.cpp)
-target_link_libraries(test tubelib math_common armadillo)
-add_executable(tubemodel tubemodel.cpp)
-target_link_libraries(tubemodel tubelib math_common armadillo)
+target_link_libraries(test nonlin math_common armadillo)
+add_executable(multitube multitube.cpp)
+target_link_libraries(multitube nonlin math_common armadillo)
 
 # If the pyx file is a C++ file, we should specify that here.
 set_source_files_properties(
 #  ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/src/rect.pyx
 #  ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/src/pi_calculator.pyx
-  tube.pyx
+  pytube.pyx
   PROPERTIES CYTHON_IS_CXX TRUE )
 
 set(CYTHON_CXX_EXTENSION cpp)
 set(CYTHON_FLAGS -I/usr/local/include --timestamps)
-cython_add_module(tube tube.pyx)
-set_target_properties(tube PROPERTIES COMPILE_FLAGS "-Wno-cpp -Wno-strict-aliasing")
+cython_add_module(pytube pytube.pyx)
+set_target_properties(pytube PROPERTIES COMPILE_FLAGS "-Wno-cpp -Wno-strict-aliasing")
 
-target_link_libraries(tube tubelib math_common armadillo)
+target_link_libraries(pytube nonlin math_common armadillo)
 
 target_link_libraries(test math_common armadillo)
 

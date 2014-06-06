@@ -1,8 +1,8 @@
-include "tube.pxi"
+include "pytube.pxi"
 
 
 
-cdef class tube:
+cdef class pytube:
     cdef Geom* geom1
     cdef Globalconf* gc
     cdef TAsystem* sys
@@ -45,9 +45,8 @@ cdef class tube:
         self.lp=new LeftPressure(self.tube1[0],self.pL[0])
         del self.pL
         self.tube1.setLeftbc(self.lp)     #tube1 owns the bc vertex, so do not delete the memory!
-
-        print "Tube __cinit__ done"
     cpdef setRightImpedance(self,n.ndarray[n.float64_t,ndim=1] Z):
+        print "setRightImpedance called."
         cdef vd Zvec=dndtovec(Z)
         self.ri=new RightImpedance(self.tube1[0],Zvec)
         self.tube1.setRightbc(self.ri)

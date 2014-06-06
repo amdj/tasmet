@@ -1,91 +1,40 @@
 #include "tubeequation.h"
 #include "tube.h"
-#include "vertex.h"
-
+#include "tubevertex.h"
 
 namespace tube{
 
-  Equation::Equation(const Tube& tube,TubeVertex& tgp):i(tgp.i),tube(tube),vertex(tgp),left(vertex.left),right(vertex.right),gc(tube.gc),fDFT(gc.fDFT),iDFT(gc.iDFT),DDTfd(gc.DDTfd),Ns(gc.Ns),geom(tube.geom),Ncells(geom.Ncells)
+  TubeEquation::TubeEquation(const Tube& tube,TubeVertex& tgp):Equation(tube.gc),i(tgp.i),tube(tube),vertex(tgp),left(vertex.left),right(vertex.right),fDFT(gc.fDFT),iDFT(gc.iDFT),DDTfd(gc.DDTfd),geom(tube.geom),Ncells(geom.Ncells)
   {
-    TRACE(0,"Equation constructor");
+    TRACE(0,"TubeEquation constructor");
     // Geometrical parameters
 
-    TRACE(-1,"i:"<< i);
-    // Left and right cross-sectional area
-    SfL=geom.Sf(i);
-    SfR=geom.Sf(i+1);
-    // Geometric parameters
-    vSf=geom.vSf(i);
-    vSs=geom.vSs(i);
-    vVf=geom.vVf(i);
-    vVs=geom.vVs(i);
 
-    // Initialize weight functions to zero
-    wLl=0; wLr=0; wRr=0; wRl=0;
-    
-    xR=tube.geom.x(i+1);		// Position of right cell wall
-    xL=tube.geom.x(i);			// Position of left cell wall
-    
-    const vd& vx=tube.geom.vx;
-    const d& vxi=vx(i);
-    d vxip1=0;
-    d vxim1=0;
-    // Initialize distances to next node to zero
-    dxm=dxp=0;
-
-    if(i>0){
-      vxim1=vx(i-1);
-      dxm=vxi-vxim1;
-      // Left weight functions
-      wLl=(vxi-xL)/(vxi-vxim1);
-      wLr=(xL-vxim1)/(vxi-vxim1);
-    }
-    if(i<Ncells-1){
-      vxip1=vx(i+1);
-      dxp=vxip1-vxi;
-      // Right weight functions
-      wRr=(xR-vxi)/(vxip1-vxi);
-      wRl=(vxip1-xR)/(vxip1-vxi);
-    }
-    // special weight function part
-    wL0=wL1=wRNm1=wRNm2=0;	// Put these weight functions to zero
-    if(i==0){
-      wL0=vxip1/(vxip1-vxi);
-      wL1=-vxi/(vxip1-vxi);
-    }
-    if(i==Ncells-1){
-      wRNm1=(vxim1-xR)/(vxim1-vxi);
-      wRNm2=(xR-vxi)/(vxim1-vxi);
-    }
-    // end special weight function part
-    // TRACE(-1,"vertex i:"<<i);
-    // TRACE(-1,"vertex density:"<<vertex.rho());
-    // TRACE(0,"Ns:"<<tube.gc.Ns);
     zero=zeros<dmat>(tube.gc.Ns,tube.gc.Ns);
   }
-  Equation::Equation(const Equation& other):Equation(other.tube,other.vertex){
-    TRACE(0,"Equation copy constructor");
+  TubeEquation::TubeEquation(const TubeEquation& other):TubeEquation(other.tube,other.vertex){
+    TRACE(0,"TubeEquation copy constructor");
   }
-  dmat Equation::diagtmat(variable::var& v){
+  dmat TubeEquation::diagtmat(const variable::var& v){
     dmat result(Ns,Ns,fillwith::zeros);
     result.diag()=v.tdata();
     return result;
   }
-  vd Equation::getp0(){
-    TRACE(0,"Equation::getp0()");
+  vd TubeEquation::getp0(){
+    TRACE(0,"TubeEquation::getp0()");
     vd p0(Ns,fillwith::zeros);
     p0(0)=tube.gc.p0;
     return p0;
   }
-  vd Equation::getp0t(){
-    TRACE(0,"Equation::getp0t()");
+  vd TubeEquation::getp0t(){
+    TRACE(0,"TubeEquation::getp0t()");
     vd p0(Ns,fillwith::ones);
     p0*=tube.gc.p0;
     return p0;
   }
-  dmat  Equation::Jac(){
+  dmat  TubeEquation::Jac(){
     // Compute the Jacobian for the subsystem around the current gridpoint
-    TRACE(0,"Equation::Jac()");
+    TRACE(0,"TubeEquation::Jac()");
     const tasystem::Globalconf& gc=tube.gc; // Reference to variable
 					    // operations
     const us& Ns=gc.Ns;		// Number of samples
@@ -145,110 +94,112 @@ namespace tube{
     return result;
   }
 
-  dmat Equation::drhoim2(){
-    TRACE(0,"Equation::drhoim2()");
+  dmat TubeEquation::drhoim2(){
+    TRACE(0,"TubeEquation::drhoim2()");
     return zero;}
-  dmat Equation::dUim2(){
-    TRACE(0,"Equation::dUim2()");
+  dmat TubeEquation::dUim2(){
+    TRACE(0,"TubeEquation::dUim2()");
     return zero;}
-  dmat Equation::dTim2(){
-    TRACE(0,"Equation::dTim2()");
+  dmat TubeEquation::dTim2(){
+    TRACE(0,"TubeEquation::dTim2()");
     return zero;}
-  dmat Equation::dpim2(){
-    TRACE(0,"Equation::dpim2()");
+  dmat TubeEquation::dpim2(){
+    TRACE(0,"TubeEquation::dpim2()");
     return zero;}
-  dmat Equation::dTsim2(){
-    TRACE(0,"Equation::dTsim2()");
+  dmat TubeEquation::dTsim2(){
+    TRACE(0,"TubeEquation::dTsim2()");
     return zero;}
   
   
-  dmat Equation::drhoim1(){
-    TRACE(0,"Equation::drhoim1()");
+  dmat TubeEquation::drhoim1(){
+    TRACE(0,"TubeEquation::drhoim1()");
     return zero;}
-  dmat Equation::dUim1(){
-    TRACE(0,"Equation::dUim1()");
+  dmat TubeEquation::dUim1(){
+    TRACE(0,"TubeEquation::dUim1()");
     return zero;}
-  dmat Equation::dTim1(){
-    TRACE(0,"Equation::dTim1()");
+  dmat TubeEquation::dTim1(){
+    TRACE(0,"TubeEquation::dTim1()");
     return zero;}
-  dmat Equation::dpim1(){
-    TRACE(0,"Equation::dpim1()");
+  dmat TubeEquation::dpim1(){
+    TRACE(0,"TubeEquation::dpim1()");
     return zero;}
-  dmat Equation::dTsim1(){
-    TRACE(0,"Equation::dTsim1()");
-    return zero;}
-
-  dmat Equation::drhoi(){
-    TRACE(0,"Equation::drhoi()");
-    return zero;}
-  dmat Equation::dUi(){
-    TRACE(0,"Equation::dUi()");
-    return zero;}
-  dmat Equation::dTi(){
-    TRACE(0,"Equation::dTi()");
-    return zero;}
-  dmat Equation::dpi(){
-    TRACE(0,"Equation::dpi()");
-    return zero;}
-  dmat Equation::dTsi(){
-    TRACE(0,"Equation::dTsi()");
-    return zero;}
-  dmat Equation::drhoip1(){
-    TRACE(0,"Equation::drhoip1()");
-    return zero;}
-  dmat Equation::dUip1(){
-    TRACE(0,"Equation::dUip1()");
-    return zero;}
-  dmat Equation::dTip1(){
-    TRACE(0,"Equation::dTip1()");
-    return zero;}
-  dmat Equation::dpip1(){
-    TRACE(0,"Equation::dpip1()");
-    return zero;}
-  dmat Equation::dTsip1(){
-    TRACE(0,"Equation::dTsip1()");
+  dmat TubeEquation::dTsim1(){
+    TRACE(0,"TubeEquation::dTsim1()");
     return zero;}
 
-  dmat Equation::drhoip2(){
-    TRACE(0,"Equation::drhoip2()");
+  dmat TubeEquation::drhoi(){
+    TRACE(0,"TubeEquation::drhoi()");
     return zero;}
-  dmat Equation::dUip2(){
-    TRACE(0,"Equation::dUip2()");
+  dmat TubeEquation::dUi(){
+    TRACE(0,"TubeEquation::dUi()");
     return zero;}
-  dmat Equation::dTip2(){
-    TRACE(0,"Equation::dTip2()");
+  dmat TubeEquation::dTi(){
+    TRACE(0,"TubeEquation::dTi()");
     return zero;}
-  dmat Equation::dpip2(){
-    TRACE(0,"Equation::dpip2()");
+  dmat TubeEquation::dpi(){
+    TRACE(0,"TubeEquation::dpi()");
     return zero;}
-  dmat Equation::dTsip2(){
-    TRACE(0,"Equation::dTsip2()");
+  dmat TubeEquation::dTsi(){
+    TRACE(0,"TubeEquation::dTsi()");
+    return zero;}
+  dmat TubeEquation::drhoip1(){
+    TRACE(0,"TubeEquation::drhoip1()");
+    return zero;}
+  dmat TubeEquation::dUip1(){
+    TRACE(0,"TubeEquation::dUip1()");
+    return zero;}
+  dmat TubeEquation::dTip1(){
+    TRACE(0,"TubeEquation::dTip1()");
+    return zero;}
+  dmat TubeEquation::dpip1(){
+    TRACE(0,"TubeEquation::dpip1()");
+    return zero;}
+  dmat TubeEquation::dTsip1(){
+    TRACE(0,"TubeEquation::dTsip1()");
+    return zero;}
+
+  dmat TubeEquation::drhoip2(){
+    TRACE(0,"TubeEquation::drhoip2()");
+    return zero;}
+  dmat TubeEquation::dUip2(){
+    TRACE(0,"TubeEquation::dUip2()");
+    return zero;}
+  dmat TubeEquation::dTip2(){
+    TRACE(0,"TubeEquation::dTip2()");
+    return zero;}
+  dmat TubeEquation::dpip2(){
+    TRACE(0,"TubeEquation::dpip2()");
+    return zero;}
+  dmat TubeEquation::dTsip2(){
+    TRACE(0,"TubeEquation::dTsip2()");
     return zero;}
 
   // Artificial viscosity matrices
-  dmat Equation::D_r(){
+  dmat TubeEquation::D_r(){
     const us& Ns=gc.Ns;		// Number of samples
     if(i==Ncells-1)
       return D_l();
     else {
       dmat Dr(Ns,Ns,fillwith::zeros);
       // Wesselings book: rj+0.5=speed of sound
-      Dr.diag()=gc.c0*gc.kappa*nu()*gc.dx/dxp;
+      // TRACE(25,"dxp:"<<vertex.dxp);
+      Dr.diag()=gc.c0*gc.kappa*nu()*gc.dx/vertex.dxp;
       return Dr;
     }
   }
-  dmat Equation::D_l(){
+  dmat TubeEquation::D_l(){
     const us& Ns=gc.Ns;		// Number of samples
     if(i==0)
       return D_r();
     else{
       dmat Dl(Ns,Ns,fillwith::zeros);
       // Wesselings book: rj+0.5=speed of sound
-      Dl.diag()=gc.c0*gc.kappa*nu()*gc.dx/dxm;
+      // TRACE(25,"dxm:"<<vertex.dxm);
+      Dl.diag()=gc.c0*gc.kappa*nu()*gc.dx/vertex.dxm;
       return Dl;
     }
   }
-  vd Equation::nu(){
+  vd TubeEquation::nu(){
     vd pi(Ns);
     vd pip1(Ns);
     vd pim1(Ns);    
@@ -281,11 +232,5 @@ namespace tube{
     return min(half,num_over_denom);    
   }
   
-  Equation::~Equation(){}
+  TubeEquation::~TubeEquation(){}
 } // namespace tube
-
-
-
-
-
-

@@ -1,49 +1,21 @@
 // File vertex.h
 #pragma once
-#include "../var/var.h"
-#include "geom.h"
+#ifndef _TUBEVERTEX_H_
+#define _TUBEVERTEX_H_
+
+#include "vertex.h"
 #include "continuityeq.h"
 #include "momentumeq.h"
 #include "energyeq.h"
 #include "stateeq.h"
 #include "solidenergyeq.h"
 
-#define Neq 5
 
-
-namespace segment{
-  SPOILNAMESPACE
-  class Vertex{
-  public:
-    Vertex(us i,const tasystem::Globalconf& v);
-    Vertex(const Vertex&);	// Copy constructor
-    Vertex& operator=(const Vertex& v2); // Copy assignment
-    virtual ~Vertex();
-    
-    const us i;			// The node number of this vertex
-    const tasystem::Globalconf& gc;
-    const us& Ns;			// Number of sample points reference
-
-    virtual vd Error();				  // Compute error for this gridpoint
-    virtual dmat Jac();	       // Fill complete Jacobian for this node
-    virtual void SetRes(vd res);			  // Set result vector to res
-    virtual vd GetRes();				  // Extract current result vector
-
-    tube::Equation* eq[Neq];		// Pointer array of all equations
-    Vertex* left;
-    Vertex* right;
-    variable::var rho;		// Density
-    variable::var U;		// Volume flow
-    variable::var T;		// Temperature
-    variable::var p;		// Pressure
-    variable::var Ts;		// Solid temperature
-    variable::var* vars[Neq];
-  
-  };
-} // namespace segment
 
 namespace tube{    
-
+  class RightImpedanceMomentumEq;
+  class LeftPressure;
+  
   class TubeVertex:public segment::Vertex{ //Gridpoint at a position in a Tube
   public:
     TubeVertex(const Tube& tube1,us i);
@@ -51,11 +23,8 @@ namespace tube{
     void operator=(const TubeVertex&);
     virtual ~TubeVertex();
 
-    
-    // TubeVertex* left;		// Left node pointer
-    // TubeVertex* right;		// Right node pointer
-     
     const Tube& tube;			// Pointer to parent tube
+    virtual void updateW();
 
     Continuity c;		// Continuity equation
     Momentum m;			// Momentum equation
@@ -71,9 +40,23 @@ namespace tube{
     virtual vd csource() const;	// Continuity source
     virtual vd msource() const;	// Momentum source
     virtual vd esource() const;	// Energy source
+
+    friend class TubeEquation;   
+    friend class Continuity;
+    friend class Momentum;
+    friend class Energy;
+    friend class State;    
+    friend class Solidenergy;    
+    friend class RightImpedanceMomentumEq;
+    friend class LeftPressure;
+    
+  // protected:
+    d wLl,wRr,wLr,wRl;		// Weight functions for equations
+    d wL0,wL1,wRNm1,wRNm2;    	// Special boundary weight functions
     
   };				// TubeVertex class
 } // namespace tube
 
+#endif /* _TUBEVERTEX_H_ */
 
 

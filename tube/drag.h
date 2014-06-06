@@ -1,13 +1,19 @@
 #pragma once
-#include "../var/var.h"
+#ifndef _DRAG_H_
+#define _DRAG_H_
+
+#include "var.h"
 #include <math_common.h>
-#include "../globalconf.h"
-#include "../common/rottfuncs.h"
+#include "globalconf.h"
+#include "rottfuncs.h"
+
 //Drag parameter (flow resistance in a tube)
 
 namespace tube{
   SPOILNAMESPACE
   class Tube;
+  class TubeVertex;
+  class Vertex;
   namespace laminardrag{
     // Resistance force for laminar flow for the zero-frequency. 
     d zerodrag_vert(d mu,d rh);
@@ -30,8 +36,8 @@ namespace tube{
   public:
     DragResistance(const Tube& t);
     virtual ~DragResistance();
-    virtual vd operator()(us i) const;
-    virtual dmat dUi(us i) const;
+    virtual vd operator()(const Vertex&) const;
+    virtual dmat dUi(const Vertex&) const;
   protected:
     const Tube& tube;
     const tasystem::Globalconf& gc;
@@ -42,12 +48,13 @@ namespace tube{
   {
   public:
     LaminarDragResistance(const Tube& t);
-    vd operator()(us i) const;
-    dmat dUi(us i) const;		// Derivative of drag resistance to volume flow
+    vd operator()(const TubeVertex& vertex) const;
+    dmat dUi(const TubeVertex&) const;		// Derivative of drag resistance to volume flow
   private:
-    vc ComplexResistancecoef(us i) const; // Returns a complex vector of size Ns with drag resistance coefficients for every nonzero frequency (1..Nf)
+    vc ComplexResistancecoef(const TubeVertex&) const; // Returns a complex vector of size Ns with drag resistance coefficients for every nonzero frequency (1..Nf)
     laminardrag::ZerofreqDrag zfd;
     rottfuncs::rottfuncs rf;
   };
 
 } // namespace tube
+#endif /* _DRAG_H_ */

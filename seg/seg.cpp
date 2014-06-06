@@ -3,30 +3,39 @@
 namespace segment{
   static us totalnumber=0;
   
-  void coupleSegs(Seg* seg1,Seg* seg2,SegCoupling coupling){
-
+  void coupleSegs(Seg& seg1,Seg& seg2,SegCoupling coupling){
+    us seg1size=seg1.vvertex.size();
+    us seg2size=seg2.vvertex.size();
+    assert(seg1size>0);
+    assert(seg2size>0);
     if (coupling==tailhead){
       // Seg1 is coupled with its tail to Seg2's head
-      seg1->right=seg2;
-      seg2->left=seg1;
+      TRACE(3,"Coupling seg1 with its tail to the head of seg2");
+      seg1.setRight(seg2);
+      seg2.setLeft(seg1);
+
+      seg1.vvertex[seg1size-1]->right=seg2.vvertex[0].get();
+      seg2.vvertex[0]->left=seg1.vvertex[seg1size-1].get();
+
     }
     else if(coupling==headtail){
       // Seg2 is coupled with its tail to Seg1's head
-      seg1->left=seg2;
-      seg2->right=seg1;
+      TRACE(3,"Coupling seg1 with its head to the tail of seg2");
+      seg1.setLeft(seg2);
+      seg2.setRight(seg1);
     }
     else if(coupling==tailtail){
-      seg1->right=seg2;
-      seg2->right=seg1;
+      seg1.setRight(seg2);
+      seg2.setRight(seg1);
     }
     else {
       // Coupling is headhead
-      seg1->left=seg2;
-      seg2->right=seg1;
+      seg1.setLeft(seg2);
+      seg2.setRight(seg1);
     }
-      }
+  } // coupleSegs()
   
-  Seg::Seg(tasystem::Globalconf& g):gc(g),Ns(gc.Ns){
+  Seg::Seg(const tasystem::Globalconf& g,Geom geom):gc(g),geom(geom),Ns(gc.Ns){
     TRACE(0,"Seg::Seg()");
     number=totalnumber;
     totalnumber++;
@@ -38,8 +47,40 @@ namespace segment{
     // us& Ns=gc.Ns;
 
   } // Seg constructor
-  void Seg::setLeft(Seg* Left){left=Left;}
-  void Seg::setRight(Seg* Right){right=Right;}
+  void Seg::Init(){
+    assert(Ncells>0);
+    for(us i=0;i<Ncells;i++){
+      vvertex[i]->updateW();
+    }      
+  }
+  bool Seg::operator==(const Seg& other) const {return (this->number==other.number);}
+  void Seg::setLeft(const Seg& Left){
+    TRACE(0,"Seg::SetLeft()");
+    left=&Left;
+  }
+  void Seg::setRight(const Seg& Right){
+    TRACE(0,"Seg::SetRight()");
+    right=&Right;
+  }
+  void Seg::setLeftbc(vertexptr v){
+    TRACE(0,"Seg::setLeftbc()");
+    // delete vvertex[0];
+    assert(Ncells>0);
+    vvertex[0]=v;
+    vvertex[0]->right=vvertex[1].get();
+    vvertex[1]->left=vvertex[0].get();
+  }
+  void Seg::setLeftbc(Vertex* v){ setLeftbc(vertexptr(v));}
+  void Seg::setRightbc(Vertex* v){ setRightbc(vertexptr(v));}
+  void Seg::setRightbc(vertexptr v){
+    TRACE(0,"Seg::setRightbc()");
+    // delete vvertex[Ncells-1];
+    assert(Ncells>0);
+    vvertex[Ncells-1]=v;
+    vvertex[Ncells-2]->right=v.get();
+    vvertex[Ncells-1]->left=vvertex[Ncells-2].get();
+  }    
+  
   dmat Seg::Jac(){			// Return Jacobian matrix of error operator
     // sdmat Seg::Jac(){			// Return Jacobian matrix of error operator    
     TRACE(0," Seg::Jac().. ");
@@ -98,8 +139,6 @@ namespace segment{
   }
   vd Seg::GetRes(){
     TRACE(0,"Seg::Get()");
-    // const us& Neq=TubeVertex::Neq;
-    const us& Ns=gc.Ns;
     vd Result(Ndofs,fillwith::zeros);
     for(us k=0; k<Ncells;k++)
       {
