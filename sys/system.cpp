@@ -71,14 +71,14 @@ namespace tasystem{
       jac.submat(frow,fcol,lrow,lcol)=		\
 	segjac.cols(Neq*gc.Ns,segjac.n_cols-Neq*Ns);
 
-      if(curseg.Left()!=NULL){
+      if(curseg.Left()[0]!=NULL){
 	TRACE(10,"Coupling to left segment..");
 	// Couple Jacobian terms
-	us othernr=curseg.Left()->getNumber();
+	us othernr=curseg.Left()[0]->getNumber();
 	us firstcol=segfirstcol(othernr);
 	us otherndofs=segndofs(othernr);
 	// Find out if other segment is coupled to the left, or to the right
-	if(*curseg.Left()->Right()==curseg){
+	if(*(curseg.Left()[0]->Right()[0])==curseg){
 	  // tail of left segment coupled to head of current segment
 	  jac.submat(frow,firstcol+otherndofs-cellblock,lrow,firstcol+otherndofs-1)= \
 	    segjac.cols(0,cellblock-1);
@@ -89,14 +89,14 @@ namespace tasystem{
       }	  // curseg.Left()!=NULL
 
       
-      if(curseg.Right()!=NULL){
+      if(curseg.Right()[0]!=NULL){
 	// Couple Jacobian terms
 	TRACE(10,"Coupling to right segment..");
-	us othernr=curseg.Right()->getNumber();
+	us othernr=curseg.Right()[0]->getNumber();
 	us firstcol=segfirstcol(othernr);
 	us otherndofs=segndofs(othernr);
 	// Find out if other segment is coupled to the left, or to the right
-	if(*(curseg.Right()->Left())==curseg){
+	if(*(curseg.Right()[0]->Left()[0])==curseg){
 	  // tail of left segment coupled to head of current segment
 	  jac.submat(frow,firstcol,lrow,firstcol+cellblock-1)=	\
 	    segjac.cols(segjac.n_cols-cellblock,segjac.n_cols-1);

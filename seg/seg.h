@@ -5,8 +5,13 @@
 #include <vtypes.h>
 #include <memory>
 #include "geom.h"
+
+#define MAXCONNECT 3		// Maximum segments that can be connected at left and right connection
+
+
 namespace tube{
   class TubeVertex;
+  
 }
 namespace segment{
 
@@ -14,7 +19,7 @@ namespace segment{
   typedef std::shared_ptr<Vertex> vertexptr;
   
   class Seg;
-
+  typedef std::vector< const Seg* > Segvec;
   enum SegCoupling{
     headhead,tailtail,headtail,tailhead
   };
@@ -32,8 +37,10 @@ namespace segment{
     virtual void setRight(const Seg&);	   // Couple segment to some segment on left side
     virtual void setLeft(const Seg&);		   // Couple segment to some segment on right side
     virtual void Init();			   // Initializer method. Different for each segment type
-    const Seg* Right() const {return right;}
-    const Seg* Left()const {return left;}
+
+     const Segvec& Right() const {return right;}
+     const Segvec& Left() const {return left;}
+
     const us& getNumber() const {return number;}
     const us& getNdofs() const {return Ndofs;}
     const us& getNcells() const {return Ncells;}
@@ -59,14 +66,13 @@ namespace segment{
     const tasystem::Globalconf& gc;	// Global configuration of the system
     Geom geom;			// The geometry
     const us& Ns;
-
     std::vector<vertexptr> vvertex;
   protected:
-
     us Ndofs,Ncells;
     string type;
     us nL,nR;
-    Seg const *left,*right;    
+    Segvec left,right;
+    us nleft,nright;
   private:
     us number;
   };

@@ -38,10 +38,15 @@ namespace segment{
   Seg::Seg(const tasystem::Globalconf& g,Geom geom):gc(g),geom(geom),Ns(gc.Ns){
     TRACE(0,"Seg::Seg()");
     number=totalnumber;
+    nleft=0;
+    nright=0;
     totalnumber++;
     Ndofs=Ncells=0;
-    left=NULL; right=NULL;
-
+    for(us j=0;j<MAXCONNECT;j++){
+      left.push_back(NULL);
+      right.push_back(NULL);
+      // left[j]=NULL; right=[j]=NULL;
+    }
     // The Jacobian matrix is larger than the number of dofs for the
     // connection terms other segments
     // us& Ns=gc.Ns;
@@ -56,11 +61,13 @@ namespace segment{
   bool Seg::operator==(const Seg& other) const {return (this->number==other.number);}
   void Seg::setLeft(const Seg& Left){
     TRACE(0,"Seg::SetLeft()");
-    left=&Left;
+    left[nleft]=&Left;
+    nleft++;
   }
   void Seg::setRight(const Seg& Right){
     TRACE(0,"Seg::SetRight()");
-    right=&Right;
+    right[nright]=&Right;
+    nright++;
   }
   void Seg::setLeftbc(vertexptr v){
     TRACE(0,"Seg::setLeftbc()");

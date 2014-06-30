@@ -15,8 +15,8 @@ set(CMAKE_CXX_COMPILER g++)
 #set(CMAKE_VERBOSE_MAKEFILE on)
 ##########################################
 
-# set (CMAKE_CXX_FLAGS "-std=c++11 -ggdb -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address  -ffunction-sections -fdata-sections")
-set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -O2 -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address  -ffunction-sections -fdata-sections")
+set (CMAKE_CXX_FLAGS "-std=c++11 -ggdb -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address  -ffunction-sections -fdata-sections")
+#set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -O2 -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address  -ffunction-sections -fdata-sections")
 
 #configure_file (logger.h.in  "${CMAKE_CURRENT_SOURCE_DIR}/logger.h")
 

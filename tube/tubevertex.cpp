@@ -63,7 +63,7 @@ namespace tube{
     if(i==0 && left!=NULL){
       TRACE(10,"Jacobian evaluation requires coupling of segments...");
       if(left->seg.gettype().compare("Tube")==0){ // Its a Tube
-	if(*left->seg.right==seg){
+	if(*left->seg.right[0]==seg){
 	  TRACE(5,"Connected current head to left segment's tail");
 	  const us& LeftNcells=left->seg.Ncells;
 	  d L=left->seg.geom.L;
@@ -92,7 +92,7 @@ namespace tube{
     else if((i==Ncells-1) && right!=NULL) {
       TRACE(10,"Jacobian evaluation requires coupling of segments...");
       if(right->seg.gettype().compare("Tube")==0){ // Its a Tube
-	if(*right->seg.left==seg){
+	if(*right->seg.left[0]==seg){
 	  TRACE(5,"Connected current tail to right segment's head");
 	  d L=seg.geom.L;
 	  vxip1=right->seg.geom.vx(0)+seg.geom.L;
