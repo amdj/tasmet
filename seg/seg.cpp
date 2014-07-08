@@ -13,7 +13,6 @@ namespace segment{
       TRACE(3,"Coupling seg1 with its tail to the head of seg2");
       seg1.setRight(seg2);
       seg2.setLeft(seg1);
-
       seg1.vvertex[seg1size-1]->right=seg2.vvertex[0].get();
       seg2.vvertex[0]->left=seg1.vvertex[seg1size-1].get();
 
@@ -35,7 +34,7 @@ namespace segment{
     }
   } // coupleSegs()
   
-  Seg::Seg(const tasystem::Globalconf& g,Geom geom):gc(g),geom(geom),Ns(gc.Ns){
+  Seg::Seg(Geom geom):geom(geom){
     TRACE(0,"Seg::Seg()");
     number=totalnumber;
     nleft=0;
@@ -50,11 +49,21 @@ namespace segment{
     // The Jacobian matrix is larger than the number of dofs for the
     // connection terms other segments
     // us& Ns=gc.Ns;
-
-  } // Seg constructor
-  void Seg::Init(){
+  }
+  Seg::Seg(const Seg& other): Seg(other.geom){
+    this->gc=other.gc;
+    this->Ndofs=other.Ndofs;
+    this->left=other.left;
+    this->right=other.right;
+    this->nleft=other.nleft;
+    this->nright=other.nright;
+    // The number is not copied, though
+  }
+  void Seg::Init(const tasystem::Globalconf& gc){
+    this->gc=&gc;
     assert(Ncells>0);
     for(us i=0;i<Ncells;i++){
+      vvertex[i]->Init(gc);
       vvertex[i]->updateW();
     }      
   }
@@ -93,6 +102,7 @@ namespace segment{
     TRACE(0," Seg::Jac().. ");
     // TRACE(-1,"Ncells:"<<Ncells);
     // sdmat Jac(Ncells*Neq*Ns,Ncells*Neq*Ns);
+    us Ns=gc->Ns;
     dmat Jacobian (Ncells*Neq*Ns,(Ncells+2)*Neq*Ns,fillwith::zeros);    
     if(Jacobian.size()==0)
       Jacobian=dmat(Ncells*Neq*Ns,(Ncells+2)*Neq*Ns);    
@@ -147,6 +157,7 @@ namespace segment{
   vd Seg::GetRes(){
     TRACE(0,"Seg::Get()");
     vd Result(Ndofs,fillwith::zeros);
+    us Ns=gc->Ns;
     for(us k=0; k<Ncells;k++)
       {
 	Result.subvec(k*Ns*Neq,k*Ns*Neq+Ns*Neq-1)=vvertex[k]->GetRes();
@@ -156,7 +167,7 @@ namespace segment{
 
   vd Seg::Error(){
     TRACE(0,"Seg::Error()");
-    const us& Ns=gc.Ns;
+    const us& Ns=gc->Ns;
     vd error(Ndofs,fillwith::zeros);
     for(us k=0; k<Ncells;k++)
       {
@@ -167,7 +178,7 @@ namespace segment{
   void Seg::SetRes(vd res){
     TRACE(0,"Seg::SetRes()");
     // const us& Neq=(vvertex[0]).Neq;
-    const us& Ns=gc.Ns;
+    const us& Ns=gc->Ns;
     for(us k=0; k<Ncells;k++)
       {
 	vvertex[k]->SetRes(res.subvec(k*Ns*Neq,k*Ns*Neq+Ns*Neq-1));

@@ -2,7 +2,7 @@
 
 namespace segment{
 
-  Equation::Equation(const tasystem::Globalconf& gc):gc(gc),Ns(gc.Ns){}
+  // Equation::Equation(){}
 } // namespace segment
 
 

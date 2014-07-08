@@ -10,13 +10,13 @@ namespace segment{
   class Equation
   {
   public:
-    Equation(const tasystem::Globalconf& gc);
+    Equation(){}
     virtual ~Equation() {}
 
     virtual vd Error()=0;
     virtual dmat Jac()=0;		// Returns the local Jacobian of this equation
-    const tasystem::Globalconf& gc;    
-    const us& Ns;
+    const tasystem::Globalconf* gc=NULL;
+    void Init(const tasystem::Globalconf& g){gc=&g;}
   };
 
   

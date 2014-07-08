@@ -39,8 +39,8 @@ cdef extern from "var.h" namespace "variable":
 
 cdef extern from "tube.h" namespace "tube":
     cdef cppclass Tube:
-        Tube(Globalconf& gc,Geom g)
-        Seg(Globalconf& gc)    
+        Tube(Geom g)
+        Seg(Geom g)    
         void Init(d T0,d p0)
         us Ncells
         Geom geom

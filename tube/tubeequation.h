@@ -3,11 +3,12 @@
 #define _TUBEEQUATION_H_
 
 #include "equation.h"
+#include "globalconf.h"
 
 namespace tube{
   SPOILNAMESPACE  
   using namespace segment;
-
+  using tasystem::Globalconf;
   class Tube;
   class TubeVertex;
 
@@ -20,12 +21,13 @@ namespace tube{
     dmat diagtmat(const variable::var& v); // Create diagonal matrix with time domain data from variable
     const us& i; 			// Current node
     const Tube& tube;
-
+    void Init(const Globalconf& gc);
     TubeVertex& vertex;		// Reference to parent (current gridpoint)
     const segment::Vertex*& left;
     const segment::Vertex*& right;
+
     
-    const dmat& fDFT,iDFT,DDTfd;	// forward, backward dicrete fourier transform, derivative to time matrix (freq domain)
+    // const dmat& fDFT,iDFT,DDTfd;	// forward, backward dicrete fourier transform, derivative to time matrix (freq domain)
     
     vd getp0(); 		// Create a vector of zero-pressure data
     vd getp0t();   		// Same, but then time domain data

@@ -14,6 +14,8 @@
 
 namespace variable {
   SPOILNAMESPACE
+  using tasystem::Globalconfptr;
+
   // void setfreq(d freq);
   // void setNf(us Nf);
   using namespace tasystem;
@@ -24,6 +26,7 @@ namespace variable {
 
   class var {
   public:
+    var() {}
     var(const Globalconf&);	// Initialize with zeros
     var(const Globalconf&,double); // Initialize with one time-average value
     var(const Globalconf&,const vd& timedata); // Initialize with timedata!!!!
@@ -67,7 +70,7 @@ namespace variable {
 						   // outside of the
 						   // class
     ~var();
-    const Globalconf* gc;
+    const Globalconf* gc=NULL;
     us Nf,Ns;
 
   protected:

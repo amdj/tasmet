@@ -40,7 +40,7 @@ namespace tube{
     virtual dmat dUi(const Vertex&) const;
   protected:
     const Tube& tube;
-    const tasystem::Globalconf& gc;
+    const tasystem::Globalconf* gc=NULL;
 
   };
 
@@ -49,7 +49,7 @@ namespace tube{
   public:
     LaminarDragResistance(const Tube& t);
     vd operator()(const TubeVertex& vertex) const;
-    dmat dUi(const TubeVertex&) const;		// Derivative of drag resistance to volume flow
+    virtual dmat dUi(const TubeVertex&) const;		// Derivative of drag resistance to volume flow
   private:
     vc ComplexResistancecoef(const TubeVertex&) const; // Returns a complex vector of size Ns with drag resistance coefficients for every nonzero frequency (1..Nf)
     laminardrag::ZerofreqDrag zfd;

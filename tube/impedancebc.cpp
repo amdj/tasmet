@@ -59,7 +59,7 @@ namespace tube{
   }
   vd RightImpedanceMomentumEq::Error(){
     TRACE(20,"RightImpedanceMomentumEq::Error()");
-    vd error(Ns,fillwith::zeros);
+    vd error(gc->Ns,fillwith::zeros);
     // Add the normal stuff
     error+=Momentum::Error();  
     // And add the right pressure as being an impedance times the

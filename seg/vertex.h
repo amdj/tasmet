@@ -4,6 +4,7 @@
 #define _VERTEX_H_
 
 #include "var.h"
+#include "globalconf.h"
 #include "geom.h"
 #include "equation.h"
 
@@ -12,16 +13,8 @@
 
 namespace segment{
   SPOILNAMESPACE
-
-  
-class VertexW
-  {
-  public:
-    VertexW();
-    
-    virtual ~VertexW();
-  };  
-  
+  using  tasystem::Globalconf;
+  using variable::var;
   
   class Seg;  
   class Vertex{
@@ -29,13 +22,19 @@ class VertexW
     Vertex(const Seg& seg,us i);
     Vertex(const Vertex&);	// Copy constructor
     Vertex& operator=(const Vertex& v2); // Copy assignment
+    void Init(const Globalconf& gc){
+      this->gc=&gc;
+      this->updateW();
+      rho=var(gc);
+      U=var(gc);
+      T=var(gc);
+      p=var(gc);
+      Ts=var(gc);
+    }
     virtual ~Vertex();
     const Seg& seg;
     const us i;			// The node number of this vertex
-
-    const tasystem::Globalconf& gc;
-    const us& Ns;			// Number of sample points reference
-
+    const tasystem::Globalconf *gc=NULL;
 
     virtual vd Error();				  // Compute error for this gridpoint
     virtual dmat Jac();	       // Fill complete Jacobian for this node

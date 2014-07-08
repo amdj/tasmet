@@ -1,15 +1,16 @@
 #include "pressurebc.h"
-#include "bcvertex.h"
+
 namespace tube{
 
-  LeftPressure::LeftPressure(const Tube& t,variable::var& pres,variable::var& temp):TubeBcVertex(t,0),pL(pres),TL(temp) {
+  LeftPressure::LeftPressure(const Tube& t,variable::var& pres,variable::var& temp):TubeVertex(t,0),pL(pres),TL(temp) {
      TRACE(0,"LeftPressure full constructor");
    }
-   LeftPressure::LeftPressure(const Tube& t,variable::var& pres):TubeBcVertex(t,0),pL(pres),TL(gc){
+   LeftPressure::LeftPressure(const Tube& t,variable::var& pres):TubeVertex(t,0),pL(pres),TL(*pres.gc){
      TRACE(0,"LeftPressure constructor for given pressure. Temperature computed");    
-     d T0=tube.gc.T0;
-     d gamma=tube.gas.gamma(T0);
-     vd p0(Ns,fillwith::ones); p0*=tube.gc.p0;
+     const Globalconf* gc=pres.gc;
+     d T0=gc->T0;
+     d gamma=gc->gas.gamma(T0);
+     vd p0(gc->Ns,fillwith::ones); p0*=gc->p0;
      // TRACE(-1,"p0:"<<p0);
      vd TLt=T0*pow((p0+pL.tdata())/p0,gamma/(gamma-1.0));		// Adiabatic compression/expansion
      // TRACE(-1,"TLt:"<<TLt);
@@ -54,7 +55,7 @@ namespace tube{
    }
    vd LeftPressure::msource() const{
      TRACE(0,"LeftPressure::msource()");
-     vd msource(Ns,fillwith::ones);
+     vd msource(gc->Ns,fillwith::ones);
      msource=-1.0*SfL*pL();
      // This one should not yet be scaled. The scaling is done in the
      // error term after adding this source.
@@ -63,12 +64,12 @@ namespace tube{
   }
   vd LeftPressure::esource() const {
     TRACE(0,"LeftPressure::esource()");
-    vd esource(Ns,fillwith::zeros);
+    vd esource(gc->Ns,fillwith::zeros);
     d vxi=tube.geom.vx(0);
     vd TLt=TL.tdata();
-    vd kappaL=tube.gas.kappa(TLt);
+    vd kappaL=gc->gas.kappa(TLt);
     // TRACE(10,"Important: put esource on when going back to full energy eq!");
-    esource+=-1.0*SfL*(e.fDFT*(kappaL%TLt))/vxi;
+    esource+=-1.0*SfL*(gc->fDFT*(kappaL%TLt))/vxi;
     TRACE(-1,"esource:"<<esource);
     return esource;    
   }

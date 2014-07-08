@@ -12,29 +12,29 @@ namespace tube{
   }
   vd Momentum::Error(){		// Error in momentum equation
     TRACE(0,"Momentum::Error()");
-    vd error(Ns,fillwith::zeros);
+    vd error(gc->Ns,fillwith::zeros);
 
     vd rhoti=vertex.rho.tdata();
     vd Uti=vertex.U.tdata();
-    error+=Wddt*DDTfd*fDFT*(Uti%rhoti);
-    error+=Wui*fDFT*(rhoti%Uti%Uti);
+    error+=Wddt*gc->DDTfd*gc->fDFT*(Uti%rhoti);
+    error+=Wui*gc->fDFT*(rhoti%Uti%Uti);
     
     // Pressure terms    
     vd pi=vertex.p();
     error+=Wpi*pi;
 
-    vd rhotim1(Ns,fillwith::zeros);
-    vd Utim1(Ns,fillwith::zeros);
-    vd pim1(Ns,fillwith::zeros);
-    vd Utip1(Ns,fillwith::zeros);
-    vd rhotip1(Ns,fillwith::zeros);
-    vd pip1(Ns,fillwith::zeros);
+    vd rhotim1(gc->Ns,fillwith::zeros);
+    vd Utim1(gc->Ns,fillwith::zeros);
+    vd pim1(gc->Ns,fillwith::zeros);
+    vd Utip1(gc->Ns,fillwith::zeros);
+    vd rhotip1(gc->Ns,fillwith::zeros);
+    vd pip1(gc->Ns,fillwith::zeros);
 
     
     if(left!=NULL){
       rhotim1=left->rho.tdata();
       Utim1=left->U.tdata();
-      error+=Wuim1*fDFT*(rhotim1%Utim1%Utim1);
+      error+=Wuim1*gc->fDFT*(rhotim1%Utim1%Utim1);
       // Pressure term
       pim1=left->p();
       error+=Wpim1*pim1;
@@ -42,7 +42,7 @@ namespace tube{
     if(right!=NULL){
       Utip1=right->U.tdata();
       rhotip1=right->rho.tdata();
-      error+=Wuip1*fDFT*(rhotip1%Utip1%Utip1);
+      error+=Wuip1*gc->fDFT*(rhotip1%Utip1%Utip1);
       // Pressure term    
       pip1=right->p();
       error+=Wpip1*pip1;
@@ -76,8 +76,8 @@ namespace tube{
     TRACE(0,"Momentum::dUi()");
     dmat dUi=zero;
     // dUi+=vVf*tube.drag.dUi(i)/vSf;		       // Drag term
-    dUi+=Wddt*DDTfd*fDFT*diagtmat(vertex.rho)*iDFT; // Time-derivative term
-    dUi+=2.0*Wui*fDFT*(diagtmat(vertex.rho)*diagtmat(vertex.U))*iDFT;
+    dUi+=Wddt*gc->DDTfd*gc->fDFT*diagtmat(vertex.rho)*gc->iDFT; // Time-derivative term
+    dUi+=2.0*Wui*gc->fDFT*(diagtmat(vertex.rho)*diagtmat(vertex.U))*gc->iDFT;
 
     // Artificial viscosity terms
     #ifdef MOM_VISCOSITY
@@ -96,14 +96,14 @@ namespace tube{
   dmat Momentum::drhoi(){
     TRACE(0,"Momentum::drhoi()");
     dmat drhoi=zero;
-    drhoi+=Wddt*DDTfd*fDFT*diagtmat(vertex.U)*iDFT;
-    drhoi+=Wui*fDFT*diagtmat(vertex.U)*diagtmat(vertex.U)*iDFT;
+    drhoi+=Wddt*gc->DDTfd*gc->fDFT*diagtmat(vertex.U)*gc->iDFT;
+    drhoi+=Wui*gc->fDFT*diagtmat(vertex.U)*diagtmat(vertex.U)*gc->iDFT;
     drhoi.row(0)*=MOM_SCALE0;
     return MOM_SCALE*drhoi;
   }
   dmat Momentum::dpi(){
     TRACE(0,"Momentum::dpi()");
-    dmat I(Ns,Ns,fillwith::eye);
+    dmat I(gc->Ns,gc->Ns,fillwith::eye);
     dmat dpi=zero;
     dpi+=Wpi*I;
     dpi.row(0)*=MOM_SCALE0;
@@ -113,7 +113,7 @@ namespace tube{
     TRACE(0,"Momentum::drhoim1()");
     dmat drhoim1=zero;
     if(left!=NULL)
-      drhoim1+=Wuim1*fDFT*diagtmat(left->U)*diagtmat(left->U)*iDFT;
+      drhoim1+=Wuim1*gc->fDFT*diagtmat(left->U)*diagtmat(left->U)*gc->iDFT;
     drhoim1.row(0)*=MOM_SCALE0;
     return MOM_SCALE*drhoim1;
   }
@@ -121,7 +121,7 @@ namespace tube{
     TRACE(0,"Momentum::dUim1()");    // Todo: add this term!;
     dmat dUim1=zero;
     if(left!=NULL){
-      dUim1+=2.0*Wuim1*fDFT*diagtmat(left->rho)*diagtmat(left->U)*iDFT;
+      dUim1+=2.0*Wuim1*gc->fDFT*diagtmat(left->rho)*diagtmat(left->U)*gc->iDFT;
     }
     #ifdef MOM_VISCOSITY
     // Artificial viscosity terms
@@ -138,7 +138,7 @@ namespace tube{
   dmat Momentum::dpim1(){
     TRACE(0,"Momentum::dpim1()");
     dmat dpim1=zero;
-    dmat I(Ns,Ns,fillwith::eye);
+    dmat I(gc->Ns,gc->Ns,fillwith::eye);
     if(left!=NULL)
       dpim1+=Wpim1*I;
 
@@ -149,7 +149,7 @@ namespace tube{
     TRACE(0,"Momentum::dhoip1()");    // Todo: add this term!;
     dmat drhoip1=zero;
     if(right!=NULL)
-      drhoip1+=Wuip1*fDFT*diagtmat(right->U)*diagtmat(right->U)*iDFT;
+      drhoip1+=Wuip1*gc->fDFT*diagtmat(right->U)*diagtmat(right->U)*gc->iDFT;
 
     drhoip1.row(0)*=MOM_SCALE0;
     return MOM_SCALE*drhoip1;
@@ -158,7 +158,7 @@ namespace tube{
     TRACE(0,"Momentum::dUip1()"); // Todo: add this term!;
     dmat dUip1=zero;
     if(right!=NULL){
-      dUip1+=2.0*Wuip1*fDFT*diagtmat(right->rho)*diagtmat(right->U)*iDFT;
+      dUip1+=2.0*Wuip1*gc->fDFT*diagtmat(right->rho)*diagtmat(right->U)*gc->iDFT;
     }
     #ifdef MOM_VISCOSITY
     // Artificial viscosity terms
@@ -175,7 +175,7 @@ namespace tube{
   dmat Momentum::dpip1(){
     TRACE(0,"Momentum::dpip1()");
     dmat dpip1=zero;
-    dmat I(Ns,Ns,fillwith::eye);
+    dmat I(gc->Ns,gc->Ns,fillwith::eye);
     if(right!=NULL)
       dpip1+=Wpip1*I;
 

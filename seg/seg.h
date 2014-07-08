@@ -2,23 +2,24 @@
 #ifndef _SEG_H_
 #define _SEG_H_
 #include "vertex.h"
+// #include "segbase.h"
 #include <vtypes.h>
 #include <memory>
 #include "geom.h"
 
 #define MAXCONNECT 3		// Maximum segments that can be connected at left and right connection
-
-
 namespace tube{
   class TubeVertex;
-  
 }
 namespace segment{
 
   SPOILNAMESPACE
   typedef std::shared_ptr<Vertex> vertexptr;
-  
+
+  using tasystem::Globalconf;
+
   class Seg;
+  typedef std::shared_ptr< Seg > Segptr;
   typedef std::vector< const Seg* > Segvec;
   enum SegCoupling{
     headhead,tailtail,headtail,tailhead
@@ -32,21 +33,21 @@ namespace segment{
     friend class Vertex;
     friend class tube::TubeVertex;
     
-    Seg(const tasystem::Globalconf& gc,Geom geom); // nL,nR initiated as 0
-
+    Seg(Geom geom); // nL,nR initiated as 0
+    Seg(const Seg&);		       // Copy constructor, really copies everything
+    Seg& operator=(const Seg&);
     virtual void setRight(const Seg&);	   // Couple segment to some segment on left side
     virtual void setLeft(const Seg&);		   // Couple segment to some segment on right side
-    virtual void Init();			   // Initializer method. Different for each segment type
+    virtual void Init(const tasystem::Globalconf&);			   // Initializer method. Different for each segment type
 
-     const Segvec& Right() const {return right;}
-     const Segvec& Left() const {return left;}
+    const Segvec& Right() const {return right;}
+    const Segvec& Left() const {return left;}
 
     const us& getNumber() const {return number;}
     const us& getNdofs() const {return Ndofs;}
     const us& getNcells() const {return Ncells;}
     const us& getnL() const {return nL;}
     const us& getnR() const {return nR;}
-
 
     void setLeftbc(vertexptr v); // Set left boundary condition vertex
     void setRightbc(vertexptr v); // Set left boundary condition vertex    
@@ -61,11 +62,12 @@ namespace segment{
     dmat Jac();			// Return Jacobian matrix
     void SetRes(vd res);
     void setnodes(us n1,us n2){ nL=n1; nR=n2;}
-    virtual ~Seg(){}
+    virtual ~Seg(){TRACE(-5,"~Seg()");}
     
-    const tasystem::Globalconf& gc;	// Global configuration of the system
+
+  public:
+    const Globalconf* gc=NULL;	// Global configuration of the system
     Geom geom;			// The geometry
-    const us& Ns;
     std::vector<vertexptr> vvertex;
   protected:
     us Ndofs,Ncells;
@@ -75,7 +77,9 @@ namespace segment{
     us nleft,nright;
   private:
     us number;
+
   };
+  
 
 
   

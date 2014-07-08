@@ -25,24 +25,16 @@
 namespace tube{
   SPOILNAMESPACE
   using arma::sp_mat;  
-  
   using namespace segment;
 
-
-  
   class Tube:public Seg {
   public:
-    Tube(const tasystem::Globalconf& g,Geom geom);
-    Tube(const Tube& othertube); // Copy constructor to copy vertex
-				 // vector ofpointers
+    Tube(Geom geom);
+    Tube(const Tube& othertube); // Copy constructor only copies geometry.
     ~Tube();
-
-  
-    const gases::Gas& gas;		// The gas in the system. Reference variable to gc.gas
     vd GetResAt(us varnr,us freqnr); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
-
   protected:
-    void Init();
+    void Init(const tasystem::Globalconf& gc);
     LaminarDragResistance drag;
     friend class TubeVertex;
     friend class Continuity;

@@ -5,7 +5,9 @@
 
 namespace tube{
 
-  class LeftPressure:public TubeBcVertex
+  using tasystem::Globalconfptr;  
+  
+  class LeftPressure:public TubeVertex
   {
   public:
     LeftPressure(const Tube& t);

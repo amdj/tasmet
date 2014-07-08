@@ -2,11 +2,21 @@
 
 namespace tasystem{
 
-  TAsystem::TAsystem(Globalconf& g):gc(g),Ns(g.Ns){
-    TRACE(1,"TAsystem::TAsystem(SegArray)");
-    Nsegs=0;
-    Ndofs=0;
+  TAsystem::TAsystem(const Globalconf& gc):gc(gc),Nsegs(0),Ndofs(0){
+    // setGc(gc);
+  }
+  TAsystem::TAsystem(const TAsystem& o): gc(o.gc),Nsegs(o.Nsegs),Ndofs(o.Ndofs)
+  {
+    TRACE(10,"TAsystem copy cc");
+
     
+  }
+  
+  void TAsystem::setGc(const Globalconf& gc){
+    this->gc=gc;
+    for(us i=0;i<Nsegs;i++){
+      segs[i]->Init(gc);
+    }
   }
   vd TAsystem::Error(){
     TRACE(1,"TAsystem::Error()");
@@ -30,6 +40,7 @@ namespace tasystem{
   }
   vd TAsystem::GetRes(){
     TRACE(1,"TAsystem::GetRes()");
+    const us& Ns=gc.Ns;
     vd Res(Ndofs);
     us segdofs;
     us startdof=0;
@@ -46,7 +57,7 @@ namespace tasystem{
     us startdof=0;
 
     for(us i=0;i<Nsegs;i++){
-      segdofs=segs[i]->getNcells()*Ns*Neq;
+      segdofs=segs[i]->getNcells()*gc.Ns*Neq;
       segs[i]->SetRes(Res.subvec(startdof,startdof+segdofs-1));
     }
   }
@@ -61,16 +72,21 @@ namespace tasystem{
     dmat jac(Ndofs,Ndofs);
     us cellblock=Neq*Ns;
     for(us j=0;j<Nsegs;j++){
+      TRACE(1,"back in system loop, j=" << j);
       segment::Seg& curseg=*segs[j];
       dmat segjac=curseg.Jac();
+      TRACE(1,"back in system loop");
       us thisndofs=gc.Ns*Neq*curseg.getNcells();
       us frow=j*thisndofs;
       us fcol=j*thisndofs;	 // First col
       us lrow=(j+1)*thisndofs-1; // last row
       us lcol=(j+1)*thisndofs-1;
-      jac.submat(frow,fcol,lrow,lcol)=		\
+      TRACE(10,"Filling system Jacobian submat...");
+      jac.submat(frow,fcol,lrow,lcol)=			\
 	segjac.cols(Neq*gc.Ns,segjac.n_cols-Neq*Ns);
 
+      TRACE(10,"Jacobian submat succesfully filled.");
+      
       if(curseg.Left()[0]!=NULL){
 	TRACE(10,"Coupling to left segment..");
 	// Couple Jacobian terms
@@ -105,23 +121,23 @@ namespace tasystem{
 
 	} // 
       }	  // curseg.Right()!=NULL
-      
+      TRACE(-1,"Creation of Jacobian for segment "<< j << "done."<<endl);
     } // end for loop
     return jac;
   }
 
-  void TAsystem::addseg(Seg& s){
+  void TAsystem::addseg(Segptr s){
     TRACE(10,"TAsystem::addseg()");
     if(Nsegs==MAXSEGS){
       TRACE(0,"Warning: maximum segments reached");
       return;
     }
     // Put the segment in the array
-    segs.push_back(&s);
-    s.Init();
+    segs.push_back(s);
+    s->Init(gc);
     segfirstcol(Nsegs)=Ndofs;
     Ndofs+=s.getNcells()*gc.Ns*Neq;	// number of cells times number of equations times number of time samples
-    segndofs(Nsegs)=(s.getNcells()*gc.Ns*Neq);
+    segndofs(Nsegs)=s->getNdofs();
     Nsegs++;			// Update number of segments    
   }
   Seg& TAsystem::operator[](us i){

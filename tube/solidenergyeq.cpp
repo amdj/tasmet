@@ -10,14 +10,14 @@ namespace tube{
 
   vd Solidenergy::Error(){		// Error in momentum equation
     TRACE(0,"Solidenergy::Error()");
-    // vd error(Ns,fillwith::zeros);
+    // vd error(gc->Ns,fillwith::zeros);
     vd error=vertex.Ts();
     return error;
   }
   dmat Solidenergy::dTsi(){
     TRACE(0,"Solidenergy:dTsi()");
     // Set solid temperature to zero
-    return eye<dmat>(Ns,Ns);
+    return eye<dmat>(gc->Ns,gc->Ns);
   }
   Solidenergy::~Solidenergy(){
     TRACE(-5,"Solidenergy destructor");

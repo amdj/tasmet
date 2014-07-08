@@ -3,7 +3,7 @@
 #include "seg.h"
 namespace segment{
 
-  Vertex::Vertex(const Seg& seg,us i):seg(seg),i(i),gc(seg.gc),Ns(gc.Ns),rho(gc),U(gc),T(gc),p(gc),Ts(gc){
+  Vertex::Vertex(const Seg& seg,us i):seg(seg),i(i) {
     TRACE(0,"Vertex constructor");
     left=NULL;
     right=NULL;
@@ -65,7 +65,8 @@ namespace segment{
     TRACE(0,"Vertex::Error()");
     // TRACE(-1,"Check for position i>0 && i<gp-1...");
     // assert(i>0 && i<seg.geom.gp-1);
-    const us Ns=gc.Ns;
+    const us& Ns=gc->Ns;
+    TRACE(10,"Assignment of Ns survived:"<< Ns);
     vd error(Neq*Ns);
     for(us k=0;k<Neq;k++)
       {
@@ -75,6 +76,7 @@ namespace segment{
   }
   vd Vertex::GetRes(){			// Get current result vector
     TRACE(0,"Vertex::GetRes()");
+    const us& Ns=gc->Ns;
     vd res(Neq*Ns);
     for(us k=0;k<Neq;k++){
       res.subvec(k*Ns,k*Ns+Ns-1)=(*vars[k])();
@@ -83,11 +85,13 @@ namespace segment{
   }
   void Vertex::SetRes(vd res){
     TRACE(0,"Vertex::Set()");
+    const us& Ns=gc->Ns;
     for(us k=0;k<Neq;k++){
-      vars[k]->set(res.subvec(k*Ns,k*Ns+Ns-1));
+      vars[k]->set(res.subvec(k*gc->Ns,k*Ns+Ns-1));
     }
   }
   dmat Vertex::Jac(){		// Return Jacobian
+    const us& Ns=gc->Ns;
     TRACE(0," Vertex::Jac()...");
     TRACE(-1,"Ns:"<<Ns);
     TRACE(-1,"Neq:"<<Neq);    

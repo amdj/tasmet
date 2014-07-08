@@ -207,13 +207,13 @@ namespace tube{
   }
   vd  TubeVertex::csource() const {
     TRACE(0,"TubeVertex::csource()");
-    return zeros(Ns);}
+    return zeros(gc->Ns);}
   vd  TubeVertex::msource() const {
     TRACE(0,"TubeVertex::msource()");
-    return zeros(Ns);}
+    return zeros(gc->Ns);}
   vd  TubeVertex::esource() const {
     TRACE(0,"TubeVertex::esource()");
-    return zeros(Ns);}    
+    return zeros(gc->Ns);}    
     
   TubeVertex::~TubeVertex(){
     TRACE(-5,"TubeVertex destructor");
