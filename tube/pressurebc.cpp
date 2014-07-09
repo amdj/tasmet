@@ -2,10 +2,10 @@
 
 namespace tube{
 
-  LeftPressure::LeftPressure(const Tube& t,variable::var& pres,variable::var& temp):TubeVertex(t,0),pL(pres),TL(temp) {
+  LeftPressure::LeftPressure(us segnr,variable::var& pres,variable::var& temp):TubeBcVertex(segnr),pL(pres),TL(temp) {
      TRACE(0,"LeftPressure full constructor");
    }
-   LeftPressure::LeftPressure(const Tube& t,variable::var& pres):TubeVertex(t,0),pL(pres),TL(*pres.gc){
+  LeftPressure::LeftPressure(us segnr,variable::var& pres):TubeBcVertex(segnr),pL(pres),TL(*pres.gc){
      TRACE(0,"LeftPressure constructor for given pressure. Temperature computed");    
      const Globalconf* gc=pres.gc;
      d T0=gc->T0;
@@ -17,10 +17,10 @@ namespace tube{
      TL.settdata(TLt);
 
    }
-   void LeftPressure::updateW(){
+   void LeftPressure::updateW(const Geom& geom){
      // Change continuity equation for an open boundary
      TRACE(1,"LeftPressure::updateW()");
-     TubeVertex::updateW();
+     TubeVertex::updateW(geom);
      c.Wim1=0;
      c.Wi=wRl-wL0;
      c.Wip1=wRr-wL1;
@@ -42,8 +42,8 @@ namespace tube{
      e.Wji=wL0-wRl;
      e.Wjip1=wL1-wRr;
 
-     d vxi=tube.geom.vx(0);
-     d vxip1=tube.geom.vx(1);
+     d vxi=geom.vx(0);
+     d vxip1=geom.vx(1);
      d dxp=vxip1-vxi;
 
      e.Wc1=0;
@@ -65,7 +65,6 @@ namespace tube{
   vd LeftPressure::esource() const {
     TRACE(0,"LeftPressure::esource()");
     vd esource(gc->Ns,fillwith::zeros);
-    d vxi=tube.geom.vx(0);
     vd TLt=TL.tdata();
     vd kappaL=gc->gas.kappa(TLt);
     // TRACE(10,"Important: put esource on when going back to full energy eq!");

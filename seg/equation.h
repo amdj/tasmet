@@ -1,7 +1,7 @@
 #pragma once
-#include "var.h"
-#include <math_common.h>
-#include "geom.h"
+#include <vtypes.h>
+#include "globalconf.h"
+
 
 namespace segment{
   SPOILNAMESPACE
@@ -10,13 +10,15 @@ namespace segment{
   class Equation
   {
   public:
-    Equation(){}
-    virtual ~Equation() {}
+    const tasystem::Globalconf* gc=NULL;
+    Vertex& vertex;
+    
+    Equation(Vertex& v):vertex(v) {}
+    ~Equation(){}
 
     virtual vd Error()=0;
     virtual dmat Jac()=0;		// Returns the local Jacobian of this equation
-    const tasystem::Globalconf* gc=NULL;
-    void Init(const tasystem::Globalconf& g){gc=&g;}
+    virtual void Init(const tasystem::Globalconf& g){gc=&g;}
   };
 
   

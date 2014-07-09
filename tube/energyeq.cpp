@@ -1,12 +1,12 @@
 #include "energyeq.h"
 #include "tubevertex.h"
-#include "tube.h"
+
 
 #define ENERGY_SCALE  (gc->p0) //(1/gc.omg)
 #define ENERGY_SCALE0 (1.0)//(1.0/pow(gc.M,2)) //(1/gc.omg)
 
 namespace tube{
-  Isentropic::Isentropic(const Tube& tube,TubeVertex& gp):TubeEquation(tube,gp){
+  Isentropic::Isentropic(TubeVertex& gp):TubeEquation(gp){
   }
   Isentropic::~Isentropic(){}
   vd Isentropic::Error(){
@@ -41,7 +41,7 @@ namespace tube{
       diagmat(pow(vertex.rho.tdata()/rho0,(gamma-1.0)))*gc->iDFT;
     return drhoi;
   }
-  Energy::Energy(const Tube& tube,TubeVertex& gp):TubeEquation(tube,gp){
+  Energy::Energy(TubeVertex& gp):TubeEquation(gp){
     // Standard boundary condition is adiabatic-no-slip-wall
     if(i==0){			// Leftmost vertex
       TRACE(-1,"Leftmost vertex");

@@ -8,7 +8,7 @@ namespace tube{
   class State:public TubeEquation
   {
   public:
-    State(const Tube& tube,TubeVertex& gp);
+    State(TubeVertex& gp);
     ~State();
 
     vd Error();			// Error in momentum equation at node i

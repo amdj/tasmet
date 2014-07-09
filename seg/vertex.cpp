@@ -1,9 +1,10 @@
 #include "vertex.h"
 #include "var.h"
-#include "seg.h"
+
+
 namespace segment{
 
-  Vertex::Vertex(const Seg& seg,us i):seg(seg),i(i) {
+  Vertex::Vertex() {
     TRACE(0,"Vertex constructor");
     left=NULL;
     right=NULL;
@@ -14,12 +15,23 @@ namespace segment{
     vars[4]=&Ts;
    
   }
-  void Vertex::updateW()  {
+  void Vertex::Init(us i,const tasystem::Globalconf& g,const Geom& geom){
+    this->i=i;
+    this->Ncells=geom.Ncells;
+    this->gc=&g;
+    this->updateW(geom);
+    rho=var(*gc);
+    U=var(*gc);
+    T=var(*gc);
+    p=var(*gc);
+    Ts=var(*gc);
+  }
+
+
+  void Vertex::updateW(const Geom& geom)  {
     TRACE(1,"Vertex::updateW()");
-    const us& Ncells=seg.Ncells;
-    const Geom& geom=seg.geom;
-    
-    const vd& vx=seg.geom.vx;
+    Ncells=geom.Ncells;
+    const vd& vx=geom.vx;
     vxi=vx(i);
     vxip1=0;
     vxim1=0;

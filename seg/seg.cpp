@@ -1,7 +1,6 @@
 #include "seg.h"
 
 namespace segment{
-  static us totalnumber=0;
   
   void coupleSegs(Seg& seg1,Seg& seg2,SegCoupling coupling){
     us seg1size=seg1.vvertex.size();
@@ -34,13 +33,10 @@ namespace segment{
     }
   } // coupleSegs()
   
-  Seg::Seg(Geom geom):geom(geom){
+  Seg::Seg(Geom geom):SegBase(geom){
     TRACE(0,"Seg::Seg()");
-    number=totalnumber;
-    nleft=0;
-    nright=0;
-    totalnumber++;
-    Ndofs=Ncells=0;
+    Ndofs=0;
+    type="Seg";
     for(us j=0;j<MAXCONNECT;j++){
       left.push_back(NULL);
       right.push_back(NULL);
@@ -50,7 +46,7 @@ namespace segment{
     // connection terms other segments
     // us& Ns=gc.Ns;
   }
-  Seg::Seg(const Seg& other): Seg(other.geom){
+  Seg::Seg(const Seg& other): SegBase(other){
     this->gc=other.gc;
     this->Ndofs=other.Ndofs;
     this->left=other.left;
@@ -61,13 +57,13 @@ namespace segment{
   }
   void Seg::Init(const tasystem::Globalconf& gc){
     this->gc=&gc;
+    const us& Ncells=geom.Ncells;
+    
     assert(Ncells>0);
-    for(us i=0;i<Ncells;i++){
-      vvertex[i]->Init(gc);
-      vvertex[i]->updateW();
+    for(us i=0;i<Nvertex;i++){
+      vvertex[i]->Init(i,gc,geom);
     }      
   }
-  bool Seg::operator==(const Seg& other) const {return (this->number==other.number);}
   void Seg::setLeft(const Seg& Left){
     TRACE(0,"Seg::SetLeft()");
     left[nleft]=&Left;
@@ -78,31 +74,38 @@ namespace segment{
     right[nright]=&Right;
     nright++;
   }
-  void Seg::setLeftbc(vertexptr v){
+  void Seg::setLeftbc(const Vertex& v){
     TRACE(0,"Seg::setLeftbc()");
     // delete vvertex[0];
-    assert(Ncells>0);
-    vvertex[0]=v;
-    vvertex[0]->right=vvertex[1].get();
-    vvertex[1]->left=vvertex[0].get();
+    // vvertex[0]=
+      
+    // vvertex[0]=new 
+    // const us& Ncells=geom.Ncells;
+    // assert(Ncells>0);
+    // vvertex[0]=v;
+    // vvertex[0]->right=vvertex[1].get();
+    // vvertex[1]->left=vvertex[0].get();
   }
-  void Seg::setLeftbc(Vertex* v){ setLeftbc(vertexptr(v));}
-  void Seg::setRightbc(Vertex* v){ setRightbc(vertexptr(v));}
-  void Seg::setRightbc(vertexptr v){
+
+  void Seg::setRightbc(const Vertex& v){
     TRACE(0,"Seg::setRightbc()");
+
     // delete vvertex[Ncells-1];
-    assert(Ncells>0);
-    vvertex[Ncells-1]=v;
-    vvertex[Ncells-2]->right=v.get();
-    vvertex[Ncells-1]->left=vvertex[Ncells-2].get();
+    const us& Ncells=geom.Ncells;
+    // assert(Ncells>0);
+    // vvertex[Ncells-1]=v;
+    // vvertex[Ncells-2]->right=v.get();
+    // vvertex[Ncells-1]->left=vvertex[Ncells-2].get();
   }    
   
   dmat Seg::Jac(){			// Return Jacobian matrix of error operator
     // sdmat Seg::Jac(){			// Return Jacobian matrix of error operator    
     TRACE(0," Seg::Jac().. ");
+    
     // TRACE(-1,"Ncells:"<<Ncells);
     // sdmat Jac(Ncells*Neq*Ns,Ncells*Neq*Ns);
-    us Ns=gc->Ns;
+    const us& Ns=gc->Ns;
+    const us& Ncells=geom.Ncells;
     dmat Jacobian (Ncells*Neq*Ns,(Ncells+2)*Neq*Ns,fillwith::zeros);    
     if(Jacobian.size()==0)
       Jacobian=dmat(Ncells*Neq*Ns,(Ncells+2)*Neq*Ns);    
@@ -156,6 +159,7 @@ namespace segment{
   }
   vd Seg::GetRes(){
     TRACE(0,"Seg::Get()");
+    const us& Ncells=geom.Ncells;
     vd Result(Ndofs,fillwith::zeros);
     us Ns=gc->Ns;
     for(us k=0; k<Ncells;k++)
@@ -167,6 +171,7 @@ namespace segment{
 
   vd Seg::Error(){
     TRACE(0,"Seg::Error()");
+    const us& Ncells=geom.Ncells;
     const us& Ns=gc->Ns;
     vd error(Ndofs,fillwith::zeros);
     for(us k=0; k<Ncells;k++)
@@ -176,6 +181,7 @@ namespace segment{
     return error;
   }
   void Seg::SetRes(vd res){
+    const us& Ncells=geom.Ncells;
     TRACE(0,"Seg::SetRes()");
     // const us& Neq=(vvertex[0]).Neq;
     const us& Ns=gc->Ns;

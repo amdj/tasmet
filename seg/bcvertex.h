@@ -9,17 +9,27 @@
 #ifndef _BCVERTEX_H_
 #define _BCVERTEX_H_
 
+#include <vtypes.h>
 
-#include "tube.h"
-#include "var.h"
+namespace segment{
 
-namespace tube{
-  class TubeVertex;
-  class TubeBcVertex:public TubeVertex
+  enum connectpos{ left,right};  
+  
+  
+  class BcVertex
   {
+
   public:
-    TubeBcVertex(const Tube&t,us vertexnr);
-    virtual ~TubeBcVertex(){}
+    BcVertex(us segnr):segnumber(segnr){TRACE(100,"Node not yet initialized!");}
+
+    virtual ~BcVertex(){}
+    // virtual Vertex* copy(const SegBase&)=0; // Copy the boundary condition vertex
+    virtual string gettype() const=0;
+    virtual enum connectpos connectPos() const=0;
+    us segNumber() const {return segnumber;}
+  private:
+    us segnumber;
+    
   };
   
 

@@ -10,15 +10,16 @@
 #ifndef _IMPEDANCEBC_H_
 #define _IMPEDANCEBC_H_
 
-#include "bcvertex.h"
+#include "tubebcvertex.h"
 #include "momentumeq.h"
 
 
 namespace tube{
+  using segment::connectpos;
 
   class RightImpedanceMomentumEq:public Momentum{
   public:
-    RightImpedanceMomentumEq(const Tube&,TubeBcVertex&,vd& Z);
+    RightImpedanceMomentumEq(TubeBcVertex&,vd& Z);
     ~RightImpedanceMomentumEq(){}
     vd Error();
     dmat dUi();
@@ -28,17 +29,22 @@ namespace tube{
     dmat drhoim1();
     dmat drhoi();
     vd& Z;
-    
   }; 
 
   class RightImpedance:public TubeBcVertex // Adiabatic impedance boundary condition
   {
   public:
-    RightImpedance(const Tube& t,vd Z);
-    ~RightImpedance(){}
-    void updateW();
     vd Z;			// The impedance
     RightImpedanceMomentumEq mright; // Completely adjusted equation
+    
+    virtual string gettype() const {return string("RightImpedance");}
+    virtual enum connectpos connectPos() const {return connectpos::right;}
+    RightImpedance(us segnr,vd Z);
+    RightImpedance(const RightImpedance& o);
+    ~RightImpedance(){}
+    void updateW(const Geom& geom);
+
+
 
   };
 

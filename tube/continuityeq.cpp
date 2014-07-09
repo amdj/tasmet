@@ -1,6 +1,5 @@
 #include "continuityeq.h"
 #include "tubevertex.h"
-#include "tube.h"
 
 #define CONT_VISCOSITY
 #define CONT_SCALE (1.0)//(pow(gc.c0,2)) //(pow(gc.c0,2)/gc.omg)
@@ -9,8 +8,8 @@
 
 
 namespace tube{
-  Continuity::Continuity(const Tube& tube,TubeVertex& gp):
-    TubeEquation(tube,gp){
+  Continuity::Continuity(TubeVertex& gp):
+    TubeEquation(gp){
     TRACE(0,"Continuity constructor done");
     Wim1=Wi=Wip1=Wddt=0;		// Initialize to zero
   }

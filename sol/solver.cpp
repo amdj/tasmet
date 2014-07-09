@@ -4,9 +4,32 @@
 namespace tasystem{
 
 
-  Solver::Solver(TAsystem& sys1): sys(sys1){
-
+  Solver::Solver(const TAsystem& sys1) {
+    TRACE(6,"Solver(TAsystem&)");
+    sys=new TAsystem(sys1);
   }
+  Solver::Solver(const Solver& other){
+    if(other.sys!=NULL)
+      sys=new TAsystem(*other.sys);
+    else
+      sys=NULL;
+  }
+  Solver& Solver::operator=(const Solver& other){
+    if(sys!=NULL)
+      delete sys;
+    if(other.sys!=NULL)
+      sys=new TAsystem(*other.sys);
+    else
+      sys=NULL;
+    return *this;
+  }
+  
+  Solver::~Solver(){
+      TRACE(-5,"~Solver()");
+      if(sys!=NULL)
+	delete sys;
+    }
+
   void Solver::DoIter(d dampfac){
     // Do an iteration
     using math_common::esdmat;

@@ -15,16 +15,15 @@
 namespace tube{    
   class RightImpedanceMomentumEq;
   class LeftPressure;
+  using segment::Geom;
+  using tasystem::Globalconf;
   
   class TubeVertex:public segment::Vertex{ //Gridpoint at a position in a Tube
-  public:
-    TubeVertex(const Tube& tube1,us i);
-    TubeVertex(const TubeVertex&); // The copy constructor.
-    void operator=(const TubeVertex&);
-    virtual ~TubeVertex();
 
-    const Tube& tube;			// Pointer to parent tube
-    virtual void updateW();
+  public:
+  // protected:
+    d wLl,wRr,wLr,wRl;		// Weight functions for equations
+    d wL0,wL1,wRNm1,wRNm2;    	// Special boundary weight functions
 
     Continuity c;		// Continuity equation
     Momentum m;			// Momentum equation
@@ -32,6 +31,13 @@ namespace tube{
     State s;			// State equation (ideal gas)
     Solidenergy se;		// Solid energy equation
     Isentropic is;
+
+    TubeVertex();  
+    void operator=(const TubeVertex&);
+    virtual ~TubeVertex();
+
+    virtual void updateW(const Geom& geom,const SegBase* thisseg=NULL,const SegBase* left=NULL,const SegBase* right=NULL);
+    void Init(us i,const Globalconf& gc,const Geom&);   
     // These virtual functions are required such that boundary
     // condition sources can be added in a later stage by inheriting
     // from this TubeVertex. By default these sources are not a
@@ -50,9 +56,6 @@ namespace tube{
     friend class RightImpedanceMomentumEq;
     friend class LeftPressure;
     
-  // protected:
-    d wLl,wRr,wLr,wRl;		// Weight functions for equations
-    d wL0,wL1,wRNm1,wRNm2;    	// Special boundary weight functions
     
   };				// TubeVertex class
 } // namespace tube

@@ -8,39 +8,37 @@
 #pragma once
 #ifndef TUBE_H_
 #define TUBE_H_
-#include "globalconf.h"
 #include "seg.h"
-#include "geom.h"
 #include "drag.h"
-#include "tubevertex.h"
-#include "var.h"
 #include <vtypes.h>
-#include <material.h>
 #include <math_common.h>
 // #include <Eigen/Sparse>
 
 
-
-
 namespace tube{
   SPOILNAMESPACE
-  using arma::sp_mat;  
+
   using namespace segment;
+  
 
   class Tube:public Seg {
   public:
+    LaminarDragResistance drag;
+    
     Tube(Geom geom);
-    Tube(const Tube& othertube); // Copy constructor only copies geometry.
+    Tube(const Tube& othertube); // Copy constructor copies everything!
+    Tube& operator=(const Tube& othertube); // And again, we copy everything.
     ~Tube();
     vd GetResAt(us varnr,us freqnr); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
   protected:
     void Init(const tasystem::Globalconf& gc);
-    LaminarDragResistance drag;
+
     friend class TubeVertex;
     friend class Continuity;
     friend class Momentum;
   private:
-
+    void cleanup();
+    void build();
   };				// Tube class
 
 } /* namespace tube */

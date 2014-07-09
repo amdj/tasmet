@@ -1,10 +1,8 @@
 #include "drag.h"
-#include "tube.h"
-#include "tubevertex.h"
 
 namespace tube{
 
-  DragResistance::DragResistance(const Tube& t):tube(t),
+  DragResistance::DragResistance(const SegBase& t):tube(t),
 gc(tube.gc)  {  }
   dmat DragResistance::dUi(const Vertex& vertex) const {
     const us& Ns=gc->Ns;
@@ -45,7 +43,7 @@ vc LaminarDragResistance::ComplexResistancecoef(const TubeVertex& vertex) const 
     vc Resistancecoef=I*rho0*omgvec%(fnu/(1.0-fnu));
     return Resistancecoef;
 }
-  LaminarDragResistance::LaminarDragResistance(const Tube&t):DragResistance(t),zfd(t){
+  LaminarDragResistance::LaminarDragResistance(const SegBase&t):DragResistance(t),zfd(t){
     rf=rottfuncs::rottfuncs(tube.geom.shape); // Reinitialize thermoviscous functions with right shape
   }
   vd LaminarDragResistance::operator()(const TubeVertex& vertex) const {
@@ -89,7 +87,7 @@ vc LaminarDragResistance::ComplexResistancecoef(const TubeVertex& vertex) const 
     }
     d zerodrag_blapprox(d mu,d rh){ return 0; }
     
-    ZerofreqDrag::ZerofreqDrag(const Tube& t): tube(t){
+    ZerofreqDrag::ZerofreqDrag(const SegBase& t): tube(t){
       TRACE(0,"ZerofreqDrag::ZerofreqDrag()");
       if(tube.geom.shape=="vert")
 	zerodrag_funptr=&zerodrag_vert;

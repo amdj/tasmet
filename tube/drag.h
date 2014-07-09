@@ -2,18 +2,18 @@
 #ifndef _DRAG_H_
 #define _DRAG_H_
 
-#include "var.h"
-#include <math_common.h>
-#include "globalconf.h"
+#include "segbase.h"
+#include "tubevertex.h"
 #include "rottfuncs.h"
 
 //Drag parameter (flow resistance in a tube)
 
 namespace tube{
   SPOILNAMESPACE
-  class Tube;
-  class TubeVertex;
-  class Vertex;
+  using segment::SegBase;
+  using segment::Vertex;
+
+  
   namespace laminardrag{
     // Resistance force for laminar flow for the zero-frequency. 
     d zerodrag_vert(d mu,d rh);
@@ -21,25 +21,25 @@ namespace tube{
     d zerodrag_blapprox(d mu,d rh);
     class ZerofreqDrag{
     public:
-      ZerofreqDrag(const Tube& t);
+      ZerofreqDrag(const SegBase& t);
       d operator()(d mu,d rh,d U) const ; // Full resistance in Newtons
       d operator()(d mu,d rh) const;	// Resistance coefficient
       ~ZerofreqDrag();
     private:
       d (*zerodrag_funptr)(d,d);
-      const Tube& tube;
+      const SegBase& tube;
     };
   } // namespace laminardrag
 
 
   class DragResistance{
   public:
-    DragResistance(const Tube& t);
+    DragResistance(const SegBase& t);
     virtual ~DragResistance();
     virtual vd operator()(const Vertex&) const;
     virtual dmat dUi(const Vertex&) const;
   protected:
-    const Tube& tube;
+    const SegBase& tube;
     const tasystem::Globalconf* gc=NULL;
 
   };
@@ -47,7 +47,7 @@ namespace tube{
   class LaminarDragResistance:public DragResistance
   {
   public:
-    LaminarDragResistance(const Tube& t);
+    LaminarDragResistance(const SegBase& t);
     vd operator()(const TubeVertex& vertex) const;
     virtual dmat dUi(const TubeVertex&) const;		// Derivative of drag resistance to volume flow
   private:

@@ -1,9 +1,9 @@
 #include "tubevertex.h"
-#include "tube.h"
-#include "pressurebc.h"
+
+
 namespace tube{
 
-  TubeVertex::TubeVertex(const Tube& tube1,us i):Vertex(tube1,i),tube(tube1),c(tube,*this),m(tube,*this),e(tube,*this),s(tube,*this),se(tube,*this),is(tube,*this)
+  TubeVertex::TubeVertex():c(*this),m(*this),e(*this),s(*this),se(*this),is(*this)
   {
     TRACE(0,"TubeVertex contructor");
     
@@ -14,16 +14,14 @@ namespace tube{
     eq[3]=&s;
     eq[4]=&se;
   }
-
-  TubeVertex::TubeVertex(const TubeVertex& told):TubeVertex(told.tube,told.i){
-    TRACE(0,"TubeVertex::operator(),tgp");
-    TRACE(-1,"Copied TubeVertex i:"<<i);
+  void TubeVertex::Init(us i,const Globalconf& gc,const Geom& geom){
+    Vertex::Init(i,gc,geom);
+    for(us i=0;i<Neq;i++)
+      eq[i]->Init(gc);
   }
-  void TubeVertex::updateW(){
+  void TubeVertex::updateW(const Geom& geom,const SegBase* thisseg,const SegBase* left,const SegBase* right){
     TRACE(1,"TubeVertex::updateW()");
-    Vertex::updateW();
-    const us& Ncells=tube.Ncells;
-    const Geom& geom=seg.geom;
+    Vertex::updateW(geom);
 
     // Initialize weight functions to zero
     wLl=0; wLr=0; wRr=0; wRl=0;
@@ -62,12 +60,12 @@ namespace tube{
 
     if(i==0 && left!=NULL){
       TRACE(10,"Jacobian evaluation requires coupling of segments...");
-      if(left->seg.gettype().compare("Tube")==0){ // Its a Tube
-	if(*left->seg.right[0]==seg){
+      if(left->gettype().compare("Tube")==0){ // Its a Tube
+	if(*left->right[0]==*thisseg){
 	  TRACE(5,"Connected current head to left segment's tail");
-	  const us& LeftNcells=left->seg.Ncells;
-	  d L=left->seg.geom.L;
-	  vxim1=left->seg.geom.vx(LeftNcells-1)-L;
+	  const us& LeftNcells=left->geom.Ncells;
+	  d L=left->geom.L;
+	  vxim1=left->geom.vx(LeftNcells-1)-L;
 	  TRACE(6,"vxi:"<<vxi);
 	  TRACE(6,"vxim1:"<<vxim1);
 	}
@@ -75,7 +73,7 @@ namespace tube{
 	  TRACE(5,"Connected current head to left segment's head");
 	  TRACE(6,"vxi:"<<vxi);
 	  TRACE(6,"vxim1:"<<vxim1);
-	  vxim1=-left->seg.geom.vx(0);
+	  vxim1=-left->geom.vx(0);
 	  wLl=(vxi-xL)/(vxi-vxim1);
 	  UsignL=-1;
       	}
@@ -84,26 +82,26 @@ namespace tube{
       }
       else{			// Its not a Tube
 	TRACE(20,"Error, this kind of coupling not yet implemented. Exiting...");
-	TRACE(20,"Seg on left side: "<< right->seg.gettype());
+	TRACE(20,"Seg on left side: "<< right->gettype());
 	exit(1);
       }
     } // i==0 and left!=NULL
     
     else if((i==Ncells-1) && right!=NULL) {
       TRACE(10,"Jacobian evaluation requires coupling of segments...");
-      if(right->seg.gettype().compare("Tube")==0){ // Its a Tube
-	if(*right->seg.left[0]==seg){
+      if(right->gettype().compare("Tube")==0){ // Its a Tube
+	if(*right->left[0]==*thisseg){
 	  TRACE(5,"Connected current tail to right segment's head");
-	  d L=seg.geom.L;
-	  vxip1=right->seg.geom.vx(0)+seg.geom.L;
+	  d L=geom.L;
+	  vxip1=right->geom.vx(0)+thisseg->geom.L;
 	  TRACE(6,"vxi:"<<vxi);
 	  TRACE(6,"vxip1:"<<vxip1);
 	}
       	else{
 	  TRACE(5,"Connected current tail to right segment's tail");
-	  const us& RightNcells=right->seg.Ncells;
-	  const d& RightL=right->seg.geom.L;
-	  vxip1=RightL-right->seg.geom.vx(Ncells)+seg.geom.L;
+	  const us& RightNcells=right->geom.Ncells;
+	  const d& RightL=right->geom.L;
+	  vxip1=RightL-right->geom.vx(Ncells)+geom.L;
 	  TRACE(6,"vxi:"<<vxi);
 	  TRACE(6,"vxip1:"<<vxip1);
 	  UsignR=-1;
@@ -113,7 +111,7 @@ namespace tube{
       }
       else{			// Its not a Tube
 	TRACE(20,"Error, this kind of coupling not yet implemented. Exiting...");
-	TRACE(20,"Seg on left side: "<< right->seg.gettype());
+	TRACE(20,"Seg on left side: "<< right->gettype());
 	exit(1);
       }
     } // i==Ncells-1 and right!=NULL

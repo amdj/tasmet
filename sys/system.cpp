@@ -1,37 +1,74 @@
 #include "system.h"
+#include "impedancebc.h"
 
 namespace tasystem{
 
-  TAsystem::TAsystem(const Globalconf& gc):gc(gc),Nsegs(0),Ndofs(0){
-    // setGc(gc);
+  void copysegs(TAsystem& to,const TAsystem& from){
+    for(us i=0;i<from.getNsegs();i++)
+      if(from[i]!=NULL)
+	to.addseg(*from[i]);
+      else
+	TRACE(50,"Warning! Segment is NULL");
   }
-  TAsystem::TAsystem(const TAsystem& o): gc(o.gc),Nsegs(o.Nsegs),Ndofs(o.Ndofs)
+  // void copybc()
+  
+  TAsystem::TAsystem(const Globalconf& gc):gc(gc){}
+  TAsystem::TAsystem(const TAsystem& o): gc(o.gc)
   {
     TRACE(10,"TAsystem copy cc");
+    copysegs(*this,o);
+  }
 
-    
+  TAsystem& TAsystem::operator=(const TAsystem& other){
+    cleanup();
+    gc=other.gc;
+    copysegs(*this,other);
+    return *this;
+  }
+  void TAsystem::cleanup(){
+    for(us i=0;i<Nsegs;i++)
+      delete segs[i];
+    for(us i=0;i<Nbc;i++)
+      delete bcvertexes[i];
+    Nsegs=0;
+    Nbc=0;
+  }
+  BcVertex* TAsystem::getBc(us i) const {
+      if(i<Nbc)
+	return bcvertexes[i];
+      else
+	return NULL;
+	
+    }
+  void TAsystem::addseg(const Seg& seg){
+    TRACE(10,"TAsystem::addseg()");
+    segs.push_back(copyseg(seg));
+    // Put the segment in the array
+
+    Nsegs++;			// Update number of segments
+  }
+  void TAsystem::addbc(const BcVertex& vertex){
+    TRACE(0,"TAsystem::addbc()");
+    bcvertexes.push_back(copybc(vertex));
+    Nbc++;
   }
   
+  void TAsystem::Init(){
+    TRACE(10,"TAsystem::Init()");
+    // connectbc(bcvertexes[Nbc]->segNumber(),*bcvertexes[Nbc],right);
+    // Seg* s=segs[Ndofs];
+    // TRACE(2,"Initialize segments...");
+    // s->Init(gc);
+    // segfirstcol(Nsegs)=Ndofs;
+    // Ndofs+=s->getNcells()*gc.Ns*Neq;	// number of cells times number of equations times number of time samples
+    // segndofs(Nsegs)=s->getNdofs();
+
+  }
   void TAsystem::setGc(const Globalconf& gc){
     this->gc=gc;
     for(us i=0;i<Nsegs;i++){
       segs[i]->Init(gc);
     }
-  }
-  vd TAsystem::Error(){
-    TRACE(1,"TAsystem::Error()");
-    
-    vd Error(Ndofs);
-    us segdofs;
-    us startdof=0;
-
-    for(us i=0;i<Nsegs;i++){
-      segdofs=segndofs(i);
-      startdof=segfirstcol(i);
-      Error.subvec(startdof,startdof+segdofs-1)=segs[i]->Error();
-      startdof=startdof+segdofs;
-    }
-    return Error;
   }
   void TAsystem::setnodes(us segnr,us nl,us nr){
     TRACE(1,"TAsystem::setnodes");
@@ -83,7 +120,7 @@ namespace tasystem{
       us lcol=(j+1)*thisndofs-1;
       TRACE(10,"Filling system Jacobian submat...");
       jac.submat(frow,fcol,lrow,lcol)=			\
-	segjac.cols(Neq*gc.Ns,segjac.n_cols-Neq*Ns);
+	segjac.cols(Neq*gc.Ns,segjac.n_cols-1-Neq*Ns);
 
       TRACE(10,"Jacobian submat succesfully filled.");
       
@@ -125,24 +162,32 @@ namespace tasystem{
     } // end for loop
     return jac;
   }
+  vd TAsystem::Error(){
+    TRACE(1,"TAsystem::Error()");
+    
+    vd Error(Ndofs);
+    us segdofs;
+    us startdof=0;
 
-  void TAsystem::addseg(Segptr s){
-    TRACE(10,"TAsystem::addseg()");
-    if(Nsegs==MAXSEGS){
-      TRACE(0,"Warning: maximum segments reached");
-      return;
+    for(us i=0;i<Nsegs;i++){
+      segdofs=segndofs(i);
+      startdof=segfirstcol(i);
+      Error.subvec(startdof,startdof+segdofs-1)=segs[i]->Error();
+      startdof=startdof+segdofs;
     }
-    // Put the segment in the array
-    segs.push_back(s);
-    s->Init(gc);
-    segfirstcol(Nsegs)=Ndofs;
-    Ndofs+=s.getNcells()*gc.Ns*Neq;	// number of cells times number of equations times number of time samples
-    segndofs(Nsegs)=s->getNdofs();
-    Nsegs++;			// Update number of segments    
-  }
-  Seg& TAsystem::operator[](us i){
-    return *(segs.at(i));
+    return Error;
   }
 
+  Seg* TAsystem::operator[](us i) const {
+    if(i<Nsegs)
+      return (segs[i]);
+    else
+      return NULL;
+  }
+  
+  TAsystem::~TAsystem() {
+    TRACE(-5,"~TAsystem()");
+    cleanup();
+  }
 } // namespace tasystem
 

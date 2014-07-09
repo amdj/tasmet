@@ -1,10 +1,9 @@
 #include "solidenergyeq.h"
 #include "tubevertex.h"
-#include "tube.h"
 
 namespace tube{
 
-  Solidenergy::Solidenergy(const Tube& tube,TubeVertex& gp):TubeEquation(tube,gp){
+  Solidenergy::Solidenergy(TubeVertex& gp):TubeEquation(gp){
     TRACE(0,"SolidSolidenergy constructor done");
   }
 

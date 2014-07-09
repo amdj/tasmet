@@ -3,9 +3,8 @@
 #ifndef _VERTEX_H_
 #define _VERTEX_H_
 
+#include "segbase.h"
 #include "var.h"
-#include "globalconf.h"
-#include "geom.h"
 #include "equation.h"
 
 #define Neq (5)
@@ -13,36 +12,18 @@
 
 namespace segment{
   SPOILNAMESPACE
-  using  tasystem::Globalconf;
+  using tasystem::Globalconf;
+  using segment::Geom;
   using variable::var;
+
   
-  class Seg;  
   class Vertex{
   public:
-    Vertex(const Seg& seg,us i);
-    Vertex(const Vertex&);	// Copy constructor
-    Vertex& operator=(const Vertex& v2); // Copy assignment
-    void Init(const Globalconf& gc){
-      this->gc=&gc;
-      this->updateW();
-      rho=var(gc);
-      U=var(gc);
-      T=var(gc);
-      p=var(gc);
-      Ts=var(gc);
-    }
-    virtual ~Vertex();
-    const Seg& seg;
-    const us i;			// The node number of this vertex
-    const tasystem::Globalconf *gc=NULL;
+    us i=0;			// The node number of this vertex
+    us Ncells=0;
+    const Globalconf *gc=NULL;
+    Equation* eq[Neq];		// Pointer array of all equations
 
-    virtual vd Error();				  // Compute error for this gridpoint
-    virtual dmat Jac();	       // Fill complete Jacobian for this node
-    virtual void SetRes(vd res);			  // Set result vector to res
-    virtual vd GetRes();				  // Extract current result vector
-
-
-    segment::Equation* eq[Neq];		// Pointer array of all equations
     const Vertex* left;
     const Vertex* right;
     variable::var rho;		// Density
@@ -51,8 +32,7 @@ namespace segment{
     variable::var p;		// Pressure
     variable::var Ts;		// Solid temperature
     variable::var* vars[Neq];
-
-    virtual void updateW();	       // Update weight functions of equations
+    
     d vSf;			// Vertex fluid cross-sectional area
     d vSs;			// Vertex solid cross-sectional area
     d vVf;			// Vertex cell fluid volume
@@ -67,6 +47,22 @@ namespace segment{
     d dxm;			// Distance to nearby left node
 
     d vxim1,vxi,vxip1;    		// Vertex position of left and right vertex
+    
+    Vertex();
+    virtual ~Vertex();
+    Vertex(const Vertex&);	
+    Vertex& operator=(const Vertex& v2); // Copy assignment
+    void Init(us i,const Globalconf& gc,const Geom& geom);
+
+    virtual void updateW(const Geom&);	       // Update weight functions of equations
+    vd Error();				  // Compute error for this gridpoint
+    dmat Jac();	       // Fill complete Jacobian for this node
+    void SetRes(vd res);			  // Set result vector to res
+    vd GetRes();				  // Extract current result vector
+
+
+
+
   };
 } // namespace segment
 

@@ -1,16 +1,15 @@
 #include "tubeequation.h"
-#include "tube.h"
 #include "tubevertex.h"
 
 namespace tube{
 
-  TubeEquation::TubeEquation(const Tube& tube,TubeVertex& tgp):Equation(),i(tgp.i),tube(tube),vertex(tgp),left(vertex.left),right(vertex.right),geom(tube.geom),Ncells(geom.Ncells)
+  TubeEquation::TubeEquation(TubeVertex& tgp):Equation(tgp),vertex(tgp),i(vertex.i),Ncells(vertex.Ncells),left(vertex.left),right(vertex.right)
   {
     TRACE(0,"TubeEquation constructor");
     // Geometrical parameters
 
   }
-  TubeEquation::TubeEquation(const TubeEquation& other):TubeEquation(other.tube,other.vertex){
+  TubeEquation::TubeEquation(const TubeEquation& other):TubeEquation(other.vertex){
     TRACE(0,"TubeEquation copy constructor");
   }
   void TubeEquation::Init(const Globalconf& gc1){
@@ -42,7 +41,7 @@ namespace tube{
 					    // operations
     const us& Ns=gc->Ns;		// Number of samples
     us bw=Ns-1;
-    const us Ncells=tube.geom.Ncells;
+
     // For an unconnected boundary node, we need to shift all
     // equations one block to make space for connection to i-2 and i+2
     // derivatives

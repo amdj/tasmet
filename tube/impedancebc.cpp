@@ -6,13 +6,14 @@
 
 
 namespace tube{
-  RightImpedance::RightImpedance(const Tube& t,vd Z1):TubeBcVertex(t,t.getNcells()-1),Z(Z1),mright(t,*this,Z){
+  RightImpedance::RightImpedance(us segnr,vd Z1):TubeBcVertex(segnr),Z(Z1),mright(*this,Z){
     TRACE(2,"RightImpedance constructor");
     // Change continuity equation for open boundary
   }
-  void RightImpedance::updateW(){
+  RightImpedance::RightImpedance(const RightImpedance& other):RightImpedance(other.segNumber(),other.Z){}
+  void RightImpedance::updateW(const Geom& geom){
     TRACE(1,"RightImpedance::updateW()");
-    TubeVertex::updateW();
+    TubeVertex::updateW(geom);
     c.Wddt=vVf;
     c.Wim1=wRNm2-wLl;
     c.Wi  =wRNm1-wLr;
@@ -40,8 +41,8 @@ namespace tube{
     e.Wji  =wLr-wRNm1;
     e.Wjip1=0;
     
-    d xi=tube.geom.vx(i);
-    d xim1=tube.geom.vx(i-1);	 
+    d xi=geom.vx(i);
+    d xim1=geom.vx(i-1);	 
     d dxm=xi-xim1;
     e.Wc1=-SfL/dxm;
     e.Wc2= SfL/dxm;
@@ -53,7 +54,7 @@ namespace tube{
     // Conduction terms are not changed.
     
   }
-  RightImpedanceMomentumEq::RightImpedanceMomentumEq(const Tube& t,TubeBcVertex& tv,vd& Z):Momentum(t,tv),Z(Z){
+  RightImpedanceMomentumEq::RightImpedanceMomentumEq(TubeBcVertex& tv,vd& Z):Momentum(tv),Z(Z){
     TRACE(20,"RightImpedanceMomentumEq::RightImpedanceMomentumEq()");
     TRACE(20,"Z:\n"<<Z)
   }

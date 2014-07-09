@@ -7,7 +7,7 @@ namespace tube{
   class Continuity:public TubeEquation{	// Tube continuity equation 
   public:
 
-    Continuity(const Tube& tube,TubeVertex& gp);
+    Continuity(TubeVertex& gp);
     ~Continuity();
   
     vd Error();			// Error in this equation at this node

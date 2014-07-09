@@ -9,17 +9,17 @@ include(UseCython)
 add_definitions(-DLOGLEVEL=nonlinearlogger)
 #enable_testing()
 set(CMAKE_C_COMPILER gcc)
-set(CMAKE_CXX_COMPILER g++)
+set(CMAKE_CXX_COMPILER clang++)
 
 ######################### VERBOSE MAKEFILE
 #set(CMAKE_VERBOSE_MAKEFILE on)
 ##########################################
 
 set (CMAKE_CXX_FLAGS "-std=c++11 -march=native -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address")
-set (CMAKE_CXX_FLAGS "-std=c++11 -march=native -fPIC -Wall -Wno-unused-function -Wno-unknown-warning-option  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address")
+# set (CMAKE_CXX_FLAGS "-std=c++11 -march=native -fPIC -Wall -Wno-unused-function -Wno-unknown-warning-option  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address")
 
 #set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -O3 -march=native -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address  -ffunction-sections -fdata-sections")
-
+set(CMAKE_CXX_FLAGS "-std=c++11 -fPIC")
 #configure_file (logger.h.in  "${CMAKE_CURRENT_SOURCE_DIR}/logger.h")
 
 AUX_SOURCE_DIRECTORY(tube tubesources)
@@ -56,10 +56,10 @@ set(PYTHON_LIBRARY libpython2.7.so)
 
 add_library(nonlin ${nonlinear_SRC})
 
-add_executable(test123 test.cpp)
+add_executable(test123 test123.cpp)
 target_link_libraries(test123 nonlin math_common armadillo)
-add_executable(multitube multitube.cpp)
-target_link_libraries(multitube nonlin math_common armadillo)
+# add_executable(multitube multitube.cpp)
+# target_link_libraries(multitube nonlin math_common armadillo)
 
 # If the pyx file is a C++ file, we should specify that here.
 set_source_files_properties(
@@ -71,17 +71,19 @@ set_source_files_properties(
 set(CYTHON_CXX_EXTENSION cpp)
 set(CYTHON_FLAGS -I/usr/local/include --timestamps)
 
-cython_add_module(pytube pytube.pyx)
-cython_add_module(doubletube doubletube.pyx)
-set_target_properties(pytube doubletube  PROPERTIES COMPILE_FLAGS "-Wno-cpp -Wno-strict-aliasing")
+# cython_add_module(pytube pytube.pyx)
+# cython_add_module(doubletube doubletube.pyx)
+# set_target_properties(pytube doubletube  PROPERTIES COMPILE_FLAGS "-Wno-cpp -Wno-strict-aliasing")
 
-target_link_libraries(doubletube nonlin math_common armadillo)
-target_link_libraries(pytube nonlin math_common armadillo)
+# target_link_libraries(doubletube nonlin math_common armadillo)
+# target_link_libraries(pytube nonlin math_common armadillo)
 target_link_libraries(test123 math_common armadillo)
 
+# To execute the test directly
+add_custom_command(TARGET test123 POST_BUILD COMMAND test123 -5)
 
-#add_library(pytube SHARED pytube.cpp)
-#set_target_properties(pytube PROPERTIES PREFIX "")
+# add_library(pytube SHARED pytube.cpp)
+# set_target_properties(pytube PROPERTIES PREFIX "")
 
 #target_link_libraries(pytube python2.7)
 # The headers which have to be installed
@@ -89,7 +91,7 @@ target_link_libraries(test123 math_common armadillo)
 #enable_testing()
 #add_test(test_cpp test COMMAND test)
 #add_custom_target(testtest COMMAND test)
-# add_custom_command(TARGET test123 POST_BUILD COMMAND test123)
+
 #Install library to library directory
 #install(TARGETS math_common DESTINATION lib)
 #add_library(math_common SHARED ${math_common_SRC})

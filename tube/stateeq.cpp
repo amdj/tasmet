@@ -1,12 +1,11 @@
 #include "stateeq.h"
-#include "tube.h"
 #include "tubevertex.h"
 
 #define STATE_SCALE (1.0)
 
 namespace tube{
 
-  State::State(const Tube& tube,TubeVertex& gp):TubeEquation(tube,gp){
+  State::State(TubeVertex& gp):TubeEquation(gp){
     TRACE(0,"State constructor done");
   }
 

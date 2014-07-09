@@ -5,14 +5,18 @@
 
 namespace tasystem{
 
-class Solver
-{
-public:
-  Solver(TAsystem& tasys);
-  void DoIter(d dampfac=1.0);
-private:
-  TAsystem sys;
-};
+  class Solver
+  {
+  public:
+  private:
+    TAsystem* sys=NULL;
+  public:
+    Solver(const TAsystem& tasys);
+    Solver(const Solver& other);
+    Solver& operator=(const Solver& other);
+    void DoIter(d dampfac=1.0);
+    ~Solver();
+  };
 
 } // namespace tasystem
 

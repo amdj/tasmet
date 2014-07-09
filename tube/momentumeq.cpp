@@ -1,13 +1,12 @@
 #include "momentumeq.h"
-#include "tubevertex.h"
-#include "tube.h"
-
+#include "drag.h"
 #include "momscale.h"
+#include "tubevertex.h"
 // #define MOM_VISCOSITY
 
 namespace tube{
 
-  Momentum::Momentum(const Tube& tube,TubeVertex& gp):TubeEquation(tube,gp){
+  Momentum::Momentum(TubeVertex& gp):TubeEquation(gp){
     TRACE(0,"Momentum constructor...");
   }
   vd Momentum::Error(){		// Error in momentum equation
