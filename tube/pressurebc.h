@@ -7,9 +7,7 @@
 
 namespace tube{
 
-  using tasystem::Globalconfptr;  
   using variable::var;
-
   using segment::connectpos;
   
   class LeftPressure:public TubeBcVertex

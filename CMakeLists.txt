@@ -22,6 +22,7 @@ set (CMAKE_CXX_FLAGS "-std=c++11 -march=native -fPIC -Wall -Wno-unused-function 
 set(CMAKE_CXX_FLAGS "-std=c++11 -fPIC")
 #configure_file (logger.h.in  "${CMAKE_CURRENT_SOURCE_DIR}/logger.h")
 
+
 AUX_SOURCE_DIRECTORY(tube tubesources)
 AUX_SOURCE_DIRECTORY(var varsources)
 AUX_SOURCE_DIRECTORY(seg segsources)
@@ -48,6 +49,7 @@ include_directories(
   var
   tube
   common
+  models
   )
 
 # math_common should be linked to armadillo
@@ -80,7 +82,7 @@ cython_add_module(pytube pytube.pyx)
 target_link_libraries(test123 math_common armadillo)
 
 # To execute the test directly
-add_custom_command(TARGET test123 POST_BUILD COMMAND test123 )
+# add_custom_command(TARGET test123 POST_BUILD COMMAND test123 )
 
 # add_library(pytube SHARED pytube.cpp)
 # set_target_properties(pytube PROPERTIES PREFIX "")

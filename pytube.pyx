@@ -7,82 +7,53 @@ cdef class pytube:
     cdef Geom* geom1
     cdef Globalconf* gc
     cdef Solver* sol
-
+    cdef TAsystem* sys
+    cdef Tube* tube1
     def __cinit__(self,us gp,us Nf,d freq,d L,d S,d T0,d p0,n.ndarray[n.float64_t,ndim=1] p1,string cshape,int loglevel,d kappa):
         # self.thisl=new isentropictube(gp,Nf,1.,1.,freq,Up)
         # print "New tube initialized"
-        initlog(loglevel)
         self.Nf=Nf
         self.freq=freq
-        # print "freq:",freq
         self.gp=gp
-        self.Nf=Nf
-        # print "p0:",p0
-        cdef d phi=1.0
-        cdef d R=n.sqrt(S/n.pi)
-        cdef d rh=S/(2*n.pi*R)
-        cdef d Mach=abs(p1[1]**2+p1[2]**2)/p0
-        # print "rh:",rh
-        print "cshape:",cshape
-        cdef d Mass=0
-        cdef d dx=L/float(gp)
-        # print "dx:", dx
-        # print "kappa:",kappa
-        # cdef d S
-        # print p1
-        cdef Geom* geom1=new Geom(gp,L,S,phi,rh,cshape)
-        self.tube1=new Tube(self.geom1[0])
-        del self.geom1
-
-        self.gc=new Globalconf(Nf,freq,"air",T0,p0,Mach,S,dx,Mass,kappa)
-        self.pL=new var(self.gc[0])
-        if(Nf>0):
-            self.pL.set(dndtovec(p1))
-        self.lp=new LeftPressure(self.tube1[0],self.pL[0])
-        del self.pL
-        self.tube1.setLeftbc(self.lp)     #tube1 owns the bc vertex, so do not delete the memory!
+        # self.sol=Fubini(gp,Nf,freq,L,S,c(0),loglevel,kappa)
 
 
-    cpdef setRightImpedance(self,n.ndarray[n.float64_t,ndim=1] Z):
-        print "setRightImpedance called."
-        cdef vd Zvec=dndtovec(Z)
-        self.ri=new RightImpedance(self.tube1.get()[0],Zvec)
-        self.tube1.setRightbc(self.ri)
-        self.sys=new TAsystem(self.gc[0])
-        self.sys.addseg(<Seg&> self.tube1)
-        self.sol=new Solver(self.sys[0])
-    def __dealloc__(self):
-        del self.sol
-        del self.sys
-        del self.tube1
-        del self.gc
-        del self.geom1
-    cpdef getNf(self):
-        return self.Nf
-    cpdef getgp(self):
-        return self.gp
-    cpdef getx(self):
-        return dvectond(self.tube1[0].geom.vx)
-    cpdef Error(self):
-        return dvectond(*self.sys.Error())
-    cpdef GetRes(self):
-        return dvectond(*self.sys.GetRes())
-    cpdef DoIter(self,d relaxfac):
-        self.sol.DoIter(relaxfac)
-    cpdef SetRes(self,n.ndarray[n.float64_t,ndim=1] res):
-        self.tube1.SetRes(dndtovec(res))
-    cpdef GetResVar(self,_type,freqnr):
-        if _type=='pres':
-            return dvectond(*self.tube1.GetResAt(3,freqnr))
-        elif _type=='rho':
-            return dvectond(*self.tube1.GetResAt(0,freqnr))
-        elif _type=='temp':
-            return dvectond(*self.tube1.GetResAt(2,freqnr))
-        elif _type=='volu':
-            return dvectond(*self.tube1.GetResAt(1,freqnr))
+    # cpdef setRightImpedance(self,n.ndarray[n.float64_t,ndim=1] Z):
+    #     print "setRightImpedance called."
+    #     cdef vd Zvec=dndtovec(Z)
+    #     self.ri=new RightImpedance(self.tube1.get()[0],Zvec)
+    #     self.tube1.setRightbc(self.ri)
+    #     self.sys=new TAsystem(self.gc[0])
+    #     self.sys.addseg(<Seg&> self.tube1)
+    #     self.sol=new Solver(self.sys[0])
+    # def __dealloc__(self):
+
+    # cpdef getNf(self):
+    #     return self.Nf
+    # cpdef getgp(self):
+    #     return self.gp
+    # cpdef getx(self):
+    #     return dvectond(self.tube1[0].geom.vx)
+    # cpdef Error(self):
+    #     return dvectond(*self.sys.Error())
+    # cpdef GetRes(self):
+    #     return dvectond(*self.sys.GetRes())
+    # cpdef DoIter(self,d relaxfac):
+    #     self.sol.DoIter(relaxfac)
+    # cpdef SetRes(self,n.ndarray[n.float64_t,ndim=1] res):
+    #     self.tube1.SetRes(dndtovec(res))
+    # cpdef GetResVar(self,_type,freqnr):
+    #     if _type=='pres':
+    #         return dvectond(*self.tube1.GetResAt(3,freqnr))
+    #     elif _type=='rho':
+    #         return dvectond(*self.tube1.GetResAt(0,freqnr))
+    #     elif _type=='temp':
+    #         return dvectond(*self.tube1.GetResAt(2,freqnr))
+    #     elif _type=='volu':
+    #         return dvectond(*self.tube1.GetResAt(1,freqnr))
         
-        else:
-            return None
+    #     else:
+    #         # return None
     # def getResult(self):
     #     cdef vector[double] res=self.thisl.getRes()
     #     return ToArray(res)

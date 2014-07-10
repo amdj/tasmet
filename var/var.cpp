@@ -110,7 +110,7 @@ namespace variable {
   }
 
   // Set methods
-  void var::set(double val,us freqnr) { //Set result for specific frequency zero,real one, -imag one, etc
+  void var::set(us freqnr,d val) { //Set result for specific frequency zero,real one, -imag one, etc
     updateNf();
     amplitudedata[freqnr]=val;
     idft();

@@ -14,7 +14,6 @@
 
 namespace variable {
   SPOILNAMESPACE
-  using tasystem::Globalconfptr;
 
   // void setfreq(d freq);
   // void setNf(us Nf);
@@ -48,7 +47,7 @@ namespace variable {
     vd tdata() const  {return timedata; } //Get time data vector
     d tdata(d t) const; //Extract the estimated value for a given time t
     //Set methods
-    void set(double,us); //Set result vector at specific frequency
+    void set(us freq,double val); //Set result vector at specific frequency
     void set(const vd values); //Set result vector to these values
     void set(const vc values); //Set result vector to these values, complex numbers
     void setResfluc(vd& values); //Set result vector for only unsteady Fourier components
