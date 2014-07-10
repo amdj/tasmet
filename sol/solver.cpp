@@ -5,7 +5,7 @@ namespace tasystem{
 
 
   Solver::Solver(const TAsystem& sys1) {
-    TRACE(6,"Solver(TAsystem&)");
+    TRACE(15,"Solver(TAsystem&)");
     sys=new TAsystem(sys1);
   }
   Solver::Solver(const Solver& other){
@@ -29,14 +29,29 @@ namespace tasystem{
       if(sys!=NULL)
 	delete sys;
     }
-
+  void Solver::Init()
+  {
+    TRACE(15,"Solver::Init()");
+    if (sys!=NULL) {
+      sys->Init();
+      hasinit=true;
+    }
+  }
   void Solver::DoIter(d dampfac){
     // Do an iteration
+    TRACE(15,"Solver::DoIter()");
+    if(!hasinit)
+      Init();
+    if(sys==NULL)
+      {
+	TRACE(15,"Error, no system defined!");
+	return;
+      }
     using math_common::esdmat;
     using math_common::evd;
-    TRACE(10,"Computing error...");
+    TRACE(15,"Computing error...");
     vd err=sys->Error();
-    TRACE(10,"Computing Jacobian...");
+    TRACE(15,"Computing Jacobian...");
     sdmat jac(sys->Jac());
     // *jac=sdmat(sys->Jac());
     // dmat jac=Jac();    
@@ -49,6 +64,7 @@ namespace tasystem{
     // TRACE(10,"jac2 (eigen):"<<endl<<jac2);
     TRACE(10,"Computing old x...");
     vd oldx=sys->GetRes();
+    TRACE(-1,"Old x:\n"<< oldx);
     try{
     // Eigen::SimplicialCholesky<esdmat,Eigen::COLAMDOrdering<int> > solver(jac2); // Werkt niet...
     // Eigen::SimplicialCholesky<esdmat,3 > solver(jac2); // Werkt niet...    

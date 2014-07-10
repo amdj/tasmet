@@ -22,7 +22,10 @@ namespace tube{
     LeftPressure(us,var&,var& temp);
 
     ~LeftPressure(){}
+    virtual void Init(us i,const Globalconf&,const Geom&);
+  protected:
     void updateW(const Geom& geom);
+  public:
     virtual string gettype() const {return string("LeftPressure");}
     virtual enum connectpos connectPos() const {return connectpos::left;}
     virtual vd msource() const;	// Prescribed left pressure

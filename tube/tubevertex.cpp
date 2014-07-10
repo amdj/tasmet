@@ -3,21 +3,26 @@
 
 namespace tube{
 
-  TubeVertex::TubeVertex():c(*this),m(*this),e(*this),s(*this),se(*this),is(*this)
+  TubeVertex::TubeVertex():c(*this),m(*this),e(*this),s(*this),se(*this),is(*this) { }
+  TubeVertex::TubeVertex(const TubeVertex& o):TubeVertex(){ }
+  TubeVertex& TubeVertex::operator=(const TubeVertex& o)
   {
-    TRACE(0,"TubeVertex contructor");
-    
-    eq[0]=&this->c;			// Continuity is first
-    eq[1]=&this->m;
+    return *this;
+  }
+  void TubeVertex::Init(us i,const Globalconf& gc,const Geom& geom)
+  {
+    TRACE(8,"TubeVertex::Init(gc,geom)");
+    Vertex::Init(i,gc,geom);
+    eq[0]=&c;			// Continuity is first
+    eq[1]=&m;
     eq[2]=&is; 			// Changed to isentropic
     // eq[2]=&e; 			// Full energy
     eq[3]=&s;
     eq[4]=&se;
-  }
-  void TubeVertex::Init(us i,const Globalconf& gc,const Geom& geom){
-    Vertex::Init(i,gc,geom);
+    
     for(us i=0;i<Neq;i++)
       eq[i]->Init(gc);
+    updateW(geom);
   }
   void TubeVertex::updateW(const Geom& geom,const SegBase* thisseg,const SegBase* left,const SegBase* right){
     TRACE(1,"TubeVertex::updateW()");

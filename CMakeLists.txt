@@ -71,7 +71,7 @@ set_source_files_properties(
 set(CYTHON_CXX_EXTENSION cpp)
 set(CYTHON_FLAGS -I/usr/local/include --timestamps)
 
-# cython_add_module(pytube pytube.pyx)
+cython_add_module(pytube pytube.pyx)
 # cython_add_module(doubletube doubletube.pyx)
 # set_target_properties(pytube doubletube  PROPERTIES COMPILE_FLAGS "-Wno-cpp -Wno-strict-aliasing")
 
@@ -80,7 +80,7 @@ set(CYTHON_FLAGS -I/usr/local/include --timestamps)
 target_link_libraries(test123 math_common armadillo)
 
 # To execute the test directly
-add_custom_command(TARGET test123 POST_BUILD COMMAND test123 -5)
+add_custom_command(TARGET test123 POST_BUILD COMMAND test123 )
 
 # add_library(pytube SHARED pytube.cpp)
 # set_target_properties(pytube PROPERTIES PREFIX "")

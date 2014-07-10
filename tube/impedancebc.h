@@ -37,14 +37,17 @@ namespace tube{
     vd Z;			// The impedance
     RightImpedanceMomentumEq mright; // Completely adjusted equation
     
-    virtual string gettype() const {return string("RightImpedance");}
-    virtual enum connectpos connectPos() const {return connectpos::right;}
+    
     RightImpedance(us segnr,vd Z);
     RightImpedance(const RightImpedance& o);
+    RightImpedance& operator=(const RightImpedance&);
     ~RightImpedance(){}
+    virtual void Init(us i,const Globalconf&,const Geom&);
+    
+    virtual string gettype() const {return string("RightImpedance");}
+    virtual enum connectpos connectPos() const {return connectpos::right;}
+  protected:
     void updateW(const Geom& geom);
-
-
 
   };
 

@@ -10,9 +10,14 @@ namespace tasystem{
   using tube::LeftPressure;
   using segment::connectpos;
 
-  void connectbc(Seg& seg,BcVertex& bc){
+  void connectbc(Seg& seg,const BcVertex& bc){
+    TRACE(14,"connectbc()");
     if(bc.connectPos()==connectpos::left)
       seg.setLeftbc((Vertex&) bc);
+    else if(bc.connectPos()==connectpos::right)
+      seg.setRightbc((Vertex&) bc);
+    else
+      cout << "WARNING: connectbc(): Bc type not understood!\n";
   }
 
   Seg* copyseg(const Seg& orig)

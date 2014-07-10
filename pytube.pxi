@@ -11,11 +11,6 @@ cdef extern from "seg.h" namespace "segment":
     cdef cppclass Seg:
         Seg(Globalconf& gc)
 
-cdef extern from "seg.h" namespace "segment":
-    cdef cppclass Segptr:
-        Segptr(*Seg)
-        Segptr(*Tube)
-        Seg* get()
         
 cdef extern from "system.h" namespace "tasystem":
     cdef cppclass TAsystem:
@@ -23,9 +18,6 @@ cdef extern from "system.h" namespace "tasystem":
         void addseg(Seg& seg)
         vd Error()
         vd GetRes()
-    cdef cppclass TAsystemptr:
-        TAsystemptr(*TAsystem)
-        TAsystem* get()
         
 cdef extern from "solver.h" namespace "tasystem":
     cdef cppclass Solver:

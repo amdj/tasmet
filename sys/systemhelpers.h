@@ -8,8 +8,11 @@ namespace tasystem{
   using segment::BcVertex;
   using segment::connectpos;
 
-  void connectbc(Seg&,const BcVertex&);
+  // enum SegCoupling{
+  //   headhead,tailtail,headtail,tailhead
+  // };
 
+  void connectbc(Seg&,const BcVertex&);
   Seg* copyseg(const Seg& orig);
   BcVertex* copybc(const BcVertex& orig);
 } // namespace tasystem

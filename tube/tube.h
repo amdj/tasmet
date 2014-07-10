@@ -31,7 +31,7 @@ namespace tube{
     ~Tube();
     vd GetResAt(us varnr,us freqnr); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
   protected:
-    void Init(const tasystem::Globalconf& gc);
+    virtual void Init(const tasystem::Globalconf& gc);
 
     friend class TubeVertex;
     friend class Continuity;

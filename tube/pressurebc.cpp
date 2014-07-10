@@ -16,8 +16,14 @@ namespace tube{
      // TRACE(-1,"TLt:"<<TLt);
      TL.settdata(TLt);
 
-   }
-   void LeftPressure::updateW(const Geom& geom){
+  }
+  void LeftPressure::Init(us i,const Globalconf& gc,const Geom& geom)
+  {
+    TubeVertex::Init(i,gc,geom);
+    updateW(geom);
+  }
+  void LeftPressure::updateW(const Geom& geom)
+  {
      // Change continuity equation for an open boundary
      TRACE(1,"LeftPressure::updateW()");
      TubeVertex::updateW(geom);

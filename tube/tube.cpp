@@ -21,19 +21,20 @@
 namespace tube {
   Tube::Tube(Geom geom):Seg(geom),drag(*this){
     // Fill vector of gridpoints with data:
-    TRACE(5,"Tube constructor started, filling gridpoints vector...");
+    TRACE(13,"Tube constructor started, filling gridpoints vector...");
 
     // globalconf instance is put in reference variable gc in
     // inherited class Seg
     build();
-    TRACE(5,"Tube constructor done");
+    TRACE(13,"Tube constructor done");
   }
   void Tube::build(){
+    TRACE(13,"Tube::build()");
     type="Tube";
     // vvertex=new Vertex*[Ncells];
     Nvertex=geom.Ncells;
     for(us i=0; i<Nvertex;i++){
-      TRACE(-1,"Tube vvertex i:"<<i);
+      TRACE(12,"Creating Tube vvertex "<<i << " ...");
       vvertex.push_back(vertexptr(new TubeVertex()));
       // Link the array
       if(i>0){
@@ -46,6 +47,7 @@ namespace tube {
 
   }
   void Tube::cleanup(){
+    TRACE(13,"Tube::cleanup()");
     for(us i=0;i<Nvertex;i++)
       vvertex[i].reset();
     Nvertex=0;
@@ -53,14 +55,14 @@ namespace tube {
   }
   
   Tube::Tube(const Tube& other):Tube(other.geom){
-    TRACE(0,"Tube copy constructor");
+    TRACE(13,"Tube copy constructor");
     this->gc=other.gc;
     this->Ndofs=other.Ndofs;
     this->left=other.left;
     this->right=other.right;
     this->nleft=other.nleft;
     this->nright=other.nright;
-    TRACE(0,"Tube copy constructor done.");
+    TRACE(13,"Tube copy constructor done.");
     // First runs the Seg copy constructor. This copies the pointers to left and righ segment of this one. Then the Seg base constructor is called from the Seg Cc. After that the Tube constructor is called to create the vertices.
   }
   Tube& Tube::operator=(const Tube& other){
@@ -72,9 +74,8 @@ namespace tube {
     return *this;
   }
   void Tube::Init(const tasystem::Globalconf& g){
-    TRACE(0,"Tube::Init()");
+    TRACE(13,"Tube::Init()");
     Seg::Init(g);
-    Ndofs=geom.Ncells*gc->Ns*Neq;
     for (us i=0;i<Nvertex;i++){
       // TRACE(-1,"i:"<<i);
       vvertex[i]->T.set(g.T0,0);

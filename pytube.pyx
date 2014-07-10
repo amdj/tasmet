@@ -1,17 +1,13 @@
 include "pytube.pxi"
 
+cdef extern from "fubini.h" namespace "":
+    Solver* Fubini(us gp,us Nf,d freq,d L,d S,c p1,int loglevel,d kappa)
 
 cdef class pytube:
     cdef Geom* geom1
     cdef Globalconf* gc
-    cdef TAsystemptr sys
     cdef Solver* sol
-    cdef Segptr tube1
-    cdef LeftPressure* lp
-    cdef RightImpedance* ri
-    cdef var* pL
-    cpdef int Nf,gp
-    cpdef double freq,Up
+
     def __cinit__(self,us gp,us Nf,d freq,d L,d S,d T0,d p0,n.ndarray[n.float64_t,ndim=1] p1,string cshape,int loglevel,d kappa):
         # self.thisl=new isentropictube(gp,Nf,1.,1.,freq,Up)
         # print "New tube initialized"

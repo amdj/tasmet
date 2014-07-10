@@ -34,11 +34,13 @@ namespace segment{
     Seg& operator=(const Seg&);
 
     // Coupling of segments
+    // ------------------------------ DEPRECATED!!
     void setRight(const Seg&);	   // Couple segment to some segment on left side
     void setLeft(const Seg&);		   // Couple segment to some segment on right side
-
+    // ------------------------------
+    
     // Initialized method (after adding to a system)
-    void Init(const tasystem::Globalconf&);			   // Initializer method. Different for each segment type
+    virtual void Init(const tasystem::Globalconf&);			   // Initializer method. Different for each segment type
 
     const us& getNdofs() const {return Ndofs;}
     const us& getNcells() const {return geom.Ncells;}

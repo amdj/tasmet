@@ -15,7 +15,10 @@ namespace segment{
     vars[4]=&Ts;
    
   }
+  Vertex::Vertex(const Vertex& o):Vertex(){}
+  Vertex& Vertex::operator=(const Vertex& o) {Vertex(); return *this;}
   void Vertex::Init(us i,const tasystem::Globalconf& g,const Geom& geom){
+    TRACE(8,"Vertex::Init()");
     this->i=i;
     this->Ncells=geom.Ncells;
     this->gc=&g;
@@ -29,7 +32,7 @@ namespace segment{
 
 
   void Vertex::updateW(const Geom& geom)  {
-    TRACE(1,"Vertex::updateW()");
+    TRACE(8,"Vertex::updateW()");
     Ncells=geom.Ncells;
     const vd& vx=geom.vx;
     vxi=vx(i);
@@ -62,28 +65,29 @@ namespace segment{
     // ****************************** End initialization
     
   }
-  Vertex&  Vertex::operator=(const Vertex& v2){ // Copy assignment
-    this->rho=v2.rho;
-    this->U=v2.U;
-    this->T=v2.T;
-    this->p=v2.p;
-    this->Ts=v2.Ts;
+  // Vertex&  Vertex::operator=(const Vertex& v2){ // Copy assignment
+  //   this->rho=v2.rho;
+  //   this->U=v2.U;
+  //   this->T=v2.T;
+  //   this->p=v2.p;
+  //   this->Ts=v2.Ts;
 
-    return *this;
+  //   return *this;
 
-  }
+  // }
   vd Vertex::Error()
   {
-    TRACE(0,"Vertex::Error()");
+    TRACE(7,"Vertex::Error()");
     // TRACE(-1,"Check for position i>0 && i<gp-1...");
     // assert(i>0 && i<seg.geom.gp-1);
     const us& Ns=gc->Ns;
-    TRACE(10,"Assignment of Ns survived:"<< Ns);
+    TRACE(7,"Assignment of Ns survived:"<< Ns);
     vd error(Neq*Ns);
     for(us k=0;k<Neq;k++)
       {
 	error.subvec(k*Ns,(k+1)*Ns-1)=eq[k]->Error();
       }
+    TRACE(7,"Vertex::Error() done.");
     return error;
   }
   vd Vertex::GetRes(){			// Get current result vector

@@ -7,7 +7,6 @@ namespace tasystem{
   SPOILNAMESPACE
   // This class can be copied safely
   class Globalconf;
-  typedef std::shared_ptr<tasystem::Globalconf> Globalconfptr;
 
   
   class Globalconf{

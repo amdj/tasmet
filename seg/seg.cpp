@@ -34,7 +34,7 @@ namespace segment{
   } // coupleSegs()
   
   Seg::Seg(Geom geom):SegBase(geom){
-    TRACE(0,"Seg::Seg()");
+    TRACE(13,"Seg::Seg(Geom)");
     Ndofs=0;
     type="Seg";
     for(us j=0;j<MAXCONNECT;j++){
@@ -47,6 +47,7 @@ namespace segment{
     // us& Ns=gc.Ns;
   }
   Seg::Seg(const Seg& other): SegBase(other){
+    TRACE(13,"Seg copy constructor");
     this->gc=other.gc;
     this->Ndofs=other.Ndofs;
     this->left=other.left;
@@ -57,25 +58,25 @@ namespace segment{
   }
   void Seg::Init(const tasystem::Globalconf& gc){
     this->gc=&gc;
-    const us& Ncells=geom.Ncells;
-    
-    assert(Ncells>0);
+    Nvertex=geom.Ncells;
+    assert(Nvertex>0);
+    Ndofs=geom.Ncells*gc.Ns*Neq;
     for(us i=0;i<Nvertex;i++){
       vvertex[i]->Init(i,gc,geom);
     }      
   }
   void Seg::setLeft(const Seg& Left){
-    TRACE(0,"Seg::SetLeft()");
+    TRACE(13,"Seg::SetLeft()");
     left[nleft]=&Left;
     nleft++;
   }
   void Seg::setRight(const Seg& Right){
-    TRACE(0,"Seg::SetRight()");
+    TRACE(13,"Seg::SetRight()");
     right[nright]=&Right;
     nright++;
   }
   void Seg::setLeftbc(const Vertex& v){
-    TRACE(0,"Seg::setLeftbc()");
+    TRACE(13,"Seg::setLeftbc()-----EMPTY!");
     // delete vvertex[0];
     // vvertex[0]=
       
@@ -88,10 +89,10 @@ namespace segment{
   }
 
   void Seg::setRightbc(const Vertex& v){
-    TRACE(0,"Seg::setRightbc()");
+    TRACE(13,"Seg::setRighbc()-----EMPTY!");
 
     // delete vvertex[Ncells-1];
-    const us& Ncells=geom.Ncells;
+    // const us& Ncells=geom.Ncells;
     // assert(Ncells>0);
     // vvertex[Ncells-1]=v;
     // vvertex[Ncells-2]->right=v.get();
@@ -100,7 +101,7 @@ namespace segment{
   
   dmat Seg::Jac(){			// Return Jacobian matrix of error operator
     // sdmat Seg::Jac(){			// Return Jacobian matrix of error operator    
-    TRACE(0," Seg::Jac().. ");
+    TRACE(8," Seg::Jac().. ");
     
     // TRACE(-1,"Ncells:"<<Ncells);
     // sdmat Jac(Ncells*Neq*Ns,Ncells*Neq*Ns);
@@ -111,17 +112,17 @@ namespace segment{
       Jacobian=dmat(Ncells*Neq*Ns,(Ncells+2)*Neq*Ns);    
     dmat vJac(Neq*Ns,3*Neq*Ns,fillwith::zeros);
     us firstrow,firstcol,lastrow,lastcol;
-    TRACE(9,"Filling Segment Jacobian matrix...");
+    TRACE(8,"Filling Segment Jacobian matrix...");
     // #pragma omp parallel for
     for(us j=0;j<Ncells;j++){			   // Fill the Jacobian
-      TRACE(8,"Obtaining vertex Jacobian...");
+      TRACE(3,"Obtaining vertex Jacobian...");
       vJac=vvertex[j]->Jac();
       // The row height of a vertex jacobian matrix is Neq*Ns, The
       // column with is 3*Neq*Ns, since the neigbouring vertex has to
       // be found
       firstrow=j*Neq*Ns;
       lastrow=(j+1)*Neq*Ns-1;
-      TRACE(8,"j:"<<j);
+      TRACE(3,"j:"<<j);
       if(j>0 && j<Ncells-1){
 	TRACE(0,"interior vertex jacobian, j="<<j);
 	firstcol=(j)*Neq*Ns;
@@ -146,7 +147,7 @@ namespace segment{
 	  lastcol=Jacobian.n_cols-1;
 	}
       }	// j==Ncells-1
-      TRACE(8,"Filling segment Jacobian with vertex subpart...");
+      TRACE(3,"Filling segment Jacobian with vertex subpart...");
       // cout << firstrow << " ";
       // cout << firstcol << " ";
       // cout << lastrow << " ";
@@ -154,11 +155,11 @@ namespace segment{
       // cout << "Jacsize:" << Jacobian.n_rows << " " << Jacobian.n_cols <<"\n";
       Jacobian.submat(firstrow,firstcol,lastrow,lastcol)=vJac;      
     }	// end for
-    TRACE(9,"Segment Jacobian done.");
+    TRACE(8,"Segment Jacobian done.");
     return Jacobian;
   }
   vd Seg::GetRes(){
-    TRACE(0,"Seg::Get()");
+    TRACE(8,"Seg::Get()");
     const us& Ncells=geom.Ncells;
     vd Result(Ndofs,fillwith::zeros);
     us Ns=gc->Ns;

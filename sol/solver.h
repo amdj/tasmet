@@ -8,14 +8,20 @@ namespace tasystem{
   class Solver
   {
   public:
-  private:
-    TAsystem* sys=NULL;
+
   public:
+    TAsystem* sys=NULL;
+    
     Solver(const TAsystem& tasys);
     Solver(const Solver& other);
     Solver& operator=(const Solver& other);
+
     void DoIter(d dampfac=1.0);
+    void Init();
     ~Solver();
+  private:
+    bool hasinit;
+    
   };
 
 } // namespace tasystem

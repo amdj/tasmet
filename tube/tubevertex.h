@@ -32,12 +32,14 @@ namespace tube{
     Solidenergy se;		// Solid energy equation
     Isentropic is;
 
-    TubeVertex();  
-    void operator=(const TubeVertex&);
+    TubeVertex();
+    TubeVertex(const TubeVertex&);
+    TubeVertex& operator=(const TubeVertex&);
     virtual ~TubeVertex();
-
-    virtual void updateW(const Geom& geom,const SegBase* thisseg=NULL,const SegBase* left=NULL,const SegBase* right=NULL);
-    void Init(us i,const Globalconf& gc,const Geom&);   
+  protected:
+    void updateW(const Geom& geom,const SegBase* thisseg=NULL,const SegBase* left=NULL,const SegBase* right=NULL);
+  public:
+    virtual void Init(us i,const Globalconf& gc,const Geom&);   
     // These virtual functions are required such that boundary
     // condition sources can be added in a later stage by inheriting
     // from this TubeVertex. By default these sources are not a

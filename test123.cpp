@@ -15,7 +15,7 @@ using namespace tube;
 
 int main(int argc,char* argv[]) {
   cout <<  "Running test..." << endl;
-  int loglevel=10;
+  int loglevel=4;
   us gp=4;
   us Nf=0;
   us Ns=2*Nf+1;
@@ -62,14 +62,30 @@ int main(int argc,char* argv[]) {
   // tube::RightImpedance bcright(geom1,Z);
   var pL(gc,p0);
   pL.set(1,1);
-  tube::LeftPressure bcleft(pL);
+  tube::LeftPressure bcleft(0,pL);
+
+  
   TAsystem sys(gc);
   sys.addseg(t1);
-
+  sys.addbc(bcleft);
   // // // // TRACE(0,bcright->Z);  
   tasystem::Solver sol(sys);
+  // sol.Init();
+  cout << "Ndofs for seg before adding :"<< t1.getNdofs()<< "\n";
+  cout << "Ndofs for seg in system :"<< sys[0]->getNdofs()<< "\n";
+  cout << "Ndofs for seg in solver:"<< (*sol.sys)[0]->getNdofs()<< "\n";
+
+  cout << "Ncells for seg before adding :"<< t1.getNcells()<< "\n";
+  cout << "Ncells for seg in system :"<< sys[0]->getNcells()<< "\n";
+  cout << "Ncells for seg :"<< (*sol.sys)[0]->getNcells()<< "\n";
+
+  sol.Init();
+  vd res=sol.sys->GetRes();
+  cout << "res:\n"<<res;
   // // vd x=t1.GetRmomes();
-  // sol.DoIter();
+  sol.DoIter();
+  res=sol.sys->GetRes();
+  cout << "res:\n"<<res;
 
 
   

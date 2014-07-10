@@ -56,6 +56,7 @@ namespace tasystem{
     TAsystem& operator=(const TAsystem& other);
     void Init();
     us getNsegs() const {return Nsegs;}
+    us getNbc() const {return Nbc;}
     // System with a
     // vector of segments
     vd Error();			// Total error vector

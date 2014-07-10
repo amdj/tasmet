@@ -24,14 +24,14 @@ namespace segment{
     const Globalconf *gc=NULL;
     Equation* eq[Neq];		// Pointer array of all equations
 
-    const Vertex* left;
-    const Vertex* right;
+    const Vertex* left=NULL;
+    const Vertex* right=NULL;
     variable::var rho;		// Density
     variable::var U;		// Volume flow
     variable::var T;		// Temperature
     variable::var p;		// Pressure
     variable::var Ts;		// Solid temperature
-    variable::var* vars[Neq];
+    variable::var* vars[Neq]={&rho,&U,&T,&p,&Ts};
     
     d vSf;			// Vertex fluid cross-sectional area
     d vSs;			// Vertex solid cross-sectional area
@@ -49,12 +49,15 @@ namespace segment{
     d vxim1,vxi,vxip1;    		// Vertex position of left and right vertex
     
     Vertex();
+    
     virtual ~Vertex();
-    Vertex(const Vertex&);	
+    // Standard copy constructor will suffice
+    Vertex(const Vertex&); 
     Vertex& operator=(const Vertex& v2); // Copy assignment
-    void Init(us i,const Globalconf& gc,const Geom& geom);
-
-    virtual void updateW(const Geom&);	       // Update weight functions of equations
+    virtual void Init(us i,const Globalconf& gc,const Geom& geom);
+  protected:
+    void updateW(const Geom&);	       // Update weight functions of equations
+  public:
     vd Error();				  // Compute error for this gridpoint
     dmat Jac();	       // Fill complete Jacobian for this node
     void SetRes(vd res);			  // Set result vector to res

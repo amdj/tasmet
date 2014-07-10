@@ -12,7 +12,7 @@
 #include <vtypes.h>
 
 namespace segment{
-
+  SPOILNAMESPACE
   enum connectpos{ left,right};  
   
   
@@ -20,14 +20,13 @@ namespace segment{
   {
 
   public:
-    BcVertex(us segnr):segnumber(segnr){TRACE(100,"Node not yet initialized!");}
-
+    BcVertex(us segnr);
     virtual ~BcVertex(){}
     // virtual Vertex* copy(const SegBase&)=0; // Copy the boundary condition vertex
     virtual string gettype() const=0;
     virtual enum connectpos connectPos() const=0;
     us segNumber() const {return segnumber;}
-  private:
+  protected:
     us segnumber;
     
   };

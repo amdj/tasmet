@@ -19,6 +19,12 @@ namespace tube{
   {
   public:
     TubeBcVertex(us segnr): BcVertex(segnr){}
+    TubeBcVertex(TubeBcVertex& o):TubeBcVertex(o.segNumber()) {}
+    TubeBcVertex& operator=(const TubeBcVertex&)
+    {
+
+      return *this;      
+    }
     virtual ~TubeBcVertex(){}
     // virtual Vertex* copy(const SegBase&)=0; // Copy the boundary condition vertex
   };
