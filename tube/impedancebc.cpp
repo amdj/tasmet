@@ -87,7 +87,6 @@ namespace tube{
 
     errorZ(0)*=MOM_SCALE0;
     error+=errorZ;
-
     return error;
   }
   dmat RightImpedanceMomentumEq::dpi(){

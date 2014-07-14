@@ -1,7 +1,8 @@
 /* test.cpp */
 
 #include "globalconf.h"
-#include "tube/tube.h"
+#include "tube.h"
+#include "twimpedance.h"
 #include "pressurebc.h"
 #include "tubevertex.h"
 #include "impedancebc.h"
@@ -16,8 +17,8 @@ using namespace tube;
 int main(int argc,char* argv[]) {
   cout <<  "Running test..." << endl;
   int loglevel=4;
-  us gp=4;
-  us Nf=0;
+  us gp=40;
+  us Nf=1;
   us Ns=2*Nf+1;
   double f=100;
   double omg=2*number_pi*f;
@@ -42,59 +43,38 @@ int main(int argc,char* argv[]) {
   d Mach=0.1;
   d kappa=0.1;
   Globalconf gc(Nf,f,"air",T0,p0,Mach,S0,griddx,0,kappa);
-  variable::var U(gc);
-  // U.set(1e-2,1);
-
-  U.set(1e0,3);    
-  // U.set(1e0,2);
-  TRACE(10,"U:"<<gc.fDFT*(U.tdata()));  
-  TRACE(10,endl<<gc.iDFT);
-  TRACE(10,"Usq::"<<(U*U)());
-
-  // TRACE(10,gc.DDTfd);
-
   Geom geom1(gp,L,S,phi,rh,"inviscid");
   Tube t1(geom1);
-  // TRACE(10,"Dl:"<<endl<<t1.vvertex[1]->eq[0]->D_l());
-  // TRACE(10,"-Dr:"<<endl<<-t1.vvertex[1]->eq[0]->D_r());  
 
-  // vd Z=(415/S)*ones<vd>(gc.Ns);
-  // tube::RightImpedance bcright(geom1,Z);
   var pL(gc,0);
-  pL.set(1,1);
+  if(Nf>0)
+    pL.set(1,1);
   tube::LeftPressure bcleft(0,pL);
-  tube::RightImpedance bcright(0,415*vd(Ns,fillwith::ones));
-
+  // tube::RightImpedance bcright(0,415*vd(Ns,fillwith::ones));
+  tube::TwImpedance bcright(0);
   cout << "left: "<<bcleft.left <<"\n" ;
   
   TAsystem sys(gc);
   sys.addseg(t1);
   sys.addbc(bcright);
-  cout << "left: "<<static_cast<LeftPressure*>(sys.getBc(0))->left<< "\n" ;
-  
   sys.addbc(bcleft);
-  // // // // // TRACE(0,bcright->Z);  
+
   Solver sol(sys);
-  cout << "left: "<<static_cast<LeftPressure*>(sol.sys->getBc(1))->left<< "\n" ;
-  // cout << "right: "<<static_cast<RightImpedance*>(sol.sys->getBc(0))->right<< "\n" ;
+
   sol.Init();
-  cout << "left: "<< sol.sys->getSeg(0)->vvertex[0]->left<< "\n" ;
-  // cout << "right: "<<static_cast<RightImpedance*>(sol.sys->getSeg(0)->vvertex[0right<< "\n" ;
-  // Solver sol1(sol);
-  // cout << "left: "<<static_cast<LeftPressure*>(sol1.sys->getBc(1))->left<< "\n" ; 
-  // sol1.Init();
-  // cout << "left: "<< sol1.sys->getSeg(0)->vvertex[0]->left<< "\n" ;
-  
-  // vd res=sol1.sys->GetRes();
+
+  Solver sol1(sol);
+  sol1.Init();
+  vd res=sol1.sys->GetRes();
   // cout << "res:\n"<<res;
-  // // vd err=sol1.sys->Error();
+  vd err=sol1.sys->Error();
   
   // // // vd x=t1.GetRmomes();
   // // vd err=sol.sys->Error();
   // // cout << "error:\n"<<err;
 
-  // // for(us i=0; i<4;i++)  
-  //   // sol1.DoIter();
+  for(us i=0; i<4;i++)  
+    sol1.DoIter();
   // res=sol1.sys->GetRes();
   // vd er=sol1.sys->Error();
   // cout << "res:\n"<<res;

@@ -1,11 +1,13 @@
 #include "systemhelpers.h"
 #include "tube.h"
 #include "impedancebc.h"
+#include "twimpedance.h"
 #include "pressurebc.h"
 
 namespace tasystem{
   using tube::Tube;
   using tube::RightImpedance;
+  using tube::TwImpedance;
   using tube::LeftPressure;
   using segment::connectpos;
 
@@ -36,7 +38,12 @@ namespace tasystem{
     if(orig.gettype().compare("RightImpedance")==0){
       TRACE(14,"Copying a RightImpedance bc...");
       return static_cast<BcVertex*>(new RightImpedance(static_cast<const RightImpedance&>(orig)));
-    } else if(orig.gettype().compare("LeftPressure")==0){
+    }
+    else if(orig.gettype().compare("TwImpedance")==0){
+      TRACE(14,"Copying a TwImpedance bc...");
+      return static_cast<BcVertex*>(new TwImpedance(static_cast<const TwImpedance&>(orig)));
+    }
+    else if(orig.gettype().compare("LeftPressure")==0){
       TRACE(14,"Copying a LeftPressure bc...");
       return static_cast<BcVertex*>(new LeftPressure(static_cast<const LeftPressure&>(orig)));
     }
@@ -49,6 +56,9 @@ namespace tasystem{
   Vertex* vertexfrombc(BcVertex* orig){
     if(orig->gettype().compare("RightImpedance")==0)
       return static_cast<Vertex*>(static_cast<RightImpedance*>(orig));
+    else if(orig->gettype().compare("TwImpedance")==0)
+      return static_cast<Vertex*>(static_cast<TwImpedance*>(orig));
+
     else if(orig->gettype().compare("LeftPressure")==0)
       return static_cast<Vertex*>(static_cast<LeftPressure*>(orig));
     else{

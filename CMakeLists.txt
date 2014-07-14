@@ -9,8 +9,8 @@ include(UseCython)
 add_definitions(-DLOGLEVEL=nonlinearlogger)
 #enable_testing()
 set(CMAKE_C_COMPILER gcc)
-# set(CMAKE_CXX_COMPILER clang++)
-set(CMAKE_CXX_COMPILER g++)
+set(CMAKE_CXX_COMPILER clang++)
+# set(CMAKE_CXX_COMPILER g++)
 ######################### VERBOSE MAKEFILE
 #set(CMAKE_VERBOSE_MAKEFILE on)
 ##########################################
