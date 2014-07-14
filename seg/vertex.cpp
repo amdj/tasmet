@@ -22,7 +22,7 @@ namespace segment{
     this->i=i;
     this->Ncells=geom.Ncells;
     this->gc=&g;
-    this->updateW(geom);
+    Vertex::updateW(geom);
     rho=var(*gc);
     U=var(*gc);
     T=var(*gc);
@@ -39,9 +39,9 @@ namespace segment{
     Ncells=geom.Ncells;
     const vd& vx=geom.vx;
     vxi=vx(i);
-    vxip1=0;
-    vxim1=0;
-    // Initialize distances to next node to zero
+    vxip1=0;			// To be filled below
+    vxim1=0;			// To be filled below
+    // initialize distances to next node to zero
     dxm=dxp=0;
     if(i>0){
       vxim1=vx(i-1);
