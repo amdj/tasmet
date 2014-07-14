@@ -21,7 +21,7 @@ namespace tube{
   {
     TRACE(8,"LeftPressure copy constructor");
     TRACE(8,"pL:"<<pL);
-    
+    TRACE(9,"LeftPressure left pointer:"<<left);
   }
   void LeftPressure::Init(us i,const Globalconf& gc,const Geom& geom)
   {

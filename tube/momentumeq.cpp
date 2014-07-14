@@ -88,7 +88,6 @@ namespace tube{
     // dUi+=vVf*tube.drag.dUi(i)/vSf;		       // Drag term
     dUi+=Wddt*gc->DDTfd*gc->fDFT*diagtmat(vertex.rho)*gc->iDFT; // Time-derivative term
     dUi+=2.0*Wui*gc->fDFT*(diagtmat(vertex.rho)*diagtmat(vertex.U))*gc->iDFT;
-    TRACE(30,"rho:"<<vertex.rho);
     // Artificial viscosity terms
     #ifdef MOM_VISCOSITY
     if(i>0 && i<Ncells-1){
@@ -99,7 +98,6 @@ namespace tube{
     else
       dUi+=-D_r();
     #endif
-    TRACE(50,"dUi:"<< dUi);    
     dUi.row(0)*=MOM_SCALE0;
     return MOM_SCALE*dUi;
   }
@@ -193,6 +191,8 @@ namespace tube{
     return MOM_SCALE*dpip1;
   }
   dmat Momentum::dUip2(){
+    TRACE(0,"Momentum:dUip2()");
+    TRACE(50,"i:"<<i);
     dmat dUip2=zero;
     if(i==0 && left==NULL)
       TRACE(20,"i is nul and left is nul");

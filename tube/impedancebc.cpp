@@ -83,9 +83,6 @@ namespace tube{
     vd error(gc->Ns,fillwith::zeros);
     // Add the normal stuff
     error+=Momentum::Error();  
-
-    TRACE(20,"Momentum added");
-
     vd errorZ=MOM_SCALE*vertex.SfR*Z%(vertex.wRNm1*vertex.U()+vertex.wRNm2*vertex.left->U());
 
     errorZ(0)*=MOM_SCALE0;
@@ -96,10 +93,6 @@ namespace tube{
   dmat RightImpedanceMomentumEq::dpi(){
     TRACE(1,"RightImpedanceMomentumEq::dpi()");
     dmat dpi=Momentum::dpi();
-    // dpi.row(0).zeros();
-
-    // Set mean pressure to zero on last node
-    // dpi(0,0)=MOM_SCALE*MOM_SCALE0;
     return dpi;
   }
   dmat RightImpedanceMomentumEq::dUi(){

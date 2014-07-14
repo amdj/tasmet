@@ -88,6 +88,7 @@ namespace tasystem{
 	TRACE(9,"Connecting boundary condition "<<i<<"...");
 	connectbc(*segs[bcvertices[i]->segNumber()],*bcvertices[i]);
       }
+
     for(us i=0;i<Nsegs;i++)
       {
 	TRACE(9,"Initializing Segment "<<i<<"...");

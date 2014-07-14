@@ -34,9 +34,9 @@ Solver* Fubini(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
   Tube t1(geom1);
   TRACE(30,"p1:"<<p1);
   var pL(gc);
-  // for(us i=0;i<Ns;i++)
-    // pL.set(i,p1(i));
-  pL.set(2,-1);
+  for(us i=0;i<Ns;i++)
+    pL.set(i,p1(i));
+
   TRACE(30,"pL:"<<pL());  
   LeftPressure pleft(0,pL);
   cout << pleft.pL();

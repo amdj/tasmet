@@ -66,7 +66,7 @@ namespace segment{
       if(i<Nvertex-1)
 	vvertex[i]->right=vvertex[i+1].get();
       if(i>0)
-	vvertex[i-1]->left=vvertex[i].get();
+	vvertex[i]->left=vvertex[i-1].get();
       TRACE(13,"Starting intialization of Vertex "<< i);
       vvertex[i]->Init(i,gc,geom);
     }      
@@ -95,7 +95,7 @@ namespace segment{
     // vvertex[0]=
     TRACE(13,"setLeftBc(): v:"<<v);
     vvertex[0].reset(v);
-    TRACE(13,"Segnumber of bc: " << ((BcVertex*) vvertex[0].get())->segNumber());
+    // TRACE(13,"Segnumber of bc: " << ((Vertex*) vvertex[0].get())->segNumber());
     // const us& Nvertex=geom.Nvertex;
     assert(Nvertex>0);
     vvertex[0]->right=vvertex[1].get();

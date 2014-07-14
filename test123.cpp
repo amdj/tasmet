@@ -64,44 +64,45 @@ int main(int argc,char* argv[]) {
   pL.set(1,1);
   tube::LeftPressure bcleft(0,pL);
   tube::RightImpedance bcright(0,415*vd(Ns,fillwith::ones));
+
+  cout << "left: "<<bcleft.left <<"\n" ;
   
   TAsystem sys(gc);
   sys.addseg(t1);
   sys.addbc(bcright);
-  sys.addbc(bcleft);
-  // // // // TRACE(0,bcright->Z);  
-  Solver sol(sys);
-  sol.Init();
-
-  Solver sol1(sol);
-  // cout << "Ndofs for seg before adding :"<< t1.getNdofs()<< "\n";
-  // cout << "Ndofs for seg in system :"<< sys[0]->getNdofs()<< "\n";
-  // cout << "Ndofs for seg in solver:"<< (*sol.sys)[0]->getNdofs()<< "\n";
-
-  // cout << "Ncells for seg before adding :"<< t1.getNcells()<< "\n";
-  // cout << "Ncells for seg in system :"<< sys[0]->getNcells()<< "\n";
-  // cout << "Ncells for seg :"<< (*sol.sys)[0]->getNcells()<< "\n";
-
-  sol1.Init();
-
-  vd res=sol1.sys->GetRes();
-  cout << "res:\n"<<res;
-  // vd err=sol1.sys->Error();
+  cout << "left: "<<static_cast<LeftPressure*>(sys.getBc(0))->left<< "\n" ;
   
-  // // vd x=t1.GetRmomes();
-  // vd err=sol.sys->Error();
-  // cout << "error:\n"<<err;
+  sys.addbc(bcleft);
+  // // // // // TRACE(0,bcright->Z);  
+  Solver sol(sys);
+  cout << "left: "<<static_cast<LeftPressure*>(sol.sys->getBc(1))->left<< "\n" ;
+  // cout << "right: "<<static_cast<RightImpedance*>(sol.sys->getBc(0))->right<< "\n" ;
+  sol.Init();
+  cout << "left: "<< sol.sys->getSeg(0)->vvertex[0]->left<< "\n" ;
+  // cout << "right: "<<static_cast<RightImpedance*>(sol.sys->getSeg(0)->vvertex[0right<< "\n" ;
+  // Solver sol1(sol);
+  // cout << "left: "<<static_cast<LeftPressure*>(sol1.sys->getBc(1))->left<< "\n" ; 
+  // sol1.Init();
+  // cout << "left: "<< sol1.sys->getSeg(0)->vvertex[0]->left<< "\n" ;
+  
+  // vd res=sol1.sys->GetRes();
+  // cout << "res:\n"<<res;
+  // // vd err=sol1.sys->Error();
+  
+  // // // vd x=t1.GetRmomes();
+  // // vd err=sol.sys->Error();
+  // // cout << "error:\n"<<err;
 
-  // for(us i=0; i<4;i++)  
-    // sol1.DoIter();
-  res=sol1.sys->GetRes();
-  vd er=sol1.sys->Error();
-  cout << "res:\n"<<res;
+  // // for(us i=0; i<4;i++)  
+  //   // sol1.DoIter();
+  // res=sol1.sys->GetRes();
+  // vd er=sol1.sys->Error();
+  // cout << "res:\n"<<res;
 
-  cout << "err:\n"<<er;
-  dmat Jac=sol1.sys->Jac();
-  sol1.sys->show();
-  cout << "Jac:\n"<< Jac;
+  // cout << "err:\n"<<er;
+  // dmat Jac=sol1.sys->Jac();
+  // sol1.sys->show();
+  // cout << "Jac:\n"<< Jac;
 
   return 0;
 }
