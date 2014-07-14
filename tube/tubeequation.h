@@ -2,44 +2,45 @@
 #ifndef _TUBEEQUATION_H_
 #define _TUBEEQUATION_H_
 
+#include "geom.h"
 #include "equation.h"
+#include "var.h"
 
 namespace tube{
   SPOILNAMESPACE  
   using namespace segment;
-
-  class Tube;
+  using tasystem::Globalconf;
+  using segment::Equation;
   class TubeVertex;
 
   
-  class TubeEquation:public segment::Equation{
+  class TubeEquation:public Equation{
   public:
-    TubeEquation(const Tube& tube,TubeVertex& gp);
-    ~TubeEquation();
-    TubeEquation(const TubeEquation& other); // Copy constructor
-    dmat diagtmat(const variable::var& v); // Create diagonal matrix with time domain data from variable
+    dmat zero;			// Zeros matrix of right size
+    TubeVertex& vertex;
     const us& i; 			// Current node
-    const Tube& tube;
-
-    TubeVertex& vertex;		// Reference to parent (current gridpoint)
+    const us& Ncells;
     const segment::Vertex*& left;
     const segment::Vertex*& right;
     
-    const dmat& fDFT,iDFT,DDTfd;	// forward, backward dicrete fourier transform, derivative to time matrix (freq domain)
+    TubeEquation(TubeVertex& gp);
+    virtual ~TubeEquation();
+    TubeEquation(const TubeEquation& other); // Copy constructor
+    dmat diagtmat(const variable::var& v); // Create diagonal matrix with time domain data from variable
+    void Init(const Globalconf& gc);
+    
+    // const dmat& fDFT,iDFT,DDTfd;	// forward, backward dicrete fourier transform, derivative to time matrix (freq domain)
     
     vd getp0(); 		// Create a vector of zero-pressure data
     vd getp0t();   		// Same, but then time domain data
-    const Geom& geom;
-    const us& Ncells;		// Number of cells
 
     virtual dmat Jac();		// Returns the local Jacobian of this equation
-    dmat zero;			// Zeros matrix of right size
+
     virtual dmat drhoim2();	// Derivative of current equation to density at node i-2
     virtual dmat dUim2();	// Etc
     virtual dmat dTim2();
     virtual dmat dpim2();
     virtual dmat dTsim2();
-
     
     virtual dmat drhoim1();	// Derivative of current equation to density at node i-1
     virtual dmat dUim1();	// Etc

@@ -1,39 +1,37 @@
 #include "drag.h"
-#include "tube.h"
-#include "tubevertex.h"
 
 namespace tube{
 
-  DragResistance::DragResistance(const Tube& t):tube(t),
+  DragResistance::DragResistance(const SegBase& t):tube(t),
 gc(tube.gc)  {  }
   dmat DragResistance::dUi(const Vertex& vertex) const {
-    const us& Ns=gc.Ns;
+    const us& Ns=gc->Ns;
     return dmat(Ns,Ns,fillwith::zeros); 
   }
   DragResistance::~DragResistance(){}
   vd  DragResistance::operator()(const Vertex& vertex) const {
     //Compute the drag resistance for each frequency at node i in the momentum equation
-    vd D(gc.Ns,fillwith::zeros);
+    vd D(gc->Ns,fillwith::zeros);
     return D;
   }
 vc LaminarDragResistance::ComplexResistancecoef(const TubeVertex& vertex) const {
     TRACE(0,"LaminarDragResistance::ComplexResistancecoef()");
-    const us& Nf=gc.Nf;
+    const us& Nf=gc->Nf;
     const us& i=vertex.i;
     d T0=vertex.T(0);	// Time-averaged temperature
-    d mu0=tube.gas.mu(T0);
-    d p0=vertex.p(0)+tube.gc.p0;
-    d rho0=tube.gas.rho(T0,p0);
+    d mu0=gc->gas.mu(T0);
+    d p0=vertex.p(0)+gc->p0;
+    d rho0=gc->gas.rho(T0,p0);
 
     const d& rh=tube.geom.rh(i);
     TRACE(-1,"rh: "<<rh);
     d omg,deltanu; 
     vc rh_over_deltanu(Nf);
     vc omgvec(Nf);
-    for(us j=0;j<gc.Nf;j++)
+    for(us j=0;j<gc->Nf;j++)
       {
 	TRACE(-1,"j:"<<j);
-	omg=gc.omg*(j+1);
+	omg=gc->omg*(j+1);
 	omgvec(j)=omg;
 	deltanu=sqrt(2*mu0/(rho0*omg));
 	TRACE(-1,"deltanu: " << deltanu);
@@ -45,14 +43,14 @@ vc LaminarDragResistance::ComplexResistancecoef(const TubeVertex& vertex) const 
     vc Resistancecoef=I*rho0*omgvec%(fnu/(1.0-fnu));
     return Resistancecoef;
 }
-  LaminarDragResistance::LaminarDragResistance(const Tube&t):DragResistance(t),zfd(t){
+  LaminarDragResistance::LaminarDragResistance(const SegBase&t):DragResistance(t),zfd(t){
     rf=rottfuncs::rottfuncs(tube.geom.shape); // Reinitialize thermoviscous functions with right shape
   }
   vd LaminarDragResistance::operator()(const TubeVertex& vertex) const {
     const us& i=vertex.i;
     const d& rh=tube.geom.rh(i);
     TRACE(0,"LaminarDragResistance::operator()");
-    const us& Nf=gc.Nf;
+    const us& Nf=gc->Nf;
     dmat dDdU=dUi(vertex);
     vd drag=dDdU*vertex.U();
     // VERY IMPORTANT: NOM
@@ -60,12 +58,12 @@ vc LaminarDragResistance::ComplexResistancecoef(const TubeVertex& vertex) const 
   }
   dmat LaminarDragResistance::dUi(const TubeVertex& vertex) const { // Derivative of drag resistance to velocity
     TRACE(0,"LaminarDragResistance::dUi()");
-    dmat dUi(gc.Ns,gc.Ns,fillwith::zeros);
+    dmat dUi(gc->Ns,gc->Ns,fillwith::zeros);
     const us& i=vertex.i;
     const d& rh=tube.geom.rh(i);
-    const us& Nf=gc.Nf;
+    const us& Nf=gc->Nf;
     d T0=vertex.T(0);	// Time-averaged temperature
-    d mu0=tube.gas.mu(T0);
+    d mu0=gc->gas.mu(T0);
 
     // The complex resistance coefficient vector has size Nf
     vc CResistance=ComplexResistancecoef(vertex);
@@ -89,7 +87,7 @@ vc LaminarDragResistance::ComplexResistancecoef(const TubeVertex& vertex) const 
     }
     d zerodrag_blapprox(d mu,d rh){ return 0; }
     
-    ZerofreqDrag::ZerofreqDrag(const Tube& t): tube(t){
+    ZerofreqDrag::ZerofreqDrag(const SegBase& t): tube(t){
       TRACE(0,"ZerofreqDrag::ZerofreqDrag()");
       if(tube.geom.shape=="vert")
 	zerodrag_funptr=&zerodrag_vert;

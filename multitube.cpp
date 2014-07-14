@@ -30,11 +30,11 @@ int main(int argc, char *argv[])
    // gp=4;
   tasystem::Globalconf gc(Nf,freq);
   tube::Geom g1(gp,L,S,1.0,S/PI,"circ");
-  tube::Tube t1(gc,g1);
-  tube::Tube t2(gc,g1);
+  tube::Tube t1(g1);
+  tube::Tube t2(g1);
   
   d p1=1;
-  variable::var presLeft(t1.gc);
+  variable::var presLeft(*t1.gc);
   if (Nf>0)
     presLeft.set(p1,1);	// One oscillation
 

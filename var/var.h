@@ -14,6 +14,7 @@
 
 namespace variable {
   SPOILNAMESPACE
+
   // void setfreq(d freq);
   // void setNf(us Nf);
   using namespace tasystem;
@@ -23,13 +24,21 @@ namespace variable {
 
 
   class var {
+  protected:
+    vd timedata,amplitudedata;
   public:
+    const Globalconf* gc=NULL;
+    us Nf=0,Ns=0;
+    
+    
+    var() {}
     var(const Globalconf&);	// Initialize with zeros
     var(const Globalconf&,double); // Initialize with one time-average value
     var(const Globalconf&,const vd& timedata); // Initialize with timedata!!!!
     // var& operator=(const var&);			  // Copy assignment operator
     // var operator()(const var&); //Copy constructor
     // Get methods
+    ~var();
     const d& operator()(us i) const;				   // Extract amplitude data result at specific frequency
     d& operator()(us i);				   // Extract amplitude data result at specific frequency    
 
@@ -45,7 +54,7 @@ namespace variable {
     vd tdata() const  {return timedata; } //Get time data vector
     d tdata(d t) const; //Extract the estimated value for a given time t
     //Set methods
-    void set(double,us); //Set result vector at specific frequency
+    void set(us freq,double val); //Set result vector at specific frequency
     void set(const vd values); //Set result vector to these values
     void set(const vc values); //Set result vector to these values, complex numbers
     void setResfluc(vd& values); //Set result vector for only unsteady Fourier components
@@ -66,12 +75,7 @@ namespace variable {
 						   // is defined
 						   // outside of the
 						   // class
-    ~var();
-    const Globalconf* gc;
-    us Nf,Ns;
-
   protected:
-    vd timedata,amplitudedata;	// The only real data in this class
     void dft();
     void idft();
     void updateNf();

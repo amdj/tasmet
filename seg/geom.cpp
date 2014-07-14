@@ -3,6 +3,7 @@ namespace segment{
 
   Geom::Geom(us gp,d L,d Sprismatic,d phiprismatic,d rhprismatic,string shape):shape(shape),gp(gp),Ncells(gp-1){
     TRACE(0,"Geom constructor");
+    prismatic=true;
     this->L=L;
     x=linspace(0,L,gp);
  
@@ -40,6 +41,24 @@ namespace segment{
     }
     TRACE(-1,"Celldata vx:"<<vx);
   }
-  
+  void Geom::show(){
+    if(true)
+      {
+	cout << "-------- Geometry --------\n"	\
+	     << "Ncells: " << Ncells << "\n"	\
+	     << "L     : " << L<< "\n"		\
+	     << "Shape : " << shape<< "\n"	\
+	  ;
+      }
+    if(prismatic)
+      {
+	cout << "S     : " << S(0) << "\n"	\
+	     << "Sf    : " << Sf(0) << "\n"	\
+	     << "phi   : " << phi(0) << "\n"	\
+	  ;
+      }
+    cout << "--------------------------\n"	\
+      ;
+  }
   Geom::~Geom(){}
 } // namespace segment

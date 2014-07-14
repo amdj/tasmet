@@ -3,18 +3,26 @@
 #define _SOLVER_H_
 #include "system.h"
 
-
-
 namespace tasystem{
 
-class Solver
-{
-public:
-  Solver(TAsystem& tasys);
-  void DoIter(d dampfac=1.0);
-private:
-  TAsystem& sys;
-};
+  class Solver
+  {
+  public:
+
+  public:
+    TAsystem* sys=NULL;
+    
+    Solver(const TAsystem& tasys);
+    Solver(const Solver& other);
+    Solver& operator=(const Solver& other);
+
+    void DoIter(d dampfac=1.0);
+    void Init();
+    ~Solver();
+  private:
+    bool hasinit;
+    
+  };
 
 } // namespace tasystem
 

@@ -9,7 +9,7 @@ namespace segment {
     Geom(us gp,d L,d S,d phi,d rh,string cshape);
     ~Geom();
     const string shape;	 // Shape keyword: currently available: 'circ','vert','blapprox'
-    
+    void show();
     const us gp;         // Number of cell walls
     const us Ncells;	 // Number of cells
     d L;		 //Length of the Segment
@@ -33,6 +33,7 @@ namespace segment {
     vd vrh;			// Hydraulic radius of vertex
   private:
     void Celldata();		// Compute all cell data
+    bool prismatic=false;
   };                            /* class Geom */
 }                               // namespace segment
 // 

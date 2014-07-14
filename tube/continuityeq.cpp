@@ -1,6 +1,5 @@
 #include "continuityeq.h"
 #include "tubevertex.h"
-#include "tube.h"
 
 #define CONT_VISCOSITY
 #define CONT_SCALE (1.0)//(pow(gc.c0,2)) //(pow(gc.c0,2)/gc.omg)
@@ -9,31 +8,32 @@
 
 
 namespace tube{
-  Continuity::Continuity(const Tube& tube,TubeVertex& gp):
-    TubeEquation(tube,gp){
-    TRACE(0,"Continuity constructor done");
+  Continuity::Continuity(TubeVertex& gp):
+    TubeEquation(gp){
+    TRACE(6,"Continuity constructor done");
     Wim1=Wi=Wip1=Wddt=0;		// Initialize to zero
   }
 
   vd Continuity::Error(){	// Current error in continuity equation
     // The default boundary implementation is an adiabatic no-slip wall.
-    vd error(Ns,fillwith::zeros);
-    error+=Wddt*DDTfd*vertex.rho();
-    error+=Wi*fDFT*(vertex.rho.tdata()%vertex.U.tdata());
+    TRACE(6,"Continuity::Error()");
+    vd error(gc->Ns,fillwith::zeros);
+    error+=Wddt*gc->DDTfd*vertex.rho();
+    error+=Wi*gc->fDFT*(vertex.rho.tdata()%vertex.U.tdata());
 
     if(i>0 || (i==0 && left!=NULL)){
       // Standard implementation of a no-slip (wall) boundary
       // condition
       vd rhoim1=left->rho.tdata();
       vd Uim1=left->U.tdata();
-      error+=Wim1*fDFT*(rhoim1%Uim1);
+      error+=Wim1*gc->fDFT*(rhoim1%Uim1);
     }
     if(i<Ncells-1 || (i==Ncells-1 && right!=NULL) ){
       // Standard implementation of a no-slip (wall) boundary
       // condition
       vd rhoip1=right->rho.tdata();
       vd Uip1=right->U.tdata();
-      error+=Wip1*fDFT*(rhoip1%Uip1);
+      error+=Wip1*gc->fDFT*(rhoip1%Uip1);
     }
 
 #ifdef CONT_VISCOSITY
@@ -60,8 +60,8 @@ namespace tube{
   }
   dmat Continuity::drhoi(){
     TRACE(0,"Continuity::drhoi()");
-    dmat drhoi=Wddt*DDTfd;		// Initialize and add first term
-    drhoi+=Wi*fDFT*diagtmat(vertex.U)*iDFT;
+    dmat drhoi=Wddt*gc->DDTfd;		// Initialize and add first term
+    drhoi+=Wi*gc->fDFT*diagtmat(vertex.U)*gc->iDFT;
 
     // Artificial viscosity terms
 #ifdef CONT_VISCOSITY
@@ -81,7 +81,7 @@ namespace tube{
   dmat Continuity::dUi(){
     TRACE(0,"Continuity::dUi()");
     dmat dUi=zero;
-    dUi+=Wi*fDFT*diagtmat(vertex.rho)*iDFT;
+    dUi+=Wi*gc->fDFT*diagtmat(vertex.rho)*gc->iDFT;
     dUi.row(0)*=CONT_SCALE0;    
     return CONT_SCALE*dUi;
   }
@@ -89,7 +89,7 @@ namespace tube{
     TRACE(0,"Continuity::dUip1()");
     dmat dUip1=zero;
     if(right!=NULL)
-      dUip1+=Wip1*fDFT*diagtmat(right->rho)*iDFT;
+      dUip1+=Wip1*gc->fDFT*diagtmat(right->rho)*gc->iDFT;
     dUip1.row(0)*=CONT_SCALE0;
     return CONT_SCALE*dUip1;
   }
@@ -97,7 +97,7 @@ namespace tube{
     TRACE(0,"Continuity::dUim1()");
     dmat dUim1=zero;
     if(left!=NULL)
-      dUim1+=Wim1*fDFT*diagtmat(left->rho)*iDFT;
+      dUim1+=Wim1*gc->fDFT*diagtmat(left->rho)*gc->iDFT;
     dUim1.row(0)*=CONT_SCALE0;
     return CONT_SCALE*dUim1;
   }
@@ -106,7 +106,7 @@ namespace tube{
     dmat drhoip1=zero;
 
     if(i<Ncells-1 || right!=NULL)
-      drhoip1=Wip1*fDFT*diagtmat(right->U)*iDFT;
+      drhoip1=Wip1*gc->fDFT*diagtmat(right->U)*gc->iDFT;
 
     // Artificial viscosity terms
 #ifdef CONT_VISCOSITY    
@@ -126,7 +126,7 @@ namespace tube{
     TRACE(0,"Continuity::drhoim1()");
     dmat drhoim1=zero;
     if(left!=NULL)
-      drhoim1+=Wim1*fDFT*diagtmat(left->U)*iDFT;
+      drhoim1+=Wim1*gc->fDFT*diagtmat(left->U)*gc->iDFT;
 
     // Artificial viscosity terms
     #ifdef CONT_VISCOSITY

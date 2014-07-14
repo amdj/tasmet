@@ -6,6 +6,7 @@ namespace tasystem{
   Globalconf::Globalconf(us Nf,d freq,string gas,d T0,d p0,d Mach,d S0,d dx,d Mass,d kappa):
     gas(gas)
   {
+    this->Gastype=gas;
     this->p0=p0;
     this->T0=T0;
     this->S0=S0;
@@ -14,6 +15,7 @@ namespace tasystem{
     this->Mass=Mass;
     this->c0=this->gas.cm(T0);
     this->kappa=kappa;
+    this->Mach=Mach;
     if(Nf==0 || Mach<1e-10)
       M=1.0;
     else
@@ -21,6 +23,18 @@ namespace tasystem{
     set(Nf,freq);
     TRACE(10,"Globalconf constructor done");
     
+  }
+  void Globalconf::show(){
+    cout << "------- Globalconf configuration ------ \n"			\
+	 << "------- Nf             : "<< Nf <<"\n"				\
+	 << "------- Base frequency : " << freq << " Hz\n"			\
+	 << "------- Gas            : " << Gastype << "\n"			\
+	 << "------- p0             : " << p0 << " [Pa] \n"			\
+	 << "------- T0             : " << T0 << " [K] \n"			\
+	 << "------- kappa:         : " << kappa << "\n"			\
+      ;
+    
+
   }
     void Globalconf::set(us Nf,d freq){
     TRACE(0,"Globalconf::set(Nf,freq)");
@@ -88,7 +102,7 @@ namespace tasystem{
       omgvec(i)=omg*i;
   }
   
-  Globalconf::~Globalconf(){}
+
 
 
 } // Namespace tasystem

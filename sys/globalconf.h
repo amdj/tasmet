@@ -1,14 +1,23 @@
 #pragma once
+#include <memory>
 #include <vtypes.h>
 #include <material.h>
 
 namespace tasystem{
   SPOILNAMESPACE
+  // This class can be copied safely
+  class Globalconf;
+
+  
   class Globalconf{
   public:
+    Globalconf(){}
     Globalconf(us Nf,d freq,string Gas="air",d T0=293.15,d p0=101325.0,d Mach=1.0,d S0=1.0,d dx=1.0,d Mass=0.0,d kappa=0.25);
-    ~Globalconf();
+    ~Globalconf(){TRACE(-5,"~Globalconf()");}
+    // Globalconf(const Globalconf& o): Globalconf(o.Nf,o.freq,o.Gastype,o.T0,o.p0,o.Mach,o.S0,o.dx,o.Mass,o.kappa){}
+
     gases::Gas gas;
+    string Gastype;
     us Nf;			// Number of frequencies to solve for
     us Ns;			// Corresponding number of time samples
 
@@ -22,7 +31,7 @@ namespace tasystem{
 
     
     d T0,p0;			/* Reference temperature and pressure (used to initialize a lot of variables. */
-    d Mass;			/* Fluid mass in the system (should remain constant) */
+    d Mass,Mach;			/* Fluid mass in the system (should remain constant) */
     vd omgvec;
     void set(us Nf,d freq);	// Set data for new frequency and number of samples
     dmat iDFT; //inverse discrete Fourier transform matrix
@@ -35,7 +44,7 @@ namespace tasystem{
     void setMass(d mass){ Mass=mass;}
     void setp0(d p) { p0=p;}
     void setgas(gases::Gas g){ gas=g;}
-    void show(){ }
+    void show();
     //    void setgas(string g){ gas(g);}
   protected:
     void updateiDFT();

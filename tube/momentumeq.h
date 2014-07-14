@@ -1,19 +1,21 @@
 #pragma once
 
-
 #include "tubeequation.h"
-#include "drag.h"
+
 
 namespace tube{
   SPOILNAMESPACE
+  class TubeVertex;
+  
   class Momentum:public TubeEquation
   {
   public:
-    Momentum(const Tube& tube,TubeVertex& gp);
+    Momentum(TubeVertex& gp);
     ~Momentum();
     d Wuim1,Wui,Wuip1,Wpim1,Wpi,Wpip1; // Weight functions
     d Wddt;			       // Time-derivative weight function
     virtual vd Error();			// Error in momentum equation at node i
+    virtual void show();
     dmat drhoi();
     dmat dUi();
     dmat dpi();

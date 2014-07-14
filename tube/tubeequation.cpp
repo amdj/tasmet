@@ -1,45 +1,47 @@
 #include "tubeequation.h"
-#include "tube.h"
 #include "tubevertex.h"
 
 namespace tube{
 
-  TubeEquation::TubeEquation(const Tube& tube,TubeVertex& tgp):Equation(tube.gc),i(tgp.i),tube(tube),vertex(tgp),left(vertex.left),right(vertex.right),fDFT(gc.fDFT),iDFT(gc.iDFT),DDTfd(gc.DDTfd),geom(tube.geom),Ncells(geom.Ncells)
+  TubeEquation::TubeEquation(TubeVertex& tgp):Equation(tgp),vertex(tgp),i(vertex.i),Ncells(vertex.Ncells),left(vertex.left),right(vertex.right)
   {
     TRACE(0,"TubeEquation constructor");
     // Geometrical parameters
 
-
-    zero=zeros<dmat>(tube.gc.Ns,tube.gc.Ns);
   }
-  TubeEquation::TubeEquation(const TubeEquation& other):TubeEquation(other.tube,other.vertex){
+  TubeEquation::TubeEquation(const TubeEquation& other):TubeEquation(other.vertex){
     TRACE(0,"TubeEquation copy constructor");
   }
+  void TubeEquation::Init(const Globalconf& gc1){
+    Equation::Init(gc1);
+    zero=zeros<dmat>(gc->Ns,gc->Ns);
+
+  }
   dmat TubeEquation::diagtmat(const variable::var& v){
-    dmat result(Ns,Ns,fillwith::zeros);
+    dmat result(gc->Ns,gc->Ns,fillwith::zeros);
     result.diag()=v.tdata();
     return result;
   }
   vd TubeEquation::getp0(){
     TRACE(0,"TubeEquation::getp0()");
-    vd p0(Ns,fillwith::zeros);
-    p0(0)=tube.gc.p0;
+    vd p0(gc->Ns,fillwith::zeros);
+    p0(0)=gc->p0;
     return p0;
   }
   vd TubeEquation::getp0t(){
     TRACE(0,"TubeEquation::getp0t()");
-    vd p0(Ns,fillwith::ones);
-    p0*=tube.gc.p0;
+    vd p0(gc->Ns,fillwith::ones);
+    p0*=gc->p0;
     return p0;
   }
   dmat  TubeEquation::Jac(){
     // Compute the Jacobian for the subsystem around the current gridpoint
     TRACE(0,"TubeEquation::Jac()");
-    const tasystem::Globalconf& gc=tube.gc; // Reference to variable
+    // const tasystem::Globalconf& gc=*this->gc; // Reference to variable
 					    // operations
-    const us& Ns=gc.Ns;		// Number of samples
+    const us& Ns=gc->Ns;		// Number of samples
     us bw=Ns-1;
-    const us Ncells=tube.geom.Ncells;
+
     // For an unconnected boundary node, we need to shift all
     // equations one block to make space for connection to i-2 and i+2
     // derivatives
@@ -47,7 +49,7 @@ namespace tube{
     // Order is: rho,U,T,p,Tw
     TRACE(-1,"Ns:" << Ns);
     // TRACE(-1,"rhoim1 size:"<< rhoim1);
-    TRACE(-2,"gc dft size:"<< gc.fDFT.size());
+    TRACE(-2,"gc dft size:"<< gc->fDFT.size());
     // submat: first row,first col,last row, last col
 
     long int offset=0;
@@ -89,7 +91,6 @@ namespace tube{
     result.submat(0,offset+7*Ns,bw,offset+7*Ns+bw)=dTi();
     result.submat(0,offset+8*Ns,bw,offset+8*Ns+bw)=dpi();
     result.submat(0,offset+9*Ns,bw,offset+9*Ns+bw)=dTsi();
-
 
     return result;
   }
@@ -176,30 +177,31 @@ namespace tube{
 
   // Artificial viscosity matrices
   dmat TubeEquation::D_r(){
-    const us& Ns=gc.Ns;		// Number of samples
+    const us& Ns=gc->Ns;		// Number of samples
     if(i==Ncells-1)
       return D_l();
     else {
       dmat Dr(Ns,Ns,fillwith::zeros);
       // Wesselings book: rj+0.5=speed of sound
       // TRACE(25,"dxp:"<<vertex.dxp);
-      Dr.diag()=gc.c0*gc.kappa*nu()*gc.dx/vertex.dxp;
+      Dr.diag()=gc->c0*gc->kappa*nu()*gc->dx/vertex.dxp;
       return Dr;
     }
   }
   dmat TubeEquation::D_l(){
-    const us& Ns=gc.Ns;		// Number of samples
+    const us& Ns=gc->Ns;		// Number of samples
     if(i==0)
       return D_r();
     else{
       dmat Dl(Ns,Ns,fillwith::zeros);
       // Wesselings book: rj+0.5=speed of sound
       // TRACE(25,"dxm:"<<vertex.dxm);
-      Dl.diag()=gc.c0*gc.kappa*nu()*gc.dx/vertex.dxm;
+      Dl.diag()=gc->c0*gc->kappa*nu()*gc->dx/vertex.dxm;
       return Dl;
     }
   }
   vd TubeEquation::nu(){
+    const d& Ns=gc->Ns;
     vd pi(Ns);
     vd pip1(Ns);
     vd pim1(Ns);    

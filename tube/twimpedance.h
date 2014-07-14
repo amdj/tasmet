@@ -6,9 +6,8 @@
 // for tubes as a custom vertex. Examples are adiabatic walls, isothermal walls and an
 // adiabatic open pressure boundary conditions.
 #pragma once
-
-#ifndef _IMPEDANCEBC_H_
-#define _IMPEDANCEBC_H_
+#ifndef _TWIMPEDANCE_H_
+#define _TWIMPEDANCE_H_
 
 #include "tubebcvertex.h"
 #include "momentumeq.h"
@@ -17,10 +16,10 @@
 namespace tube{
   using segment::connectpos;
 
-  class RightImpedanceMomentumEq:public Momentum{
+  class TwImpedanceMomentumEq:public Momentum{
   public:
-    RightImpedanceMomentumEq(TubeBcVertex&,vd& Z);
-    ~RightImpedanceMomentumEq(){}
+    TwImpedanceMomentumEq(TubeBcVertex&);
+    ~TwImpedanceMomentumEq(){}
     vd Error();
     dmat dUi();
     dmat dUim1();
@@ -28,23 +27,20 @@ namespace tube{
     dmat dpim1();
     dmat drhoim1();
     dmat drhoi();
-    vd& Z;
   }; 
 
-  class RightImpedance:public TubeBcVertex // Adiabatic impedance boundary condition
+  class TwImpedance:public TubeBcVertex // Adiabatic impedance boundary condition
   {
   public:
-    vd Z;			// The impedance
-    RightImpedanceMomentumEq mright; // Completely adjusted equation
+    TwImpedanceMomentumEq mright; // Completely adjusted equation
     
-    
-    RightImpedance(us segnr,vd Z);
-    RightImpedance(const RightImpedance& o);
-    RightImpedance& operator=(const RightImpedance&);
-    ~RightImpedance(){}
+    TwImpedance(us segnr);
+    TwImpedance(const TwImpedance& o);
+    TwImpedance& operator=(const TwImpedance&);
+    ~TwImpedance(){}
     virtual void Init(us i,const Globalconf&,const Geom&);
     
-    virtual string gettype() const {return string("RightImpedance");}
+    virtual string gettype() const {return string("TwImpedance");}
     virtual enum connectpos connectPos() const {return connectpos::right;}
   protected:
     void updateW(const Geom& geom);
@@ -56,7 +52,7 @@ namespace tube{
 } // namespace tube
 
 
-#endif /* _IMPEDANCEBC_H_ */
+#endif /* _TWIMPEDANCE_H_ */
 
 
 

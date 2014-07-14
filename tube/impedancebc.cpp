@@ -6,13 +6,34 @@
 
 
 namespace tube{
-  RightImpedance::RightImpedance(const Tube& t,vd Z1):TubeBcVertex(t,t.getNcells()-1),Z(Z1),mright(t,*this,Z){
-    TRACE(2,"RightImpedance constructor");
+  RightImpedance::RightImpedance(us segnr,vd Z1):TubeBcVertex(segnr),Z(Z1),mright(*this,Z){
+    TRACE(8,"RightImpedance constructor");
+    eq[1]=&mright;
     // Change continuity equation for open boundary
   }
-  void RightImpedance::updateW(){
-    TRACE(1,"RightImpedance::updateW()");
-    TubeVertex::updateW();
+  RightImpedance::RightImpedance(const RightImpedance& other):RightImpedance(other.segNumber(),other.Z)
+  {
+    TRACE(8,"RightImpedance copy cc."); 
+  }
+  RightImpedance& RightImpedance::operator=(const RightImpedance& o){
+    TRACE(8,"RightImpedance copy assignment operator");
+    setSegNumber(o.segNumber());
+    Z=o.Z;
+    eq[1]=&mright;
+    return *this;
+  }
+
+  void RightImpedance::Init(us i,const Globalconf& gc,const Geom& geom)
+  {
+    TRACE(8,"RightImpedance::Init(), vertex "<< i <<".");
+    TubeVertex::Init(i,gc,geom);
+    eq[1]=&mright;
+    mright.Init(gc);
+    updateW(geom);
+  }
+  
+  void RightImpedance::updateW(const Geom& geom){
+    TRACE(8,"RightImpedance::updateW()");
     c.Wddt=vVf;
     c.Wim1=wRNm2-wLl;
     c.Wi  =wRNm1-wLr;
@@ -40,8 +61,8 @@ namespace tube{
     e.Wji  =wLr-wRNm1;
     e.Wjip1=0;
     
-    d xi=tube.geom.vx(i);
-    d xim1=tube.geom.vx(i-1);	 
+    d xi=geom.vx(i);
+    d xim1=geom.vx(i-1);	 
     d dxm=xi-xim1;
     e.Wc1=-SfL/dxm;
     e.Wc2= SfL/dxm;
@@ -53,52 +74,24 @@ namespace tube{
     // Conduction terms are not changed.
     
   }
-  RightImpedanceMomentumEq::RightImpedanceMomentumEq(const Tube& t,TubeBcVertex& tv,vd& Z):Momentum(t,tv),Z(Z){
-    TRACE(20,"RightImpedanceMomentumEq::RightImpedanceMomentumEq()");
-    TRACE(20,"Z:\n"<<Z)
-  }
+  RightImpedanceMomentumEq::RightImpedanceMomentumEq(TubeBcVertex& tv,vd& Z):Momentum(tv),Z(Z){
+    TRACE(6,"RightImpedanceMomentumEq::RightImpedanceMomentumEq()");
+    TRACE(6,"Z:\n"<<Z)
+      }
   vd RightImpedanceMomentumEq::Error(){
-    TRACE(20,"RightImpedanceMomentumEq::Error()");
-    vd error(Ns,fillwith::zeros);
+    TRACE(4,"RightImpedanceMomentumEq::Error()");
+    vd error(gc->Ns,fillwith::zeros);
     // Add the normal stuff
     error+=Momentum::Error();  
-    // And add the right pressure as being an impedance times the
-    // velocity:
-    // TRACE(10,"wRNm1:"<<vertex.wRNm1);
-    // TRACE(10,"wRNm2:"<<vertex.wRNm2);
-    // TRACE(10,"Left U:"<<vertex.left->U());
-    // TRACE(10,"This U:"<<vertex.U());    
     vd errorZ=MOM_SCALE*vertex.SfR*Z%(vertex.wRNm1*vertex.U()+vertex.wRNm2*vertex.left->U());
-    // TRACE(10,"ErrorZ:\n"<<errorZ);
+
     errorZ(0)*=MOM_SCALE0;
     error+=errorZ;
-    // TRACE(10,"Z:"<<Z);
-    // TRACE(10,"Error:\n"<<error);
-    // Use time-averaged momentum equation to fix the pressure to p0
-    // at the last node
-    // Impedance-like
-    // error(0)=1.0*MOM_SCALE0*MOM_SCALE*(p(0)-Z(0)*U(0));
-
-    // Just set velocity at last node equalt to zero :Velocity zero
-    // error(0)=1.0*MOM_SCALE0*MOM_SCALE*U(0);
-
-    // Pressure opening
-    // error(0)+=wRNm1*MOM_SCALE0SfR*p(0)+wRNm2*SfR*left->p(0);
-
-    
-    // Pressure zero
-    // error(0)=MOM_SCALE0*MOM_SCALE*p(0);
-
-
     return error;
   }
   dmat RightImpedanceMomentumEq::dpi(){
     TRACE(1,"RightImpedanceMomentumEq::dpi()");
     dmat dpi=Momentum::dpi();
-    // dpi.row(0).zeros();
-
-    // Set mean pressure to zero on last node
-    // dpi(0,0)=MOM_SCALE*MOM_SCALE0;
     return dpi;
   }
   dmat RightImpedanceMomentumEq::dUi(){

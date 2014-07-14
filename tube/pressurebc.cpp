@@ -1,25 +1,41 @@
 #include "pressurebc.h"
-#include "bcvertex.h"
+
 namespace tube{
 
-  LeftPressure::LeftPressure(const Tube& t,variable::var& pres,variable::var& temp):TubeBcVertex(t,0),pL(pres),TL(temp) {
-     TRACE(0,"LeftPressure full constructor");
+  LeftPressure::LeftPressure(us segnr,const var& pres,const var& temp):TubeBcVertex(segnr),pL(pres),TL(temp) {
+     TRACE(8,"LeftPressure full constructor");
    }
-   LeftPressure::LeftPressure(const Tube& t,variable::var& pres):TubeBcVertex(t,0),pL(pres),TL(gc){
-     TRACE(0,"LeftPressure constructor for given pressure. Temperature computed");    
-     d T0=tube.gc.T0;
-     d gamma=tube.gas.gamma(T0);
-     vd p0(Ns,fillwith::ones); p0*=tube.gc.p0;
+  LeftPressure::LeftPressure(us segnr,const var& pres):TubeBcVertex(segnr),pL(pres),TL(*pres.gc){
+     TRACE(8,"LeftPressure constructor for given pressure. Temperature computed");    
+     const Globalconf* gc=pres.gc;
+     d T0=gc->T0;
+     d gamma=gc->gas.gamma(T0);
+     vd p0(gc->Ns,fillwith::ones); p0*=gc->p0;
      // TRACE(-1,"p0:"<<p0);
      vd TLt=T0*pow((p0+pL.tdata())/p0,gamma/(gamma-1.0));		// Adiabatic compression/expansion
      // TRACE(-1,"TLt:"<<TLt);
      TL.settdata(TLt);
 
-   }
-   void LeftPressure::updateW(){
+  }
+  LeftPressure::LeftPressure(const LeftPressure& other):LeftPressure(other.segNumber(),other.pL,other.TL)
+  {
+    TRACE(8,"LeftPressure copy constructor");
+    TRACE(8,"pL:"<<pL);
+    TRACE(9,"LeftPressure left pointer:"<<left);
+  }
+  void LeftPressure::Init(us i,const Globalconf& gc,const Geom& geom)
+  {
+    TRACE(8,"LeftPressure::Init()");
+    pL.gc=&gc;
+    TL.gc=&gc;
+    TubeVertex::Init(i,gc,geom);
+    LeftPressure::updateW(geom);
+  }
+
+  void LeftPressure::updateW(const Geom& geom)
+  {
      // Change continuity equation for an open boundary
-     TRACE(1,"LeftPressure::updateW()");
-     TubeVertex::updateW();
+     TRACE(8,"LeftPressure::updateW()");
      c.Wim1=0;
      c.Wi=wRl-wL0;
      c.Wip1=wRr-wL1;
@@ -41,8 +57,8 @@ namespace tube{
      e.Wji=wL0-wRl;
      e.Wjip1=wL1-wRr;
 
-     d vxi=tube.geom.vx(0);
-     d vxip1=tube.geom.vx(1);
+     d vxi=geom.vx(0);
+     d vxip1=geom.vx(1);
      d dxp=vxip1-vxi;
 
      e.Wc1=0;
@@ -53,8 +69,8 @@ namespace tube{
 
    }
    vd LeftPressure::msource() const{
-     TRACE(0,"LeftPressure::msource()");
-     vd msource(Ns,fillwith::ones);
+     TRACE(2,"LeftPressure::msource()");
+     vd msource(gc->Ns,fillwith::zeros);
      msource=-1.0*SfL*pL();
      // This one should not yet be scaled. The scaling is done in the
      // error term after adding this source.
@@ -62,13 +78,12 @@ namespace tube{
     return msource;
   }
   vd LeftPressure::esource() const {
-    TRACE(0,"LeftPressure::esource()");
-    vd esource(Ns,fillwith::zeros);
-    d vxi=tube.geom.vx(0);
+    TRACE(2,"LeftPressure::esource()");
+    vd esource(gc->Ns,fillwith::zeros);
     vd TLt=TL.tdata();
-    vd kappaL=tube.gas.kappa(TLt);
+    vd kappaL=gc->gas.kappa(TLt);
     // TRACE(10,"Important: put esource on when going back to full energy eq!");
-    esource+=-1.0*SfL*(e.fDFT*(kappaL%TLt))/vxi;
+    esource+=-1.0*SfL*(gc->fDFT*(kappaL%TLt))/vxi;
     TRACE(-1,"esource:"<<esource);
     return esource;    
   }

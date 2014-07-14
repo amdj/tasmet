@@ -20,10 +20,10 @@ namespace variable {
 
   //***************************************** The var class
   var::var(const Globalconf& gc): var(gc,0.0) {  }
-  var::var(const Globalconf& gc,double initval) :gc(&gc),Nf(gc.Nf),Ns(gc.Ns) {
+  var::var(const Globalconf& gc1,double initval) :gc(&gc1),Nf(gc1.Nf),Ns(gc1.Ns) {
     TRACE(0,"var::var(const Globalconf& gc, double initval)");
-    timedata=vd(Ns);
-    amplitudedata=vd(Ns);
+    timedata=vd(gc->Ns);
+    amplitudedata=vd(gc->Ns);
     settdata(initval);
   }
   var::var(const Globalconf& gc,const vd& timedata):var(gc){ // Create a variable and fill it with time data.
@@ -35,7 +35,7 @@ namespace variable {
     TRACE(0,"var::updateNf()");
     if(this->Ns!=gc->Ns){
       TRACE(5,"UPDATENF untested code");
-      assert((Ns%2)==1);	// Check if number of samples is not even
+      assert((gc->Ns%2)==1);	// Check if number of samples is not even
       if(this->Ns>gc->Ns){
 	amplitudedata=amplitudedata.subvec(0,gc->Ns-1);
       }
@@ -45,7 +45,7 @@ namespace variable {
 	amplitudedata.subvec(0,this->Ns-1)=oldadata;
       }
       this->Ns=gc->Ns;		       // Update this number of samples
-      timedata=vd(Ns,fillwith::zeros); // Reinitialize timedata
+      timedata=vd(gc->Ns,fillwith::zeros); // Reinitialize timedata
       idft();
     }
   }
@@ -110,7 +110,7 @@ namespace variable {
   }
 
   // Set methods
-  void var::set(double val,us freqnr) { //Set result for specific frequency zero,real one, -imag one, etc
+  void var::set(us freqnr,d val) { //Set result for specific frequency zero,real one, -imag one, etc
     updateNf();
     amplitudedata[freqnr]=val;
     idft();
@@ -289,7 +289,7 @@ namespace variable {
   // //	return vi_plus_half-vi_min_half;
   // //	}
   // vd vvar::ddx_forward(us i,const vd& x){
-  //   vd result(Ns);
+  //   vd result(gc->Ns);
   //   assert((i>=0) && (i<=gp));
   //   if (i<gp-1){
   //     result=(data[i+1]()-data[i]())/(x[i+1]-x[i]);
@@ -302,7 +302,7 @@ namespace variable {
 
   // }
   // vd vvar::ddx_backward(us i,const vd& x){
-  //   vd result(Ns);
+  //   vd result(gc->Ns);
   //   assert((i>=0) && (i<=gp));
   //   if (i==0){
   //     result=(data[i+1]()-data[i]())/(x[i+1]-x[i]);
@@ -317,7 +317,7 @@ namespace variable {
   // }
 
   // vd vvar::ddx_central(us i,const vd& x) {
-  //   vd result(Ns);
+  //   vd result(gc->Ns);
   //   assert((i>=0) && (i<=gp));
   //   if((i>0) && (i<gp-1)) {
   //     result=(data[i+1]()-data[i-1]())/(x[i+1]-x[i-1]); //Central difference
