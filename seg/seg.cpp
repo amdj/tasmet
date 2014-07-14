@@ -71,6 +71,14 @@ namespace segment{
       vvertex[i]->Init(i,gc,geom);
     }      
   }
+  void Seg::show(){
+    geom.show();
+    showVertices();
+  }
+  void Seg::showVertices(){
+    for(us i=0;i<Nvertex;i++)
+      vvertex[i]->show();
+  }
   void Seg::setLeft(const Seg& Left){
     TRACE(13,"Seg::SetLeft()");
     left[nleft]=&Left;

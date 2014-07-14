@@ -27,7 +27,7 @@ namespace tasystem{
     return Ndofs;
   }
   // void copybc()
-  
+
   TAsystem::TAsystem(const Globalconf& gc):gc(gc){}
   TAsystem::TAsystem(const TAsystem& o): gc(o.gc)
   {
@@ -40,6 +40,13 @@ namespace tasystem{
     gc=other.gc;
     copyallsegsbc(*this,other);
     return *this;
+  }
+  void TAsystem::show(){
+    cout << "Showing TAsystem...\n"		\
+      ;
+    gc.show();
+    for(us i=0;i<Nsegs;i++)
+      segs[i]->show();
   }
   void TAsystem::cleanup(){
     for(us i=0;i<Nsegs;i++)

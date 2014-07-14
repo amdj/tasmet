@@ -9,6 +9,17 @@ namespace tube{
   Momentum::Momentum(TubeVertex& gp):TubeEquation(gp){
     TRACE(0,"Momentum constructor...");
   }
+  void Momentum::show(){
+    cout << "--------- Showing momentum weight factors for i=" << vertex.i <<"\n" \
+	 << "Wddt      : "<<Wddt      <<"\n"					\
+	 << "Wuim1     : "<<Wuim1<<"\n"						\
+	 << "Wui       : "<<Wui      <<"\n"					\
+	 << "Wuip1     : "<<Wuip1<<"\n"						\
+	 << "Wpim1     : "<<Wpim1      <<"\n"					\
+	 << "Wpi       : "<<Wpi      <<"\n"					\
+	 << "Wpip1     : "<<Wpip1      <<"\n"					\
+            ;      
+  }
   vd Momentum::Error(){		// Error in momentum equation
     TRACE(6,"Momentum::Error()");
     vd error(gc->Ns,fillwith::zeros);

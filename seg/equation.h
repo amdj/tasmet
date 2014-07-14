@@ -15,7 +15,7 @@ namespace segment{
     
     Equation(Vertex& v):vertex(v) {TRACE(6,"Equation constructor");}
     ~Equation(){}
-
+    virtual void show(){}
     virtual vd Error()=0;
     virtual dmat Jac()=0;		// Returns the local Jacobian of this equation
     virtual void Init(const tasystem::Globalconf& g){gc=&g;}

@@ -53,7 +53,7 @@ namespace tasystem{
     TAsystem(const TAsystem& o);
     TAsystem& operator=(const TAsystem& other);
     void Init();
-
+    void show();
     us getNsegs() const {return Nsegs;}
     us getNbc() const {return Nbc;}
     // System with a

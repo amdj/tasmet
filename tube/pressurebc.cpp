@@ -29,7 +29,7 @@ namespace tube{
     pL.gc=&gc;
     TL.gc=&gc;
     TubeVertex::Init(i,gc,geom);
-    updateW(geom);
+    LeftPressure::updateW(geom);
   }
 
   void LeftPressure::updateW(const Geom& geom)

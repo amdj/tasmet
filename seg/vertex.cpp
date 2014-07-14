@@ -32,7 +32,25 @@ namespace segment{
     T.set(0,g.T0);
     rho.set(0,g.gas.rho(g.T0,g.p0));
   }
-
+  void Vertex::show(){
+    cout << "Showing data for Vertex " << i << ".\n"	\
+	 << ""						\
+	 << "vSf: " << vSf << "\n"			\
+	 << "vSs: " << vSs << "\n"			\
+	 << "vVf: "<< vVf << "\n"			\
+	 << "vVs: " << vVs <<"\n"			\
+							\
+	 << "SfR:"<<SfR<<"\n"				\
+	 << "SfL:"<<SfL<<"\n"				\
+      
+	 <<  "xR:"<<xR<<"\n"			\
+	 <<  "xL:"<<xL<<"\n"			\
+	 << "dxp:"<<dxp<<"\n"			\
+	 << "dxm:"<<dxm<<"\n"			\
+      ;                  
+    d vxim1,vxi,vxip1;        
+      
+  }
 
   void Vertex::updateW(const Geom& geom)  {
     TRACE(5,"Vertex::updateW()");

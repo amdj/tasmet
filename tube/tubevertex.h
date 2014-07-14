@@ -36,6 +36,7 @@ namespace tube{
     TubeVertex(const TubeVertex&);
     TubeVertex& operator=(const TubeVertex&);
     virtual ~TubeVertex();
+    virtual void show();
   private:
     void updateW(const Geom& geom,const SegBase* thisseg=NULL,const SegBase* left=NULL,const SegBase* right=NULL);
   public:

@@ -24,6 +24,22 @@ namespace tube{
       eq[i]->Init(gc);
     TubeVertex::updateW(geom);
   }
+  void TubeVertex::show(){
+    cout << "----------------- TubeVertex " << i << "----\n";
+    Vertex::show();
+    cout << "wLl      : "<<wLl<<"\n"			\
+	 << "wLr      : "<<wLr      <<"\n"	\
+	 << "wRl      : "<<wRl      <<"\n"	\
+	 << "wRr      : "<<wRr      <<"\n"	\
+	 << "wL0      : "<<wL0      <<"\n"	\
+	 << "wL1      : "<<wL1      <<"\n"	\
+	 << "wRNm1    : "<<wRNm1      <<"\n"	\
+	 << "wRNm2    : "<<wRNm2      <<"\n"	\
+      ;
+    cout << "---------- Now showing equation-specific weight factors\n";
+    for(us i=0;i<Neq;i++)
+      eq[i]->show();
+  }
   void TubeVertex::updateW(const Geom& geom,const SegBase* thisseg,const SegBase* left,const SegBase* right){
     TRACE(8,"TubeVertex::updateW()");
 

@@ -49,7 +49,7 @@ namespace segment{
     d vxim1,vxi,vxip1;    		// Vertex position of left and right vertex
     
     Vertex();
-    
+    virtual void show();
     virtual ~Vertex();
     // Standard copy constructor will suffice
     Vertex(const Vertex&); 
