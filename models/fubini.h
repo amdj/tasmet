@@ -34,19 +34,19 @@ Solver* Fubini(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
   Tube t1(geom1);
   TRACE(30,"p1:"<<p1);
   var pL(gc);
-  for(us i=0;i<Ns;i++)
-    pL.set(i,p1(i));
-
+  // for(us i=0;i<Ns;i++)
+    // pL.set(i,p1(i));
+  pL.set(2,-1);
   TRACE(30,"pL:"<<pL());  
   LeftPressure pleft(0,pL);
-  
+  cout << pleft.pL();
   TAsystem sys(gc);
   sys.addseg(t1);
   sys.addbc(pleft);
 
   vd Z=(z0/S)*vd(Ns,fillwith::ones);
   RightImpedance iright(0,Z);
-  sys.addbc(iright);
+  // sys.addbc(iright);
   Solver* Sol=new Solver(sys);
   Sol->sys->getSeg(0)->geom.show();
   return Sol;  

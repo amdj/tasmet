@@ -92,7 +92,6 @@ namespace tube{
     result.submat(0,offset+8*Ns,bw,offset+8*Ns+bw)=dpi();
     result.submat(0,offset+9*Ns,bw,offset+9*Ns+bw)=dTsi();
 
-
     return result;
   }
 

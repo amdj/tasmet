@@ -14,7 +14,8 @@ cdef class pytube:
         # self.gp=gp
         self.sol=Fubini(gp,Nf,freq,L,S,dndtovec(p1),loglevel,kappa)
         self.tube=<Tube*> self.sol[0].sys[0].getSeg(0)
-
+    def show(self):
+        self.sol[0].sys[0].show()    
     def __dealloc__(self):
         del self.sol
     def init(self):

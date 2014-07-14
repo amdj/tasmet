@@ -70,7 +70,7 @@ namespace tube{
    }
    vd LeftPressure::msource() const{
      TRACE(2,"LeftPressure::msource()");
-     vd msource(gc->Ns,fillwith::ones);
+     vd msource(gc->Ns,fillwith::zeros);
      msource=-1.0*SfL*pL();
      // This one should not yet be scaled. The scaling is done in the
      // error term after adding this source.

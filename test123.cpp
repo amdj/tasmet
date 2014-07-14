@@ -82,7 +82,7 @@ int main(int argc,char* argv[]) {
   // cout << "Ncells for seg in system :"<< sys[0]->getNcells()<< "\n";
   // cout << "Ncells for seg :"<< (*sol.sys)[0]->getNcells()<< "\n";
 
-  // sol1.Init();
+  sol1.Init();
 
   vd res=sol1.sys->GetRes();
   cout << "res:\n"<<res;
@@ -100,7 +100,7 @@ int main(int argc,char* argv[]) {
 
   cout << "err:\n"<<er;
   dmat Jac=sol1.sys->Jac();
-  sol.sys->show();
+  sol1.sys->show();
   cout << "Jac:\n"<< Jac;
 
   return 0;
