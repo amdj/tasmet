@@ -40,7 +40,7 @@ int main(int argc,char* argv[]) {
   d S0=S;
 
   d Mach=0.1;
-  d kappa=0;
+  d kappa=0.1;
   Globalconf gc(Nf,f,"air",T0,p0,Mach,S0,griddx,0,kappa);
   variable::var U(gc);
   // U.set(1e-2,1);

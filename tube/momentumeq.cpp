@@ -2,7 +2,7 @@
 #include "drag.h"
 #include "momscale.h"
 #include "tubevertex.h"
-// #define MOM_VISCOSITY
+#define MOM_VISCOSITY
 
 namespace tube{
 
