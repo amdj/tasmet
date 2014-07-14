@@ -100,6 +100,7 @@ namespace segment{
     assert(Nvertex>0);
     vvertex[0]->right=vvertex[1].get();
     vvertex[1]->left=vvertex[0].get();
+    vvertex[0]->left=NULL;
   }
 
   void Seg::setRightbc(Vertex* v){
@@ -111,6 +112,7 @@ namespace segment{
     // assert(Nvertex>0);
     vvertex[Nvertex-2]->right=v;
     vvertex[Nvertex-1]->left=vvertex[Nvertex-2].get();
+    vvertex[Nvertex-1]->right=NULL;
   }    
   
   dmat Seg::Jac(){			// Return Jacobian matrix of error operator

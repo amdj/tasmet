@@ -92,8 +92,8 @@ int main(int argc,char* argv[]) {
   // vd err=sol.sys->Error();
   // cout << "error:\n"<<err;
 
-  for(us i=0; i<4;i++)  
-    sol1.DoIter();
+  // for(us i=0; i<4;i++)  
+    // sol1.DoIter();
   res=sol1.sys->GetRes();
   vd er=sol1.sys->Error();
   cout << "res:\n"<<res;
