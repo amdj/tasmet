@@ -129,8 +129,9 @@ namespace tasystem{
     us startdof=0;
 
     for(us i=0;i<Nsegs;i++){
-      segdofs=segs[i]->getNcells()*gc.Ns*Neq;
+      segdofs=segs[i]->getNdofs();
       segs[i]->SetRes(Res.subvec(startdof,startdof+segdofs-1));
+      startdof=startdof+segdofs;
     }
   }
   dmat TAsystem::Jac(){
@@ -155,6 +156,7 @@ namespace tasystem{
       us lrow=(j+1)*thisndofs-1; // last row
       us lcol=(j+1)*thisndofs-1;
       TRACE(14,"Filling system Jacobian submat...");
+      // cout << "Segjac:\n"<<segjac;
       jac.submat(frow,fcol,lrow,lcol)=			\
 	segjac.cols(Neq*gc.Ns,segjac.n_cols-1-Neq*Ns);
 
@@ -204,13 +206,11 @@ namespace tasystem{
     vd Error(Ndofs);
     us segdofs;
     us startdof=0;
+
     TRACE(-1,"Nsegs:"<< Nsegs);
     for(us i=0;i<Nsegs;i++){
       segdofs=segs[i]->getNdofs();
-      startdof=segfirstcol(i);
       Error.subvec(startdof,startdof+segdofs-1)=segs[i]->Error();
-      // TRACE(30,"Dangerous!!");
-      // Error=segs[i]->Error();
       startdof=startdof+segdofs;
     }
     return Error;
