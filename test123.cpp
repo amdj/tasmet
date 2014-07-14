@@ -100,7 +100,8 @@ int main(int argc,char* argv[]) {
 
   cout << "err:\n"<<er;
   dmat Jac=sol1.sys->Jac();
-  cout << "Jac:\n"<< Jac;
   sol.sys->show();
+  cout << "Jac:\n"<< Jac;
+
   return 0;
 }
