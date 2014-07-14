@@ -60,35 +60,47 @@ int main(int argc,char* argv[]) {
 
   // vd Z=(415/S)*ones<vd>(gc.Ns);
   // tube::RightImpedance bcright(geom1,Z);
-  var pL(gc,p0);
+  var pL(gc,0);
   pL.set(1,1);
   tube::LeftPressure bcleft(0,pL);
-
+  tube::RightImpedance bcright(0,415*vd(Ns,fillwith::ones));
   
   TAsystem sys(gc);
   sys.addseg(t1);
+  sys.addbc(bcright);
   sys.addbc(bcleft);
   // // // // TRACE(0,bcright->Z);  
-  tasystem::Solver sol(sys);
-  // sol.Init();
-  cout << "Ndofs for seg before adding :"<< t1.getNdofs()<< "\n";
-  cout << "Ndofs for seg in system :"<< sys[0]->getNdofs()<< "\n";
-  cout << "Ndofs for seg in solver:"<< (*sol.sys)[0]->getNdofs()<< "\n";
-
-  cout << "Ncells for seg before adding :"<< t1.getNcells()<< "\n";
-  cout << "Ncells for seg in system :"<< sys[0]->getNcells()<< "\n";
-  cout << "Ncells for seg :"<< (*sol.sys)[0]->getNcells()<< "\n";
-
+  Solver sol(sys);
   sol.Init();
-  vd res=sol.sys->GetRes();
+
+  Solver sol1(sol);
+  // cout << "Ndofs for seg before adding :"<< t1.getNdofs()<< "\n";
+  // cout << "Ndofs for seg in system :"<< sys[0]->getNdofs()<< "\n";
+  // cout << "Ndofs for seg in solver:"<< (*sol.sys)[0]->getNdofs()<< "\n";
+
+  // cout << "Ncells for seg before adding :"<< t1.getNcells()<< "\n";
+  // cout << "Ncells for seg in system :"<< sys[0]->getNcells()<< "\n";
+  // cout << "Ncells for seg :"<< (*sol.sys)[0]->getNcells()<< "\n";
+
+  // sol1.Init();
+
+  vd res=sol1.sys->GetRes();
   cout << "res:\n"<<res;
+  // vd err=sol1.sys->Error();
+  
   // // vd x=t1.GetRmomes();
-  sol.DoIter();
-  res=sol.sys->GetRes();
+  // vd err=sol.sys->Error();
+  // cout << "error:\n"<<err;
+
+  for(us i=0; i<4;i++)  
+    sol1.DoIter();
+  res=sol1.sys->GetRes();
+  vd er=sol1.sys->Error();
   cout << "res:\n"<<res;
 
-
+  cout << "err:\n"<<er;
+  dmat Jac=sol1.sys->Jac();
+  cout << "Jac:\n"<< Jac;
   
   return 0;
 }
-

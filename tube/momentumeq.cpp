@@ -10,7 +10,7 @@ namespace tube{
     TRACE(0,"Momentum constructor...");
   }
   vd Momentum::Error(){		// Error in momentum equation
-    TRACE(0,"Momentum::Error()");
+    TRACE(6,"Momentum::Error()");
     vd error(gc->Ns,fillwith::zeros);
 
     vd rhoti=vertex.rho.tdata();

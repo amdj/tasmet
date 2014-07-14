@@ -15,4 +15,6 @@ namespace tasystem{
   void connectbc(Seg&,const BcVertex&);
   Seg* copyseg(const Seg& orig);
   BcVertex* copybc(const BcVertex& orig);
+  Vertex* vertexfrombc(BcVertex*);
+
 } // namespace tasystem

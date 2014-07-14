@@ -26,27 +26,30 @@ namespace tasystem{
   
   Solver::~Solver(){
       TRACE(-5,"~Solver()");
-      if(sys!=NULL)
+      if(sys!=NULL){
 	delete sys;
+	sys=NULL;
+      }
     }
   void Solver::Init()
   {
     TRACE(15,"Solver::Init()");
-    if (sys!=NULL) {
-      sys->Init();
-      hasinit=true;
-    }
+    if(!hasinit)
+      {
+	if (sys!=NULL) {
+	  sys->Init();
+	  hasinit=true;
+	}
+	else  {
+	  TRACE(50,"Error, no system defined!");
+	  return;
+	}
+      }	// already initialized
   }
   void Solver::DoIter(d dampfac){
     // Do an iteration
     TRACE(15,"Solver::DoIter()");
-    if(!hasinit)
-      Init();
-    if(sys==NULL)
-      {
-	TRACE(15,"Error, no system defined!");
-	return;
-      }
+    Init();
     using math_common::esdmat;
     using math_common::evd;
     TRACE(15,"Computing error...");
@@ -60,7 +63,6 @@ namespace tasystem{
     esdmat jac2=math_common::ArmaToEigen(jac);
     // delete jac;
     evd Eerr=math_common::ArmaToEigen(err);
-
     // TRACE(10,"jac2 (eigen):"<<endl<<jac2);
     TRACE(10,"Computing old x...");
     vd oldx=sys->GetRes();

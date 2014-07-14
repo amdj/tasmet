@@ -11,8 +11,8 @@ namespace tube{
   }
   void TubeVertex::Init(us i,const Globalconf& gc,const Geom& geom)
   {
-    TRACE(8,"TubeVertex::Init(gc,geom)");
-    Vertex::Init(i,gc,geom);
+    TRACE(8,"TubeVertex::Init(gc,geom), vertex "<< i << ".");
+    Vertex::Init(i,gc,geom);	// Which also calls Vertex::updateW()
     eq[0]=&c;			// Continuity is first
     eq[1]=&m;
     eq[2]=&is; 			// Changed to isentropic
@@ -22,11 +22,10 @@ namespace tube{
     
     for(us i=0;i<Neq;i++)
       eq[i]->Init(gc);
-    updateW(geom);
+    TubeVertex::updateW(geom);
   }
   void TubeVertex::updateW(const Geom& geom,const SegBase* thisseg,const SegBase* left,const SegBase* right){
-    TRACE(1,"TubeVertex::updateW()");
-    Vertex::updateW(geom);
+    TRACE(8,"TubeVertex::updateW()");
 
     // Initialize weight functions to zero
     wLl=0; wLr=0; wRr=0; wRl=0;

@@ -10,12 +10,13 @@
 namespace tube{
   Continuity::Continuity(TubeVertex& gp):
     TubeEquation(gp){
-    TRACE(0,"Continuity constructor done");
+    TRACE(6,"Continuity constructor done");
     Wim1=Wi=Wip1=Wddt=0;		// Initialize to zero
   }
 
   vd Continuity::Error(){	// Current error in continuity equation
     // The default boundary implementation is an adiabatic no-slip wall.
+    TRACE(6,"Continuity::Error()");
     vd error(gc->Ns,fillwith::zeros);
     error+=Wddt*gc->DDTfd*vertex.rho();
     error+=Wi*gc->fDFT*(vertex.rho.tdata()%vertex.U.tdata());

@@ -10,6 +10,7 @@
 #define _BCVERTEX_H_
 
 #include <vtypes.h>
+#include "vertex.h"
 
 namespace segment{
   SPOILNAMESPACE
@@ -26,7 +27,8 @@ namespace segment{
     virtual string gettype() const=0;
     virtual enum connectpos connectPos() const=0;
     us segNumber() const {return segnumber;}
-  protected:
+    void setSegNumber(us nr){segnumber=nr;}
+  private:
     us segnumber;
     
   };

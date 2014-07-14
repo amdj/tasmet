@@ -4,11 +4,11 @@
 namespace tube{
 
   Solidenergy::Solidenergy(TubeVertex& gp):TubeEquation(gp){
-    TRACE(0,"SolidSolidenergy constructor done");
+    TRACE(7,"SolidSolidenergy constructor done");
   }
 
   vd Solidenergy::Error(){		// Error in momentum equation
-    TRACE(0,"Solidenergy::Error()");
+    TRACE(6,"Solidenergy::Error()");
     // vd error(gc->Ns,fillwith::zeros);
     vd error=vertex.Ts();
     return error;

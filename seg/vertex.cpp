@@ -5,7 +5,7 @@
 namespace segment{
 
   Vertex::Vertex() {
-    TRACE(0,"Vertex constructor");
+    TRACE(8,"Vertex constructor");
     left=NULL;
     right=NULL;
     vars[0]=&rho;
@@ -18,7 +18,7 @@ namespace segment{
   Vertex::Vertex(const Vertex& o):Vertex(){}
   Vertex& Vertex::operator=(const Vertex& o) {Vertex(); return *this;}
   void Vertex::Init(us i,const tasystem::Globalconf& g,const Geom& geom){
-    TRACE(8,"Vertex::Init()");
+    TRACE(5,"Vertex::Init()");
     this->i=i;
     this->Ncells=geom.Ncells;
     this->gc=&g;
@@ -28,11 +28,14 @@ namespace segment{
     T=var(*gc);
     p=var(*gc);
     Ts=var(*gc);
+    // Initialized density and temperature
+    T.set(0,g.T0);
+    rho.set(0,g.gas.rho(g.T0,g.p0));
   }
 
 
   void Vertex::updateW(const Geom& geom)  {
-    TRACE(8,"Vertex::updateW()");
+    TRACE(5,"Vertex::updateW()");
     Ncells=geom.Ncells;
     const vd& vx=geom.vx;
     vxi=vx(i);
@@ -61,7 +64,6 @@ namespace segment{
     vVf=geom.vVf(i);
     vVs=geom.vVs(i);
 
-
     // ****************************** End initialization
     
   }
@@ -77,21 +79,21 @@ namespace segment{
   // }
   vd Vertex::Error()
   {
-    TRACE(7,"Vertex::Error()");
-    // TRACE(-1,"Check for position i>0 && i<gp-1...");
+    TRACE(4,"Vertex::Error() for Vertex "<< i << ".");
+    // TRACE(4,"Check for position i>0 && i<gp-1...");
     // assert(i>0 && i<seg.geom.gp-1);
     const us& Ns=gc->Ns;
-    TRACE(7,"Assignment of Ns survived:"<< Ns);
+    TRACE(4,"Assignment of Ns survived:"<< Ns);
     vd error(Neq*Ns);
     for(us k=0;k<Neq;k++)
       {
 	error.subvec(k*Ns,(k+1)*Ns-1)=eq[k]->Error();
       }
-    TRACE(7,"Vertex::Error() done.");
+    TRACE(4,"Vertex::Error() done.");
     return error;
   }
   vd Vertex::GetRes(){			// Get current result vector
-    TRACE(0,"Vertex::GetRes()");
+    TRACE(4,"Vertex::GetRes()");
     const us& Ns=gc->Ns;
     vd res(Neq*Ns);
     for(us k=0;k<Neq;k++){
@@ -100,20 +102,21 @@ namespace segment{
     return res;
   }
   void Vertex::SetRes(vd res){
-    TRACE(0,"Vertex::Set()");
+    TRACE(4,"Vertex::Set()");
     const us& Ns=gc->Ns;
     for(us k=0;k<Neq;k++){
       vars[k]->set(res.subvec(k*gc->Ns,k*Ns+Ns-1));
     }
   }
   dmat Vertex::Jac(){		// Return Jacobian
+    TRACE(2,"Vertex::Jac()");
     const us& Ns=gc->Ns;
-    TRACE(0," Vertex::Jac()...");
-    TRACE(-1,"Ns:"<<Ns);
-    TRACE(-1,"Neq:"<<Neq);    
+    TRACE(5," Vertex::Jac()...");
+    TRACE(5,"Ns:"<<Ns);
+    TRACE(5,"Neq:"<<Neq);    
     dmat Jac(Neq*Ns,3*Neq*Ns,fillwith::zeros);
     for(us k=0;k<Neq;k++){
-      TRACE(-1,"Equation number:"<<k);
+      TRACE(5,"Equation number:"<<k);
       us firstrow=k*Ns;
       // cout << firstrow << " ";
       us firstcol=0;
@@ -123,10 +126,7 @@ namespace segment{
       us lastcol=Jac.n_cols-1;
       // cout << lastcol << " ";
       dmat eqJac=eq[k]->Jac();
-      // if(k==2)
-	// eqJac*=1e6;		// Rescaling of momentum equation
       Jac.submat(firstrow,firstcol,lastrow,lastcol)=eqJac;
-      TRACE(-1,"Eqjac returns");
       
     }
     return Jac;

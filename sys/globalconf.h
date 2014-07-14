@@ -44,7 +44,7 @@ namespace tasystem{
     void setMass(d mass){ Mass=mass;}
     void setp0(d p) { p0=p;}
     void setgas(gases::Gas g){ gas=g;}
-    void show(){ }
+    void show();
     //    void setgas(string g){ gas(g);}
   protected:
     void updateiDFT();

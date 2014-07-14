@@ -40,15 +40,15 @@ namespace segment{
     // ------------------------------
     
     // Initialized method (after adding to a system)
-    virtual void Init(const tasystem::Globalconf&);			   // Initializer method. Different for each segment type
+    void Init(const tasystem::Globalconf&);			   // Initializer method. Different for each segment type
 
     const us& getNdofs() const {return Ndofs;}
     const us& getNcells() const {return geom.Ncells;}
     const us& getnL() const {return nL;}
     const us& getnR() const {return nR;}
 
-    void setLeftbc(const Vertex& v); // Set left boundary condition vertex
-    void setRightbc(const Vertex& v); // Set left boundary condition vertex    
+    void setLeftbc(Vertex* v); // Set left boundary condition vertex
+    void setRightbc(Vertex* v); // Set left boundary condition vertex    
     
     vd Error();			// Return error vector for this segment
     vd GetRes();		// Return result vector for this segment

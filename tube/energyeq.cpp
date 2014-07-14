@@ -10,7 +10,7 @@ namespace tube{
   }
   Isentropic::~Isentropic(){}
   vd Isentropic::Error(){
-    TRACE(0,"Isentropic::Error()");
+    TRACE(6,"Isentropic::Error()");
     vd err(gc->Ns,fillwith::zeros);
     const Globalconf& gc1=*this->gc;
     d T0=gc1.T0;
@@ -22,14 +22,14 @@ namespace tube{
     return ENERGY_SCALE*err;
   }
   dmat Isentropic::dpi(){
-    TRACE(0,"Isentropic::dpi()");
+    TRACE(1,"Isentropic::dpi()");
     dmat dpi(gc->Ns,gc->Ns,fillwith::eye);
     d p0=gc->p0;    
     dpi=dpi/p0;
     return ENERGY_SCALE*dpi;
   }
   dmat Isentropic::drhoi(){
-    TRACE(0,"Isentropic::drhoi()");    
+    TRACE(1,"Isentropic::drhoi()"); 
     dmat drhoi(gc->Ns,gc->Ns,fillwith::zeros);
 
     d T0=gc->T0;
@@ -42,6 +42,7 @@ namespace tube{
     return drhoi;
   }
   Energy::Energy(TubeVertex& gp):TubeEquation(gp){
+    TRACE(6,"Energy::Energy()"); 
     // Standard boundary condition is adiabatic-no-slip-wall
     if(i==0){			// Leftmost vertex
       TRACE(-1,"Leftmost vertex");
@@ -57,7 +58,7 @@ namespace tube{
     TRACE(0,"Energy constructor done");
   }
   vd Energy::Error(){		// Error in momentum equation
-    TRACE(0,"Energy::Error()");
+    TRACE(6,"Energy::Error()");
     vd error(gc->Ns,fillwith::zeros);
     d gamma=this->gamma();
 

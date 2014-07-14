@@ -2,11 +2,11 @@
 
 namespace tube{
 
-  LeftPressure::LeftPressure(us segnr,variable::var& pres,variable::var& temp):TubeBcVertex(segnr),pL(pres),TL(temp) {
-     TRACE(0,"LeftPressure full constructor");
+  LeftPressure::LeftPressure(us segnr,const var& pres,const var& temp):TubeBcVertex(segnr),pL(pres),TL(temp) {
+     TRACE(8,"LeftPressure full constructor");
    }
-  LeftPressure::LeftPressure(us segnr,variable::var& pres):TubeBcVertex(segnr),pL(pres),TL(*pres.gc){
-     TRACE(0,"LeftPressure constructor for given pressure. Temperature computed");    
+  LeftPressure::LeftPressure(us segnr,const var& pres):TubeBcVertex(segnr),pL(pres),TL(*pres.gc){
+     TRACE(8,"LeftPressure constructor for given pressure. Temperature computed");    
      const Globalconf* gc=pres.gc;
      d T0=gc->T0;
      d gamma=gc->gas.gamma(T0);
@@ -17,16 +17,25 @@ namespace tube{
      TL.settdata(TLt);
 
   }
+  LeftPressure::LeftPressure(const LeftPressure& other):LeftPressure(other.segNumber(),other.pL,other.TL)
+  {
+    TRACE(8,"LeftPressure copy constructor");
+    TRACE(8,"pL:"<<pL);
+    
+  }
   void LeftPressure::Init(us i,const Globalconf& gc,const Geom& geom)
   {
+    TRACE(8,"LeftPressure::Init()");
+    pL.gc=&gc;
+    TL.gc=&gc;
     TubeVertex::Init(i,gc,geom);
     updateW(geom);
   }
+
   void LeftPressure::updateW(const Geom& geom)
   {
      // Change continuity equation for an open boundary
-     TRACE(1,"LeftPressure::updateW()");
-     TubeVertex::updateW(geom);
+     TRACE(8,"LeftPressure::updateW()");
      c.Wim1=0;
      c.Wi=wRl-wL0;
      c.Wip1=wRr-wL1;
@@ -60,7 +69,7 @@ namespace tube{
 
    }
    vd LeftPressure::msource() const{
-     TRACE(0,"LeftPressure::msource()");
+     TRACE(2,"LeftPressure::msource()");
      vd msource(gc->Ns,fillwith::ones);
      msource=-1.0*SfL*pL();
      // This one should not yet be scaled. The scaling is done in the
@@ -69,7 +78,7 @@ namespace tube{
     return msource;
   }
   vd LeftPressure::esource() const {
-    TRACE(0,"LeftPressure::esource()");
+    TRACE(2,"LeftPressure::esource()");
     vd esource(gc->Ns,fillwith::zeros);
     vd TLt=TL.tdata();
     vd kappaL=gc->gas.kappa(TLt);

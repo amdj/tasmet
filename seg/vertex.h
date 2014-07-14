@@ -55,7 +55,7 @@ namespace segment{
     Vertex(const Vertex&); 
     Vertex& operator=(const Vertex& v2); // Copy assignment
     virtual void Init(us i,const Globalconf& gc,const Geom& geom);
-  protected:
+  private:
     void updateW(const Geom&);	       // Update weight functions of equations
   public:
     vd Error();				  // Compute error for this gridpoint

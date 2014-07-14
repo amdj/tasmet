@@ -24,6 +24,18 @@ namespace tasystem{
     TRACE(10,"Globalconf constructor done");
     
   }
+  void Globalconf::show(){
+    cout << "------- Globalconf configuration ------ \n"			\
+	 << "------- Nf             : "<< Nf <<"\n"				\
+	 << "------- Base frequency : " << freq << " Hz\n"			\
+	 << "------- Gas            : " << Gastype << "\n"			\
+	 << "------- p0             : " << p0 << " [Pa] \n"			\
+	 << "------- T0             : " << T0 << " [K] \n"			\
+	 << "------- kappa:         : " << kappa << "\n"			\
+      ;
+    
+
+  }
     void Globalconf::set(us Nf,d freq){
     TRACE(0,"Globalconf::set(Nf,freq)");
     //ctor

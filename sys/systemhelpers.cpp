@@ -1,5 +1,4 @@
 #include "systemhelpers.h"
-#include "bcvertex.h"
 #include "tube.h"
 #include "impedancebc.h"
 #include "pressurebc.h"
@@ -13,11 +12,11 @@ namespace tasystem{
   void connectbc(Seg& seg,const BcVertex& bc){
     TRACE(14,"connectbc()");
     if(bc.connectPos()==connectpos::left)
-      seg.setLeftbc((Vertex&) bc);
+      seg.setLeftbc(vertexfrombc(copybc(bc)));
     else if(bc.connectPos()==connectpos::right)
-      seg.setRightbc((Vertex&) bc);
+      seg.setRightbc(vertexfrombc(copybc(bc)));
     else
-      cout << "WARNING: connectbc(): Bc type not understood!\n";
+      cout << "WARNING: bconnectbc(): Bc type not understood!\n";
   }
 
   Seg* copyseg(const Seg& orig)
@@ -33,18 +32,30 @@ namespace tasystem{
     
   } // copyseg
   BcVertex* copybc(const BcVertex& orig){
+    TRACE(14,"copbybc(BcVertex&)");
     if(orig.gettype().compare("RightImpedance")==0){
-      return new RightImpedance((RightImpedance&) orig);
+      TRACE(14,"Copying a RightImpedance bc...");
+      return static_cast<BcVertex*>(new RightImpedance(static_cast<const RightImpedance&>(orig)));
+    } else if(orig.gettype().compare("LeftPressure")==0){
+      TRACE(14,"Copying a LeftPressure bc...");
+      return static_cast<BcVertex*>(new LeftPressure(static_cast<const LeftPressure&>(orig)));
     }
-    else if(orig.gettype().compare("LeftPressure")==0){
-      return new LeftPressure((LeftPressure&) orig);
-    }
-
     else{
       TRACE(50,"Boundary condition type not understood");
       return NULL;
+      exit(1);
     }
-
+  }
+  Vertex* vertexfrombc(BcVertex* orig){
+    if(orig->gettype().compare("RightImpedance")==0)
+      return static_cast<Vertex*>(static_cast<RightImpedance*>(orig));
+    else if(orig->gettype().compare("LeftPressure")==0)
+      return static_cast<Vertex*>(static_cast<LeftPressure*>(orig));
+    else{
+      TRACE(50,"Boundary condition type not understood");
+      return NULL;
+      exit(1);
+    }
   }
   
   

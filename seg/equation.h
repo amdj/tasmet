@@ -13,7 +13,7 @@ namespace segment{
     const tasystem::Globalconf* gc=NULL;
     Vertex& vertex;
     
-    Equation(Vertex& v):vertex(v) {}
+    Equation(Vertex& v):vertex(v) {TRACE(6,"Equation constructor");}
     ~Equation(){}
 
     virtual vd Error()=0;

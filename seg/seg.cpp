@@ -1,5 +1,5 @@
 #include "seg.h"
-
+#include "bcvertex.h"
 namespace segment{
   
   void coupleSegs(Seg& seg1,Seg& seg2,SegCoupling coupling){
@@ -57,11 +57,17 @@ namespace segment{
     // The number is not copied, though
   }
   void Seg::Init(const tasystem::Globalconf& gc){
+    TRACE(13,"Seg::Init()");
     this->gc=&gc;
     Nvertex=geom.Ncells;
     assert(Nvertex>0);
     Ndofs=geom.Ncells*gc.Ns*Neq;
     for(us i=0;i<Nvertex;i++){
+      if(i<Nvertex-1)
+	vvertex[i]->right=vvertex[i+1].get();
+      if(i>0)
+	vvertex[i-1]->left=vvertex[i].get();
+      TRACE(13,"Starting intialization of Vertex "<< i);
       vvertex[i]->Init(i,gc,geom);
     }      
   }
@@ -75,46 +81,45 @@ namespace segment{
     right[nright]=&Right;
     nright++;
   }
-  void Seg::setLeftbc(const Vertex& v){
+  void Seg::setLeftbc(Vertex* v){ // The segment owns the bc from then on!
     TRACE(13,"Seg::setLeftbc()-----EMPTY!");
     // delete vvertex[0];
     // vvertex[0]=
-      
-    // vvertex[0]=new 
-    // const us& Ncells=geom.Ncells;
-    // assert(Ncells>0);
-    // vvertex[0]=v;
-    // vvertex[0]->right=vvertex[1].get();
-    // vvertex[1]->left=vvertex[0].get();
+    TRACE(13,"setLeftBc(): v:"<<v);
+    vvertex[0].reset(v);
+    TRACE(13,"Segnumber of bc: " << ((BcVertex*) vvertex[0].get())->segNumber());
+    // const us& Nvertex=geom.Nvertex;
+    assert(Nvertex>0);
+    vvertex[0]->right=vvertex[1].get();
+    vvertex[1]->left=vvertex[0].get();
   }
 
-  void Seg::setRightbc(const Vertex& v){
+  void Seg::setRightbc(Vertex* v){
     TRACE(13,"Seg::setRighbc()-----EMPTY!");
-
-    // delete vvertex[Ncells-1];
-    // const us& Ncells=geom.Ncells;
-    // assert(Ncells>0);
-    // vvertex[Ncells-1]=v;
-    // vvertex[Ncells-2]->right=v.get();
-    // vvertex[Ncells-1]->left=vvertex[Ncells-2].get();
+    assert(Nvertex>0);
+    vvertex[Nvertex-1].reset(v);
+    // delete vvertex[Nvertex-1];
+    // const us& Nvertex=geom.Nvertex;
+    // assert(Nvertex>0);
+    vvertex[Nvertex-2]->right=v;
+    vvertex[Nvertex-1]->left=vvertex[Nvertex-2].get();
   }    
   
   dmat Seg::Jac(){			// Return Jacobian matrix of error operator
     // sdmat Seg::Jac(){			// Return Jacobian matrix of error operator    
     TRACE(8," Seg::Jac().. ");
     
-    // TRACE(-1,"Ncells:"<<Ncells);
-    // sdmat Jac(Ncells*Neq*Ns,Ncells*Neq*Ns);
+    // TRACE(-1,"Nvertex:"<<Nvertex);
+    // sdmat Jac(Nvertex*Neq*Ns,Nvertex*Neq*Ns);
     const us& Ns=gc->Ns;
-    const us& Ncells=geom.Ncells;
-    dmat Jacobian (Ncells*Neq*Ns,(Ncells+2)*Neq*Ns,fillwith::zeros);    
+    dmat Jacobian (Nvertex*Neq*Ns,(Nvertex+2)*Neq*Ns,fillwith::zeros);    
     if(Jacobian.size()==0)
-      Jacobian=dmat(Ncells*Neq*Ns,(Ncells+2)*Neq*Ns);    
+      Jacobian=dmat(Nvertex*Neq*Ns,(Nvertex+2)*Neq*Ns);    
     dmat vJac(Neq*Ns,3*Neq*Ns,fillwith::zeros);
     us firstrow,firstcol,lastrow,lastcol;
     TRACE(8,"Filling Segment Jacobian matrix...");
     // #pragma omp parallel for
-    for(us j=0;j<Ncells;j++){			   // Fill the Jacobian
+    for(us j=0;j<Nvertex;j++){			   // Fill the Jacobian
       TRACE(3,"Obtaining vertex Jacobian...");
       vJac=vvertex[j]->Jac();
       // The row height of a vertex jacobian matrix is Neq*Ns, The
@@ -123,7 +128,7 @@ namespace segment{
       firstrow=j*Neq*Ns;
       lastrow=(j+1)*Neq*Ns-1;
       TRACE(3,"j:"<<j);
-      if(j>0 && j<Ncells-1){
+      if(j>0 && j<Nvertex-1){
 	TRACE(0,"interior vertex jacobian, j="<<j);
 	firstcol=(j)*Neq*Ns;
 	lastcol=(j+3)*Neq*Ns-1;
@@ -139,14 +144,14 @@ namespace segment{
       }	// j==0
       else {			// Last vertex
 	if(vvertex[j]->right==NULL){
-	  firstcol=(Ncells-2)*Neq*Ns;
-	  lastcol=(Ncells+1)*Neq*Ns-1;	  
+	  firstcol=(Nvertex-2)*Neq*Ns;
+	  lastcol=(Nvertex+1)*Neq*Ns-1;	  
 	}
 	else{
-	  firstcol=(Ncells-1)*Neq*Ns;
+	  firstcol=(Nvertex-1)*Neq*Ns;
 	  lastcol=Jacobian.n_cols-1;
 	}
-      }	// j==Ncells-1
+      }	// j==Nvertex-1
       TRACE(3,"Filling segment Jacobian with vertex subpart...");
       // cout << firstrow << " ";
       // cout << firstcol << " ";
@@ -159,11 +164,11 @@ namespace segment{
     return Jacobian;
   }
   vd Seg::GetRes(){
-    TRACE(8,"Seg::Get()");
-    const us& Ncells=geom.Ncells;
+    TRACE(8,"Seg::GetRes()");
+
     vd Result(Ndofs,fillwith::zeros);
     us Ns=gc->Ns;
-    for(us k=0; k<Ncells;k++)
+    for(us k=0; k<Nvertex;k++)
       {
 	Result.subvec(k*Ns*Neq,k*Ns*Neq+Ns*Neq-1)=vvertex[k]->GetRes();
       }
@@ -171,22 +176,20 @@ namespace segment{
   }
 
   vd Seg::Error(){
-    TRACE(0,"Seg::Error()");
-    const us& Ncells=geom.Ncells;
+    TRACE(8,"Seg::Error()");
     const us& Ns=gc->Ns;
     vd error(Ndofs,fillwith::zeros);
-    for(us k=0; k<Ncells;k++)
+    for(us k=0; k<Nvertex;k++)
       {
 	error.subvec(k*Ns*Neq,k*Ns*Neq+Ns*Neq-1)=vvertex[k]->Error();
       }
     return error;
   }
   void Seg::SetRes(vd res){
-    const us& Ncells=geom.Ncells;
-    TRACE(0,"Seg::SetRes()");
+    TRACE(8,"Seg::SetRes()");
     // const us& Neq=(vvertex[0]).Neq;
     const us& Ns=gc->Ns;
-    for(us k=0; k<Ncells;k++)
+    for(us k=0; k<Nvertex;k++)
       {
 	vvertex[k]->SetRes(res.subvec(k*Ns*Neq,k*Ns*Neq+Ns*Neq-1));
       }

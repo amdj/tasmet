@@ -22,8 +22,6 @@ namespace tube{
     const us& Ncells;
     const segment::Vertex*& left;
     const segment::Vertex*& right;
-
-
     
     TubeEquation(TubeVertex& gp);
     virtual ~TubeEquation();

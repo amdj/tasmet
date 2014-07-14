@@ -18,11 +18,14 @@ namespace tube{
   class TubeBcVertex:public TubeVertex,public BcVertex
   {
   public:
-    TubeBcVertex(us segnr): BcVertex(segnr){}
-    TubeBcVertex(TubeBcVertex& o):TubeBcVertex(o.segNumber()) {}
-    TubeBcVertex& operator=(const TubeBcVertex&)
+    TubeBcVertex(us segnr): BcVertex(segnr){
+      TRACE(8,"TubeBcVertex(segnr)");
+    }
+    TubeBcVertex(TubeBcVertex& o):TubeBcVertex(o.segNumber()) {TRACE(8,"TubeBcVertex copy cc.");}
+    TubeBcVertex& operator=(const TubeBcVertex& o)
     {
-
+      TRACE(8,"TubeBcVertex::operator=()");
+      setSegNumber(o.segNumber());
       return *this;      
     }
     virtual ~TubeBcVertex(){}

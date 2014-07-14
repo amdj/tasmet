@@ -73,15 +73,15 @@ namespace tube {
     build();
     return *this;
   }
-  void Tube::Init(const tasystem::Globalconf& g){
-    TRACE(13,"Tube::Init()");
-    Seg::Init(g);
-    for (us i=0;i<Nvertex;i++){
-      // TRACE(-1,"i:"<<i);
-      vvertex[i]->T.set(g.T0,0);
-      vvertex[i]->rho.set(g.gas.rho(g.T0,g.p0),0);
-    }
-  }
+  // void Tube::Init(const tasystem::Globalconf& g){
+  //   TRACE(13,"Tube::Init()");
+  //   Seg::Init(g);
+  //   for (us i=0;i<Nvertex;i++){
+  //     // TRACE(-1,"i:"<<i);
+  //     vvertex[i]->T.set(g.T0,0);
+  //     vvertex[i]->rho.set(g.gas.rho(g.T0,g.p0),0);
+  //   }
+  // }
 
 
   vd Tube::GetResAt(us varnr,us freqnr){

@@ -58,8 +58,6 @@ set(PYTHON_LIBRARY libpython2.7.so)
 
 add_library(nonlin ${nonlinear_SRC})
 
-add_executable(test123 test123.cpp)
-target_link_libraries(test123 nonlin math_common armadillo)
 # add_executable(multitube multitube.cpp)
 # target_link_libraries(multitube nonlin math_common armadillo)
 
@@ -72,14 +70,15 @@ set_source_files_properties(
 
 set(CYTHON_CXX_EXTENSION cpp)
 set(CYTHON_FLAGS -I/usr/local/include --timestamps)
-
+add_executable(test123 test123.cpp)
 cython_add_module(pytube pytube.pyx)
 # cython_add_module(doubletube doubletube.pyx)
-# set_target_properties(pytube doubletube  PROPERTIES COMPILE_FLAGS "-Wno-cpp -Wno-strict-aliasing")
+set_target_properties(pytube PROPERTIES COMPILE_FLAGS "-Wno-cpp -Wno-strict-aliasing")
 
 # target_link_libraries(doubletube nonlin math_common armadillo)
-# target_link_libraries(pytube nonlin math_common armadillo)
-target_link_libraries(test123 math_common armadillo)
+target_link_libraries(test123 nonlin math_common armadillo)
+target_link_libraries(pytube nonlin math_common armadillo)
+
 
 # To execute the test directly
 # add_custom_command(TARGET test123 POST_BUILD COMMAND test123 )

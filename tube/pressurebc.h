@@ -16,12 +16,13 @@ namespace tube{
     variable::var pL;			// Pressure boundary condition
     variable::var TL;			// Temperature boundary conditions
 
-    LeftPressure(us,var&);
-    LeftPressure(us,var&,var& temp);
-
+    LeftPressure(us,const var&);
+    LeftPressure(us,const var&,const var& temp);
+    LeftPressure(const LeftPressure& other);
+    LeftPressure& operator=(const LeftPressure&);
     ~LeftPressure(){}
     virtual void Init(us i,const Globalconf&,const Geom&);
-  protected:
+  private:
     void updateW(const Geom& geom);
   public:
     virtual string gettype() const {return string("LeftPressure");}

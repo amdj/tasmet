@@ -24,7 +24,13 @@ namespace variable {
 
 
   class var {
+  protected:
+    vd timedata,amplitudedata;
   public:
+    const Globalconf* gc=NULL;
+    us Nf=0,Ns=0;
+    
+    
     var() {}
     var(const Globalconf&);	// Initialize with zeros
     var(const Globalconf&,double); // Initialize with one time-average value
@@ -32,6 +38,7 @@ namespace variable {
     // var& operator=(const var&);			  // Copy assignment operator
     // var operator()(const var&); //Copy constructor
     // Get methods
+    ~var();
     const d& operator()(us i) const;				   // Extract amplitude data result at specific frequency
     d& operator()(us i);				   // Extract amplitude data result at specific frequency    
 
@@ -68,12 +75,7 @@ namespace variable {
 						   // is defined
 						   // outside of the
 						   // class
-    ~var();
-    const Globalconf* gc=NULL;
-    us Nf,Ns;
-
   protected:
-    vd timedata,amplitudedata;	// The only real data in this class
     void dft();
     void idft();
     void updateNf();

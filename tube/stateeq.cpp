@@ -11,7 +11,7 @@ namespace tube{
 
   vd State::Error()
   {
-    TRACE(0,"State::Error()");
+    TRACE(6,"State::Error()");
     vd error(gc->Ns,fillwith::zeros);
     vd p0=getp0();
     // TRACE(-1,"State p0:"<<p0);
