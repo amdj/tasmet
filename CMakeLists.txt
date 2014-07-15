@@ -8,14 +8,23 @@ include(UseCython)
 #add_definitions(-DEIGEN_NO_DEBUG -DARMA_NO_DEBUG)
 add_definitions(-DLOGLEVEL=nonlinearlogger)
 #enable_testing()
-set(CMAKE_C_COMPILER gcc)
+set(CMAKE_C_COMPILER glang)
 set(CMAKE_CXX_COMPILER clang++)
 # set(CMAKE_CXX_COMPILER g++)
 ######################### VERBOSE MAKEFILE
 #set(CMAKE_VERBOSE_MAKEFILE on)
 ##########################################
+ # -pipe
+ #           Use pipes rather than temporary files for communication between the various stages of compilation.  This fails to work on some systems where the
+ #           assembler is unable to read from a pipe; but the GNU assembler has no trouble.
 
-set (CMAKE_CXX_FLAGS "-std=c++11 -march=native -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address")
+
+ 
+ #Clang++ flags
+set (CMAKE_CXX_FLAGS "-std=c++11 -pipe -march=native -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address")
+#Optimized clang++ flags
+set(CMAKE_CXX_FLAGS $(CMAKE_CXX_FLAGS) "-O2 -march=x86_64 ")
+
 # set (CMAKE_CXX_FLAGS "-std=c++11 -march=native -fPIC -Wall -Wno-unused-function -Wno-unknown-warning-option  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address")
 
 #set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -O3 -march=native -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address  -ffunction-sections -fdata-sections")
