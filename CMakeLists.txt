@@ -1,4 +1,7 @@
 # CMakeList.txt for nonlinear code
+
+#CMakeLists.txt for branch master, producing optimized code (slower)
+
 cmake_minimum_required (VERSION 2.8.5)
 project(nonlinear_tmtubes)
 # Make the scripts available in the 'cmake' directory available for the
@@ -8,8 +11,10 @@ include(UseCython)
 #add_definitions(-DEIGEN_NO_DEBUG -DARMA_NO_DEBUG)
 add_definitions(-DLOGLEVEL=nonlinearlogger)
 #enable_testing()
+
 set(CMAKE_C_COMPILER glang)
 set(CMAKE_CXX_COMPILER clang++)
+
 # set(CMAKE_CXX_COMPILER g++)
 ######################### VERBOSE MAKEFILE
 #set(CMAKE_VERBOSE_MAKEFILE on)
@@ -25,12 +30,12 @@ set (CMAKE_CXX_FLAGS "-std=c++11 -pipe -march=native -fPIC -Wall -Wno-unused-fun
 #Optimized clang++ flags
 set(CMAKE_CXX_FLAGS $(CMAKE_CXX_FLAGS) "-O2 -march=x86_64 ")
 
+
 # set (CMAKE_CXX_FLAGS "-std=c++11 -march=native -fPIC -Wall -Wno-unused-function -Wno-unknown-warning-option  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address")
 
 #set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -O3 -march=native -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address  -ffunction-sections -fdata-sections")
 set(CMAKE_CXX_FLAGS "-std=c++11 -fPIC")
 #configure_file (logger.h.in  "${CMAKE_CURRENT_SOURCE_DIR}/logger.h")
-
 
 AUX_SOURCE_DIRECTORY(tube tubesources)
 AUX_SOURCE_DIRECTORY(var varsources)

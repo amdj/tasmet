@@ -192,17 +192,17 @@ namespace tube{
   }
   dmat Momentum::dUip2(){
     TRACE(0,"Momentum:dUip2()");
-    TRACE(50,"i:"<<i);
+    // TRACE(50,"i:"<<i);
     dmat dUip2=zero;
     if(i==0 && left==NULL)
-      TRACE(20,"i is nul and left is nul");
+      // TRACE(20,"i is nul and left is nul");
       dUip2+=-D_r();
     return dUip2;
   }
   dmat Momentum::dUim2(){
     dmat dUim2=zero;
     if((i==Ncells-1)&& right==NULL )
-      TRACE(20,"i is  Ncells and and right is nul");
+      // TRACE(20,"i is  Ncells and and right is nul");
       dUim2+=-D_l();
     return dUim2;
   }  

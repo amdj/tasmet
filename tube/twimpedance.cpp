@@ -90,7 +90,7 @@ namespace tube{
     vd ur=(vertex.wRNm1*vertex.U()+vertex.wRNm2*vertex.left->U())/vertex.SfR;
     vd urtd=gc->iDFT*ur;
     vd pr=gc->fDFT*(p0*pow(1.0+((gamma-1.0)/2.0)*urtd/c0,2.0*gamma/(gamma-1.0))-p0);
-    TRACE(100,"pr:"<<pr);
+    // TRACE(100,"pr:"<<pr);
     vd errorZ=MOM_SCALE*vertex.SfR*pr;
 
     errorZ(0)*=MOM_SCALE0;
@@ -111,7 +111,7 @@ namespace tube{
     d p0=gc->p0;
     d gamma=gc->gas.gamma(T0);
     d z0=p0*gamma/c0;
-    TRACE(30,"z0:"<<z0);
+    // TRACE(30,"z0:"<<z0);
     vd ur=(vertex.wRNm1*vertex.U()+vertex.wRNm2*vertex.left->U())/vertex.SfR;
     vd urtd=gc->iDFT*ur;
     
@@ -131,7 +131,7 @@ namespace tube{
     d c0=gc->gas.cm(T0);
     d gamma=gc->gas.gamma(T0);
     d z0=p0*gamma/c0;
-    TRACE(30,"z0:"<<z0);
+    // TRACE(30,"z0:"<<z0);
 
     vd ur=(vertex.wRNm1*vertex.U()+vertex.wRNm2*vertex.left->U())/vertex.SfR;
     vd urtd=gc->iDFT*ur;
