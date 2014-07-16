@@ -1,45 +1,47 @@
 # CMakeList.txt for nonlinear code
 
-#CMakeLists.txt for branch master, producing optimized code (slower)
-# math_common should be linked to armadillo
+############################## Optimized code flags
+set(CMAKE_CXX_FLAGS " -O3 -march=native -mtune=native ")
+add_definitions(-DLOGGER=0 -DTRACER=0)
+add_definitions(-DEIGEN_NO_DEBUG -DARMA_NO_DEBUG)
+############################## End optimized code flags
+
+#PYthon version
 set(PYVER 3.4m)
-set(PYTHON_LIBRARY libpython${PYVER}.so)
 
-cmake_minimum_required (VERSION 2.8.5)
-project(nonlinear_tmtubes)
-# Make the scripts available in the 'cmake' directory available for the
-# 'include()' command, 'find_package()' command.
-set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_LIST_DIR}/cmake )
-include(UseCython)
-#add_definitions(-DEIGEN_NO_DEBUG -DARMA_NO_DEBUG)
-add_definitions(-DLOGLEVEL=nonlinearlogger)
-#enable_testing()
-
-set(CMAKE_C_COMPILER glang)
-set(CMAKE_CXX_COMPILER clang++)
-
-# set(CMAKE_CXX_COMPILER g++)
 ######################### VERBOSE MAKEFILE
 #set(CMAKE_VERBOSE_MAKEFILE on)
 ##########################################
- # -pipe
- #           Use pipes rather than temporary files for communication between the various stages of compilation.  This fails to work on some systems where the
- #           assembler is unable to read from a pipe; but the GNU assembler has no trouble.
 
 
- 
- #Clang++ flags
-set (CMAKE_CXX_FLAGS "-std=c++11 -pipe -march=native -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address")
-#Optimized clang++ flags
-set(CMAKE_CXX_FLAGS $(CMAKE_CXX_FLAGS) "-O2 -march=x86_64 ")
 
 
-# set (CMAKE_CXX_FLAGS "-std=c++11 -march=native -fPIC -Wall -Wno-unused-function -Wno-unknown-warning-option  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address")
 
-#set (CMAKE_CXX_FLAGS "-std=c++11 -fopenmp -O3 -march=native -fPIC -Wall -Wno-unused-function  -Wno-unused-variable -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp  -Wno-address  -ffunction-sections -fdata-sections")
-set(CMAKE_CXX_FLAGS "-std=c++11 -fPIC")
-#configure_file (logger.h.in  "${CMAKE_CURRENT_SOURCE_DIR}/logger.h")
+############################## Not so often changed
+set(PYTHON_LIBRARY libpython${PYVER}.so)
+add_definitions(-DLOGLEVEL=nonlinearlogger)
+cmake_minimum_required (VERSION 2.8.5)
+project(nonlinear_tmtubes)
+# Make the scripts available in the 'cmake' directory available for
+# the 'include()' command, 'find_package()' command.
 
+set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
+${CMAKE_CURRENT_LIST_DIR}/cmake )
+
+
+# set(CMAKE_CXX_COMPILER clang++)
+set(CMAKE_CXX_COMPILER g++)
+
+# -pipe Use pipes rather than temporary files for communication
+#           between the various stages of compilation.  This fails to
+#           work on some systems where the assembler is unable to
+#           read from a pipe; but the GNU assembler has no trouble.
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pipe -fPIC -Wall \
+ -Wno-unused-function \
+ -Wno-unused-variable -Wno-unused-but-set-variable \
+ -Wno-return-local-addr -Wno-cpp  -Wno-address")
+
+include(UseCython)
 AUX_SOURCE_DIRECTORY(tube tubesources)
 AUX_SOURCE_DIRECTORY(var varsources)
 AUX_SOURCE_DIRECTORY(seg segsources)
@@ -47,15 +49,12 @@ AUX_SOURCE_DIRECTORy(sys syssources)
 AUX_SOURCE_DIRECTORy(sol solsources)
 AUX_SOURCE_DIRECTORy(common commonsources)
 set (nonlinear_SRC ${tubesources} ${varsources} ${segsources}
-${syssources} ${solsources}
-${varsources} ${commonsources})
+  ${syssources} ${solsources}
+  ${varsources} ${commonsources})
 
-#  tube/continuityeq.cpp tube/drag.cpp
-#    tube/energyeq.cpp tube/geom.cpp tube/momentumeq.cpp
-#    tube/solidenergyeq.cpp tube/stateeq.cpp tube/tube.cpp
-#    tube/tubeequation.cpp tube/vertex.cpp 
 
 include_directories(
+/usr/include/python${PYVER}
   /usr/include/eigen3
   /usr/local/include
   /usr/local/include/eigen3
@@ -76,8 +75,8 @@ add_library(nonlin ${nonlinear_SRC})
 
 # If the pyx file is a C++ file, we should specify that here.
 set_source_files_properties(
-#  ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/src/rect.pyx
-#  ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/src/pi_calculator.pyx
+  #  ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/src/rect.pyx
+  #  ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/src/pi_calculator.pyx
   pytube.pyx doubletube.pyx
   PROPERTIES CYTHON_IS_CXX TRUE )
 
@@ -114,12 +113,3 @@ target_link_libraries(pytube nonlin math_common armadillo)
 
 
 #set_target_properties(math_common PROPERTIES VERSION ${math_common_VERSION_STR#ING} SOVERSION ${math_common_VERSION_MAJOR})
-
-
-
-
-
-
-
-
-
