@@ -1,6 +1,9 @@
 # CMakeList.txt for nonlinear code
 
 #CMakeLists.txt for branch master, producing optimized code (slower)
+# math_common should be linked to armadillo
+set(PYVER 3.4m)
+set(PYTHON_LIBRARY libpython${PYVER}.so)
 
 cmake_minimum_required (VERSION 2.8.5)
 project(nonlinear_tmtubes)
@@ -53,7 +56,6 @@ ${varsources} ${commonsources})
 #    tube/tubeequation.cpp tube/vertex.cpp 
 
 include_directories(
-  /usr/include/python2.7
   /usr/include/eigen3
   /usr/local/include
   /usr/local/include/eigen3
@@ -66,9 +68,6 @@ include_directories(
   models
   )
 
-# math_common should be linked to armadillo
-set(PYTHON_LIBRARIES libpython2.7.so)
-set(PYTHON_LIBRARY libpython2.7.so)
 
 add_library(nonlin ${nonlinear_SRC})
 
