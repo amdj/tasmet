@@ -1,6 +1,8 @@
 #pragma once			// 
+#ifndef _GEOM_H_
+#define _GEOM_H_
 #include <vtypes.h>
-
+#define MAXGP 500
 
 namespace segment {
   SPOILNAMESPACE
@@ -36,4 +38,5 @@ namespace segment {
     bool prismatic=false;
   };                            /* class Geom */
 }                               // namespace segment
-// 
+
+#endif /* _GEOM_H_ */
