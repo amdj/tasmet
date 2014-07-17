@@ -10,6 +10,7 @@
 #pragma once
 #ifndef _SYSTEM_H_
 #define _SYSTEM_H_
+#define MAXNDOFS 20000
 #include <memory>
 #include <vtypes.h>
 #include "tube.h"

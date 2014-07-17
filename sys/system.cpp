@@ -95,6 +95,11 @@ namespace tasystem{
 	segs[i]->Init(gc);
       }
     Ndofs=computeNdofs(*this);
+    if(Ndofs>MAXNDOFS)
+      {
+	cout << "WARNING: way too many DOFS required: Ndofs=" <<Ndofs << ". Exiting...\n";
+	exit(1);
+      }
   }
   void TAsystem::setGc(const Globalconf& gc){
     this->gc=gc;

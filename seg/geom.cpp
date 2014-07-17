@@ -1,7 +1,17 @@
 #include "geom.h"
 namespace segment{
-
+  void testgp(us gp){
+    if(gp<0 || gp >MAXGP)
+      {
+	cout << "WARNING: Given number of gridpoints is "	\
+	     << gp<<", which is larger than MAXGP.\n"
+	     << "MAXGP is: " << MAXGP << ". Now exiting...";
+	exit(1);
+	  
+      }
+  }
   Geom::Geom(us gp,d L,d Sprismatic,d phiprismatic,d rhprismatic,string shape):shape(shape),gp(gp),Ncells(gp-1){
+
     TRACE(0,"Geom constructor");
     prismatic=true;
     this->L=L;
