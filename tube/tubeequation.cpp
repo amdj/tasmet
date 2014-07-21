@@ -3,6 +3,13 @@
 
 namespace tube{
 
+  inline double min(d x,d y)  {
+    return x<=y? x : y;
+  }
+  inline double max(d x,d y)  {
+    return x<=y? y : x;
+  }
+  
   TubeEquation::TubeEquation(TubeVertex& tgp):Equation(tgp),vertex(tgp),i(vertex.i),Ncells(vertex.Ncells),left(vertex.left),right(vertex.right)
   {
     TRACE(0,"TubeEquation constructor");
@@ -176,27 +183,42 @@ namespace tube{
     return zero;}
 
   // Artificial viscosity matrices
+  vd eps(const vd& nu,const Globalconf& gc){
+    vd eps(nu.size());
+    for(us i=0;i<eps.size(); i++)
+      {
+	eps(i)=max(min(0.5,gc.kappa*nu(i)),gc.kappa*1e-2);
+      }
+    return eps;
+  }
+
   dmat TubeEquation::D_r(){
     const us& Ns=gc->Ns;		// Number of samples
     if(i==Ncells-1)
       return D_l();
     else {
       dmat Dr(Ns,Ns,fillwith::zeros);
-      // Wesselings book: rj+0.5=speed of sound
-      // TRACE(25,"dxp:"<<vertex.dxp);
-      Dr.diag()=gc->c0*gc->kappa*nu()*gc->dx/vertex.dxp;
+      d rj=gc->c0;
+      vd nu1=nu();
+      vd eps1=eps(nu1,*gc);
+
+      Dr.diag()=rj*eps1;
       return Dr;
     }
   }
+
+  
   dmat TubeEquation::D_l(){
     const us& Ns=gc->Ns;		// Number of samples
     if(i==0)
       return D_r();
     else{
       dmat Dl(Ns,Ns,fillwith::zeros);
-      // Wesselings book: rj+0.5=speed of sound
-      // TRACE(25,"dxm:"<<vertex.dxm);
-      Dl.diag()=gc->c0*gc->kappa*nu()*gc->dx/vertex.dxm;
+      d rj=gc->c0;
+      vd nu1=nu();
+      vd eps1=eps(nu1,*gc);
+
+      Dl.diag()=rj*eps1;
       return Dl;
     }
   }
@@ -221,17 +243,18 @@ namespace tube{
     } // Last node
       // return ones<vd>(Ns);
     vd half=vd(Ns); half.fill(0.5);
-    vd denominator=abs(pim1+2*pi+pip1);
-    vd numerator=(pim1-2*pi+pip1);
+    d denominator=3.0*gc->p0;//abs(pim1+2*pi+pip1);
+    vd numerator=abs(pim1-2*pi+pip1);
     vd num_over_denom(Ns);
     for(us k=0;k<Ns;k++){
       // if(abs(denominator(k))<=1e-10) // Safe from division by zero??
-	// num_over_denom(k)=0.01;
+	// num_over_denom(k)=0.5;
       // else
-	// num_over_denom(k)=numerator(k)/denominator(k);
-      num_over_denom(k)=0.1;
+      
+      num_over_denom(k)=numerator(k)/denominator;///denominator(k);
+      // num_over_denom(k)=0.5;      
     }
-    return min(half,num_over_denom);    
+  return num_over_denom;
   }
   
   TubeEquation::~TubeEquation(){}
