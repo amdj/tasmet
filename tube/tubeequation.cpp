@@ -183,11 +183,11 @@ namespace tube{
     return zero;}
 
   // Artificial viscosity matrices
-  vd eps(const vd& nu,const Globalconf& gc){
+  vd eps(const vd& nu,d kappa){
     vd eps(nu.size());
     for(us i=0;i<eps.size(); i++)
       {
-	eps(i)=max(min(0.5,gc.kappa*nu(i)),gc.kappa*1e-2);
+	eps(i)=max(min(0.5,kappa*nu(i)),kappa*1e-3);
       }
     return eps;
   }
@@ -199,8 +199,7 @@ namespace tube{
     else {
       dmat Dr(Ns,Ns,fillwith::zeros);
       d rj=gc->c0;
-      vd nu1=nu();
-      vd eps1=eps(nu1,*gc);
+      vd eps1=eps(nu(),gc->kappa);
 
       Dr.diag()=rj*eps1;
       return Dr;
@@ -215,8 +214,7 @@ namespace tube{
     else{
       dmat Dl(Ns,Ns,fillwith::zeros);
       d rj=gc->c0;
-      vd nu1=nu();
-      vd eps1=eps(nu1,*gc);
+      vd eps1=eps(nu(),gc->kappa);
 
       Dl.diag()=rj*eps1;
       return Dl;

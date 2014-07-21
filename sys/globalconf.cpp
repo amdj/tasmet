@@ -9,6 +9,7 @@ namespace tasystem{
     this->Gastype=gas;
     this->p0=p0;
     this->T0=T0;
+    this->rho0=this->gas.rho(T0,p0);
     this->S0=S0;
     this->dx=dx;
     this->V0=S0*dx;
@@ -31,7 +32,8 @@ namespace tasystem{
 	 << "------- Gas            : " << Gastype << "\n"			\
 	 << "------- p0             : " << p0 << " [Pa] \n"			\
 	 << "------- T0             : " << T0 << " [K] \n"			\
-	 << "------- kappa:         : " << kappa << "\n"			\
+	 << "------- rho0             : " << rho0 << " [kg/m^3] \n"		\
+	 << "------- kappa:         : " << kappa << "\n"	\
       ;
     
 
