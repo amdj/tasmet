@@ -30,7 +30,7 @@ namespace tasystem{
 				// typically between 0.25 and 0.75
 
     
-    d T0,p0;			/* Reference temperature and pressure (used to initialize a lot of variables. */
+    d T0,p0,rho0;			/* Reference temperature and pressure (used to initialize a lot of variables. */
     d Mass,Mach;			/* Fluid mass in the system (should remain constant) */
     vd omgvec;
     void set(us Nf,d freq);	// Set data for new frequency and number of samples

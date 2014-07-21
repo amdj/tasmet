@@ -61,16 +61,16 @@ namespace tube{
     // Artificial viscosity terms
     #ifdef MOM_VISCOSITY
     if(i>0 && i<Ncells-1){
-      error+=-D_r()*(right->U()-vertex.U());
-      error+= D_l()*(vertex.U()-left->U());
+      error+=-gc->rho0*D_r()*(right->U()-vertex.U());
+      error+= gc->rho0*D_l()*(vertex.U()-left->U());
     }
     else if(i==0){
-      error+=-D_r()*(right->right->U()-right->U());
-      error+= D_l()*(right->U()-vertex.U());
+      error+=-gc->rho0*D_r()*(right->right->U()-right->U());
+      error+= gc->rho0*D_l()*(right->U()-vertex.U());
     }
     else {
-      error+=-D_r()*(vertex.U()-left->U());
-      error+= D_l()*(left->U()-left->left->U());
+      error+=-gc->rho0*D_r()*(vertex.U()-left->U());
+      error+= gc->rho0*D_l()*(left->U()-left->left->U());
     }
     #endif
     // Drag term
@@ -91,12 +91,12 @@ namespace tube{
     // Artificial viscosity terms
     #ifdef MOM_VISCOSITY
     if(i>0 && i<Ncells-1){
-      dUi+=(D_l()+D_r());
+      dUi+=gc->rho0*(D_l()+D_r());
     }
     else if(i==0)
-      dUi+=-D_l();
+      dUi+=-gc->rho0*D_l();
     else
-      dUi+=-D_r();
+      dUi+=-gc->rho0*D_r();
     #endif
     dUi.row(0)*=MOM_SCALE0;
     return MOM_SCALE*dUi;
@@ -134,10 +134,10 @@ namespace tube{
     #ifdef MOM_VISCOSITY
     // Artificial viscosity terms
     if(i>0 && i<Ncells-1){
-      dUim1+=-D_l();
+      dUim1+=-gc->rho0*D_l();
     }
     else if(i==Ncells-1)
-      dUim1+=D_r()+D_l();
+      dUim1+=gc->rho0*(D_r()+D_l());
     #endif
     
     dUim1.row(0)*=MOM_SCALE0;
@@ -171,10 +171,10 @@ namespace tube{
     #ifdef MOM_VISCOSITY
     // Artificial viscosity terms
     if(i>0 && i<Ncells-1){
-      dUip1+=-D_r();
+      dUip1+=-gc->rho0*D_r();
     }
     else if(i==0)
-      dUip1+=D_r()+D_l();
+      dUip1+=gc->rho0*(D_r()+D_l());
     #endif
     
     dUip1.row(0)*=MOM_SCALE0;
@@ -196,14 +196,14 @@ namespace tube{
     dmat dUip2=zero;
     if(i==0 && left==NULL)
       // TRACE(20,"i is nul and left is nul");
-      dUip2+=-D_r();
+      dUip2+=-gc->rho0*D_r();
     return dUip2;
   }
   dmat Momentum::dUim2(){
     dmat dUim2=zero;
     if((i==Ncells-1)&& right==NULL )
       // TRACE(20,"i is  Ncells and and right is nul");
-      dUim2+=-D_l();
+      dUim2+=-gc->rho0*D_l();
     return dUim2;
   }  
   Momentum::~Momentum(){
