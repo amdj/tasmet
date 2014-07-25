@@ -22,16 +22,17 @@ namespace tube{
     return *this;
   }
 
-  void TwImpedance::Init(us i,const Globalconf& gc,const Geom& geom)
+  void TwImpedance::Init(us i,const SegBase& thisseg)
   {
     TRACE(8,"TwImpedance::Init(), vertex "<< i <<".");
-    TubeVertex::Init(i,gc,geom);
+    TubeVertex::Init(i,thisseg);
     eq[1]=&mright;
-    mright.Init(gc);
-    updateW(geom);
+    mright.Init(*thisseg.gc);
+    updateW(thisseg);
   }
   
-  void TwImpedance::updateW(const Geom& geom){
+  void TwImpedance::updateW(const SegBase& thisseg){
+    const Geom& geom=thisseg.geom;
     TRACE(8,"TwImpedance::updateW()");
     c.Wddt=vVf;
     c.Wim1=wRNm2-wLl;
@@ -79,19 +80,19 @@ namespace tube{
   vd TwImpedanceMomentumEq::Error(){
     TRACE(4,"TwImpedanceMomentumEq::Error()");
 
-    vd error(gc->Ns,fillwith::zeros);    
+    vd error(v.gc->Ns,fillwith::zeros);    
     // Add the normal stuff
     error+=Momentum::Error();
 
-    d T0=gc->T0;
-    d c0=gc->gas.cm(T0);
-    d p0=gc->p0;
-    d gamma=gc->gas.gamma(T0);
-    vd ur=(vertex.wRNm1*vertex.U()+vertex.wRNm2*vertex.left->U())/vertex.SfR;
-    vd urtd=gc->iDFT*ur;
-    vd pr=gc->fDFT*(p0*pow(1.0+((gamma-1.0)/2.0)*urtd/c0,2.0*gamma/(gamma-1.0))-p0);
+    d T0=v.gc->T0;
+    d c0=v.gc->gas.cm(T0);
+    d p0=v.gc->p0;
+    d gamma=v.gc->gas.gamma(T0);
+    vd ur=(v.wRNm1*v.U()+v.wRNm2*v.left->U())/v.SfR;
+    vd urtd=v.gc->iDFT*ur;
+    vd pr=v.gc->fDFT*(p0*pow(1.0+((gamma-1.0)/2.0)*urtd/c0,2.0*gamma/(gamma-1.0))-p0);
     // TRACE(100,"pr:"<<pr);
-    vd errorZ=MOM_SCALE*vertex.SfR*pr;
+    vd errorZ=MOM_SCALE*v.SfR*pr;
 
     errorZ(0)*=MOM_SCALE0;
     error+=errorZ;
@@ -105,18 +106,18 @@ namespace tube{
   dmat TwImpedanceMomentumEq::dUi(){
     TRACE(1,"TwImpedanceMomentumEq::dUi()");
     dmat dUi=Momentum::dUi();
-    const us& Ns=gc->Ns;
-    d T0=gc->T0;
-    d c0=gc->gas.cm(T0);
-    d p0=gc->p0;
-    d gamma=gc->gas.gamma(T0);
+    const us& Ns=v.gc->Ns;
+    d T0=v.gc->T0;
+    d c0=v.gc->gas.cm(T0);
+    d p0=v.gc->p0;
+    d gamma=v.gc->gas.gamma(T0);
     d z0=p0*gamma/c0;
     // TRACE(30,"z0:"<<z0);
-    vd ur=(vertex.wRNm1*vertex.U()+vertex.wRNm2*vertex.left->U())/vertex.SfR;
-    vd urtd=gc->iDFT*ur;
+    vd ur=(v.wRNm1*v.U()+v.wRNm2*v.left->U())/v.SfR;
+    vd urtd=v.gc->iDFT*ur;
     
-    dmat Z=gc->fDFT*(z0/vertex.SfR)*diagmat(pow(1.0+((gamma-1.0)/2.0)*urtd/c0,(gamma+1.0)/(gamma-1.0)))*gc->iDFT;
-    dmat adddUi=MOM_SCALE*vertex.wRNm1*vertex.SfR*Z;
+    dmat Z=v.gc->fDFT*(z0/v.SfR)*diagmat(pow(1.0+((gamma-1.0)/2.0)*urtd/c0,(gamma+1.0)/(gamma-1.0)))*v.gc->iDFT;
+    dmat adddUi=MOM_SCALE*v.wRNm1*v.SfR*Z;
     adddUi.row(0)*=MOM_SCALE0;
     dUi+=adddUi;
     return dUi;
@@ -125,19 +126,19 @@ namespace tube{
   dmat TwImpedanceMomentumEq::dUim1(){
     TRACE(1,"TwImpedanceMomentumEq::dUim1()");
     dmat dUim1=Momentum::dUim1();    
-    const us& Ns=gc->Ns;
-    d T0=gc->T0;
-    d p0=gc->p0;
-    d c0=gc->gas.cm(T0);
-    d gamma=gc->gas.gamma(T0);
+    const us& Ns=v.gc->Ns;
+    d T0=v.gc->T0;
+    d p0=v.gc->p0;
+    d c0=v.gc->gas.cm(T0);
+    d gamma=v.gc->gas.gamma(T0);
     d z0=p0*gamma/c0;
     // TRACE(30,"z0:"<<z0);
 
-    vd ur=(vertex.wRNm1*vertex.U()+vertex.wRNm2*vertex.left->U())/vertex.SfR;
-    vd urtd=gc->iDFT*ur;
+    vd ur=(v.wRNm1*v.U()+v.wRNm2*v.left->U())/v.SfR;
+    vd urtd=v.gc->iDFT*ur;
     
-    dmat Z=gc->fDFT*(z0/vertex.SfR)*diagmat(pow(1.0+((gamma-1.0)/2.0)*urtd/c0,(gamma+1.0)/(gamma-1.0)))*gc->iDFT;
-    dmat adddUim1=MOM_SCALE*vertex.wRNm2*vertex.SfR*Z;
+    dmat Z=v.gc->fDFT*(z0/v.SfR)*diagmat(pow(1.0+((gamma-1.0)/2.0)*urtd/c0,(gamma+1.0)/(gamma-1.0)))*v.gc->iDFT;
+    dmat adddUim1=MOM_SCALE*v.wRNm2*v.SfR*Z;
     adddUim1.row(0)*=MOM_SCALE0;
     dUim1+=adddUim1;
     return dUim1;

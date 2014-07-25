@@ -27,7 +27,7 @@ project(nonlinear_tmtubes)
 
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 ${CMAKE_CURRENT_LIST_DIR}/cmake )
-
+set(CLANG_FLAGS "-Wno-unknown-warning-option -Wno-overloaded-virtual")
 
 # set(CMAKE_CXX_COMPILER clang++)
 set(CMAKE_CXX_COMPILER g++)
@@ -36,7 +36,7 @@ set(CMAKE_CXX_COMPILER g++)
 #           between the various stages of compilation.  This fails to
 #           work on some systems where the assembler is unable to
 #           read from a pipe; but the GNU assembler has no trouble.
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pipe -fPIC -Wall \
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CLANG_FLAGS} -g -std=c++11 -pipe -fPIC -Wall \
  -Wno-unused-function \
  -Wno-unused-variable -Wno-unused-but-set-variable \
  -Wno-return-local-addr -Wno-cpp  -Wno-address")
@@ -83,12 +83,14 @@ set_source_files_properties(
 set(CYTHON_CXX_EXTENSION cpp)
 set(CYTHON_FLAGS -I/usr/local/include --timestamps)
 add_executable(test123 test123.cpp)
+add_executable(threetubes threetubes.cpp)
 cython_add_module(pytube pytube.pyx)
 # cython_add_module(doubletube doubletube.pyx)
 set_target_properties(pytube PROPERTIES COMPILE_FLAGS "-Wno-cpp -Wno-strict-aliasing")
 
 # target_link_libraries(doubletube nonlin math_common armadillo)
 target_link_libraries(test123 nonlin math_common armadillo)
+target_link_libraries(threetubes nonlin math_common armadillo)
 target_link_libraries(pytube nonlin math_common armadillo)
 
 

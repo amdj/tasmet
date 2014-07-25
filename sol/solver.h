@@ -17,10 +17,7 @@ namespace tasystem{
     Solver& operator=(const Solver& other);
 
     void DoIter(d dampfac=1.0);
-    void Init();
     ~Solver();
-  private:
-    bool hasinit;
     
   };
 

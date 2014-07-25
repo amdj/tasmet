@@ -31,6 +31,15 @@ namespace variable {
     this->timedata=timedata;
     dft();
   }
+  var& var::operator=(const var& other){
+    this->gc=other.gc;
+    this->Nf=other.Nf;
+    this->Ns=other.Ns;
+    this->timedata=other.timedata;
+    this->amplitudedata=other.amplitudedata;
+    return *this;
+  }
+  
   void var::updateNf(){
     TRACE(0,"var::updateNf()");
     if(this->Ns!=gc->Ns){
@@ -111,6 +120,7 @@ namespace variable {
 
   // Set methods
   void var::set(us freqnr,d val) { //Set result for specific frequency zero,real one, -imag one, etc
+    assert(freqnr<Ns);
     updateNf();
     amplitudedata[freqnr]=val;
     idft();

@@ -5,9 +5,7 @@
 namespace segment{
 
   Vertex::Vertex() {
-    TRACE(8,"Vertex constructor");
-    left=NULL;
-    right=NULL;
+    TRACE(8,"Vertex::Vertex()");
     vars[0]=&rho;
     vars[1]=&U;
     vars[2]=&T;
@@ -17,22 +15,24 @@ namespace segment{
   }
   Vertex::Vertex(const Vertex& o):Vertex(){}
   Vertex& Vertex::operator=(const Vertex& o) {Vertex(); return *this;}
-  void Vertex::Init(us i,const tasystem::Globalconf& g,const Geom& geom){
-    TRACE(5,"Vertex::Init()");
+  void Vertex::Init(us i,const SegBase& thisseg){
+    TRACE(8,"Vertex::Init()");
     this->i=i;
+    const Geom& geom=thisseg.geom;
+
     this->Ncells=geom.Ncells;
-    this->gc=&g;
-    Vertex::updateW(geom);
+    this->gc=thisseg.gc;
+    Vertex::setVertexGeom(geom);
     rho=var(*gc);
     U=var(*gc);
     T=var(*gc);
     p=var(*gc);
     Ts=var(*gc);
     // Initialized density and temperature
-    T.set(0,g.T0);
-    rho.set(0,g.gas.rho(g.T0,g.p0));
+    T.set(0,gc->T0);
+    rho.set(0,gc->gas.rho(gc->T0,gc->p0));
   }
-  void Vertex::show(){
+  void Vertex::show() const{
     cout << "Showing data for Vertex " << i << ".\n"	\
 	 << ""						\
 	 << "vSf: " << vSf << "\n"			\
@@ -49,11 +49,11 @@ namespace segment{
 	 << "dxm:"<<dxm<<"\n"			\
       ;                  
     d vxim1,vxi,vxip1;        
-      
   }
 
-  void Vertex::updateW(const Geom& geom)  {
-    TRACE(5,"Vertex::updateW()");
+  void Vertex::setVertexGeom(const SegBase& thisseg)  {
+    TRACE(8,"Vertex::updateW()");
+    const Geom& geom=thisseg.geom;
     Ncells=geom.Ncells;
     const vd& vx=geom.vx;
     vxi=vx(i);
@@ -127,30 +127,25 @@ namespace segment{
     }
   }
   dmat Vertex::Jac(){		// Return Jacobian
-    TRACE(2,"Vertex::Jac()");
+    TRACE(5,"Vertex::Jac() for vertex "<< i<< ".");
     const us& Ns=gc->Ns;
-    TRACE(5," Vertex::Jac()...");
     TRACE(5,"Ns:"<<Ns);
     TRACE(5,"Neq:"<<Neq);    
     dmat Jac(Neq*Ns,3*Neq*Ns,fillwith::zeros);
+    us firstcol=0;
+    us lastcol=Jac.n_cols-1;
     for(us k=0;k<Neq;k++){
       TRACE(5,"Equation number:"<<k);
       us firstrow=k*Ns;
-      // cout << firstrow << " ";
-      us firstcol=0;
-      // cout << firstcol << " ";
       us lastrow=firstrow+Ns-1;
-      // cout << lastrow << " ";
-      us lastcol=Jac.n_cols-1;
-      // cout << lastcol << " ";
-      dmat eqJac=eq[k]->Jac();
-      Jac.submat(firstrow,firstcol,lastrow,lastcol)=eqJac;
-      
+      TRACE(5,"Equation "<< k <<"... succesfully obtained Jacobian");
+      Jac.submat(firstrow,firstcol,lastrow,lastcol)=eq[k]->Jac();
     }
+    
     return Jac;
   }  
   Vertex::~Vertex(){
-    TRACE(-5,"Vertex destructor");
+    TRACE(-5,"~Vertex");
   }
 
 } // namespace segment

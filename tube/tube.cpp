@@ -21,67 +21,35 @@
 namespace tube {
   Tube::Tube(Geom geom):Seg(geom),drag(*this){
     // Fill vector of gridpoints with data:
-    TRACE(13,"Tube constructor started, filling gridpoints vector...");
-
-    // globalconf instance is put in reference variable gc in
-    // inherited class Seg
-    build();
-    TRACE(13,"Tube constructor done");
-  }
-  void Tube::build(){
-    TRACE(13,"Tube::build()");
+    TRACE(13,"Tube constructor()...");
     type="Tube";
-    // vvertex=new Vertex*[Ncells];
-    Nvertex=geom.Ncells;
-    for(us i=0; i<Nvertex;i++){
-      TRACE(12,"Creating Tube vvertex "<<i << " ...");
-      vvertex.push_back(vertexptr(new TubeVertex()));
-      // Link the array
-      if(i>0){
-	TRACE(-1,"Tube vvertex i-1:"<<i-1);
-	vvertex[i]->left=vvertex[i-1].get();
-	TRACE(-1,"Add right pointer to this one: " << vvertex[i]);
-	vvertex[i-1]->right=vvertex[i].get();
-      }
-    }
-
   }
+  Vertex* Tube::makeVertex(us i,const Globalconf& g){
+    TRACE(13,"Tube::makeVertex("<< i <<",gc)");    
+    return new TubeVertex();}
   void Tube::cleanup(){
     TRACE(13,"Tube::cleanup()");
-    for(us i=0;i<Nvertex;i++)
-      vvertex[i].reset();
+    vvertex.clear();
     Nvertex=0;
     Ndofs=0;
   }
-  
-  Tube::Tube(const Tube& other):Tube(other.geom){
-    TRACE(13,"Tube copy constructor");
-    this->gc=other.gc;
-    this->Ndofs=other.Ndofs;
-    this->left=other.left;
-    this->right=other.right;
-    this->nleft=other.nleft;
-    this->nright=other.nright;
-    TRACE(13,"Tube copy constructor done.");
-    // First runs the Seg copy constructor. This copies the pointers to left and righ segment of this one. Then the Seg base constructor is called from the Seg Cc. After that the Tube constructor is called to create the vertices.
-  }
+  Tube::Tube(const Tube& other):Tube(other.geom){}
   Tube& Tube::operator=(const Tube& other){
-    TRACE(0,"Tube copy assignment");
+    TRACE(13,"Tube copy assignment");
     cleanup();
-    newgeom(other.geom);
+    geom=other.geom;
     // drag(geom);
-    build();
+    WARN("Do not use assignment operators for tubes");
     return *this;
   }
-  // void Tube::Init(const tasystem::Globalconf& g){
-  //   TRACE(13,"Tube::Init()");
-  //   Seg::Init(g);
-  //   for (us i=0;i<Nvertex;i++){
-  //     // TRACE(-1,"i:"<<i);
-  //     vvertex[i]->T.set(g.T0,0);
-  //     vvertex[i]->rho.set(g.gas.rho(g.T0,g.p0),0);
-  //   }
-  // }
+  void Tube::Init(const tasystem::Globalconf& g){
+    TRACE(13,"Tube::Init()");
+    Seg::Init(g);
+    for (us i=0;i<Nvertex;i++){
+      vvertex[i]->T.set(0,g.T0);
+      vvertex[i]->rho.set(0,g.gas.rho(g.T0,g.p0));
+    }
+  }
 
 
   vd Tube::GetResAt(us varnr,us freqnr){
@@ -96,16 +64,6 @@ namespace tube {
   Tube::~Tube(){
     TRACE(15,"~Tube()");
     cleanup();
-    // if(Ncells>0){
-      // Vertex* v=vvertex[0];
-      // for (us i=0;i<Ncells;i++){
-	// TRACE(-6,"Deleting vertex..");
-	// delete vvertex[i];
-      // }
-	// TRACE(-6,"Deleting vertex array..");
-      // delete vvertex;  
-    // }
-
   }
   
 

@@ -35,7 +35,7 @@ namespace variable {
     var(const Globalconf&);	// Initialize with zeros
     var(const Globalconf&,double); // Initialize with one time-average value
     var(const Globalconf&,const vd& timedata); // Initialize with timedata!!!!
-    // var& operator=(const var&);			  // Copy assignment operator
+    var& operator=(const var&);			  // Copy assignment operator
     // var operator()(const var&); //Copy constructor
     // Get methods
     ~var();

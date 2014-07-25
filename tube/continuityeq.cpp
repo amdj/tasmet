@@ -2,8 +2,8 @@
 #include "tubevertex.h"
 
 #define CONT_VISCOSITY
-#define CONT_SCALE (1.0)//(pow(gc.c0,2)) //(pow(gc.c0,2)/gc.omg)
-#define CONT_SCALE0 (1.0)//(1.0/pow(gc.M,2))
+#define CONT_SCALE (1.0)//(pow(v.gc.c0,2)) //(pow(v.gc.c0,2)/v.gc.omg)
+#define CONT_SCALE0 (1.0)//(1.0/pow(v.gc.M,2))
 
 
 
@@ -17,60 +17,60 @@ namespace tube{
   vd Continuity::Error(){	// Current error in continuity equation
     // The default boundary implementation is an adiabatic no-slip wall.
     TRACE(6,"Continuity::Error()");
-    vd error(gc->Ns,fillwith::zeros);
-    error+=Wddt*gc->DDTfd*vertex.rho();
-    error+=Wi*gc->fDFT*(vertex.rho.tdata()%vertex.U.tdata());
-
-    if(i>0 || (i==0 && left!=NULL)){
+    vd error(v.gc->Ns,fillwith::zeros);
+    error+=Wddt*v.gc->DDTfd*v.rho();
+    error+=Wi*v.gc->fDFT*(v.rho.tdata()%v.U.tdata());
+    if(v.i>0 || (v.i==0 && v.left!=NULL)){
       // Standard implementation of a no-slip (wall) boundary
       // condition
-      vd rhoim1=left->rho.tdata();
-      vd Uim1=left->U.tdata();
-      error+=Wim1*gc->fDFT*(rhoim1%Uim1);
+      vd rhoim1=v.left->rho.tdata();
+      vd Uim1=v.left->U.tdata();
+      error+=Wim1*v.gc->fDFT*(rhoim1%Uim1);
     }
-    if(i<Ncells-1 || (i==Ncells-1 && right!=NULL) ){
+    if(v.i<v.Ncells-1 || (v.i==v.Ncells-1 && v.right!=NULL) ){
       // Standard implementation of a no-slip (wall) boundary
       // condition
-      vd rhoip1=right->rho.tdata();
-      vd Uip1=right->U.tdata();
-      error+=Wip1*gc->fDFT*(rhoip1%Uip1);
+      vd rhoip1=v.right->rho.tdata();
+      vd Uip1=v.right->U.tdata();
+      error+=Wip1*v.gc->fDFT*(rhoip1%Uip1);
     }
 
 #ifdef CONT_VISCOSITY
-    const d& vSf=vertex.vSf;
-    if(i>0 && i<Ncells-1){
-      error+=-D_r()*(right->rho() -vertex.rho())*vSf;
-      error+= D_l()*(vertex.rho() -left->rho())  *vSf;
+    const d& vSf=v.vSf;
+    if(v.i>0 && v.i<v.Ncells-1){
+      error+=-D_r()*(v.right->rho() -v.rho())*vSf;
+      error+= D_l()*(v.rho() -v.left->rho())  *vSf;
     }
-    else if(i==0){		// First vertex
-      error+=-D_r()*(right->right->rho()-right->rho())*vSf;
-      error+=D_l()*(right->rho()-vertex.rho())*vSf;
+    else if(v.i==0){		// First v
+      error+=-D_r()*(v.right->right->rho()-v.right->rho())*vSf;
+      error+=D_l()*(v.right->rho()-v.rho())*vSf;
     }
-    else {			// Last vertex
-      error+=-D_r()*(vertex.rho()-left->rho())*vSf;
-      error+=D_l()*(left->rho()-left->left->rho())*vSf;
+    else {			// Last v
+      error+=-D_r()*(v.rho()-v.left->rho())*vSf;
+      error+=D_l()*(v.left->rho()-v.left->left->rho())*vSf;
     }
 #endif
     
-    
+    TRACE(6,"Continuity::Error()");    
     // (Boundary) source term
-    error+=vertex.csource();
+    error+=v.csource();
+    TRACE(6,"Continuity::Error()");
     error(0)*=CONT_SCALE0;
     return CONT_SCALE*error;
   }
   dmat Continuity::drhoi(){
     TRACE(0,"Continuity::drhoi()");
-    dmat drhoi=Wddt*gc->DDTfd;		// Initialize and add first term
-    drhoi+=Wi*gc->fDFT*diagtmat(vertex.U)*gc->iDFT;
+    dmat drhoi=Wddt*v.gc->DDTfd;		// Initialize and add first term
+    drhoi+=Wi*v.gc->fDFT*diagtmat(v.U)*v.gc->iDFT;
 
     // Artificial viscosity terms
 #ifdef CONT_VISCOSITY
-    const d& vVf=vertex.vVf;
-    const d& vSf=vertex.vSf;
-    if(i>0 && i<Ncells-1){
+    const d& vVf=v.vVf;
+    const d& vSf=v.vSf;
+    if(v.i>0 && v.i<v.Ncells-1){
       drhoi+=(D_l()+D_r())*vSf;	// Middle vertex
     }
-    else if(i==0)
+    else if(v.i==0)
       drhoi+=-D_l()*vSf;	// First vertex
     else		
       drhoi+=-D_r()*vSf;	// Last vertex
@@ -81,23 +81,25 @@ namespace tube{
   dmat Continuity::dUi(){
     TRACE(0,"Continuity::dUi()");
     dmat dUi=zero;
-    dUi+=Wi*gc->fDFT*diagtmat(vertex.rho)*gc->iDFT;
+    dUi+=Wi*v.gc->fDFT*diagtmat(v.rho)*v.gc->iDFT;
     dUi.row(0)*=CONT_SCALE0;    
     return CONT_SCALE*dUi;
   }
   dmat Continuity::dUip1(){
     TRACE(0,"Continuity::dUip1()");
     dmat dUip1=zero;
-    if(right!=NULL)
-      dUip1+=Wip1*gc->fDFT*diagtmat(right->rho)*gc->iDFT;
+
+    if(v.right!=NULL)
+      dUip1+=Wip1*v.gc->fDFT*diagtmat(v.right->rho)*v.gc->iDFT;
     dUip1.row(0)*=CONT_SCALE0;
     return CONT_SCALE*dUip1;
   }
   dmat Continuity::dUim1(){
     TRACE(0,"Continuity::dUim1()");
+
     dmat dUim1=zero;
-    if(left!=NULL)
-      dUim1+=Wim1*gc->fDFT*diagtmat(left->rho)*gc->iDFT;
+    if(v.left!=NULL)
+      dUim1+=Wim1*v.gc->fDFT*diagtmat(v.left->rho)*v.gc->iDFT;
     dUim1.row(0)*=CONT_SCALE0;
     return CONT_SCALE*dUim1;
   }
@@ -105,16 +107,16 @@ namespace tube{
     TRACE(0,"Continuity::drhoip1()");
     dmat drhoip1=zero;
 
-    if(i<Ncells-1 || right!=NULL)
-      drhoip1=Wip1*gc->fDFT*diagtmat(right->U)*gc->iDFT;
+    if(v.i<v.Ncells-1 || v.right!=NULL)
+      drhoip1=Wip1*v.gc->fDFT*diagtmat(v.right->U)*v.gc->iDFT;
 
     // Artificial viscosity terms
 #ifdef CONT_VISCOSITY    
-    const d& vSf=vertex.vSf;
-    if(i>0 && i<Ncells-1){
+    const d& vSf=v.vSf;
+    if(v.i>0 && v.i<v.Ncells-1){
       drhoip1+=-D_r()*vSf;
     }
-    else if(i==0){		// First vertex
+    else if(v.i==0){		// First vertex
       drhoip1+=(D_l()+D_r())*vSf;
     }
 #endif
@@ -124,17 +126,18 @@ namespace tube{
   }
   dmat Continuity::drhoim1(){
     TRACE(0,"Continuity::drhoim1()");
+
     dmat drhoim1=zero;
-    if(left!=NULL)
-      drhoim1+=Wim1*gc->fDFT*diagtmat(left->U)*gc->iDFT;
+    if(v.left!=NULL)
+      drhoim1+=Wim1*v.gc->fDFT*diagtmat(v.left->U)*v.gc->iDFT;
 
     // Artificial viscosity terms
     #ifdef CONT_VISCOSITY
-    const d& vSf=vertex.vSf;
-    if(i>0 && i<Ncells-1){
+    const d& vSf=v.vSf;
+    if(v.i>0 && v.i<v.Ncells-1){
       drhoim1+=-D_l()*vSf;
     }
-    else if(i==Ncells-1){		// Last vertex
+    else if(v.i==v.Ncells-1){		// Last vertex
       drhoim1+=(D_l()+D_r())*vSf;
     }
     #endif
@@ -144,16 +147,16 @@ namespace tube{
   }
   dmat Continuity::drhoim2(){
     dmat drhoim2=zero;
-    if(i==Ncells-1 && right==NULL){
-      const d& vSf=vertex.vSf;
+    if(v.i==v.Ncells-1 && v.right==NULL){
+      const d& vSf=v.vSf;
       drhoim2+=-D_l()*vSf;
     }
     return drhoim2;
   }
   dmat Continuity::drhoip2(){
     dmat drhoip2=zero;
-    if(i==0 && left==NULL){
-      const d& vSf=vertex.vSf;
+    if(v.i==0 && v.left==NULL){
+      const d& vSf=v.vSf;
       drhoip2+=-D_r()*vSf;
     }
     // TRACE(10,"D_r():\n"<<D_r());

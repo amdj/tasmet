@@ -25,7 +25,7 @@ namespace tasystem{
     TRACE(10,"Globalconf constructor done");
     
   }
-  void Globalconf::show(){
+  void Globalconf::show() const {
     cout << "------- Globalconf configuration ------ \n"			\
 	 << "------- Nf             : "<< Nf <<"\n"				\
 	 << "------- Base frequency : " << freq << " Hz\n"			\

@@ -23,13 +23,13 @@ namespace tube{
     return *this;
   }
 
-  void RightImpedance::Init(us i,const Globalconf& gc,const Geom& geom)
+  void RightImpedance::Init(us i,const SegBase& thisseg)
   {
     TRACE(8,"RightImpedance::Init(), vertex "<< i <<".");
-    TubeVertex::Init(i,gc,geom);
+    TubeVertex::Init(i,thisseg);
     eq[1]=&mright;
-    mright.Init(gc);
-    updateW(geom);
+    mright.Init(*thisseg.gc);
+    updateW(thisseg.geom);
   }
   
   void RightImpedance::updateW(const Geom& geom){
@@ -80,10 +80,10 @@ namespace tube{
       }
   vd RightImpedanceMomentumEq::Error(){
     TRACE(4,"RightImpedanceMomentumEq::Error()");
-    vd error(gc->Ns,fillwith::zeros);
+    vd error(v.gc->Ns,fillwith::zeros);
     // Add the normal stuff
     error+=Momentum::Error();  
-    vd errorZ=MOM_SCALE*vertex.SfR*Z%(vertex.wRNm1*vertex.U()+vertex.wRNm2*vertex.left->U());
+    vd errorZ=MOM_SCALE*v.SfR*Z%(v.wRNm1*v.U()+v.wRNm2*v.left->U());
 
     errorZ(0)*=MOM_SCALE0;
     error+=errorZ;
@@ -97,7 +97,7 @@ namespace tube{
   dmat RightImpedanceMomentumEq::dUi(){
     TRACE(1,"RightImpedanceMomentumEq::dUi()");
     dmat dUi=Momentum::dUi();
-    dmat adddUi=MOM_SCALE*vertex.wRNm1*vertex.SfR*diagmat(Z);
+    dmat adddUi=MOM_SCALE*v.wRNm1*v.SfR*diagmat(Z);
     adddUi.row(0)*=MOM_SCALE0;
     dUi+=adddUi;
 
@@ -114,7 +114,7 @@ namespace tube{
   dmat RightImpedanceMomentumEq::dUim1(){
     TRACE(1,"RightImpedanceMomentumEq::dUim1()");
     dmat dUim1=Momentum::dUim1();    
-    dmat adddUim1=MOM_SCALE*vertex.wRNm2*vertex.SfR*diagmat(Z);
+    dmat adddUim1=MOM_SCALE*v.wRNm2*v.SfR*diagmat(Z);
     adddUim1.row(0)*=MOM_SCALE0;
     dUim1+=adddUim1;
     // For velocity boundary condition

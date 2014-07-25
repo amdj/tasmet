@@ -17,17 +17,13 @@ namespace tube{
   class TubeEquation:public Equation{
   public:
     dmat zero;			// Zeros matrix of right size
-    TubeVertex& vertex;
-    const us& i; 			// Current node
-    const us& Ncells;
-    const segment::Vertex*& left;
-    const segment::Vertex*& right;
+    TubeVertex& v;
     
     TubeEquation(TubeVertex& gp);
     virtual ~TubeEquation();
     TubeEquation(const TubeEquation& other); // Copy constructor
     dmat diagtmat(const variable::var& v); // Create diagonal matrix with time domain data from variable
-    void Init(const Globalconf& gc);
+    virtual void Init(const Globalconf& gc);
     
     // const dmat& fDFT,iDFT,DDTfd;	// forward, backward dicrete fourier transform, derivative to time matrix (freq domain)
     

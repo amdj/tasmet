@@ -36,11 +36,11 @@ namespace tube{
     TubeVertex(const TubeVertex&);
     TubeVertex& operator=(const TubeVertex&);
     virtual ~TubeVertex();
-    virtual void show();
+    virtual void show() const;
   private:
-    void updateW(const Geom& geom,const SegBase* thisseg=NULL,const SegBase* left=NULL,const SegBase* right=NULL);
+    void updateW(const SegBase& thisseg);
   public:
-    virtual void Init(us i,const Globalconf& gc,const Geom&);   
+    virtual void Init(us i,const SegBase& thisseg);   
     // These virtual functions are required such that boundary
     // condition sources can be added in a later stage by inheriting
     // from this TubeVertex. By default these sources are not a

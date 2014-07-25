@@ -16,9 +16,9 @@ using namespace tube;
 
 int main(int argc,char* argv[]) {
   cout <<  "Running test..." << endl;
-  int loglevel=4;
-  us gp=40;
-  us Nf=1;
+  int loglevel=25;
+  us gp=4;
+  us Nf=0;
   us Ns=2*Nf+1;
   double f=100;
   double omg=2*number_pi*f;
@@ -45,42 +45,43 @@ int main(int argc,char* argv[]) {
   Globalconf gc(Nf,f,"air",T0,p0,Mach,S0,griddx,0,kappa);
   Geom geom1(gp,L,S,phi,rh,"inviscid");
   Tube t1(geom1);
-
-  var pL(gc,0);
-  if(Nf>0)
-    pL.set(1,1);
-  tube::LeftPressure bcleft(0,pL);
+  t1.Init(gc);
+  // var pL(gc,0);
+  // if(Nf>0)
+    // pL.set(1,1);
+  // tube::LeftPressure bcleft(0,pL);
   // tube::RightImpedance bcright(0,415*vd(Ns,fillwith::ones));
-  tube::TwImpedance bcright(0);
-  cout << "left: "<<bcleft.left <<"\n" ;
+  // tube::TwImpedance bcright(1);
   
   TAsystem sys(gc);
   sys.addseg(t1);
-  sys.addbc(bcright);
-  sys.addbc(bcleft);
-
+  sys.addseg(t1);  
+  sys.connectSegs(0,1,SegCoupling::tailhead);
+  // sys.addbc(bcright);
+  // sys.addbc(bcleft);
+  // cout << sys.getSeg(0)->GetRes() << "\n";
   Solver sol(sys);
+  // sol.sys->Init();
+  // sys.getSeg(0)->Error();
+  // sol.sys->getSeg(0)->Jac();
 
-  sol.Init();
+  sol.sys->Init();
+  // sys.show(true);
+  // sol.sys->show(true);
+  cout << "Jac:\n"<< sol.sys->Jac();
+// sol.sys
 
-  Solver sol1(sol);
-  sol1.Init();
-  vd res=sol1.sys->GetRes();
-  // cout << "res:\n"<<res;
-  vd err=sol1.sys->Error();
+  // Solver sol2(sol);
   
-  // // // vd x=t1.GetRmomes();
+  // sol.DoIter();
+    // // // vd x=t1.GetRmomes();
   // // vd err=sol.sys->Error();
   // // cout << "error:\n"<<err;
 
-  for(us i=0; i<4;i++)  
-    sol1.DoIter();
-  // res=sol1.sys->GetRes();
-  // vd er=sol1.sys->Error();
-  // cout << "res:\n"<<res;
+
 
   // cout << "err:\n"<<er;
-  // dmat Jac=sol1.sys->Jac();
+  // dmat Jac=sol.sys->Jac();
   // sol1.sys->show();
   // cout << "Jac:\n"<< Jac;
 

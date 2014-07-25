@@ -1,3 +1,4 @@
+#include "system.h"
 #include "systemhelpers.h"
 #include "tube.h"
 #include "impedancebc.h"
@@ -10,6 +11,25 @@ namespace tasystem{
   using tube::TwImpedance;
   using tube::LeftPressure;
   using segment::connectpos;
+  using segment::SegBase;
+  
+
+  
+
+  void copyallsegsbc(TAsystem& to,const TAsystem& from){
+    TRACE(14,"copyallsegsbc()");
+    for(us i=0;i<from.getNsegs();i++)
+      if(from[i]!=NULL)
+	to.addseg(*from[i]);
+      else
+	TRACE(14,"Warning! Segment is NULL");
+    for(us i=0;i<from.getNbc();i++)
+      if(from.getBc(i)!=NULL)
+	to.addbc(*from.getBc(i));
+      else
+	TRACE(14,"Warning! Bc is NULL");
+    
+  }
 
   void connectbc(Seg& seg,const BcVertex& bc){
     TRACE(14,"connectbc()");
@@ -25,7 +45,7 @@ namespace tasystem{
   {
     if(orig.gettype().compare("Tube")==0){
       TRACE(10,"New tube added to system.");
-      return new Tube((const Tube&) orig);
+      return new Tube(static_cast<const Tube&>(orig));
     }
     else{
       TRACE(50,"Warning: segment " << orig.gettype() << " not yet implemented!");

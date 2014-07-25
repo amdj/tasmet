@@ -10,10 +10,10 @@ namespace segment {
   public:
     Geom(us gp,d L,d S,d phi,d rh,string cshape);
     ~Geom();
-    const string shape;	 // Shape keyword: currently available: 'circ','vert','blapprox'
+    string shape;	 // Shape keyword: currently available: 'circ','vert','blapprox'
     void show();
-    const us gp;         // Number of cell walls
-    const us Ncells;	 // Number of cells
+    us gp;         // Number of cell walls
+    us Ncells;	 // Number of cells
     d L;		 //Length of the Segment
     vd x;		 // Position of cell walls
 

@@ -1,11 +1,11 @@
 #include "geom.h"
 namespace segment{
   void testgp(us gp){
-    if(gp<0 || gp >MAXGP)
+    if(gp<4 || gp >MAXGP)
       {
-	cout << "WARNING: Given number of gridpoints is "	\
+	WARN( "WARNING: Given number of gridpoints is "	\
 	     << gp<<", which is larger than MAXGP.\n"
-	     << "MAXGP is: " << MAXGP << ". Now exiting...";
+	      << "MAXGP is: " << MAXGP << ". Now exiting...");
 	exit(1);
 	  
       }

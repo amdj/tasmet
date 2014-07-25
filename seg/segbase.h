@@ -5,39 +5,37 @@
 #include "globalconf.h"
 #include "geom.h"
 
-
 namespace segment{
   class SegBase;
   using tasystem::Globalconf;
-  typedef std::vector< const SegBase* > Segvec;
-  
+  typedef vector<const SegBase*> SegBaseVec;
+
   class SegBase{
   private:
     us number=0;
-    Geom* geomptr;
   public:
-    Geom& geom;			// The geometry    
+    Geom geom;			// The geometry    
+    const Globalconf* gc=NULL;	// Global configuration of the system
   protected:
-    us nL=0,nR=0;
-    us nleft=0,nright=0;	// Deprecated!
+    SegBaseVec left,right;
     string type;
-
+    
   public:
     SegBase(Geom geom);
     virtual ~SegBase();
-    const Globalconf* gc=NULL;	// Global configuration of the system
-  protected:
-    void newgeom(const Geom& newgeom);
-    
-  public:    
-    const string& gettype() const;
-    const Segvec& Right() const {return right;}
-    const Segvec& Left() const {return left;}
-    Segvec left,right;
+    void setRight(const SegBase&);	   // Couple segment to some segment on left side
+    void setLeft(const SegBase&);		   // Couple segment to some segment on right side
+    // ------------------------------
+
     const us& getNumber() const {return number;}
+    void setNumber(us number) {this->number=number;} 
+    const string& gettype() const;
+    const SegBaseVec& getRight() const {return right;}
+    const SegBaseVec& getLeft() const {return left;}
     bool operator==(const SegBase& seg2) const; // Check if two segments are the same
 
-    
+  protected:
+    void newgeom(const Geom& newgeom);
     
   };
   

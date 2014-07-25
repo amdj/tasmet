@@ -29,15 +29,14 @@ namespace tube{
     Tube(const Tube& othertube); // Copy constructor copies everything!
     Tube& operator=(const Tube& othertube); // And again, we copy everything.
     ~Tube();
+    virtual void Init(const Globalconf& gc);
+    virtual Vertex* makeVertex(us i,const Globalconf& gc);
     vd GetResAt(us varnr,us freqnr); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
-  protected:
-
     friend class TubeVertex;
     friend class Continuity;
     friend class Momentum;
   private:
     void cleanup();
-    void build();
   };				// Tube class
 
 } /* namespace tube */

@@ -42,7 +42,7 @@ namespace tube{
     RightImpedance(const RightImpedance& o);
     RightImpedance& operator=(const RightImpedance&);
     ~RightImpedance(){}
-    virtual void Init(us i,const Globalconf&,const Geom&);
+    virtual void Init(us i,const SegBase&);
     
     virtual string gettype() const {return string("RightImpedance");}
     virtual enum connectpos connectPos() const {return connectpos::right;}

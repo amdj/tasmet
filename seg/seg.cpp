@@ -2,46 +2,11 @@
 #include "bcvertex.h"
 namespace segment{
   
-  void coupleSegs(Seg& seg1,Seg& seg2,SegCoupling coupling){
-    us seg1size=seg1.vvertex.size();
-    us seg2size=seg2.vvertex.size();
-    assert(seg1size>0);
-    assert(seg2size>0);
-    if (coupling==tailhead){
-      // Seg1 is coupled with its tail to Seg2's head
-      TRACE(3,"Coupling seg1 with its tail to the head of seg2");
-      seg1.setRight(seg2);
-      seg2.setLeft(seg1);
-      seg1.vvertex[seg1size-1]->right=seg2.vvertex[0].get();
-      seg2.vvertex[0]->left=seg1.vvertex[seg1size-1].get();
-
-    }
-    else if(coupling==headtail){
-      // Seg2 is coupled with its tail to Seg1's head
-      TRACE(3,"Coupling seg1 with its head to the tail of seg2");
-      seg1.setLeft(seg2);
-      seg2.setRight(seg1);
-    }
-    else if(coupling==tailtail){
-      seg1.setRight(seg2);
-      seg2.setRight(seg1);
-    }
-    else {
-      // Coupling is headhead
-      seg1.setLeft(seg2);
-      seg2.setRight(seg1);
-    }
-  } // coupleSegs()
   
   Seg::Seg(Geom geom):SegBase(geom){
     TRACE(13,"Seg::Seg(Geom)");
     Ndofs=0;
     type="Seg";
-    for(us j=0;j<MAXCONNECT;j++){
-      left.push_back(NULL);
-      right.push_back(NULL);
-      // left[j]=NULL; right=[j]=NULL;
-    }
     // The Jacobian matrix is larger than the number of dofs for the
     // connection terms other segments
     // us& Ns=gc.Ns;
@@ -49,85 +14,79 @@ namespace segment{
   Seg::Seg(const Seg& other): SegBase(other){
     TRACE(13,"Seg copy constructor");
     this->gc=other.gc;
-    this->Ndofs=other.Ndofs;
-    this->left=other.left;
-    this->right=other.right;
-    this->nleft=other.nleft;
-    this->nright=other.nright;
-    // The number is not copied, though
   }
   void Seg::Init(const tasystem::Globalconf& gc){
     TRACE(13,"Seg::Init()");
-    this->gc=&gc;
+    // NO Do not clear segments! Boundary conditions have been added
+    // vvertex.clear();
     Nvertex=geom.Ncells;
-    assert(Nvertex>0);
     Ndofs=geom.Ncells*gc.Ns*Neq;
+    this->gc=&gc;
+
+    if(vvertex.size()==0){
+      for(us i=0;i<Nvertex;i++)
+	vvertex.emplace_back(makeVertex(i,gc));
+    }
+    // And initialize again.
     for(us i=0;i<Nvertex;i++){
-      if(i<Nvertex-1)
-	vvertex[i]->right=vvertex[i+1].get();
-      if(i>0)
-	vvertex[i]->left=vvertex[i-1].get();
       TRACE(13,"Starting intialization of Vertex "<< i);
-      vvertex[i]->Init(i,gc,geom);
-    }      
-  }
-  void Seg::show(){
+      if(i<Nvertex-1) vvertex[i]->right=vvertex[i+1].get();
+      if(i>0) vvertex[i]->left=vvertex[i-1].get();
+      vvertex[i]->Init(i,*this);
+    }
+  } // Seg::Init
+  Vertex* Seg::makeVertex(us i,const Globalconf& gc){
+    TRACE(13,"Seg::makeVertex()");
+    return new Vertex();}
+  void Seg::show(bool showVertices){
+    TRACE(13,"Seg::show()");
     geom.show();
-    showVertices();
+    for(auto s=getLeft().begin();s!=getLeft().end();s++)
+	cout << "Left segment:" << *s << "\n";
+    for(auto s=getRight().begin();s!=getRight().end();s++)
+	cout << "Right segment:" << *s << "\n";
+
+    if(showVertices==true)
+      this->showVertices();
   }
   void Seg::showVertices(){
     for(us i=0;i<Nvertex;i++)
       vvertex[i]->show();
   }
-  void Seg::setLeft(const Seg& Left){
-    TRACE(13,"Seg::SetLeft()");
-    left[nleft]=&Left;
-    nleft++;
-  }
-  void Seg::setRight(const Seg& Right){
-    TRACE(13,"Seg::SetRight()");
-    right[nright]=&Right;
-    nright++;
-  }
+
   void Seg::setLeftbc(Vertex* v){ // The segment owns the bc from then on!
     TRACE(13,"Seg::setLeftbc()-----EMPTY!");
-    // delete vvertex[0];
-    // vvertex[0]=
-    TRACE(13,"setLeftBc(): v:"<<v);
-    vvertex[0].reset(v);
-    // TRACE(13,"Segnumber of bc: " << ((Vertex*) vvertex[0].get())->segNumber());
-    // const us& Nvertex=geom.Nvertex;
     assert(Nvertex>0);
+    vvertex[0].reset(v);
     vvertex[0]->right=vvertex[1].get();
     vvertex[1]->left=vvertex[0].get();
     vvertex[0]->left=NULL;
+    vvertex[0]->Init(0,*this);
   }
 
   void Seg::setRightbc(Vertex* v){
     TRACE(13,"Seg::setRighbc()-----EMPTY!");
     assert(Nvertex>0);
     vvertex[Nvertex-1].reset(v);
-    // delete vvertex[Nvertex-1];
-    // const us& Nvertex=geom.Nvertex;
-    // assert(Nvertex>0);
     vvertex[Nvertex-2]->right=v;
     vvertex[Nvertex-1]->left=vvertex[Nvertex-2].get();
     vvertex[Nvertex-1]->right=NULL;
+    vvertex[Nvertex-1]->Init(Nvertex-1,*this);
   }    
   
   dmat Seg::Jac(){			// Return Jacobian matrix of error operator
     // sdmat Seg::Jac(){			// Return Jacobian matrix of error operator    
-    TRACE(8," Seg::Jac().. ");
-    
+    TRACE(8," Seg::Jac() for Segment "<< getNumber() << ".");
     // TRACE(-1,"Nvertex:"<<Nvertex);
     // sdmat Jac(Nvertex*Neq*Ns,Nvertex*Neq*Ns);
     const us& Ns=gc->Ns;
+
     dmat Jacobian (Nvertex*Neq*Ns,(Nvertex+2)*Neq*Ns,fillwith::zeros);    
     if(Jacobian.size()==0)
       Jacobian=dmat(Nvertex*Neq*Ns,(Nvertex+2)*Neq*Ns);    
     dmat vJac(Neq*Ns,3*Neq*Ns,fillwith::zeros);
     us firstrow,firstcol,lastrow,lastcol;
-    TRACE(8,"Filling Segment Jacobian matrix...");
+    TRACE(8,"Filling Segment Jacobian matrix for segment "<< getNumber() <<"...");
     // #pragma omp parallel for
     for(us j=0;j<Nvertex;j++){			   // Fill the Jacobian
       TRACE(3,"Obtaining vertex Jacobian...");
@@ -145,19 +104,23 @@ namespace segment{
       }
       else if(j==0){
 	if(vvertex[j]->left==NULL){	// First node
+	  TRACE(100,"First node not connected to other segments")
 	  firstcol=Neq*Ns;
 	  lastcol=4*Neq*Ns-1;
 	} else{
+	  TRACE(100,"First node IS connected to other segment")
 	  firstcol=0;	  // Fill in
 	  lastcol=3*Neq*Ns-1;	  
 	}
       }	// j==0
       else {			// Last vertex
 	if(vvertex[j]->right==NULL){
+	  TRACE(100,"Last node not connected to other segments")
 	  firstcol=(Nvertex-2)*Neq*Ns;
 	  lastcol=(Nvertex+1)*Neq*Ns-1;	  
 	}
 	else{
+	  TRACE(100,"Last node IS connected to other segment")
 	  firstcol=(Nvertex-1)*Neq*Ns;
 	  lastcol=Jacobian.n_cols-1;
 	}
@@ -168,6 +131,11 @@ namespace segment{
       // cout << lastrow << " ";
       // cout << lastcol << " \n";
       // cout << "Jacsize:" << Jacobian.n_rows << " " << Jacobian.n_cols <<"\n";
+      if(j==Nvertex-1)
+	cout << "last vertex jac:\n"<< vJac;
+      if(j==0)
+	cout << "First vertex jac:\n"<< vJac;
+
       Jacobian.submat(firstrow,firstcol,lastrow,lastcol)=vJac;      
     }	// end for
     TRACE(8,"Segment Jacobian done.");

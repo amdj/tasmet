@@ -38,12 +38,11 @@ namespace tube{
     TwImpedance(const TwImpedance& o);
     TwImpedance& operator=(const TwImpedance&);
     ~TwImpedance(){}
-    virtual void Init(us i,const Globalconf&,const Geom&);
-    
+    virtual void Init(us i,const SegBase& thisseg);
     virtual string gettype() const {return string("TwImpedance");}
     virtual enum connectpos connectPos() const {return connectpos::right;}
   protected:
-    void updateW(const Geom& geom);
+    virtual void updateW(const SegBase&);
 
   };
 

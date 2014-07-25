@@ -12,7 +12,6 @@
 
 namespace segment{
   SPOILNAMESPACE
-  using tasystem::Globalconf;
   using segment::Geom;
   using variable::var;
 
@@ -21,9 +20,8 @@ namespace segment{
   public:
     us i=0;			// The node number of this vertex
     us Ncells=0;
-    const Globalconf *gc=NULL;
     Equation* eq[Neq];		// Pointer array of all equations
-
+    const Globalconf* gc=NULL;
     const Vertex* left=NULL;
     const Vertex* right=NULL;
     variable::var rho;		// Density
@@ -49,14 +47,14 @@ namespace segment{
     d vxim1,vxi,vxip1;    		// Vertex position of left and right vertex
     
     Vertex();
-    virtual void show();
+    virtual void show() const;
     virtual ~Vertex();
     // Standard copy constructor will suffice
     Vertex(const Vertex&); 
     Vertex& operator=(const Vertex& v2); // Copy assignment
-    virtual void Init(us i,const Globalconf& gc,const Geom& geom);
+    virtual void Init(us i,const SegBase& thisseg);
   private:
-    void updateW(const Geom&);	       // Update weight functions of equations
+    void setVertexGeom(const SegBase& thisseg);	       // Update weight functions of equations
   public:
     vd Error();				  // Compute error for this gridpoint
     dmat Jac();	       // Fill complete Jacobian for this node

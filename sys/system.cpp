@@ -4,234 +4,166 @@
 
 
 namespace tasystem{
+  inline us max(us s,us t){  return s? s>=t : t;}
 
-  void copyallsegsbc(TAsystem& to,const TAsystem& from){
-    TRACE(14,"copyallsegsbc()");
-    for(us i=0;i<from.getNsegs();i++)
-      if(from[i]!=NULL)
-	to.addseg(*from[i]);
-      else
-	TRACE(14,"Warning! Segment is NULL");
-    for(us i=0;i<from.getNbc();i++)
-      if(from.getBc(i)!=NULL)
-	to.addbc(*from.getBc(i));
-      else
-	TRACE(14,"Warning! Bc is NULL");
-    
+  TAsystem::TAsystem(const Globalconf& gc):gc(gc){
+    TRACE(14,"TAsystem::TAsystem(gc)");
+    segfirstdof.zeros();
+    segndofs.zeros();
   }
-  us computeNdofs(const TAsystem& t)
+  TAsystem::TAsystem(const TAsystem& o) :TAsystem(o.gc)
   {
-    us Ndofs=0; 
-    for(us i=0;i<t.getNsegs();i++)
-      Ndofs+=t[i]->getNdofs();
-    return Ndofs;
-  }
-  // void copybc()
-
-  TAsystem::TAsystem(const Globalconf& gc):gc(gc){}
-  TAsystem::TAsystem(const TAsystem& o): gc(o.gc)
-  {
+    TRACE(14,"TAsystem::TAsystem(TAsystem&)");
+    cleanup();
     TRACE(14,"TAsystem copy cc");
     copyallsegsbc(*this,o);
+    segConnections=o.segConnections;
+    hasinit=false;
+  }
+  void TAsystem::Init(){
+    TRACE(14,"TAsystem::Init()");
+    us Nsegs=getNsegs();
+    us Nbc=getNbc();
+    for(us i=0;i<Nsegs;i++)
+      {
+	TRACE(9,"Initializing Segment "<<i<<"...");
+	segs[i]->Init(gc);
+      }
+    for(us i=0;i<Nbc;i++)
+      {
+    	TRACE(9,"Connecting boundary condition "<<i<<"...");
+    	connectbc(*segs[bcvertices[i]->segNumber()],*bcvertices[i]);
+      }
+    us i=0;
+    for(auto v=segConnections.begin();v!=segConnections.end();++v){
+      TRACE(90,"Connecting segment connection " << i << "...");
+      coupleSegs(*v,*this);
+      i++;
+    }
+
+    // Now the weight functions are not yet updated for the vertices
+    // that have to be connected. For now we see no other option than
+    // running seg->Init again
+    for(us i=0;i<Nsegs;i++)
+      {
+	TRACE(9,"Initializing Segment "<<i<<"...");
+	segs[i]->Init(gc);
+      }
+    
+    
+    computeNdofs();
+    if(Ndofs>MAXNDOFS)
+      {
+	WARN("Way too many DOFS required: Ndofs=" <<Ndofs << ". Exiting...\n");
+	exit(1);
+      }
+    hasinit=true;
   }
 
   TAsystem& TAsystem::operator=(const TAsystem& other){
     cleanup();
     gc=other.gc;
     copyallsegsbc(*this,other);
+    segConnections=other.segConnections;
+    hasinit=false;
     return *this;
   }
-  void TAsystem::show(){
-    cout << "Showing TAsystem...\n"		\
+  TAsystem::~TAsystem() {
+    TRACE(-5,"~TAsystem()");
+    cleanup();
+  }
+
+  
+  void TAsystem::computeNdofs()
+  {
+    TRACE(14,"TAsystem::computeNdofs()");
+    Ndofs=0;
+    segfirstdof(0)=0;
+
+    for(us i=0;i<getNsegs();i++)
+      {
+	assert(segs[i].get()!=NULL);
+	us thisndofs=segs[i]->getNdofs();
+	TRACE(12,"This segment ndofs:"<< thisndofs);
+	Ndofs+=thisndofs;
+	segndofs(i)=thisndofs;
+	if(i>0) segfirstdof(i)=segfirstdof(i-1)+segndofs(i-1);
+      }
+  }
+  void TAsystem::connectSegs(us seg1,us seg2,SegCoupling sc){
+    TRACE(14,"TAsystem::ConnectSegs()");
+    // Basic check if nothing is wrong
+    if(max(seg1,seg2)>=getNsegs())
+      {
+	WARN("Segment number is higher than available number of segments. ");
+	return;
+      }
+    segConnections.push_back(SegConnection(seg1,seg2,sc));
+    hasinit=false;
+  }
+
+  void TAsystem::show(bool showvertices){
+    cout << "########################## Showing TAsystem...\n"		\
       ;
+    CheckInit();
     gc.show();
-    for(us i=0;i<Nsegs;i++)
-      segs[i]->show();
+    for(us i=0;i<getNsegs();i++){
+      TRACE(13,"Showing segment "<<i <<"..");
+      segs[i]->show(showvertices);
+    }
   }
   void TAsystem::cleanup(){
-    for(us i=0;i<Nsegs;i++)
-      delete segs[i];
-    for(us i=0;i<Nbc;i++)
-      delete bcvertices[i];
-    Nsegs=0;
     Ndofs=0;
-    Nbc=0;
+    segs.clear();
+    bcvertices.clear();
+    segConnections.clear();
+    hasinit=false;
   }
   BcVertex* TAsystem::getBc(us i) const {
-      if(i<Nbc)
-	return bcvertices[i];
-      else
-	return NULL;
+    us Nbc=getNbc();
+    if(i<Nbc)
+      return bcvertices[i].get();
+    else
+      return NULL;
 	
-    }
+  }
   void TAsystem::addseg(const Seg& seg){
     TRACE(14,"TAsystem::addseg()");
-    segs.push_back(copyseg(seg));
-    Nsegs++;			// Update number of segments
-    Ndofs=computeNdofs(*this);
+    hasinit=false;
+    segs.emplace_back((copyseg(seg)));
+    segs[getNsegs()-1]->setNumber(getNsegs()-1);
   }
   void TAsystem::addbc(const BcVertex& vertex){
     TRACE(14,"TAsystem::addbc()");
-    bcvertices.push_back(copybc(vertex));
-    Nbc++;
+    bcvertices.emplace_back(copybc(vertex));
+    hasinit=false;
   }
   void TAsystem::CheckInit(){
+    TRACE(14,"TAsystem::CheckInit()");
     if(!hasinit){
       Init();
       hasinit=true;
     }
   }
-  void TAsystem::Init(){
-    TRACE(14,"TAsystem::Init()");
-    for(us i=0;i<Nbc;i++)
-      {
-	TRACE(9,"Connecting boundary condition "<<i<<"...");
-	connectbc(*segs[bcvertices[i]->segNumber()],*bcvertices[i]);
-      }
-
-    for(us i=0;i<Nsegs;i++)
-      {
-	TRACE(9,"Initializing Segment "<<i<<"...");
-	segs[i]->Init(gc);
-      }
-    Ndofs=computeNdofs(*this);
-    if(Ndofs>MAXNDOFS)
-      {
-	cout << "WARNING: way too many DOFS required: Ndofs=" <<Ndofs << ". Exiting...\n";
-	exit(1);
-      }
-  }
   void TAsystem::setGc(const Globalconf& gc){
+    TRACE(14,"TAsystem::setGc()");
     this->gc=gc;
-    for(us i=0;i<Nsegs;i++){
-      segs[i]->Init(gc);
-    }
+    hasinit=false;
   }
-  void TAsystem::setnodes(us segnr,us nl,us nr){
-    TRACE(14,"TAsystem::setnodes");
-    assert(segnr>0 && segnr<Nsegs);
-    segs[segnr]->setnodes(nl,nr);
-  }
-  vd TAsystem::GetRes(){
-    TRACE(14,"TAsystem::GetRes(), Ndofs:"<< Ndofs);
-    CheckInit();
-    const us& Ns=gc.Ns;
-    vd Res(Ndofs);
-    us segdofs;
-    us startdof=0;
-    for(us i=0;i<Nsegs;i++){
-      segdofs=segs[i]->getNdofs();
-      Res.subvec(startdof,startdof+segdofs-1)=segs[i]->GetRes();
-      startdof=startdof+segdofs;
-      TRACE(4,"Seg:"<<i<<", Ndofs: "<<segdofs);
-
-    }
-    return Res;
-  }
-  void TAsystem::SetRes(vd Res){
-    CheckInit();
-    TRACE(14,"TAsystem::SetRes(vd res)");
-    us segdofs;
-    us startdof=0;
-
-    for(us i=0;i<Nsegs;i++){
-      segdofs=segs[i]->getNdofs();
-      segs[i]->SetRes(Res.subvec(startdof,startdof+segdofs-1));
-      startdof=startdof+segdofs;
-    }
-  }
-  dmat TAsystem::Jac(){
-    TRACE(14,"TAsystem::operator()() return Jacobian matrix");
-    CheckInit();
-    // Something interesting has to be done here later on to connect
-    // the different segments in the sense that blocks of Jacobian
-    // matrix parts have to be moved to the right place etc. To be
-    // continued...
-    TRACE(-1,"Ndofs:"<<Ndofs);
-    const us& Ns=gc.Ns;
-    dmat jac(Ndofs,Ndofs);
-    us cellblock=Neq*Ns;
-    for(us j=0;j<Nsegs;j++){
-      TRACE(14,"back in system loop, j=" << j);
-      segment::Seg& curseg=*segs[j];
-      dmat segjac=curseg.Jac();
-      TRACE(14,"back in system loop");
-      us thisndofs=curseg.getNdofs();
-      us frow=j*thisndofs;
-      us fcol=j*thisndofs;	 // First col
-      us lrow=(j+1)*thisndofs-1; // last row
-      us lcol=(j+1)*thisndofs-1;
-      TRACE(14,"Filling system Jacobian submat...");
-      // cout << "Segjac:\n"<<segjac;
-      jac.submat(frow,fcol,lrow,lcol)=			\
-	segjac.cols(Neq*gc.Ns,segjac.n_cols-1-Neq*Ns);
-
-      TRACE(14,"Jacobian submat succesfully filled.");
-
-      // if(curseg.Left()[0]!=NULL){
-      // 	TRACE(14,"Coupling to left segment..");
-      // 	// Couple Jacobian terms
-      // 	us othernr=curseg.Left()[0]->getNumber();
-      // 	us firstcol=segfirstcol(othernr);
-      // 	us otherndofs=segndofs(othernr);
-      // 	// Find out if other segment is coupled to the left, or to the right
-      // 	if(*(curseg.Left()[0]->Right()[0])==curseg){
-      // 	  // tail of left segment coupled to head of current segment
-      // 	  jac.submat(frow,firstcol+otherndofs-cellblock,lrow,firstcol+otherndofs-1)= \
-      // 	    segjac.cols(0,cellblock-1);
-      // 	}    
-      // 	else{			// headhead coupling
-
-      // 	} // 
-      // }	  // curseg.Left()!=NULL
-
-      
-      // if(curseg.Right()[0]!=NULL){
-      // 	// Couple Jacobian terms
-      // 	TRACE(14,"Coupling to right segment..");
-      // 	us othernr=curseg.Right()[0]->getNumber();
-      // 	us firstcol=segfirstcol(othernr);
-      // 	us otherndofs=segndofs(othernr);
-      // 	// Find out if other segment is coupled to the left, or to the right
-      // 	if(*(curseg.Right()[0]->Left()[0])==curseg){
-      // 	  // tail of left segment coupled to head of current segment
-      // 	  jac.submat(frow,firstcol,lrow,firstcol+cellblock-1)=	\
-      // 	    segjac.cols(segjac.n_cols-cellblock,segjac.n_cols-1);
-      // 	}    
-      // 	else{			// headhead coupling
-
-      // 	} // 
-      // }	  // curseg.Right()!=NULL
-      TRACE(-1,"Creation of Jacobian for segment "<< j << "done."<<endl);
-    } // end for loop
-    return jac;
-  }
-  vd TAsystem::Error(){
-    TRACE(14,"TAsystem::Error()");
-    CheckInit();
-    vd Error(Ndofs);
-    us segdofs;
-    us startdof=0;
-
-    TRACE(-1,"Nsegs:"<< Nsegs);
-    for(us i=0;i<Nsegs;i++){
-      segdofs=segs[i]->getNdofs();
-      Error.subvec(startdof,startdof+segdofs-1)=segs[i]->Error();
-      startdof=startdof+segdofs;
-    }
-    return Error;
-  }
+  // void TAsystem::setnodes(us segnr,us nl,us nr){
+  //   TRACE(14,"TAsystem::setnodes");
+  //   assert(segnr>0 && segnr<Nsegs);
+  //   segs[segnr]->setnodes(nl,nr);
+  // }
 
   Seg* TAsystem::operator[](us i) const {
+    us Nsegs=getNsegs();
+    
     if(i<Nsegs)
-      return (segs[i]);
+      return (segs[i].get());
     else
       return NULL;
   }
   
-  TAsystem::~TAsystem() {
-    TRACE(-5,"~TAsystem()");
-    cleanup();
-  }
 } // namespace tasystem
 

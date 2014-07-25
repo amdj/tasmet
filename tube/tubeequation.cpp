@@ -1,5 +1,5 @@
 #include "tubeequation.h"
-#include "tubevertex.h"
+#include "tube.h"
 
 namespace tube{
 
@@ -10,43 +10,42 @@ namespace tube{
     return x<=y? y : x;
   }
   
-  TubeEquation::TubeEquation(TubeVertex& tgp):Equation(tgp),vertex(tgp),i(vertex.i),Ncells(vertex.Ncells),left(vertex.left),right(vertex.right)
+  TubeEquation::TubeEquation(TubeVertex& tgp):Equation(tgp),v(tgp)
   {
     TRACE(0,"TubeEquation constructor");
-    // Geometrical parameters
 
   }
-  TubeEquation::TubeEquation(const TubeEquation& other):TubeEquation(other.vertex){
+  TubeEquation::TubeEquation(const TubeEquation& other):TubeEquation(other.v){
     TRACE(0,"TubeEquation copy constructor");
   }
-  void TubeEquation::Init(const Globalconf& gc1){
-    Equation::Init(gc1);
-    zero=zeros<dmat>(gc->Ns,gc->Ns);
-
+  void TubeEquation::Init(const Globalconf& gc){
+    TRACE(6,"TubeEquation::Init(gc)");
+    Equation::Init(gc);
+    zero=zeros<dmat>(gc.Ns,gc.Ns);
   }
   dmat TubeEquation::diagtmat(const variable::var& v){
-    dmat result(gc->Ns,gc->Ns,fillwith::zeros);
+    dmat result(v.gc->Ns,vertex.gc->Ns,fillwith::zeros);
     result.diag()=v.tdata();
     return result;
   }
   vd TubeEquation::getp0(){
     TRACE(0,"TubeEquation::getp0()");
-    vd p0(gc->Ns,fillwith::zeros);
-    p0(0)=gc->p0;
+    vd p0(v.gc->Ns,fillwith::zeros);
+    p0(0)=v.gc->p0;
     return p0;
   }
   vd TubeEquation::getp0t(){
     TRACE(0,"TubeEquation::getp0t()");
-    vd p0(gc->Ns,fillwith::ones);
-    p0*=gc->p0;
+    vd p0(v.gc->Ns,fillwith::ones);
+    p0*=v.gc->p0;
     return p0;
   }
   dmat  TubeEquation::Jac(){
     // Compute the Jacobian for the subsystem around the current gridpoint
+
     TRACE(0,"TubeEquation::Jac()");
-    // const tasystem::Globalconf& gc=*this->gc; // Reference to variable
-					    // operations
-    const us& Ns=gc->Ns;		// Number of samples
+    const us Ns=v.gc->Ns;
+    TRACE(2,"Assignment of Ns survived, Ns="<< v.gc->Ns);
     us bw=Ns-1;
 
     // For an unconnected boundary node, we need to shift all
@@ -56,13 +55,13 @@ namespace tube{
     // Order is: rho,U,T,p,Tw
     TRACE(-1,"Ns:" << Ns);
     // TRACE(-1,"rhoim1 size:"<< rhoim1);
-    TRACE(-2,"gc dft size:"<< gc->fDFT.size());
+    TRACE(-2,"gc dft size:"<< v.gc->fDFT.size());
     // submat: first row,first col,last row, last col
-
     long int offset=0;
-    if(i==Ncells-1 && vertex.right==NULL)
+    if(v.i==v.Ncells-1 && v.right==NULL)
       offset=Ns*Neq;
-    if(i==0 && vertex.left==NULL){ // Most left node
+    if(v.i==0 && v.left==NULL){ // Most left node
+      // TRACE(100,"First vertex not coupled to other left vertex");
       offset=-Ns*Neq;
       result.submat(0,10*Ns,bw,10*Ns+bw)=drhoip2();
       result.submat(0,11*Ns,bw,11*Ns+bw)=dUip2();
@@ -71,13 +70,15 @@ namespace tube{
       result.submat(0,14*Ns,bw,14*Ns+bw)=dTsip2();
     }
     else{
+      // TRACE(100,"First vertex IS coupled to other vertex");
       result.submat(0,offset     ,bw,offset+     bw)=drhoim1();
       result.submat(0,offset+1*Ns,bw,offset+  Ns+bw)=dUim1();
       result.submat(0,offset+2*Ns,bw,offset+2*Ns+bw)=dTim1();
       result.submat(0,offset+3*Ns,bw,offset+3*Ns+bw)=dpim1();
       result.submat(0,offset+4*Ns,bw,offset+4*Ns+bw)=dTsim1();
     }
-    if(i==Ncells-1 && vertex.right==NULL){
+    if(v.i==v.Ncells-1 && v.right==NULL){
+      // TRACE(100,"Last vertex not coupled to other right vertex");
       result.submat(0,0   ,bw,     bw)=drhoim2();
       result.submat(0,1*Ns,bw,  Ns+bw)=dUim2();
       result.submat(0,2*Ns,bw,2*Ns+bw)=dTim2();
@@ -85,6 +86,7 @@ namespace tube{
       result.submat(0,4*Ns,bw,4*Ns+bw)=dTsim2();
     }
     else{
+      // TRACE(100,"Last vertex IS coupled to other right vertex");
       result.submat(0,offset+10*Ns,bw,offset+10*Ns+bw)=drhoip1();
       result.submat(0,offset+11*Ns,bw,offset+11*Ns+bw)=dUip1();
       result.submat(0,offset+12*Ns,bw,offset+12*Ns+bw)=dTip1();
@@ -98,6 +100,11 @@ namespace tube{
     result.submat(0,offset+7*Ns,bw,offset+7*Ns+bw)=dTi();
     result.submat(0,offset+8*Ns,bw,offset+8*Ns+bw)=dpi();
     result.submat(0,offset+9*Ns,bw,offset+9*Ns+bw)=dTsi();
+    // TRACE(2,"TubeEquation Jacobian created. Returning to vertex Jacobian.");
+    // if(v.i==v.Ncells-1)
+      // cout << "Last vertex Jacobian: for equation\n" << result;
+    // if(v.i==0)
+      // cout << "First vertex Jacobian: for equation\n" << result;
 
     return result;
   }
@@ -193,13 +200,13 @@ namespace tube{
   }
 
   dmat TubeEquation::D_r(){
-    const us& Ns=gc->Ns;		// Number of samples
-    if(i==Ncells-1)
+    const us Ns=v.gc->Ns;
+    if(v.i==v.Ncells-1)
       return D_l();
     else {
       dmat Dr(Ns,Ns,fillwith::zeros);
-      d rj=gc->c0;
-      vd eps1=eps(nu(),gc->kappa);
+      d rj=v.gc->c0;
+      vd eps1=eps(nu(),v.gc->kappa);
 
       Dr.diag()=rj*eps1;
       return Dr;
@@ -208,40 +215,40 @@ namespace tube{
 
   
   dmat TubeEquation::D_l(){
-    const us& Ns=gc->Ns;		// Number of samples
-    if(i==0)
+    const us Ns=v.gc->Ns;
+    if(v.i==0)
       return D_r();
     else{
       dmat Dl(Ns,Ns,fillwith::zeros);
-      d rj=gc->c0;
-      vd eps1=eps(nu(),gc->kappa);
+      d rj=v.gc->c0;
+      vd eps1=eps(nu(),v.gc->kappa);
 
       Dl.diag()=rj*eps1;
       return Dl;
     }
   }
   vd TubeEquation::nu(){
-    const d& Ns=gc->Ns;
+    const d& Ns=v.gc->Ns;
     vd pi(Ns);
     vd pip1(Ns);
     vd pim1(Ns);    
-    if(i>0&&i<Ncells-1){
-      pi=vertex.p();
-      pip1=right->p();
-      pim1=left->p();
-    } else if(i==0){
-      pi=vertex.p();
-      pim1=right->p();
-      pip1=right->right->p();
+    if(v.i>0 && v.i<v.Ncells-1){
+      pi=v.p();
+      pip1=v.right->p();
+      pim1=v.left->p();
+    } else if(v.i==0){
+      pi=v.p();
+      pim1=v.right->p();
+      pip1=v.right->right->p();
     }
     else{
-      pi=left->p();
-      pip1=left->p();
-      pim1=left->left->p();
+      pi=v.left->p();
+      pip1=v.left->p();
+      pim1=v.left->left->p();
     } // Last node
       // return ones<vd>(Ns);
     vd half=vd(Ns); half.fill(0.5);
-    d denominator=3.0*gc->p0;//abs(pim1+2*pi+pip1);
+    d denominator=3.0*v.gc->p0;//abs(pim1+2*pi+pip1);
     vd numerator=abs(pim1-2*pi+pip1);
     vd num_over_denom(Ns);
     for(us k=0;k<Ns;k++){
@@ -255,5 +262,5 @@ namespace tube{
   return num_over_denom;
   }
   
-  TubeEquation::~TubeEquation(){}
+  TubeEquation::~TubeEquation(){TRACE(-5,"~TubeEquation()");}
 } // namespace tube

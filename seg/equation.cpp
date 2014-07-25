@@ -2,7 +2,9 @@
 
 namespace segment{
 
-  // Equation::Equation(){}
+  void Equation::Init(const tasystem::Globalconf& gc1)  {
+    TRACE(6,"Equation::Init(gc)");
+  }
 } // namespace segment
 
 

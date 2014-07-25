@@ -31,25 +31,9 @@ namespace tasystem{
 	sys=NULL;
       }
     }
-  void Solver::Init()
-  {
-    TRACE(15,"Solver::Init()");
-    if(!hasinit)
-      {
-	if (sys!=NULL) {
-	  sys->Init();
-	  hasinit=true;
-	}
-	else  {
-	  TRACE(50,"Error, no system defined!");
-	  return;
-	}
-      }	// already initialized
-  }
   void Solver::DoIter(d dampfac){
     // Do an iteration
     TRACE(15,"Solver::DoIter()");
-    Init();
     using math_common::esdmat;
     using math_common::evd;
     TRACE(15,"Computing error...");

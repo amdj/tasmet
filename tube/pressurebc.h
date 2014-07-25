@@ -21,9 +21,9 @@ namespace tube{
     LeftPressure(const LeftPressure& other);
     LeftPressure& operator=(const LeftPressure&);
     ~LeftPressure(){}
-    virtual void Init(us i,const Globalconf&,const Geom&);
+    virtual void Init(us i,const SegBase&);
   private:
-    void updateW(const Geom& geom);
+    void updateW(const SegBase&);
   public:
     virtual string gettype() const {return string("LeftPressure");}
     virtual enum connectpos connectPos() const {return connectpos::left;}
