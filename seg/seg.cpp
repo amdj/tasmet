@@ -77,13 +77,10 @@ namespace segment{
   dmat Seg::Jac(){			// Return Jacobian matrix of error operator
     // sdmat Seg::Jac(){			// Return Jacobian matrix of error operator    
     TRACE(8," Seg::Jac() for Segment "<< getNumber() << ".");
-    // TRACE(-1,"Nvertex:"<<Nvertex);
-    // sdmat Jac(Nvertex*Neq*Ns,Nvertex*Neq*Ns);
     const us& Ns=gc->Ns;
-
     dmat Jacobian (Nvertex*Neq*Ns,(Nvertex+2)*Neq*Ns,fillwith::zeros);    
-    if(Jacobian.size()==0)
-      Jacobian=dmat(Nvertex*Neq*Ns,(Nvertex+2)*Neq*Ns);    
+    // if(Jacobian.size()==0)
+      // Jacobian=dmat(Nvertex*Neq*Ns,(Nvertex+2)*Neq*Ns);    
     dmat vJac(Neq*Ns,3*Neq*Ns,fillwith::zeros);
     us firstrow,firstcol,lastrow,lastcol;
     TRACE(8,"Filling Segment Jacobian matrix for segment "<< getNumber() <<"...");
@@ -131,10 +128,10 @@ namespace segment{
       // cout << lastrow << " ";
       // cout << lastcol << " \n";
       // cout << "Jacsize:" << Jacobian.n_rows << " " << Jacobian.n_cols <<"\n";
-      if(j==Nvertex-1)
-	cout << "last vertex jac:\n"<< vJac;
-      if(j==0)
-	cout << "First vertex jac:\n"<< vJac;
+      // if(j==Nvertex-1)
+	// cout << "last vertex jac:\n"<< vJac;
+      // if(j==0)
+	// cout << "First vertex jac:\n"<< vJac;
 
       Jacobian.submat(firstrow,firstcol,lastrow,lastcol)=vJac;      
     }	// end for
