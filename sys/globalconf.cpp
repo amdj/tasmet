@@ -6,6 +6,17 @@ namespace tasystem{
   Globalconf::Globalconf(us Nf,d freq,string gas,d T0,d p0,d Mach,d S0,d dx,d Mass,d kappa):
     gas(gas)
   {
+    // Sanity checks
+    assert(2*number_pi*freq>MINOMG && 2*number_pi*freq<MAXOMG);
+    assert(Nf<MAXNF);
+    assert(T0<2000 && T0>0);
+    assert(p0>0);
+    assert(Mach>0);
+    assert(S0>0);
+    assert(dx>0);
+    assert(Mass>=0);
+    assert(kappa>0);
+    // End sanity checks
     this->Gastype=gas;
     this->p0=p0;
     this->T0=T0;

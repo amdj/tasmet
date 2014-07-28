@@ -24,14 +24,12 @@ Solver* ThreeTubes(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
   d M=pow(max(abs(p1)),2)/p0;
   d phi=1.0;
   d R=sqrt(S/number_pi);
-  d PI=S/(2*number_pi*R);
-  d rh=S/PI;
   d Mass=0;
   us Ns=2*Nf+1;
   cout << "Kappa: " << kappa << "\n";
   Globalconf gc(Nf,freq,"air",T0,p0,M,S,dx,Mass,kappa);
   gc.show();
-  Geom geom1(gp,L,S,phi,rh,"inviscid");
+  Geom geom1=Geom::Cylinder(gp,L,R);
   Tube t1(geom1);
   
   // TRACE(30,"p1:"<<p1);

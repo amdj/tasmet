@@ -43,7 +43,7 @@ int main(int argc,char* argv[]) {
   d Mach=0.1;
   d kappa=0.1;
   Globalconf gc(Nf,f,"air",T0,p0,Mach,S0,griddx,0,kappa);
-  Geom geom1(gp,L,S,phi,rh,"inviscid");
+  Geom geom1=Geom::Cylinder(gp,L,rtube);
   Tube t1(geom1);
   t1.Init(gc);
   // var pL(gc,0);
