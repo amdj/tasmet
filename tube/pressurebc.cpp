@@ -51,21 +51,24 @@ namespace tube{
     m.Wpip1=SfR*wRr;
     // Change energy equation for open boundary and prescribed pressure
     e.Wgim1=0;
-    e.Wgi=wRl;
-    e.Wgip1=wRr;
+    e.Wgi=wRl-wL0;
+    e.Wgip1=wRr-wL1;
 
     e.Wjim1=0;
-    e.Wji=-wRl;
-    e.Wjip1=-wRr;
+    e.Wji=wL0-wRl;
+    e.Wjip1=wL1-wRr;
 
     d vxi=geom.vx(0);
     d vxip1=geom.vx(1);
     d dxp=vxip1-vxi;
 
+    #if CONDUCTION==1
     e.Wc1=0;
-    e.Wc2=0;
+    e.Wc2=SfL/vxi;
     e.Wc3=SfR/dxp;
     e.Wc4=-SfR/dxp;
+    #endif
+
     // TODO Fill this further!
 
   }
@@ -87,7 +90,10 @@ namespace tube{
     // d gamfac=gamma/(gamma-1.0);
     // esource+=-gamfac*fDFT*(pL()%(wL0*U()+wL1*right->U()));
     // esource+=fDFT*(U()%pL());
-    #ifdef CONDUCTION
+    #ifndef CONDUCTION
+    #error conduction not defined
+    #endif
+    #if CONDUCTION==1
     TRACE(100,"Conduction taken into account");
     vd TLt=TL.tdata();
     vd kappaL=gc->gas.kappa(TLt);
