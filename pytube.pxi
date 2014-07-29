@@ -32,12 +32,16 @@ cdef extern from "solver.h" namespace "tasystem":
         void DoIter(d dampfac)
         TAsystem* sys
         void Init()
+        void solve()
     
 
 cdef extern from "geom.h" namespace "tube":
     cdef cppclass Geom:
         Geom(us gp,d L,d S,d phi,d rh,string cshape) except +
         vd vx
+        vd vSf
+        vd vSs
+        vd x
 
 cdef extern from "var.h" namespace "variable":
     cdef cppclass var:

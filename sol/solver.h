@@ -2,12 +2,12 @@
 #ifndef _SOLVER_H_
 #define _SOLVER_H_
 #include "system.h"
-
+#define SOLVER_MAXITER 100
 namespace tasystem{
+  using std::tuple;
 
   class Solver
   {
-  public:
 
   public:
     TAsystem* sys=NULL;
@@ -15,8 +15,8 @@ namespace tasystem{
     Solver(const TAsystem& tasys);
     Solver(const Solver& other);
     Solver& operator=(const Solver& other);
-
-    void DoIter(d dampfac=1.0);
+    void solve(d funer=1e-8,d reler=1e-6);
+    tuple<d,d> DoIter(d dampfac=1.0);
     ~Solver();
     
   };

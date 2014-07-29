@@ -199,10 +199,10 @@ namespace tube{
     return eps;
   }
 
-  dmat TubeEquation::D_r(){
+  dmat TubeEquation::d_r(){
     const us Ns=v.gc->Ns;
     if(v.i==v.Ncells-1)
-      return D_l();
+      return d_l();
     else {
       dmat Dr(Ns,Ns,fillwith::zeros);
       d rj=v.gc->c0;
@@ -214,10 +214,10 @@ namespace tube{
   }
 
   
-  dmat TubeEquation::D_l(){
+  dmat TubeEquation::d_l(){
     const us Ns=v.gc->Ns;
     if(v.i==0)
-      return D_r();
+      return d_r();
     else{
       dmat Dl(Ns,Ns,fillwith::zeros);
       d rj=v.gc->c0;

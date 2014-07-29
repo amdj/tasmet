@@ -26,8 +26,12 @@ int main(int argc,char* argv[]) {
   vd p1(2*Nf+1,arma::fill::ones);
   if(Nf>0)
     p1(1)=1.0;
+
   d kappa=1.0;
-  Solver* sol=ThreeTubes(gp,Nf,100,0.1,0.1,p1,loglevel,kappa);
+  TRACE(100, "Crash here!");
+  // Solver* sol=ThreeTubes(gp,Nf,100,0.1,0.1,p1,loglevel,kappa);
+
+  
   // TRACE(100,"First segment number:"<< sol->sys->getSeg(0)->getNumber());
   // TRACE(100,"Second segment number:"<< sol->sys->getSeg(1)->getNumber());
   // TRACE(100,"First right:"<<sol->sys->getSeg(0)->getRight()[0]);
@@ -36,10 +40,10 @@ int main(int argc,char* argv[]) {
   // TRACE(100,"First segments right address:"<< sol->sys->getSeg(0)->getRight()[0]);
   // TRACE(100,"First segment right number:"<< sol->sys->getSeg(1)->getNumber())
   // cout << sol->sys->GetRes();
-  sol->sys->Init();
-  cout << "segjac\n" << sol->sys->getSeg(0)->Jac();
+  // sol->sys->Init();
+  // cout << "segjac\n" << sol->sys->getSeg(0)->Jac();
   // cout << "\n" << sol->sys->Jac();
-  cout << "error\n" << sol->sys->Error();
+  // cout << "error\n" << sol->sys->Error();
   // sol->DoIter();
   // sol->sys->show(true);
 

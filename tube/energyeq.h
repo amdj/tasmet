@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _ENERGYEQ_H_
+#define _ENERGYEQ_H_
 #include "tubeequation.h"
 
 
@@ -31,13 +33,6 @@ namespace tube{
 				// boundary of the vertex
     d gamma();			// Time-avg ratio of specific heats
   };
-  class Isentropic:public TubeEquation{
-  public:
-    Isentropic(TubeVertex& gp);
-    ~Isentropic();
-    vd Error();			// Error in Energy equation at node i
-    dmat dpi();
-    dmat drhoi();
 
-  };
-}
+}      // namespace tube
+#endif /* _ENERGYEQ_H_ */

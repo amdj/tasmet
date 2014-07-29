@@ -1,4 +1,10 @@
 #pragma once
+#ifndef _GLOBALCONF_H_
+#define _GLOBALCONF_H_
+
+
+
+
 #include <memory>
 #include <vtypes.h>
 #include <material.h>
@@ -11,13 +17,14 @@
 namespace tasystem{
   SPOILNAMESPACE
   // This class can be copied safely
-  class Globalconf;
+
 
   
   class Globalconf{
   public:
     Globalconf(){}
-    Globalconf(us Nf,d freq,string Gas="air",d T0=293.15,d p0=101325.0,d Mach=1.0,d S0=1.0,d dx=1.0,d Mass=0.0,d kappa=0.25);
+    Globalconf(us Nf,d freq,string Gas="air",d T0=293.15,d p0=101325.0,d Mass=0.0,d kappa=1.0);
+    static Globalconf airSTP(us Nf,d freq,d Mass=0.0,d kappa=1.0);
     ~Globalconf(){TRACE(-5,"~Globalconf()");}
     // Globalconf(const Globalconf& o): Globalconf(o.Nf,o.freq,o.Gastype,o.T0,o.p0,o.Mach,o.S0,o.dx,o.Mass,o.kappa){}
 
@@ -28,7 +35,7 @@ namespace tasystem{
 
     d freq;
     d omg;		// The "base" frequency in rad/s
-    d S0,V0,c0,dx,M;		// Typical cross-sectional area,
+    d c0;		// Typical cross-sectional area,
 				// finite volume size, speed of sound,
 				// deltax of volume
     d kappa;			// Artificial viscosity tuning factor,
@@ -61,3 +68,4 @@ namespace tasystem{
 
   }; /* Class Globalconf */
 }    // namespace tasystem
+#endif /* _GLOBALCONF_H_ */

@@ -6,6 +6,7 @@
 #include "vertex.h"
 #include "continuityeq.h"
 #include "momentumeq.h"
+#include "isentropiceq.h"
 #include "energyeq.h"
 #include "stateeq.h"
 #include "solidenergyeq.h"

@@ -18,7 +18,7 @@ namespace tube{
 	 << "Wpim1     : "<<Wpim1      <<"\n"					\
 	 << "Wpi       : "<<Wpi      <<"\n"					\
 	 << "Wpip1     : "<<Wpip1      <<"\n"					\
-            ;      
+      ;      
     v.gc->show();
   }
   vd Momentum::Error(){		// Error in momentum equation
@@ -60,19 +60,22 @@ namespace tube{
       error+=Wpip1*pip1;
     }
 
-    // Artificial viscosity terms
+    // Artificial viscosity ter
+    d dx=v.vVf/v.vSf;
     #ifdef MOM_VISCOSITY
     if(v.i>0 && v.i<v.Ncells-1){
-      error+=-v.gc->rho0*D_r()*(v.right->U()-v.U());
-      error+= v.gc->rho0*D_l()*(v.U()-v.left->U());
+      d dxp=v.right->vVf/v.right->vSf;
+      d dxm=v.left->vVf/v.left->vSf;      
+      error+=-v.gc->rho0*d_r()*dx*(v.right->U()-v.U());
+      error+= v.gc->rho0*d_l()*dx*(v.U()-v.left->U());
     }
     else if(v.i==0){
-      error+=-v.gc->rho0*D_r()*(v.right->right->U()-v.right->U());
-      error+= v.gc->rho0*D_l()*(v.right->U()-v.U());
+      error+=-v.gc->rho0*d_r()*dx*(v.right->right->U()-v.right->U());
+      error+= v.gc->rho0*d_l()*dx*(v.right->U()-v.U());
     }
     else {
-      error+=-v.gc->rho0*D_r()*(v.U()-v.left->U());
-      error+= v.gc->rho0*D_l()*(v.left->U()-v.left->left->U());
+      error+=-v.gc->rho0*d_r()*dx*(v.U()-v.left->U());
+      error+= v.gc->rho0*d_l()*dx*(v.left->U()-v.left->left->U());
     }
     #endif
     // Drag term
@@ -84,7 +87,7 @@ namespace tube{
     error(0)*=MOM_SCALE0;
     return MOM_SCALE*error;
   }
-  dmat Momentum::dUi(){
+    dmat Momentum::dUi(){
     TRACE(0,"Momentum::dUi()");
     dmat dUi=zero;
     // dUi+=vVf*tube.drag.dUi(i)/vSf;		       // Drag term
@@ -93,17 +96,17 @@ namespace tube{
     // Artificial viscosity terms
     #ifdef MOM_VISCOSITY
     if(v.i>0 && v.i<v.Ncells-1){
-      dUi+=v.gc->rho0*(D_l()+D_r());
-    }
+    dUi+=v.gc->rho0*(d_l()+d_r());
+  }
     else if(v.i==0)
-      dUi+=-v.gc->rho0*D_l();
+      dUi+=-v.gc->rho0*d_l();
     else
-      dUi+=-v.gc->rho0*D_r();
+      dUi+=-v.gc->rho0*d_r();
     #endif
     dUi.row(0)*=MOM_SCALE0;
     return MOM_SCALE*dUi;
   }
-  dmat Momentum::drhoi(){
+    dmat Momentum::drhoi(){
     TRACE(0,"Momentum::drhoi()");
     dmat drhoi=zero;
     drhoi+=Wddt*v.gc->DDTfd*v.gc->fDFT*diagtmat(v.U)*v.gc->iDFT;
@@ -111,7 +114,7 @@ namespace tube{
     drhoi.row(0)*=MOM_SCALE0;
     return MOM_SCALE*drhoi;
   }
-  dmat Momentum::dpi(){
+    dmat Momentum::dpi(){
     TRACE(0,"Momentum::dpi()");
     dmat I(v.gc->Ns,v.gc->Ns,fillwith::eye);
     dmat dpi=zero;
@@ -119,7 +122,7 @@ namespace tube{
     dpi.row(0)*=MOM_SCALE0;
     return MOM_SCALE*dpi;
   }
-  dmat Momentum::drhoim1(){
+    dmat Momentum::drhoim1(){
     TRACE(0,"Momentum::drhoim1()");
     dmat drhoim1=zero;
     if(v.left!=NULL)
@@ -127,25 +130,25 @@ namespace tube{
     drhoim1.row(0)*=MOM_SCALE0;
     return MOM_SCALE*drhoim1;
   }
-  dmat Momentum::dUim1(){
+    dmat Momentum::dUim1(){
     TRACE(0,"Momentum::dUim1()");    // Todo: add this term!;
     dmat dUim1=zero;
     if(v.left!=NULL){
-      dUim1+=2.0*Wuim1*v.gc->fDFT*diagtmat(v.left->rho)*diagtmat(v.left->U)*v.gc->iDFT;
-    }
+    dUim1+=2.0*Wuim1*v.gc->fDFT*diagtmat(v.left->rho)*diagtmat(v.left->U)*v.gc->iDFT;
+  }
     #ifdef MOM_VISCOSITY
     // Artificial viscosity terms
     if(v.i>0 && v.i<v.Ncells-1){
-      dUim1+=-v.gc->rho0*D_l();
-    }
+    dUim1+=-v.gc->rho0*d_l();
+  }
     else if(v.i==v.Ncells-1)
-      dUim1+=v.gc->rho0*(D_r()+D_l());
+      dUim1+=v.gc->rho0*(d_r()+d_l());
     #endif
     
     dUim1.row(0)*=MOM_SCALE0;
     return MOM_SCALE*dUim1;
   }
-  dmat Momentum::dpim1(){
+    dmat Momentum::dpim1(){
     TRACE(0,"Momentum::dpim1()");
     dmat dpim1=zero;
     dmat I(v.gc->Ns,v.gc->Ns,fillwith::eye);
@@ -155,7 +158,7 @@ namespace tube{
     dpim1.row(0)*=MOM_SCALE0;
     return MOM_SCALE*dpim1;
   }
-  dmat Momentum::drhoip1(){
+    dmat Momentum::drhoip1(){
     TRACE(0,"Momentum::dhoip1()");    // Todo: add this term!;
     dmat drhoip1=zero;
     if(v.right!=NULL)
@@ -163,25 +166,25 @@ namespace tube{
     drhoip1.row(0)*=MOM_SCALE0;
     return MOM_SCALE*drhoip1;
   }
-  dmat Momentum::dUip1(){
+    dmat Momentum::dUip1(){
     TRACE(0,"Momentum::dUip1()"); // Todo: add this term!;
     dmat dUip1=zero;
     if(v.right!=NULL){
-      dUip1+=2.0*Wuip1*v.gc->fDFT*diagtmat(v.right->rho)*diagtmat(v.right->U)*v.gc->iDFT;
-    }
+    dUip1+=2.0*Wuip1*v.gc->fDFT*diagtmat(v.right->rho)*diagtmat(v.right->U)*v.gc->iDFT;
+  }
     #ifdef MOM_VISCOSITY
     // Artificial viscosity terms
     if(v.i>0 && v.i<v.Ncells-1){
-      dUip1+=-v.gc->rho0*D_r();
-    }
+    dUip1+=-v.gc->rho0*d_r();
+  }
     else if(v.i==0)
-      dUip1+=v.gc->rho0*(D_r()+D_l());
+      dUip1+=v.gc->rho0*(d_r()+d_l());
     #endif
     
     dUip1.row(0)*=MOM_SCALE0;
     return MOM_SCALE*dUip1;
   }
-  dmat Momentum::dpip1(){
+    dmat Momentum::dpip1(){
     TRACE(0,"Momentum::dpip1()");
     dmat dpip1=zero;
     dmat I(v.gc->Ns,v.gc->Ns,fillwith::eye);
@@ -191,26 +194,26 @@ namespace tube{
     dpip1.row(0)*=MOM_SCALE0;
     return MOM_SCALE*dpip1;
   }
-  dmat Momentum::dUip2(){
+    dmat Momentum::dUip2(){
     TRACE(0,"Momentum:dUip2()");
     // TRACE(50,"i:"<<i);
     dmat dUip2=zero;
     if(v.i==0 && v.left==NULL)
       // TRACE(20,"i is nul and left is nul");
-      dUip2+=-v.gc->rho0*D_r();
+      dUip2+=-v.gc->rho0*d_r();
     return dUip2;
   }
-  dmat Momentum::dUim2(){
+    dmat Momentum::dUim2(){
     dmat dUim2=zero;
     if((v.i==v.Ncells-1)&& v.right==NULL )
       // TRACE(20,"i is  Ncells and and right is nul");
-      dUim2+=-v.gc->rho0*D_l();
+      dUim2+=-v.gc->rho0*d_l();
     return dUim2;
   }  
-  Momentum::~Momentum(){
+    Momentum::~Momentum(){
     TRACE(-5,"Momentum destructor");
-}
-} // namespace tube
+  }
+  } // namespace tube
 
 
 

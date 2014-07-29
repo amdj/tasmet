@@ -2,8 +2,10 @@
 
 LOGTHIS
 namespace tasystem{
-  
-  Globalconf::Globalconf(us Nf,d freq,string gas,d T0,d p0,d Mach,d S0,d dx,d Mass,d kappa):
+  Globalconf Globalconf::airSTP(us Nf,d freq,d Mass,d kappa){
+    return Globalconf(Nf,freq,"air",293.15,101325,Mass,kappa);
+  }
+  Globalconf::Globalconf(us Nf,d freq,string gas,d T0,d p0,d Mass,d kappa):
     gas(gas)
   {
     // Sanity checks
@@ -11,9 +13,6 @@ namespace tasystem{
     assert(Nf<MAXNF);
     assert(T0<2000 && T0>0);
     assert(p0>0);
-    assert(Mach>0);
-    assert(S0>0);
-    assert(dx>0);
     assert(Mass>=0);
     assert(kappa>0);
     // End sanity checks
@@ -21,17 +20,17 @@ namespace tasystem{
     this->p0=p0;
     this->T0=T0;
     this->rho0=this->gas.rho(T0,p0);
-    this->S0=S0;
-    this->dx=dx;
-    this->V0=S0*dx;
+    // this->S0=S0;
+    // this->dx=dx;
+    // this->V0=S0*dx;
     this->Mass=Mass;
     this->c0=this->gas.cm(T0);
     this->kappa=kappa;
     this->Mach=Mach;
-    if(Nf==0 || Mach<1e-10)
-      M=1.0;
-    else
-      this->M=Mach;
+    // if(Nf==0 || Mach<1e-10)
+      // M=1.0;
+    // else
+      // this->M=Mach;
     set(Nf,freq);
     TRACE(10,"Globalconf constructor done");
     

@@ -12,6 +12,7 @@ namespace segment {
   public:
     static Geom Cylinder(us gp,d L,d r);
     static Geom Cone(us gp,d L,d r1,d r2); // Return a cone
+    static Geom PrisVertStack(us gp,d L,d S,d phi,d rh); // Prismatic vertical plates stack
     ~Geom();
 
     
