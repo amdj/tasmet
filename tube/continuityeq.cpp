@@ -36,27 +36,24 @@ namespace tube{
     }
 
     #ifdef CONT_VISCOSITY
-    const d& vVf=v.vVf;
+    const d& vSf=v.vSf;
     if(v.i>0 && v.i<v.Ncells-1){
-      error+=-d_r()*(v.right->rho() -v.rho())*vVf;
-      error+= d_l()*(v.rho() -v.left->rho())  *vVf;
+      error+=-d_r()*(v.right->rho() -v.rho())*vSf;
+      error+= d_l()*(v.rho() -v.left->rho())  *vSf;
     }
     else if(v.i==0){		// First v
-      error+=-d_r()*(v.right->right->rho()-v.right->rho())*vVf;
-      error+=d_l()*(v.right->rho()-v.rho())*vVf;
+      error+=-d_r()*(v.right->right->rho()-v.right->rho())*vSf;
+      error+=d_l()*(v.right->rho()-v.rho())*vSf;
     }
     else {			// Last v
-      error+=-d_r()*(v.rho()-v.left->rho())*vVf;
-      error+=d_l()*(v.left->rho()-v.left->left->rho())*vVf;
+      error+=-d_r()*(v.rho()-v.left->rho())*vSf;
+      error+=d_l()*(v.left->rho()-v.left->left->rho())*vSf;
     }
     #endif
-    
-    TRACE(6,"Continuity::Error()");    
     // (Boundary) source term
     error+=v.csource();
     TRACE(6,"Continuity::Error()");
-    error(0)*=CONT_SCALE0;
-    return CONT_SCALE*error;
+    return error;
   }
   dmat Continuity::drhoi(){
     TRACE(0,"Continuity::drhoi()");
@@ -68,31 +65,27 @@ namespace tube{
     const d& vVf=v.vVf;
     const d& vSf=v.vSf;
     if(v.i>0 && v.i<v.Ncells-1){
-      drhoi+=(d_l()+d_r())*vVf;	// Middle vertex
+      drhoi+=(d_l()+d_r())*vSf;	// Middle vertex
     }
     else if(v.i==0)
-      drhoi+=-d_l()*vVf;	// First vertex
+      drhoi+=-d_l()*vSf;	// First vertex
     else		
-      drhoi+=-d_r()*vVf;	// Last vertex
+      drhoi+=-d_r()*vSf;	// Last vertex
     #endif
-    drhoi.row(0)*=CONT_SCALE0;    
-    return CONT_SCALE*drhoi;
+    return drhoi;
   }
   dmat Continuity::dUi(){
     TRACE(0,"Continuity::dUi()");
     dmat dUi=zero;
     dUi+=Wi*v.gc->fDFT*diagtmat(v.rho)*v.gc->iDFT;
-    dUi.row(0)*=CONT_SCALE0;    
-    return CONT_SCALE*dUi;
+    return dUi;
   }
   dmat Continuity::dUip1(){
     TRACE(0,"Continuity::dUip1()");
     dmat dUip1=zero;
-
     if(v.right!=NULL)
       dUip1+=Wip1*v.gc->fDFT*diagtmat(v.right->rho)*v.gc->iDFT;
-    dUip1.row(0)*=CONT_SCALE0;
-    return CONT_SCALE*dUip1;
+    return dUip1;
   }
   dmat Continuity::dUim1(){
     TRACE(0,"Continuity::dUim1()");
@@ -100,8 +93,7 @@ namespace tube{
     dmat dUim1=zero;
     if(v.left!=NULL)
       dUim1+=Wim1*v.gc->fDFT*diagtmat(v.left->rho)*v.gc->iDFT;
-    dUim1.row(0)*=CONT_SCALE0;
-    return CONT_SCALE*dUim1;
+    return dUim1;
   }
   dmat Continuity::drhoip1(){
     TRACE(0,"Continuity::drhoip1()");
@@ -112,17 +104,15 @@ namespace tube{
 
     // Artificial viscosity terms
     #ifdef CONT_VISCOSITY    
-    const d& vVf=v.vVf;
+    const d& vSf=v.vSf;
     if(v.i>0 && v.i<v.Ncells-1){
-      drhoip1+=-d_r()*vVf;
+      drhoip1+=-d_r()*vSf;
     }
     else if(v.i==0){		// First vertex
-      drhoip1+=(d_l()+d_r())*vVf;
+      drhoip1+=(d_l()+d_r())*vSf;
     }
     #endif
-    
-    drhoip1.row(0)*=CONT_SCALE0;
-    return CONT_SCALE*drhoip1;
+    return drhoip1;
   }
   dmat Continuity::drhoim1(){
     TRACE(0,"Continuity::drhoim1()");
@@ -133,35 +123,31 @@ namespace tube{
 
     // Artificial viscosity terms
     #ifdef CONT_VISCOSITY
-    const d& vVf=v.vVf;
+    const d& vSf=v.vSf;
     if(v.i>0 && v.i<v.Ncells-1){
-      drhoim1+=-d_l()*vVf;
+      drhoim1+=-d_l()*vSf;
     }
     else if(v.i==v.Ncells-1){		// Last vertex
-      drhoim1+=(d_l()+d_r())*vVf;
+      drhoim1+=(d_l()+d_r())*vSf;
     }
     #endif
-
-    drhoim1.row(0)*=CONT_SCALE0;
-    return CONT_SCALE*drhoim1;
+    return drhoim1;
   }
   dmat Continuity::drhoim2(){
     dmat drhoim2=zero;
     if(v.i==v.Ncells-1 && v.right==NULL){
-      const d& vVf=v.vVf;
-      drhoim2+=-d_l()*vVf;
+      const d& vSf=v.vSf;
+      drhoim2+=-d_l()*vSf;
     }
     return drhoim2;
   }
   dmat Continuity::drhoip2(){
     dmat drhoip2=zero;
     if(v.i==0 && v.left==NULL){
-      const d& vVf=v.vVf;
-      drhoip2+=-d_r()*vVf;
+      const d& vSf=v.vSf;
+      drhoip2+=-d_r()*vSf;
     }
-    // TRACE(10,"d_r():\n"<<d_r());
     return drhoip2;
-
   }
   Continuity::~Continuity(){}
 

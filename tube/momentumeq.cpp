@@ -61,7 +61,7 @@ namespace tube{
     }
 
     // Artificial viscosity ter
-    d dx=v.vVf/v.vSf;
+    d dx=1.0;//v.vVf/v.vSf;
     #ifdef MOM_VISCOSITY
     if(v.i>0 && v.i<v.Ncells-1){
       d dxp=v.right->vVf/v.right->vSf;

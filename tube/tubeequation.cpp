@@ -194,7 +194,7 @@ namespace tube{
     vd eps(nu.size());
     for(us i=0;i<eps.size(); i++)
       {
-	eps(i)=max(min(0.5,kappa*nu(i)),kappa*1e-3);
+	eps(i)=max(min(0.5,kappa*nu(i)),kappa*1e-2);
       }
     return eps;
   }
