@@ -28,12 +28,12 @@ namespace tube{
     result.diag()=v.tdata();
     return result;
   }
-  vd TubeEquation::getp0(){
-    TRACE(0,"TubeEquation::getp0()");
-    vd p0(v.gc->Ns,fillwith::zeros);
-    p0(0)=v.gc->p0;
-    return p0;
-  }
+  // vd TubeEquation::getp0(){
+  //   TRACE(0,"TubeEquation::getp0()");
+  //   vd p0(v.gc->Ns,fillwith::zeros);
+  //   p0(0)=v.gc->p0;
+  //   return p0;
+  // }
   vd TubeEquation::getp0t(){
     TRACE(0,"TubeEquation::getp0t()");
     vd p0(v.gc->Ns,fillwith::ones);

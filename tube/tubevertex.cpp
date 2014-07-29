@@ -20,8 +20,9 @@ namespace tube{
     Vertex::Init(i,thisseg);	// Which also calls Vertex::updateW()
     eq[0]=&c;			// Continuity is first
     eq[1]=&m;
-    // eq[2]=&is; 			// Changed to isentropic
     eq[2]=&e; 			// Full energy
+    // eq[2]=&is; 			// Changed to isentropic
+
     eq[3]=&s;
     eq[4]=&se;
     

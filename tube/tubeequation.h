@@ -27,7 +27,6 @@ namespace tube{
     
     // const dmat& fDFT,iDFT,DDTfd;	// forward, backward dicrete fourier transform, derivative to time matrix (freq domain)
     
-    vd getp0(); 		// Create a vector of zero-pressure data
     vd getp0t();   		// Same, but then time domain data
 
     virtual dmat Jac();		// Returns the local Jacobian of this equation

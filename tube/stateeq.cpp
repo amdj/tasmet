@@ -13,9 +13,9 @@ namespace tube{
   {
     TRACE(6,"State::Error()");
     vd error(vertex.gc->Ns,fillwith::zeros);
-    vd p0=getp0();
     // TRACE(-1,"State p0:"<<p0);
-    error+=(p0+vertex.p());
+    error+=vertex.p();
+    error(0)+=v.gc->p0;	       // Add p0 part
     // TRACE(-1,"state error:"<<error);    
     // TRACE(-1,"T0:"<<vertex.gc->gas.Rs()*fDFT()*(vertex.T.tdata()%vertex.rho.tdata()));    
     error+=-1.0*vertex.gc->gas.Rs()*vertex.gc->fDFT*(vertex.rho.tdata()%vertex.T.tdata());
