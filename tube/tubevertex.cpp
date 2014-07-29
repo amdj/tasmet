@@ -53,33 +53,26 @@ namespace tube{
     wL0=wL1=wRNm1=wRNm2=0;	// Put these weight functions to zero
 
     if(i>0){
-      // Left weight functions
       wLl=(vxi-xL)/(vxi-vxim1);
       wLr=(xL-vxim1)/(vxi-vxim1);
-      // TRACE(20,"wLl:"<<wLl);
-      // TRACE(20,"wLr:"<<wLr);      
     }
     // ****************************** Initalization of vxipm and dxpm
     if(i<Ncells-1){
       // Right weight functions
       wRr=(xR-vxi)/(vxip1-vxi);
       wRl=(vxip1-xR)/(vxip1-vxi);
-      // TRACE(20,"wRl:"<<wRl);
-      // TRACE(20,"wRr:"<<wRr);      
     }
-
-
     // ****************************** Initialization special weight functions
     if(i==Ncells-1){
       wRNm1=(vxim1-xR)/(vxim1-vxi);
       wRNm2=(xR-vxi)/(vxim1-vxi);
+      
     }
     if(i==0){
       wL0=vxip1/(vxip1-vxi);
       wL1=-vxi/(vxip1-vxi);
     }
     // ****************************** End Special weight functions
-
     int UsignL=1;    
     int UsignR=1;    
 
@@ -235,6 +228,7 @@ namespace tube{
     } 
     else{
       WARN("Something went terribly wrong!");
+      abort();
     }
     // Contribution from changing cross-sectional area
     m.Wpi+=SfL-SfR;
