@@ -1,9 +1,9 @@
 # CMakeList.txt for nonlinear code
 
 ############################## Optimized code flags
-set(CMAKE_CXX_FLAGS " -O3 -march=native -mtune=native ")
-add_definitions(-DLOGGER=0 -DTRACER=0)
-add_definitions(-DEIGEN_NO_DEBUG -DARMA_NO_DEBUG)
+# set(CMAKE_CXX_FLAGS " -O3 -march=native -mtune=native ")
+# add_definitions(-DLOGGER=0 -DTRACER=0)
+# add_definitions(-DEIGEN_NO_DEBUG -DARMA_NO_DEBUG)
 ############################## End optimized code flags
 
 #PYthon version

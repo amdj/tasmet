@@ -11,6 +11,7 @@ namespace tube{
   public:
     Energy(TubeVertex& gp);
     ~Energy();
+    void show();
     d Wgim1,Wgi,Wgip1,Wjim1,Wji,Wjip1; // Weight functions for terms in energy equation - except for conduction terms
     d Wc1,Wc2,Wc3,Wc4;		// Weight functions for conduction
     d Wddt;
@@ -20,6 +21,8 @@ namespace tube{
     dmat dTi();
     
     dmat dpip1();
+    dmat dpip2();
+    dmat dpim2();
     dmat dUip1();
     dmat dTip1();
     
@@ -27,11 +30,11 @@ namespace tube{
     dmat dpim1();
     dmat dTim1();
     
-    vd kappaL();		// Thermal conducticity at the left
+    vd kappaL() const;		// Thermal conducticity at the left
 				// boundary of the vertex
-    vd kappaR();		// Thermal conductivity at the right
+    vd kappaR() const;		// Thermal conductivity at the right
 				// boundary of the vertex
-    d gamma();			// Time-avg ratio of specific heats
+    d gamma() const;			// Time-avg ratio of specific heats
   };
 
 }      // namespace tube

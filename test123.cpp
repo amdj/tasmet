@@ -46,19 +46,19 @@ int main(int argc,char* argv[]) {
   Geom geom1=Geom::Cylinder(gp,L,rtube);
   Tube t1(geom1);
   t1.Init(gc);
-  // var pL(gc,0);
-  // if(Nf>0)
-    // pL.set(1,1);
-  // tube::LeftPressure bcleft(0,pL);
+  var pL(gc,0);
+  if(Nf>0)
+    pL.set(1,1);
+  tube::LeftPressure bcleft(0,pL);
   // tube::RightImpedance bcright(0,415*vd(Ns,fillwith::ones));
   // tube::TwImpedance bcright(1);
-  
   TAsystem sys(gc);
-  sys.addseg(t1);
+  // sys.addseg(t1);
   sys.addseg(t1);  
-  sys.connectSegs(0,1,SegCoupling::tailhead);
+  // sys.connectSegs(0,1,SegCoupling::tailhead);
   // sys.addbc(bcright);
-  // sys.addbc(bcleft);
+  
+  sys.addbc(bcleft);
   // cout << sys.getSeg(0)->GetRes() << "\n";
   Solver sol(sys);
   // sol.sys->Init();
@@ -66,14 +66,14 @@ int main(int argc,char* argv[]) {
   // sol.sys->getSeg(0)->Jac();
 
   sol.sys->Init();
-  // sys.show(true);
+  sys.show(true);
   // sol.sys->show(true);
   cout << "Jac:\n"<< sol.sys->Jac();
 // sol.sys
 
   // Solver sol2(sol);
-  
-  // sol.DoIter();
+  cout << "Error:\n" << sol.sys->Error();
+  sol.DoIter();
     // // // vd x=t1.GetRmomes();
   // // vd err=sol.sys->Error();
   // // cout << "error:\n"<<err;

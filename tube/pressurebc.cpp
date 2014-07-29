@@ -1,5 +1,5 @@
 #include "pressurebc.h"
-
+#include "conduction.h"
 namespace tube{
 
   LeftPressure::LeftPressure(us segnr,const var& pres,const var& temp):TubeBcVertex(segnr),pL(pres),TL(temp) {
@@ -51,12 +51,12 @@ namespace tube{
     m.Wpip1=SfR*wRr;
     // Change energy equation for open boundary and prescribed pressure
     e.Wgim1=0;
-    e.Wgi=wRl-wL0;
-    e.Wgip1=wRr-wL1;
+    e.Wgi=wRl;
+    e.Wgip1=wRr;
 
     e.Wjim1=0;
-    e.Wji=wL0-wRl;
-    e.Wjip1=wL1-wRr;
+    e.Wji=-wRl;
+    e.Wjip1=-wRr;
 
     d vxi=geom.vx(0);
     d vxip1=geom.vx(1);
@@ -81,11 +81,18 @@ namespace tube{
   vd LeftPressure::esource() const {
     TRACE(2,"LeftPressure::esource()");
     vd esource(gc->Ns,fillwith::zeros);
+    const dmat& fDFT=gc->fDFT;
+    // d T0=T(0);
+    // d gamma=e.gamma();
+    // d gamfac=gamma/(gamma-1.0);
+    // esource+=-gamfac*fDFT*(pL()%(wL0*U()+wL1*right->U()));
+    // esource+=fDFT*(U()%pL());
+    #ifdef CONDUCTION
     vd TLt=TL.tdata();
     vd kappaL=gc->gas.kappa(TLt);
     // TRACE(10,"Important: put esource on when going back to full energy eq!");
-    esource+=-1.0*SfL*(gc->fDFT*(kappaL%TLt))/vxi;
-    TRACE(-1,"esource:"<<esource);
+    esource+=-1.0*SfL*fDFT*(kappaL%TLt)/vxi;
+    #endif
     return esource;    
   }
 

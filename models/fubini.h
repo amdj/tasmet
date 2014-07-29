@@ -46,8 +46,8 @@ Solver* Fubini(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
 
   // vd Z=(z0/S)*vd(Ns,fillwith::ones);
   // RightImpedance iright(0,Z);
-  TwImpedance iright(0);
-  sys.addbc(iright);
+  // TwImpedance iright(0);
+  // sys.addbc(iright);
   Solver* Sol=new Solver(sys);
   Sol->sys->getSeg(0)->geom.show();
   return Sol;  

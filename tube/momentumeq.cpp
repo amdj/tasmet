@@ -19,7 +19,6 @@ namespace tube{
 	 << "Wpi       : "<<Wpi      <<"\n"					\
 	 << "Wpip1     : "<<Wpip1      <<"\n"					\
       ;      
-    v.gc->show();
   }
   vd Momentum::Error(){		// Error in momentum equation
 

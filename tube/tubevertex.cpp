@@ -20,8 +20,8 @@ namespace tube{
     Vertex::Init(i,thisseg);	// Which also calls Vertex::updateW()
     eq[0]=&c;			// Continuity is first
     eq[1]=&m;
-    eq[2]=&is; 			// Changed to isentropic
-    // eq[2]=&e; 			// Full energy
+    // eq[2]=&is; 			// Changed to isentropic
+    eq[2]=&e; 			// Full energy
     eq[3]=&s;
     eq[4]=&se;
     
@@ -177,7 +177,8 @@ namespace tube{
       e.Wc3=SfR/dxp;
       e.Wc4=-SfR/dxp;
     }
-    else if(i==0){
+    else if(i==0 && vleft.size()==0){
+      TRACE(100,"We have a wall on the left side");
       c.Wim1=0;
       c.Wi=wRl;
       c.Wip1=wRr;
@@ -203,7 +204,9 @@ namespace tube{
       e.Wc3=SfR/dxp;
       e.Wc4=-SfR/dxp;
     }
-    else if(i==Ncells-1){
+    else if(i==Ncells-1 && vright.size()==0){
+      // We have a wall on the right side
+      TRACE(100,"We have a wall on the right side");
       c.Wi=-wLr;
       c.Wim1=-wLl;
       c.Wip1=0;
@@ -229,7 +232,9 @@ namespace tube{
       e.Wc3=0;
       e.Wc4=0;
     } 
-
+    else{
+      WARN("Something went terribly wrong!");
+    }
     // Contribution from changing cross-sectional area
     m.Wpi+=SfL-SfR;
 
