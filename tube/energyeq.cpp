@@ -22,63 +22,98 @@ namespace tube{
 
   }
   vd Energy::Error(){		// Error in momentum equation
-    TRACE(6,"Energy::Error()");
-    assert(v.gc!=NULL);
-    vd error(v.gc->Ns,fillwith::zeros);
-    const dmat& DDTfd=v.gc->DDTfd;
-    const dmat& fDFT=v.gc->fDFT;
-    const dmat& iDFT=v.gc->iDFT;      
-    d gamma=this->gamma();
-    d gamfac=gamma/(gamma-1.0);
-    vd Uti=v.U.tdata();
-    vd pti=v.p.tdata()+getp0t();
-    vd Tti=v.T.tdata();
-    error+=Wddt*DDTfd*v.p()/(gamma-1.0);
-    error+=Wgi*gamfac*fDFT*(pti%Uti);
-    error+=Wji*fDFT*(pti%Uti);
-    #ifdef CONDUCTION
-    error+=fDFT*(Wc2*kappaL()%Tti+Wc3*kappaR()%Tti);
-    #endif
+    // TRACE(6,"Energy::Error()");
+    // assert(v.gc!=NULL);
+    // const dmat& DDTfd=v.gc->DDTfd;
+    // const dmat& fDFT=v.gc->fDFT;
+    // const dmat& iDFT=v.gc->iDFT;      
+    // vd error(v.gc->Ns,fillwith::zeros);
+    // d gamma=this->gamma();
+    // d gamfac=gamma/(gamma-1.0);
+    // vd Uti=v.U.tdata();
+    // vd pti=v.p.tdata()+getp0t();
+    // vd Tti=v.T.tdata();
+    // error+=Wddt*DDTfd*v.p()/(gamma-1.0);
+    // error+=Wgi*gamfac*fDFT*(pti%Uti);
+    // error+=Wji*fDFT*(pti%Uti);
+    // #if CONDUCTION==1
+    // TRACE(100,"Conduction taken into account");
+    // error+=fDFT*(Wc2*kappaL()%Tti+Wc3*kappaR()%Tti);
+    // #endif
     
-    if(v.left!=NULL){
+    // if(v.left!=NULL){
+    //   vd Utim1=v.left->U.tdata();
+    //   vd ptim1=v.left->p.tdata()+getp0t();
+    //   vd Tim1=v.left->T.tdata();
+    //   error+=Wgim1*gamfac*fDFT*(ptim1%Utim1);
+    //   error+=Wjim1*fDFT*(ptim1%Uti);
+    //   #if CONDUCTION==1
+    //   error+=Wc1*fDFT*(kappaL()%Tim1);
+    //   #endif
+    // }
+    // if(v.right!=NULL){
+    //   vd Utip1=v.right->U.tdata();
+    //   vd ptip1=v.right->p.tdata()+getp0t();
+    //   vd Tip1=v.right->T.tdata();
+    //   error+=Wgip1*gamfac*fDFT*(ptip1%Utip1);
+    //   error+=Wjip1*fDFT*(ptip1%Uti);
+    //   #if CONDUCTION==1
+    //   error+=Wc4*fDFT*(kappaR()%Tip1);
+    //   #endif
+    // }
+
+    // // Artificial viscosity terms      
+    // #ifdef EN_VISCOSITY
+    // const d& vSf=v.vSf;
+    // if(v.i>0 && v.i<v.Ncells-1){
+    //   error+=-d_r()*(v.right->p() -v.p())*vSf;
+    //   error+= d_l()*(v.p() -v.left->p())  *vSf;
+    // }
+    // else if(v.i==0){		// First v
+    //   error+=-d_r()*(v.right->right->p()-v.right->p())*vSf;
+    //   error+=d_l()*(v.right->p()-v.p())*vSf;
+    // }
+    // else {			// Last v
+    //   error+=-d_r()*(v.p()-v.left->p())*vSf;
+    //   error+=d_l()*(v.left->p()-v.left->left->p())*vSf;
+    // }
+    // #endif
+    // // (Boundary source term)
+    // // TRACE(-1,"vertex.esource called from Vertex object..."<<v.esource());
+    // error+=v.esource();
+
+    // OLD CODE TODO THE SAME
+    vd error(v.gc->Ns,fillwith::zeros);
+    d gamma=this->gamma();
+
+    vd Uti=vertex.U.tdata();
+    vd pti=vertex.p.tdata()+getp0t();
+    vd Tti=vertex.T.tdata();
+    error+=Wddt*v.gc->DDTfd*vertex.p()/(gamma-1.0);
+    error+=Wgi*gamma*v.gc->fDFT*(pti%Uti)/(gamma-1.0);
+    error+=Wji*v.gc->fDFT*(pti%Uti);
+    error+=v.gc->fDFT*(Wc2*kappaL()%Tti+Wc3*kappaR()%Tti);
+    
+    if(v.i>0){
       vd Utim1=v.left->U.tdata();
       vd ptim1=v.left->p.tdata()+getp0t();
       vd Tim1=v.left->T.tdata();
-      error+=Wgim1*gamfac*fDFT*(ptim1%Utim1);
-      error+=Wjim1*fDFT*(ptim1%Uti);
-      #ifdef CONDUCTION
-      error+=Wc1*fDFT*(kappaL()%Tim1);
-      #endif
+      error+=Wgim1*gamma*v.gc->fDFT*(ptim1%Utim1)/(gamma-1.0);
+      error+=Wjim1*v.gc->fDFT*(ptim1%Uti);
+      error+=Wc1*v.gc->fDFT*(kappaL()%Tim1);
     }
-    if(v.right!=NULL){
+    if(v.i<v.Ncells-1){
       vd Utip1=v.right->U.tdata();
       vd ptip1=v.right->p.tdata()+getp0t();
       vd Tip1=v.right->T.tdata();
-      error+=Wgip1*gamfac*fDFT*(ptip1%Utip1);
-      error+=Wjip1*fDFT*(ptip1%Uti);
-      #ifdef CONDUCTION
-      error+=Wc4*fDFT*(kappaR()%Tip1);
-      #endif
+      error+=Wgip1*gamma*v.gc->fDFT*(ptip1%Utip1)/(gamma-1.0);
+      error+=Wjip1*v.gc->fDFT*(ptip1%Uti);
+      error+=Wc4*v.gc->fDFT*(kappaR()%Tip1);
     }
 
-    // Artificial viscosity terms      
-    #ifdef EN_VISCOSITY
-    const d& vSf=v.vSf;
-    if(v.i>0 && v.i<v.Ncells-1){
-      error+=-d_r()*(v.right->p() -v.p())*vSf;
-      error+= d_l()*(v.p() -v.left->p())  *vSf;
-    }
-    else if(v.i==0){		// First v
-      error+=-d_r()*(v.right->right->p()-v.right->p())*vSf;
-      error+=d_l()*(v.right->p()-v.p())*vSf;
-    }
-    else {			// Last v
-      error+=-d_r()*(v.p()-v.left->p())*vSf;
-      error+=d_l()*(v.left->p()-v.left->left->p())*vSf;
-    }
-    #endif
     // (Boundary source term)
-    // TRACE(-1,"vertex.esource called from Vertex object..."<<v.esource());
+    // TRACE(-1,"vertex.esource called from Vertex object..."<<vertex.esource());
+    
     error+=v.esource();
     return error;
   }
@@ -234,7 +269,7 @@ namespace tube{
     const dmat& iDFT=v.gc->iDFT;      
 
     dmat dTip1=zero;
-    #ifdef CONDUCTION
+    #if CONDUCTION==1
     if(v.right!=NULL)    
       dTip1+=Wc4*fDFT*diagmat(kappaR())*iDFT;
     #endif
@@ -247,7 +282,7 @@ namespace tube{
     const dmat& iDFT=v.gc->iDFT;      
     TRACE(0,"Energy::dTi()");
     dmat dTi=zero;
-    #ifdef CONDUCTION
+    #if CONDUCTION==1
     dTi+=fDFT*(Wc2*diagmat(kappaL())+Wc3*diagmat(kappaR()))*iDFT;
     #endif
     // dTi.row(0)*=ENERGY_SCALE0;
@@ -259,7 +294,7 @@ namespace tube{
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      
     dmat dTim1=zero;
-    #ifdef CONDUCTION
+    #if CONDUCTION==1
     if(v.left!=NULL)    
       dTim1+=Wc1*fDFT*diagmat(kappaL())*iDFT;
     #endif

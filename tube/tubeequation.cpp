@@ -36,9 +36,7 @@ namespace tube{
   // }
   vd TubeEquation::getp0t(){
     TRACE(0,"TubeEquation::getp0t()");
-    vd p0(v.gc->Ns,fillwith::ones);
-    p0*=v.gc->p0;
-    return p0;
+    return v.gc->p0*vd(v.gc->Ns,fillwith::ones);
   }
   dmat  TubeEquation::Jac(){
     // Compute the Jacobian for the subsystem around the current gridpoint

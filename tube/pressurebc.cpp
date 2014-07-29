@@ -63,7 +63,7 @@ namespace tube{
     d dxp=vxip1-vxi;
 
     e.Wc1=0;
-    e.Wc2=SfL/vxi;
+    e.Wc2=0;
     e.Wc3=SfR/dxp;
     e.Wc4=-SfR/dxp;
     // TODO Fill this further!
@@ -88,6 +88,7 @@ namespace tube{
     // esource+=-gamfac*fDFT*(pL()%(wL0*U()+wL1*right->U()));
     // esource+=fDFT*(U()%pL());
     #ifdef CONDUCTION
+    TRACE(100,"Conduction taken into account");
     vd TLt=TL.tdata();
     vd kappaL=gc->gas.kappa(TLt);
     // TRACE(10,"Important: put esource on when going back to full energy eq!");
