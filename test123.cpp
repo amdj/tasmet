@@ -18,7 +18,7 @@ int main(int argc,char* argv[]) {
   cout <<  "Running test..." << endl;
   int loglevel=25;
   us gp=4;
-  us Nf=0;
+  us Nf=1;
   us Ns=2*Nf+1;
   double f=100;
   double omg=2*number_pi*f;
@@ -77,8 +77,6 @@ int main(int argc,char* argv[]) {
     // // // vd x=t1.GetRmomes();
   // // vd err=sol.sys->Error();
   // // cout << "error:\n"<<err;
-
-
 
   // cout << "err:\n"<<er;
   // dmat Jac=sol.sys->Jac();

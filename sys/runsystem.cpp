@@ -113,13 +113,19 @@ namespace tasystem{
   void TAsystem::SetRes(vd Res){
     CheckInit();
     TRACE(14,"TAsystem::SetRes(vd res)");
-    us segdofs;
-    us startdof=0;
-    us Nsegs=getNsegs();
-    for(us i=0;i<Nsegs;i++){
-      segdofs=segs[i]->getNdofs();
-      segs[i]->SetRes(Res.subvec(startdof,startdof+segdofs-1));
-      startdof=startdof+segdofs;
+    if(Res.size()==Ndofs){
+      us segdofs;
+      us startdof=0;
+      us Nsegs=getNsegs();
+      for(us i=0;i<Nsegs;i++){
+	segdofs=segs[i]->getNdofs();
+	segs[i]->SetRes(Res.subvec(startdof,startdof+segdofs-1));
+	startdof=startdof+segdofs;
+      }
     }
-  }  
+    else
+      {
+	WARN("Amount of DOFS in result vector does not match system size!");
+      }
+  } // TAsystem::SetRes()
 } //namespace tasystem
