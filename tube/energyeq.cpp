@@ -4,7 +4,7 @@
 
 // #define ENERGY_SCALE (1.0/(v.gc->p0))
 #define ENERGY_SCALE (1.0)
-#define EN_VISCOSITY
+// #define EN_VISCOSITY
 
 
 namespace tube{
@@ -21,6 +21,11 @@ namespace tube{
 	 << "Wjim1     : "<<Wjim1      <<"\n"					\
 	 << "Wji       : "<<Wji      <<"\n"					\
 	 << "Wjip1     : "<<Wjip1      <<"\n"					\
+	 << "Wc1     : "<<Wc1      <<"\n"					\
+	 << "Wc2     : "<<Wc2      <<"\n"					\
+	 << "Wc3     : "<<Wc3      <<"\n"					\
+	 << "Wc4     : "<<Wc4      <<"\n"	\
+
       ;      
 
   }

@@ -15,6 +15,7 @@
 
 namespace tube{
   using segment::connectpos;
+  class TwImpedance;
 
   class TwImpedanceMomentumEq:public Momentum{
   public:
@@ -23,17 +24,23 @@ namespace tube{
     vd Error();
     dmat dUi();
     dmat dUim1();
-    dmat dpi();
-    dmat dpim1();
-    dmat drhoim1();
-    dmat drhoi();
+  }; 
+  class TwImpedanceEnergyEq:public Energy{
+  private:
+    const TwImpedance& impedancevertex;
+    
+  public:
+    TwImpedanceEnergyEq(TwImpedance&);
+    ~TwImpedanceEnergyEq(){}
+    dmat dUi();
+    dmat dUim1();
   }; 
 
   class TwImpedance:public TubeBcVertex // Adiabatic impedance boundary condition
   {
   public:
     TwImpedanceMomentumEq mright; // Completely adjusted equation
-    
+    TwImpedanceEnergyEq   eright; // Completely adjusted equation    
     TwImpedance(us segnr);
     TwImpedance(const TwImpedance& o);
     TwImpedance& operator=(const TwImpedance&);
@@ -42,9 +49,10 @@ namespace tube{
     virtual void Init(us i,const SegBase& thisseg);
     virtual string gettype() const {return string("TwImpedance");}
     virtual enum connectpos connectPos() const {return connectpos::right;}
+    d xhalf;			// Distance to right wall
   private:
     virtual void updateW(const SegBase&);
-    d xhalf;			// Distance to right wall
+  
     
   };
 

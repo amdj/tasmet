@@ -37,8 +37,8 @@ Solver* Fubini(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
     pL.set(i,p1(i));
 
   LeftPressure pleft(0,pL);
-  // TwImpedance iright(0);
-  RightIsoTWall iright(0,T0+50);
+  TwImpedance iright(0);
+  // RightIsoTWall iright(0,T0+50);
   TAsystem sys(gc);
   sys.addseg(t1);
   sys.addbc(pleft);
