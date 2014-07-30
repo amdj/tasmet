@@ -55,7 +55,7 @@ namespace segment{
   }
 
   void Seg::setLeftbc(Vertex* v){ // The segment owns the bc from then on!
-    TRACE(13,"Seg::setLeftbc()-----EMPTY!");
+    TRACE(13,"Seg::setLeftbc()");
     assert(Nvertex>0);
     vvertex[0].reset(v);
     vvertex[0]->right=vvertex[1].get();
@@ -65,11 +65,13 @@ namespace segment{
   }
 
   void Seg::setRightbc(Vertex* v){
-    TRACE(13,"Seg::setRighbc()-----EMPTY!");
+    TRACE(13,"Seg::setRightbc()");
     assert(Nvertex>0);
     vvertex[Nvertex-1].reset(v);
-    vvertex[Nvertex-2]->right=v;
+    TRACE(13,"Survived replacement");
+    vvertex[Nvertex-2]->right=vvertex[Nvertex-1].get();
     vvertex[Nvertex-1]->left=vvertex[Nvertex-2].get();
+    TRACE(13,"Survived replacement");
     vvertex[Nvertex-1]->right=NULL;
     vvertex[Nvertex-1]->Init(Nvertex-1,*this);
   }    

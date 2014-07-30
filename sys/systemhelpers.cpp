@@ -4,10 +4,11 @@
 #include "impedancebc.h"
 #include "twimpedance.h"
 #include "pressurebc.h"
-
+#include "isotwall.h"
 namespace tasystem{
   using tube::Tube;
   using tube::RightImpedance;
+  using tube::RightIsoTWall;  
   using tube::TwImpedance;
   using tube::LeftPressure;
   using segment::connectpos;
@@ -63,14 +64,18 @@ namespace tasystem{
       TRACE(14,"Copying a TwImpedance bc...");
       return static_cast<BcVertex*>(new TwImpedance(static_cast<const TwImpedance&>(orig)));
     }
+    else if(orig.gettype().compare("RightIsoTWall")==0){
+      TRACE(14,"Copying a RightIsoTWall bc...");
+      return static_cast<BcVertex*>(new RightIsoTWall(static_cast<const RightIsoTWall&>(orig)));
+    }
     else if(orig.gettype().compare("LeftPressure")==0){
       TRACE(14,"Copying a LeftPressure bc...");
       return static_cast<BcVertex*>(new LeftPressure(static_cast<const LeftPressure&>(orig)));
     }
     else{
-      TRACE(50,"Boundary condition type not understood");
-      return NULL;
-      exit(1);
+      WARN("Boundary condition type not understood");
+      abort();
+      return NULL;		// For the compiler. But we quit executing.
     }
   }
   Vertex* vertexfrombc(BcVertex* orig){
@@ -78,13 +83,13 @@ namespace tasystem{
       return static_cast<Vertex*>(static_cast<RightImpedance*>(orig));
     else if(orig->gettype().compare("TwImpedance")==0)
       return static_cast<Vertex*>(static_cast<TwImpedance*>(orig));
-
+    else if(orig->gettype().compare("RightIsoTWall")==0)
+      return static_cast<Vertex*>(static_cast<RightIsoTWall*>(orig));
     else if(orig->gettype().compare("LeftPressure")==0)
       return static_cast<Vertex*>(static_cast<LeftPressure*>(orig));
     else{
-      TRACE(50,"Boundary condition type not understood");
-      return NULL;
-      exit(1);
+      WARN("Boundary condition type not understood");
+      abort();
     }
   }
   

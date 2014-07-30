@@ -64,9 +64,11 @@ namespace tube{
     d xi=geom.vx(i);
     d xim1=geom.vx(i-1);	 
     d dxm=xi-xim1;
+
+    xhalf=xR-vxi;	       
     e.Wc1=-SfL/dxm;
     e.Wc2= SfL/dxm;
-    e.Wc3=0;
+    e.Wc3=SfR/xhalf;
     e.Wc4=0;
 
     // Last but not least: point momentum eq to new equation!
@@ -74,6 +76,24 @@ namespace tube{
     // Conduction terms are not changed.
     
   }
+  vd TwImpedance::esource(){
+    // Source term related to temperature boundary condition
+    TRACE(6,"TwImpedance::esource()");
+    const dmat& fDFT=gc->fDFT;
+    vd esource(gc->Ns,fillwith::zeros);
+    variable::var pR=wRNm2*left->p+wRNm1*p;
+    
+    d T0=gc->T0;
+    d gamma=gc->gas.gamma(T0);
+    vd p0(gc->Ns,fillwith::ones); p0*=gc->p0;
+    // TRACE(-1,"p0:"<<p0);
+    vd TRt=T0*pow((p0+pR.tdata())/p0,gamma/(gamma-1.0));		// Adiabatic compression/expansion
+    vd kappaR=gc->gas.kappa(TRt);
+
+    esource+=-1.0*SfR*fDFT*(kappaR%TRt)/xhalf;
+    return esource;  
+  }
+  
   TwImpedanceMomentumEq::TwImpedanceMomentumEq(TubeBcVertex& tv):Momentum(tv){
     TRACE(6,"TwImpedanceMomentumEq::TwImpedanceMomentumEq()");
       }

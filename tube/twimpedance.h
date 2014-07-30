@@ -38,12 +38,14 @@ namespace tube{
     TwImpedance(const TwImpedance& o);
     TwImpedance& operator=(const TwImpedance&);
     ~TwImpedance(){}
+    virtual vd esource();		// Source term for constant temperature
     virtual void Init(us i,const SegBase& thisseg);
     virtual string gettype() const {return string("TwImpedance");}
     virtual enum connectpos connectPos() const {return connectpos::right;}
-  protected:
+  private:
     virtual void updateW(const SegBase&);
-
+    d xhalf;			// Distance to right wall
+    
   };
 
 

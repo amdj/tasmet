@@ -5,6 +5,7 @@
 #include "solver.h"
 #include "gas.h"
 #include "twimpedance.h"
+#include "isotwall.h"
 using namespace segment;
 using namespace tasystem;
 using namespace tube;
@@ -20,8 +21,6 @@ Solver* Fubini(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
   d rho0=g.rho(T0,p0);
   d c0=g.cm(T0);
   d z0=rho0*c0;
-  d M=pow(max(abs(p1)),2)/p0;
-  d phi=1.0;
   d R=sqrt(S/number_pi);
   d PI=S/(2*number_pi*R);
   d rh=S/PI;
@@ -37,19 +36,15 @@ Solver* Fubini(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
   for(us i=0;i<Ns;i++)
     pL.set(i,p1(i));
 
-  TRACE(30,"pL:"<<pL());  
   LeftPressure pleft(0,pL);
-  cout << pleft.pL();
+  // TwImpedance iright(0);
+  RightIsoTWall iright(0,T0+50);
   TAsystem sys(gc);
   sys.addseg(t1);
   sys.addbc(pleft);
-
-  // vd Z=(z0/S)*vd(Ns,fillwith::ones);
-  // RightImpedance iright(0,Z);
-  TwImpedance iright(0);
   sys.addbc(iright);
   Solver* Sol=new Solver(sys);
-  Sol->sys->getSeg(0)->geom.show();
+  Sol->sys->show(false);
   return Sol;  
 }
 

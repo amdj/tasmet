@@ -6,6 +6,7 @@
 #include "pressurebc.h"
 #include "tubevertex.h"
 #include "impedancebc.h"
+#include "isotwall.h"
 #include "system.h"
 #include "solver.h"
 using namespace std;
@@ -45,28 +46,27 @@ int main(int argc,char* argv[]) {
   Globalconf gc(Nf,f,"air",T0,p0,0,kappa);
   Geom geom1=Geom::Cylinder(gp,L,rtube);
   Tube t1(geom1);
-  t1.Init(gc);
+  // t1.Init(gc);
   var pL(gc,0);
   if(Nf>0)
     pL.set(1,1);
   tube::LeftPressure bcleft(0,pL);
   // tube::RightImpedance bcright(0,415*vd(Ns,fillwith::ones));
-  // tube::TwImpedance bcright(1);
+  // tube::TwImpedance bcright(0);
+  tube::RightIsoTWall bcright(0,T0+10);
   TAsystem sys(gc);
-  // sys.addseg(t1);
   sys.addseg(t1);  
   // sys.connectSegs(0,1,SegCoupling::tailhead);
-  // sys.addbc(bcright);
-  
   sys.addbc(bcleft);
+  sys.addbc(bcright);
+    
   // cout << sys.getSeg(0)->GetRes() << "\n";
   Solver sol(sys);
   // sol.sys->Init();
   // sys.getSeg(0)->Error();
   // sol.sys->getSeg(0)->Jac();
-
   sol.sys->Init();
-  sys.show(true);
+  // sys.show(true);
   // sol.sys->show(true);
   cout << "Jac:\n"<< sol.sys->Jac();
 // sol.sys

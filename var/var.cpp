@@ -39,7 +39,11 @@ namespace variable {
     this->amplitudedata=other.amplitudedata;
     return *this;
   }
-  
+  var var::operator+(const var& other){
+    var result(*this->gc);
+    result.set(this->operator()()+other());
+    return result;
+  }
   void var::updateNf(){
     TRACE(0,"var::updateNf()");
     if(this->Ns!=gc->Ns){

@@ -1,6 +1,9 @@
 #include "energyeq.h"
 #include "tubevertex.h"
 #include "conduction.h"
+
+// #define ENERGY_SCALE (1.0/(v.gc->p0))
+#define ENERGY_SCALE (1.0)
 #define EN_VISCOSITY
 
 
@@ -36,7 +39,7 @@ namespace tube{
     error+=Wddt*DDTfd*v.p()/(gamma-1.0);
     error+=Wgi*gamfac*fDFT*(pti%Uti);
     error+=Wji*fDFT*(pti%Uti);
-    error+=fDFT*(Wc2*kappaL()%Tti+Wc3*kappaR()%Tti);
+    error+=fDFT*((Wc2*kappaL()+Wc3*kappaR())%Tti);
     
     if(v.left!=NULL){
       vd Utim1=v.left->U.tdata();
@@ -75,22 +78,21 @@ namespace tube{
     #endif
     // (Boundary source term)
     error+=v.esource();
-    return error;
+    return ENERGY_SCALE*error;
   }
   dmat Energy::dpi(){
     TRACE(0,"Energy::dpi()");
     d T0=v.T(0);
     d gamma=this->gamma();
     dmat dpi=zero;
-    dmat diagUt=diagtmat(v.U);
     const dmat& DDTfd=v.gc->DDTfd;
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      
     // Wddt = vVf, as defined in tubevertex.cpp
     d gamfac=gamma/(gamma-1.0);
     dpi+=(Wddt/(gamma-1.0))*DDTfd;
-    dpi+=Wgi*gamfac*fDFT*diagUt*iDFT;
-    dpi+=Wji*fDFT*diagUt*iDFT;
+    dpi+=Wgi*gamfac*fDFT*v.U.diagt()*iDFT;
+    dpi+=Wji*fDFT*v.U.diagt()*iDFT;
     // Artificial viscosity terms    
     #ifdef EN_VISCOSITY
     const d& vVf=v.vVf;
@@ -103,7 +105,7 @@ namespace tube{
     else		
       dpi+=-d_r()*vSf;	// Last vertex
     #endif
-    return dpi;
+    return ENERGY_SCALE*dpi;
   }
   dmat Energy::dpim1(){
     TRACE(0,"Energy::dpim1()");
@@ -114,11 +116,11 @@ namespace tube{
     d gamfac=gamma/(gamma-1.0);    
     vd Uti=v.U.tdata();
     dmat dpim1=zero;
-    dpim1+=Wjim1*fDFT*diagmat(Uti)*iDFT;
     if(v.left!=NULL){
-      vd Utim1=v.left->U.tdata();
-      dpim1+=Wgim1*gamfac*fDFT*diagmat(Utim1)*iDFT;
+      dpim1+=Wgim1*gamfac*fDFT*v.left->U.diagt()*iDFT;
     }
+    dpim1+=Wjim1*fDFT*v.U.diagt()*iDFT;
+
     // Artificial viscosity terms
     #ifdef EN_VISCOSITY
     const d& vSf=v.vSf;
@@ -129,7 +131,7 @@ namespace tube{
       dpim1+=(d_l()+d_r())*vSf;
     }
     #endif
-    return dpim1;
+    return ENERGY_SCALE*dpim1;
   }
   dmat Energy::dpip1(){
     TRACE(0,"Energy::dpip1()");
@@ -140,11 +142,10 @@ namespace tube{
     dmat dpip1=zero;
     d gamma=this->gamma();
     d gamfac=gamma/(gamma-1.0);
-    dpip1+=Wjip1*fDFT*diagmat(Uti)*iDFT;
     if(v.right!=NULL){
-      vd Utip1=v.right->U.tdata();
-      dpip1+=Wgip1*gamfac*fDFT*diagmat(Utip1)*iDFT;
+      dpip1+=Wgip1*gamfac*fDFT*v.right->U.diagt()*iDFT;
     }
+    dpip1+=Wjip1*fDFT*v.U.diagt()*iDFT;
     // Artificial viscosity terms
     #ifdef EN_VISCOSITY    
     const d& vSf=v.vSf;
@@ -155,7 +156,7 @@ namespace tube{
       dpip1+=(d_l()+d_r())*vSf;
     }
     #endif
-    return dpip1;
+    return ENERGY_SCALE*dpip1;
   }
   dmat Energy::dUi(){
     TRACE(0,"Energy::dUi()");
@@ -172,7 +173,7 @@ namespace tube{
       dUi+=Wjim1*fDFT*diagmat(v.left->p.tdata()+getp0t())*iDFT;
     if(v.right!=NULL)
       dUi+=Wjip1*fDFT*diagmat(v.right->p.tdata()+getp0t())*iDFT;
-    return dUi;
+    return ENERGY_SCALE*dUi;
   }
   dmat Energy::dUim1(){
     TRACE(0,"Energy::dUim1()");
@@ -184,7 +185,7 @@ namespace tube{
     if(v.left!=NULL){
       dUim1+=Wgim1*gamfac*fDFT*diagmat(getp0t()+v.left->p.tdata())*iDFT;
     }
-    return dUim1;
+    return ENERGY_SCALE*dUim1;
   }
   dmat Energy::dUip1(){
     TRACE(0,"Energy::dUip1()");
@@ -196,7 +197,7 @@ namespace tube{
     if(v.right!=NULL){
       dUip1+=Wgip1*gamfac*fDFT*diagmat(getp0t()+v.right->p.tdata())*iDFT;
     }
-    return dUip1;
+    return ENERGY_SCALE*dUip1;
   }
   dmat Energy::dpip2(){
     dmat dpip2=zero;
@@ -206,7 +207,7 @@ namespace tube{
       dpip2+=-d_r()*vSf;
     }
     #endif 
-    return dpip2;
+    return ENERGY_SCALE*dpip2;
   }
   dmat Energy::dpim2(){
     dmat dpim2=zero;
@@ -216,7 +217,7 @@ namespace tube{
       dpim2+=-d_l()*vSf;
     }
     #endif 
-    return dpim2;
+    return ENERGY_SCALE*dpim2;
   }
   // ############################## TEMPERATURE AND CONDUCTION TERMS
   dmat Energy::dTip1(){
@@ -226,12 +227,10 @@ namespace tube{
     const dmat& iDFT=v.gc->iDFT;      
 
     dmat dTip1=zero;
-    #if CONDUCTION==1
     if(v.right!=NULL)    
       dTip1+=Wc4*fDFT*diagmat(kappaR())*iDFT;
-    #endif
     // dTip1.row(0)*=ENERGY_SCALE0;
-    return dTip1;
+    return ENERGY_SCALE*dTip1;
   }
   dmat Energy::dTi(){
     const dmat& DDTfd=v.gc->DDTfd;
@@ -239,9 +238,9 @@ namespace tube{
     const dmat& iDFT=v.gc->iDFT;      
     TRACE(0,"Energy::dTi()");
     dmat dTi=zero;
-    dTi+=fDFT*(Wc2*diagmat(kappaL())+Wc3*diagmat(kappaR()))*iDFT;
+    dTi+=fDFT*diagmat(Wc2*kappaL()+Wc3*kappaR())*iDFT;
     // dTi.row(0)*=ENERGY_SCALE0;
-    return dTi;
+    return ENERGY_SCALE*dTi;
   }
   dmat Energy::dTim1(){
     TRACE(0,"Energy::dTim1()");
@@ -251,7 +250,7 @@ namespace tube{
     dmat dTim1=zero;
     if(v.left!=NULL)    
       dTim1+=Wc1*fDFT*diagmat(kappaL())*iDFT;
-    return dTim1;
+    return ENERGY_SCALE*dTim1;
   }
 
   // From here on, auxiliary functions
@@ -261,21 +260,24 @@ namespace tube{
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      
     
-    vd kappaL(v.gc->Ns,fillwith::zeros);
-    vd Tti=v.T.tdata();
-    vd kappait=v.gc->gas.kappa(Tti);
+    // vd kappaL(v.gc->Ns,fillwith::zeros);
+    // vd Tti=v.T.tdata();
+    // vd kappait=v.gc->gas.kappa(Tti);
 
-    if(v.i==0){
-      vd Ttip1=v.right->T.tdata();
-      vd kappaitp1=v.gc->gas.kappa(Ttip1);
-      kappaL=v.wL1*kappaitp1+v.wL0*kappait;
-    }
-    else{
-      vd Ttim1=v.left->T.tdata();
-      vd kappaitm1=v.gc->gas.kappa(Ttim1);
-      kappaL=v.wLr*kappait+v.wLl*kappaitm1;
-    }
+    // if(v.left==NULL){
+    //   vd Ttip1=v.right->T.tdata();
+    //   vd kappaitp1=v.gc->gas.kappa(Ttip1);
+    //   kappaL=v.wL1*kappaitp1+v.wL0*kappait;
+    // }
+    // else{
+    //   vd Ttim1=v.left->T.tdata();
+    //   vd kappaitm1=v.gc->gas.kappa(Ttim1);
+    //   kappaL=v.wLr*kappait+v.wLl*kappaitm1;
+    // }
+    // TRACE(100,"kappaL(0):"<<kappaL(0));
     // kappaL.zeros();		// WARNING
+    vd kappaL(v.gc->Ns,fillwith::ones);
+    kappaL*=v.gc->gas.kappa(v.gc->T0);
     return kappaL;
   }
   vd Energy::kappaR() const {		// Returns thermal conductivity time domain data
@@ -284,25 +286,29 @@ namespace tube{
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      
     
-    vd kappaR(v.gc->Ns,fillwith::zeros);
-    vd Tti=v.T.tdata();
-    vd kappait=v.gc->gas.kappa(Tti);
+    // vd kappaR(v.gc->Ns,fillwith::zeros);
+    // vd Tti=v.T.tdata();
+    // vd kappait=v.gc->gas.kappa(Tti);
 
-    if(v.i==v.Ncells-1){
-      vd Ttim1=v.left->T.tdata();
-      vd kappaitm1=v.gc->gas.kappa(Ttim1);
-      kappaR=v.wRNm2*kappaitm1+v.wRNm1*kappait;
-    }
-    else{
-      vd Ttip1=v.right->T.tdata();
-      vd kappaitp1=v.gc->gas.kappa(Ttip1);
-      kappaR=v.wRl*kappait+v.wRr*kappaitp1;
-    }
+    // if(v.right==NULL){
+    //   vd Ttim1=v.left->T.tdata();
+    //   vd kappaitm1=v.gc->gas.kappa(Ttim1);
+    //   kappaR=v.wRNm2*kappaitm1+v.wRNm1*kappait;
+    // }
+    // else{
+    //   vd Ttip1=v.right->T.tdata();
+    //   vd kappaitp1=v.gc->gas.kappa(Ttip1);
+    //   kappaR=v.wRl*kappait+v.wRr*kappaitp1;
+    // }
     // kappaR.zeros();		// WARNING!!
+    // TRACE(100,"kappaR(0):"<<kappaR(0));
+    vd kappaR(v.gc->Ns,fillwith::ones);
+    kappaR*=v.gc->gas.kappa(v.gc->T0);
     return kappaR;
   }
   d Energy::gamma() const {
-    d T0=v.T(0);
+    // d T0=v.T(0);
+    d T0=v.gc->T0; 
     return v.gc->gas.gamma(T0);
   }
   Energy::~Energy(){

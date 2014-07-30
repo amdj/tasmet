@@ -21,7 +21,7 @@ namespace variable {
   class var;			// Forward declaration
   ostream& operator<< (ostream& out,var& v);
   var operator*(const double& d1,const var& var2);
-
+  // var operator+(const d&,const var&);
 
   class var {
   protected:
@@ -47,12 +47,14 @@ namespace variable {
     var operator*(const var& variable) const;		   // Multiply two variables in time domain
     var operator*(const d& scalar) const;   // Multiply a variable with a scalar. This operation is possible for both
 				      // frequency and time domain data
-    
+    var operator+(const var& other);  // add two variables
 
     vd getResfluc() const { return amplitudedata.subvec(1,Ns-1);}
     vc getcRes() const; //Implementation for complex amplitude vector
     vd tdata() const  {return timedata; } //Get time data vector
     d tdata(d t) const; //Extract the estimated value for a given time t
+    dmat diagt() const {return diagmat(timedata);}
+    dmat diag() const {return diagmat(amplitudedata);}    
     //Set methods
     void set(us freq,double val); //Set result vector at specific frequency
     void set(const vd values); //Set result vector to these values
