@@ -62,12 +62,10 @@ namespace tube{
     d vxip1=geom.vx(1);
     d dxp=vxip1-vxi;
 
-    #if CONDUCTION==1
     e.Wc1=0;
     e.Wc2=SfL/vxi;
     e.Wc3=SfR/dxp;
     e.Wc4=-SfR/dxp;
-    #endif
 
     // TODO Fill this further!
 
@@ -90,16 +88,10 @@ namespace tube{
     // d gamfac=gamma/(gamma-1.0);
     // esource+=-gamfac*fDFT*(pL()%(wL0*U()+wL1*right->U()));
     // esource+=fDFT*(U()%pL());
-    #ifndef CONDUCTION
-    #error conduction not defined
-    #endif
-    #if CONDUCTION==1
-    TRACE(100,"Conduction taken into account");
     vd TLt=TL.tdata();
     vd kappaL=gc->gas.kappa(TLt);
     // TRACE(10,"Important: put esource on when going back to full energy eq!");
     esource+=-1.0*SfL*fDFT*(kappaL%TLt)/vxi;
-    #endif
     return esource;    
   }
 

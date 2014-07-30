@@ -1,7 +1,7 @@
 #include "energyeq.h"
 #include "tubevertex.h"
 #include "conduction.h"
-// #define EN_VISCOSITY
+#define EN_VISCOSITY
 
 
 namespace tube{
@@ -36,10 +36,7 @@ namespace tube{
     error+=Wddt*DDTfd*v.p()/(gamma-1.0);
     error+=Wgi*gamfac*fDFT*(pti%Uti);
     error+=Wji*fDFT*(pti%Uti);
-    #if CONDUCTION==1
-    TRACE(100,"Conduction taken into account");
     error+=fDFT*(Wc2*kappaL()%Tti+Wc3*kappaR()%Tti);
-    #endif
     
     if(v.left!=NULL){
       vd Utim1=v.left->U.tdata();
@@ -47,9 +44,9 @@ namespace tube{
       vd Tim1=v.left->T.tdata();
       error+=Wgim1*gamfac*fDFT*(ptim1%Utim1);
       error+=Wjim1*fDFT*(ptim1%Uti);
-      #if CONDUCTION==1
+      // Conduction term
       error+=Wc1*fDFT*(kappaL()%Tim1);
-      #endif
+
     }
     if(v.right!=NULL){
       vd Utip1=v.right->U.tdata();
@@ -57,9 +54,7 @@ namespace tube{
       vd Tip1=v.right->T.tdata();
       error+=Wgip1*gamfac*fDFT*(ptip1%Utip1);
       error+=Wjip1*fDFT*(ptip1%Uti);
-      #if CONDUCTION==1
       error+=Wc4*fDFT*(kappaR()%Tip1);
-      #endif
     }
 
     // Artificial viscosity terms      
@@ -160,7 +155,6 @@ namespace tube{
       dpip1+=(d_l()+d_r())*vSf;
     }
     #endif
-
     return dpip1;
   }
   dmat Energy::dUi(){
@@ -172,7 +166,7 @@ namespace tube{
     d gamma=this->gamma();
     d gamfac=gamma/(gamma-1.0);
     dmat diagpt=diagmat(getp0t()+v.p.tdata());
-    dUi+=Wgi*gamfac*diagpt*iDFT;
+    dUi+=Wgi*gamfac*fDFT*diagpt*iDFT;
     dUi+=Wji*fDFT*diagpt*iDFT;
     if(v.left!=NULL)
       dUi+=Wjim1*fDFT*diagmat(v.left->p.tdata()+getp0t())*iDFT;
@@ -245,9 +239,7 @@ namespace tube{
     const dmat& iDFT=v.gc->iDFT;      
     TRACE(0,"Energy::dTi()");
     dmat dTi=zero;
-    #if CONDUCTION==1
     dTi+=fDFT*(Wc2*diagmat(kappaL())+Wc3*diagmat(kappaR()))*iDFT;
-    #endif
     // dTi.row(0)*=ENERGY_SCALE0;
     return dTi;
   }
@@ -257,10 +249,8 @@ namespace tube{
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      
     dmat dTim1=zero;
-    #if CONDUCTION==1
     if(v.left!=NULL)    
       dTim1+=Wc1*fDFT*diagmat(kappaL())*iDFT;
-    #endif
     return dTim1;
   }
 
