@@ -11,17 +11,13 @@ namespace tube{
     d T0=gc->T0;
     d gamma=gc->gas.gamma(T0);
     vd p0(gc->Ns,fillwith::ones); p0*=gc->p0;
-    // TRACE(-1,"p0:"<<p0);
-    vd TLt=T0*pow((p0+pL.tdata())/p0,gamma/(gamma-1.0));		// Adiabatic compression/expansion
-    // TRACE(-1,"TLt:"<<TLt);
+    vd TLt=T0*pow((p0+pL.tdata())/p0,(gamma-1.0)/gamma);		// Adiabatic compression/expansion
     TL.settdata(TLt);
 
   }
   LeftPressure::LeftPressure(const LeftPressure& other):LeftPressure(other.segNumber(),other.pL,other.TL)
   {
     TRACE(8,"LeftPressure copy constructor");
-    TRACE(8,"pL:"<<pL);
-    TRACE(9,"LeftPressure left pointer:"<<left);
   }
   void LeftPressure::Init(us i,const SegBase& thisseg)
   {
@@ -83,14 +79,8 @@ namespace tube{
     TRACE(2,"LeftPressure::esource()");
     vd esource(gc->Ns,fillwith::zeros);
     const dmat& fDFT=gc->fDFT;
-    // d T0=T(0);
-    // d gamma=e.gamma();
-    // d gamfac=gamma/(gamma-1.0);
-    // esource+=-gamfac*fDFT*(pL()%(wL0*U()+wL1*right->U()));
-    // esource+=fDFT*(U()%pL());
     vd TLt=TL.tdata();
-    vd kappaL=gc->gas.kappa(TLt);
-    // TRACE(10,"Important: put esource on when going back to full energy eq!");
+    vd kappaL=e.kappaL();
     esource+=-1.0*SfL*fDFT*(kappaL%TLt)/vxi;
     return esource;    
   }

@@ -52,7 +52,6 @@ namespace tube{
     #endif
     // (Boundary) source term
     error+=v.csource();
-    TRACE(6,"Continuity::Error()");
     return error;
   }
   dmat Continuity::drhoi(){

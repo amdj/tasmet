@@ -31,7 +31,6 @@ namespace tube{
     ~Tube();
     virtual void Init(const Globalconf& gc);
     virtual Vertex* makeVertex(us i,const Globalconf& gc);
-    vd GetResAt(us varnr,us freqnr); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
     friend class TubeVertex;
     friend class Continuity;
     friend class Momentum;
@@ -39,6 +38,17 @@ namespace tube{
     void cleanup();
   };				// Tube class
 
+  class IsentropicTube:public Tube
+  
+  {
+  public:
+    IsentropicTube(Geom geom);
+    IsentropicTube(const IsentropicTube&);
+    IsentropicTube& operator=(const IsentropicTube&);
+    virtual void Init(const Globalconf&);
+    virtual ~IsentropicTube();
+};
+  
 } /* namespace tube */
 
 #endif /* TUBE_H_ */

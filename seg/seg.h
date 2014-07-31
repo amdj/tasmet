@@ -42,6 +42,7 @@ namespace segment{
     
     vd Error();			// Return error vector for this segment
     vd GetRes();		// Return result vector for this segment
+    vd GetResAt(us varnr,us freqnr); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
     dmat Jac();			// Return Jacobian matrix
     void SetRes(vd res);
     // void setnodes(us n1,us n2){ nL=n1; nR=n2;}

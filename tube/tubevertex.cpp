@@ -22,7 +22,6 @@ namespace tube{
     eq[1]=&m;
     eq[2]=&e; 			// Full energy
     // eq[2]=&is; 			// Changed to isentropic
-
     eq[3]=&s;
     eq[4]=&se;
     
@@ -235,13 +234,13 @@ namespace tube{
 
   }
   vd  TubeVertex::csource() const {
-    TRACE(0,"TubeVertex::csource()");
+    TRACE(4,"TubeVertex::csource()");
     return zeros(gc->Ns);}
   vd  TubeVertex::msource() const {
-    TRACE(0,"TubeVertex::msource()");
+    TRACE(4,"TubeVertex::msource()");
     return zeros(gc->Ns);}
   vd  TubeVertex::esource() const {
-    TRACE(0,"TubeVertex::esource()");
+    TRACE(4,"TubeVertex::esource()");
     return zeros(gc->Ns);}    
     
   TubeVertex::~TubeVertex(){

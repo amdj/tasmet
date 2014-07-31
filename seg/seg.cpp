@@ -151,6 +151,15 @@ namespace segment{
       }
     return Result;
   }
+  vd Seg::GetResAt(us varnr,us freqnr){
+    const us& Ncells=geom.Ncells;
+    vd res(Ncells);
+    assert(varnr<Neq);
+    for(us i=0;i<Ncells;i++){
+      res(i)=vvertex[i]->vars[varnr]->operator()(freqnr);
+    }
+    return res;
+  }
 
   vd Seg::Error(){
     TRACE(8,"Seg::Error()");

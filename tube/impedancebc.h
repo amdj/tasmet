@@ -24,10 +24,10 @@ namespace tube{
     vd Error();
     dmat dUi();
     dmat dUim1();
-    dmat dpi();
-    dmat dpim1();
-    dmat drhoim1();
-    dmat drhoi();
+    // dmat dpi();
+    // dmat dpim1();
+    // dmat drhoim1();
+    // dmat drhoi();
     vd& Z;
   }; 
 
@@ -43,7 +43,6 @@ namespace tube{
     RightImpedance& operator=(const RightImpedance&);
     ~RightImpedance(){}
     virtual void Init(us i,const SegBase&);
-    
     virtual string gettype() const {return string("RightImpedance");}
     virtual enum connectpos connectPos() const {return connectpos::right;}
   protected:

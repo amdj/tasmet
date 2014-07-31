@@ -43,7 +43,7 @@ namespace tasystem{
 
     
     d T0,p0,rho0;			/* Reference temperature and pressure (used to initialize a lot of variables. */
-    d Mass,Mach;			/* Fluid mass in the system (should remain constant) */
+    d Mass;			/* Fluid mass in the system (should remain constant) */
     vd omgvec;
     void set(us Nf,d freq);	// Set data for new frequency and number of samples
     dmat iDFT; //inverse discrete Fourier transform matrix

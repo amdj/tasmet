@@ -26,7 +26,6 @@ namespace tasystem{
     this->Mass=Mass;
     this->c0=this->gas.cm(T0);
     this->kappa=kappa;
-    this->Mach=Mach;
     // if(Nf==0 || Mach<1e-10)
       // M=1.0;
     // else

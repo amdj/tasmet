@@ -50,17 +50,6 @@ namespace tube {
       vvertex[i]->rho.set(0,g.gas.rho(g.T0,g.p0));
     }
   }
-
-
-  vd Tube::GetResAt(us varnr,us freqnr){
-    const us& Ncells=geom.Ncells;
-    vd res(Ncells);
-    assert(varnr<Neq);
-    for(us i=0;i<Ncells;i++){
-      res(i)=vvertex[i]->vars[varnr]->operator()(freqnr);
-    }
-    return res;
-  }
   Tube::~Tube(){
     TRACE(15,"~Tube()");
     cleanup();

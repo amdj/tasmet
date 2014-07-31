@@ -27,17 +27,18 @@ project(nonlinear_tmtubes)
 
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 ${CMAKE_CURRENT_LIST_DIR}/cmake )
-set(CLANG_FLAGS "-Wno-unknown-warning-option -Wno-overloaded-virtual")
+set(CLANG_FLAGS "-Wno-unknown-warning-option")
 
-# set(CMAKE_CXX_COMPILER clang++)
-set(CMAKE_CXX_COMPILER g++)
+set(CMAKE_CXX_COMPILER clang++)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CLANG_FLAGS} ")
+# set(CMAKE_CXX_COMPILER g++)
 
 # -pipe Use pipes rather than temporary files for communication
 #           between the various stages of compilation.  This fails to
 #           work on some systems where the assembler is unable to
 #           read from a pipe; but the GNU assembler has no trouble.
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CLANG_FLAGS} -g -std=c++11 -pipe -fPIC -Wall \
- -Wno-unused-function \
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pipe -fPIC -Wall \
+ -Wno-unused-function -Woverloaded-virtual  \
  -Wno-unused-variable -Wno-unused-but-set-variable \
  -Wno-return-local-addr -Wno-cpp  -Wno-address")
 
