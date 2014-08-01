@@ -10,15 +10,14 @@ namespace segment{
 
   SPOILNAMESPACE
   typedef std::unique_ptr<Vertex> vertexptr;
-
+  class Equation;
   
   class Seg:public SegBase{
   public:
     std::vector<vertexptr> vvertex; // Owned by segment, but
 				    // controlled by derived classes.
   protected:
-    us Ndofs=0;
-    us Nvertex=0;
+    us nDofs=0;
   public:    
     Seg(Geom geom); // nL,nR initiated as 0
     Seg(const Seg&);		       // Copy constructor, really copies everything
@@ -28,26 +27,26 @@ namespace segment{
     // ------------------------------ DEPRECATED!!
     
     // Initialized method (after adding to a system)
-    virtual void Init(const tasystem::Globalconf&);			   // Initializer method. Different for each segment type
-    virtual Vertex* makeVertex(us i,const Globalconf& g);
-    void show(bool showVertices=false);
-    void showVertices();
-    const us& getNdofs() const {return Ndofs;}
-    const us& getNcells() const {return geom.Ncells;}
+    virtual void init(const tasystem::Globalconf&);			   // Initializer method. Different for each segment type
+    void cleanup();
+    virtual void show(bool showVertices=false);
+
+    const us& getNDofs() const {return nDofs;}
+    const us& getNCells() const {return geom.nCells;}
     // const us& getnL() const {return nL;}
     // const us& getnR() const {return nR;}
 
-    void setLeftbc(Vertex* v); // Set left boundary condition vertex
-    void setRightbc(Vertex* v); // Set left boundary condition vertex    
+    virtual void setLeftBc(Vertex* v); // Set left boundary condition vertex
+    virtual void setRightBc(Vertex* v); // Set left boundary condition vertex    
     
-    vd Error();			// Return error vector for this segment
-    vd GetRes();		// Return result vector for this segment
-    vd GetResAt(us varnr,us freqnr); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
-    dmat Jac();			// Return Jacobian matrix
-    void SetRes(vd res);
+    vd error() const;			// Return error vector for this segment
+    vd getRes() const;		// Return result vector for this segment
+    dmat jac() const;			// Return Jacobian matrix
+    void setRes(vd res);
     // void setnodes(us n1,us n2){ nL=n1; nR=n2;}
-    virtual ~Seg(){TRACE(-5,"~Seg()");}
-
+    virtual ~Seg(){TRACE(-5,"~Seg()"); Seg::cleanup();}
+  private:
+    void showVertices();    
   };
   
 

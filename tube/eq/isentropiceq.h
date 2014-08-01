@@ -13,11 +13,11 @@ namespace tube{
 
   class Isentropic:public TubeEquation{
   public:
-    Isentropic(TubeVertex& gp);
+    Isentropic();
     ~Isentropic();
-    vd Error();			// Error in Energy equation at node i
-    dmat dpi();
-    dmat drhoi();
+    vd error(const TubeVertex&) const;			// Error in Energy equation at node i
+    dmat dpi(const TubeVertex&) const;
+    dmat drhoi(const TubeVertex&) const;
 
   };
 }

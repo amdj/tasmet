@@ -68,17 +68,17 @@ namespace segment{
 
     this->L=x(x.size()-1);
     gp=x.size();
-    Ncells=gp-1;
+    nCells=gp-1;
     
-    vx=vd(Ncells);
-    vS=vd(Ncells);
-    vSf=vd(Ncells);
-    vSs=vd(Ncells);
-    vrh=vd(Ncells);
-    vphi=vd(Ncells);
-    vVf=vd(Ncells);
-    vVs=vd(Ncells);
-    for(us j=0;j<Ncells;j++){	// Cell-centered scheme
+    vx=vd(nCells);
+    vS=vd(nCells);
+    vSf=vd(nCells);
+    vSs=vd(nCells);
+    vrh=vd(nCells);
+    vphi=vd(nCells);
+    vVf=vd(nCells);
+    vVs=vd(nCells);
+    for(us j=0;j<nCells;j++){	// Cell-centered scheme
       vx(j)=(x(j+1)+x(j))/2;
       vS(j)=(S(j+1)+S(j))/2;
       vSf(j)=(Sf(j+1)+Sf(j))/2;
@@ -94,7 +94,7 @@ namespace segment{
     if(true)
       {
 	cout << "-------- Geometry --------\n"	\
-	     << "Ncells: " << Ncells << "\n"	\
+	     << "nCells: " << nCells << "\n"	\
 	     << "L     : " << L<< "\n"		\
 	     << "Shape : " << shape<< "\n"	\
 	  ;
@@ -109,5 +109,6 @@ namespace segment{
     cout << "--------------------------\n"	\
       ;
   }
+
   Geom::~Geom(){}
 } // namespace segment

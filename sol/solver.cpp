@@ -65,13 +65,13 @@ namespace tasystem{
   typedef tuple<d,d> dtuple;
   void Solver::solve(d funtol,d reltol){
     TRACE(20,"Solver started.");
-    vd error=sys->Error();
+    vd error=sys->error();
     d funer=arma::norm(error,2);
     d reler=0;
     us nloop=0;
     while((funer>funtol || reler>reltol) && nloop<SOLVER_MAXITER)
       {
-	dtuple ers=DoIter();
+	dtuple ers=doIter();
 	funer=std::get<0>(ers);
 	reler=std::get<1>(ers);
 	cout << "Iteration: "<<nloop<<" , function error: "<<funer<<" , relative error:" << reler<< ".\n";
@@ -81,21 +81,21 @@ namespace tasystem{
       WARN("Solver reached maximum number of iterations! Results might not be reliable!");
     cout << "Solver done.\n";
   }
-  tuple<d,d> Solver::DoIter(d dampfac){
+  tuple<d,d> Solver::doIter(d dampfac){
     // Do an iteration
     assert(dampfac>0 && dampfac<=1.0);
     TRACE(15,"Solver::DoIter()");
     TRACE(10,"Computing error...");
-    vd err=sys->Error();
+    vd err=sys->error();
     assert(err.size()>0);
     TRACE(10,"Updating result vector...");
-    vd oldx=sys->GetRes();
+    vd oldx=sys->getRes();
     
     d funer=arma::norm(err,2);
     us Ndofs=err.size();
 
     TRACE(15,"Computing Jacobian...");
-    dmat jac(sys->Jac());
+    dmat jac(sys->jac());
     assert(jac.n_cols==err.size());
     assert(jac.n_rows==err.size());
     vd dx;
@@ -109,7 +109,7 @@ namespace tasystem{
     }
     d reler=arma::norm(dx,2);
     TRACE(10,"Solving linear system done.");      
-    sys->SetRes(oldx+dx);
+    sys->setRes(oldx+dx);
     TRACE(10,"Iteration done...");
     return std::make_tuple(funer,reler);		// Return function error
   } // Solver::DoIter()

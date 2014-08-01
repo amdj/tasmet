@@ -13,6 +13,18 @@ namespace tube{
   using segment::SegBase;
   using segment::Vertex;
 
+  class DragResistance{
+  public:
+    DragResistance(const SegBase& t);
+    virtual ~DragResistance();
+    virtual vd operator()(const Vertex&) const;
+    virtual dmat dUi(const Vertex&) const;
+    virtual dmat drhoi(const Vertex&) const;
+  protected:
+    const SegBase& tube;
+    const tasystem::Globalconf* gc=NULL;
+
+  };
   
   namespace laminardrag{
     // Resistance force for laminar flow for the zero-frequency. 
@@ -32,24 +44,13 @@ namespace tube{
   } // namespace laminardrag
 
 
-  class DragResistance{
-  public:
-    DragResistance(const SegBase& t);
-    virtual ~DragResistance();
-    virtual vd operator()(const Vertex&) const;
-    virtual dmat dUi(const Vertex&) const;
-  protected:
-    const SegBase& tube;
-    const tasystem::Globalconf* gc=NULL;
-
-  };
 
   class LaminarDragResistance:public DragResistance
   {
   public:
     LaminarDragResistance(const SegBase& t);
     vd operator()(const Vertex& vertex) const;
-    virtual dmat dUi(const Vertex&) const;		// Derivative of drag resistance to volume flow
+    virtual dmat dUi(const TubeVertex&) const;		// Derivative of drag resistance to volume flow
   private:
     vc ComplexResistancecoef(const Vertex&) const; // Returns a complex vector of size Ns with drag resistance coefficients for every nonzero frequency (1..Nf)
     laminardrag::ZerofreqDrag zfd;
@@ -58,3 +59,24 @@ namespace tube{
 
 } // namespace tube
 #endif /* _DRAG_H_ */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

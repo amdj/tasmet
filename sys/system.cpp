@@ -18,16 +18,16 @@ namespace tasystem{
     TRACE(14,"TAsystem copy cc");
     copyallsegsbc(*this,o);
     segConnections=o.segConnections;
-    hasinit=false;
+    hasInit=false;
   }
-  void TAsystem::Init(){
-    TRACE(14,"TAsystem::Init()");
-    us Nsegs=getNsegs();
-    us Nbc=getNbc();
+  void TAsystem::init(){
+    TRACE(14,"TAsystem::init()");
+    us Nsegs=getNSegs();
+    us Nbc=getNBc();
     for(us i=0;i<Nsegs;i++)
       {
 	TRACE(9,"Initializing Segment "<<i<<"...");
-	segs[i]->Init(gc);
+	segs[i]->init(gc);
       }
     for(us i=0;i<Nbc;i++)
       {
@@ -43,11 +43,11 @@ namespace tasystem{
 
     // Now the weight functions are not yet updated for the vertices
     // that have to be connected. For now we see no other option than
-    // running seg->Init again
+    // running seg->init again
     for(us i=0;i<Nsegs;i++)
       {
 	TRACE(9,"Initializing Segment "<<i<<"...");
-	segs[i]->Init(gc);
+	segs[i]->init(gc);
       }
     
     
@@ -57,7 +57,7 @@ namespace tasystem{
 	WARN("Way too many DOFS required: Ndofs=" <<Ndofs << ". Exiting...\n");
 	exit(1);
       }
-    hasinit=true;
+    hasInit=true;
   }
 
   TAsystem& TAsystem::operator=(const TAsystem& other){
@@ -65,7 +65,7 @@ namespace tasystem{
     gc=other.gc;
     copyallsegsbc(*this,other);
     segConnections=other.segConnections;
-    hasinit=false;
+    hasInit=false;
     return *this;
   }
   TAsystem::~TAsystem() {
@@ -80,10 +80,10 @@ namespace tasystem{
     Ndofs=0;
     segfirstdof(0)=0;
 
-    for(us i=0;i<getNsegs();i++)
+    for(us i=0;i<getNSegs();i++)
       {
 	assert(segs[i].get()!=NULL);
-	us thisndofs=segs[i]->getNdofs();
+	us thisndofs=segs[i]->getNDofs();
 	TRACE(12,"This segment ndofs:"<< thisndofs);
 	Ndofs+=thisndofs;
 	segndofs(i)=thisndofs;
@@ -93,21 +93,22 @@ namespace tasystem{
   void TAsystem::connectSegs(us seg1,us seg2,SegCoupling sc){
     TRACE(14,"TAsystem::ConnectSegs()");
     // Basic check if nothing is wrong
-    if(max(seg1,seg2)>=getNsegs())
+    if(max(seg1,seg2)>=getNSegs())
       {
 	WARN("Segment number is higher than available number of segments. ");
 	return;
       }
     segConnections.push_back(SegConnection(seg1,seg2,sc));
-    hasinit=false;
+    hasInit=false;
   }
 
   void TAsystem::show(bool showvertices){
     cout << "########################## Showing TAsystem...\n"		\
       ;
-    CheckInit();
+    checkInit();
+    TRACE(14,"checkInit() done");
     gc.show();
-    for(us i=0;i<getNsegs();i++){
+    for(us i=0;i<getNSegs();i++){
       TRACE(13,"Showing segment "<<i <<"..");
       segs[i]->show(showvertices);
     }
@@ -117,38 +118,38 @@ namespace tasystem{
     segs.clear();
     bcvertices.clear();
     segConnections.clear();
-    hasinit=false;
+    hasInit=false;
   }
   BcVertex* TAsystem::getBc(us i) const {
-    us Nbc=getNbc();
+    us Nbc=getNBc();
     if(i<Nbc)
       return bcvertices[i].get();
     else
       return NULL;
 	
   }
-  void TAsystem::addseg(const Seg& seg){
+  void TAsystem::addSeg(const Seg& seg){
     TRACE(14,"TAsystem::addseg()");
-    hasinit=false;
+    hasInit=false;
     segs.emplace_back((copyseg(seg)));
-    segs[getNsegs()-1]->setNumber(getNsegs()-1);
+    segs[getNSegs()-1]->setNumber(getNSegs()-1);
   }
-  void TAsystem::addbc(const BcVertex& vertex){
+  void TAsystem::addBc(const BcVertex& vertex){
     TRACE(14,"TAsystem::addbc()");
     bcvertices.emplace_back(copybc(vertex));
-    hasinit=false;
+    hasInit=false;
   }
-  void TAsystem::CheckInit(){
+  void TAsystem::checkInit(){
     TRACE(14,"TAsystem::CheckInit()");
-    if(!hasinit){
-      Init();
-      hasinit=true;
+    if(!hasInit){
+      init();
+      hasInit=true;
     }
   }
   void TAsystem::setGc(const Globalconf& gc){
     TRACE(14,"TAsystem::setGc()");
     this->gc=gc;
-    hasinit=false;
+    hasInit=false;
   }
   // void TAsystem::setnodes(us segnr,us nl,us nr){
   //   TRACE(14,"TAsystem::setnodes");
@@ -157,9 +158,9 @@ namespace tasystem{
   // }
 
   Seg* TAsystem::operator[](us i) const {
-    us Nsegs=getNsegs();
+    us nSegs=getNSegs();
     
-    if(i<Nsegs)
+    if(i<nSegs)
       return (segs[i].get());
     else
       return NULL;

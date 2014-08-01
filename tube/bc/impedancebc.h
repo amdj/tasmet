@@ -21,9 +21,9 @@ namespace tube{
   public:
     RightImpedanceMomentumEq(TubeBcVertex&,vd& Z);
     ~RightImpedanceMomentumEq(){}
-    vd Error();
-    dmat dUi();
-    dmat dUim1();
+    vd error(const TubeVertex&) const;
+    dmat dUi(const TubeVertex&) const;
+    dmat dUim1(const TubeVertex&) const;
     // dmat dpi();
     // dmat dpim1();
     // dmat drhoim1();
@@ -42,11 +42,11 @@ namespace tube{
     RightImpedance(const RightImpedance& o);
     RightImpedance& operator=(const RightImpedance&);
     ~RightImpedance(){}
-    virtual void Init(us i,const SegBase&);
+    virtual void initTubeVertex(us i,const Tube&);
     virtual string gettype() const {return string("RightImpedance");}
     virtual enum connectpos connectPos() const {return connectpos::right;}
   protected:
-    void updateW(const Geom& geom);
+    void updateW();
 
   };
 

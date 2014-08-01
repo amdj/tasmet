@@ -23,22 +23,22 @@ namespace tube{
     return *this;
   }
 
-  void RightIsoTWall::Init(us i,const SegBase& thisseg)
+  void RightIsoTWall::initTubeVertex(us i,const Tube& thisseg)
   {
     TRACE(8,"RightIsoTWall::Init(), vertex "<< i <<".");
-    TubeVertex::Init(i,thisseg);
+    TubeVertex::initTubeVertex(i,thisseg);
     updateW(thisseg);
   }
   
   void RightIsoTWall::updateW(const SegBase& thisseg){
     TRACE(8,"RightIsoTWall::updateW()");
 
-    xhalf=xR-vxi;
+    xhalf=lg.xR-lg.vxi;
     TRACE(30,"xhalf:"<<xhalf);
-    e.Wc1=-SfL/dxm;
-    e.Wc2= SfL/dxm;
-    e.Wc3= SfR/xhalf;
-    e.Wc4=0;
+    eWc1=-lg.SfL/lg.dxm;
+    eWc2= lg.SfL/lg.dxm;
+    eWc3= lg.SfR/xhalf;
+    eWc4=0;
     
   }
 
@@ -50,8 +50,9 @@ namespace tube{
     vd esource(gc->Ns,fillwith::zeros);
     TRACE(0,"Tbc:"<<Tbc);
     vd TRt=Tbc*vd(gc->Ns,fillwith::ones);
-    vd kappaR=gc->gas.kappa(TRt);
-    esource+=-1.0*SfR*fDFT*(kappaR%TRt)/xhalf;
+    vd T0=gc->T0*vd(gc->Ns,fillwith::ones);
+    vd kappaR=gc->gas.kappa(T0);
+    esource+=-1.0*lg.SfR*fDFT*(kappaR%TRt)/xhalf;
     return esource;  
   }
 

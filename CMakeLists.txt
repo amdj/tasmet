@@ -48,12 +48,17 @@ AUX_SOURCE_DIRECTORY(var varsources)
 AUX_SOURCE_DIRECTORY(seg segsources)
 AUX_SOURCE_DIRECTORy(sys syssources)
 AUX_SOURCE_DIRECTORy(sol solsources)
+AUX_SOURCE_DIRECTORy(tube/eq tubeeq)
+# AUX_SOURCE_DIRECTORy(tube/drag tubedrag)
+AUX_SOURCE_DIRECTORy(tube/heat tubeheat)
+AUX_SOURCE_DIRECTORy(tube/bc tubebc)
 AUX_SOURCE_DIRECTORy(common commonsources)
 set (nonlinear_SRC ${tubesources} ${varsources} ${segsources}
   ${syssources} ${solsources}
-  ${varsources} ${commonsources})
+  ${varsources} ${commonsources}
+  ${tubeeq} ${tubeheat} ${tubebc})
 
-
+ # ${tubedrag}
 include_directories(
 /usr/include/python${PYVER}
   /usr/include/eigen3
@@ -66,6 +71,10 @@ include_directories(
   tube
   common
   models
+#  tube/drag
+  tube/bc
+  tube/eq
+  tube/heat
   )
 
 

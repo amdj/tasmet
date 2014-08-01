@@ -2,6 +2,7 @@
 
 #include "globalconf.h"
 #include "tube.h"
+#include "isentropictube.h"
 #include "twimpedance.h"
 #include "pressurebc.h"
 #include "tubevertex.h"
@@ -45,7 +46,7 @@ int main(int argc,char* argv[]) {
   d kappa=0.1;
   Globalconf gc(Nf,f,"air",T0,p0,0,kappa);
   Geom geom1=Geom::Cylinder(gp,L,rtube);
-  Tube t1(geom1);
+  IsentropicTube t1(geom1);
   // t1.Init(gc);
   var pL(gc,0);
   if(Nf>0)
@@ -55,25 +56,25 @@ int main(int argc,char* argv[]) {
   // tube::TwImpedance bcright(0);
   tube::RightIsoTWall bcright(0,T0+10);
   TAsystem sys(gc);
-  sys.addseg(t1);  
+  sys.addSeg(t1);  
   // sys.connectSegs(0,1,SegCoupling::tailhead);
-  sys.addbc(bcleft);
-  sys.addbc(bcright);
+  sys.addBc(bcleft);
+  sys.addBc(bcright);
     
   // cout << sys.getSeg(0)->GetRes() << "\n";
   Solver sol(sys);
   // sol.sys->Init();
   // sys.getSeg(0)->Error();
   // sol.sys->getSeg(0)->Jac();
-  sol.sys->Init();
+  sol.sys->init();
   // sys.show(true);
   // sol.sys->show(true);
-  cout << "Jac:\n"<< sol.sys->Jac();
+  cout << "Jac:\n"<< sol.sys->jac();
 // sol.sys
 
   // Solver sol2(sol);
-  cout << "Error:\n" << sol.sys->Error();
-  sol.DoIter();
+  cout << "Error:\n" << sol.sys->error();
+  sol.doIter();
     // // // vd x=t1.GetRmomes();
   // // vd err=sol.sys->Error();
   // // cout << "error:\n"<<err;

@@ -1,23 +1,18 @@
 #pragma once
 #include <vtypes.h>
-#include "globalconf.h"
+#include "segbase.h"
 
+// The only thing an equation does is return a Jacobian, and we are
+// able to compute the error. That's it. And we only promise that
+// these quantities can be obtained.
 
 namespace segment{
   SPOILNAMESPACE
-  class Vertex;
 
   class Equation
   {
   public:
-    Vertex& vertex;
-    
-    Equation(Vertex& v):vertex(v) {TRACE(6,"Equation constructor");}
-    ~Equation(){TRACE(-5,"~Equation()");}
-    virtual void show(){}
-    virtual vd Error()=0;
-    virtual dmat Jac()=0;		// Returns the local Jacobian of this equation
-    virtual void Init(const tasystem::Globalconf& g);
+    virtual void show() const { cout << "Empty equation description. From equation.h.\n";}
   };
 
   

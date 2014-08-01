@@ -21,7 +21,7 @@ namespace tube{
     LeftPressure(const LeftPressure& other);
     LeftPressure& operator=(const LeftPressure&);
     ~LeftPressure(){}
-    virtual void Init(us i,const SegBase&);
+    virtual void initTubeVertex(us i,const Tube&);
   private:
     void updateW(const SegBase&);
   public:

@@ -17,7 +17,7 @@ namespace tube{
     RightIsoTWall& operator=(const RightIsoTWall&);
     ~RightIsoTWall(){}
     virtual vd esource() const;		// Source term for constant temperature
-    virtual void Init(us i,const SegBase& thisseg);
+    virtual void initTubeVertex(us i,const Tube& thisseg);
     virtual string gettype() const {return string("RightIsoTWall");}
     virtual enum connectpos connectPos() const {return connectpos::right;}
     d xhalf;			// Distance to right wall

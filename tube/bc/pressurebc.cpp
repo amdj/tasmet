@@ -12,19 +12,20 @@ namespace tube{
     d gamma=gc->gas.gamma(T0);
     vd p0(gc->Ns,fillwith::ones); p0*=gc->p0;
     vd TLt=T0*pow((p0+pL.tdata())/p0,(gamma-1.0)/gamma);		// Adiabatic compression/expansion
+    
     TL.settdata(TLt);
-
+    TRACE(100,"TL(0):"<<TL(0));
   }
   LeftPressure::LeftPressure(const LeftPressure& other):LeftPressure(other.segNumber(),other.pL,other.TL)
   {
     TRACE(8,"LeftPressure copy constructor");
   }
-  void LeftPressure::Init(us i,const SegBase& thisseg)
+  void LeftPressure::initTubeVertex(us i,const Tube& thisseg)
   {
     TRACE(8,"LeftPressure::Init()");
     pL.gc=thisseg.gc;
     TL.gc=thisseg.gc;
-    TubeVertex::Init(i,thisseg);
+    TubeVertex::initTubeVertex(i,thisseg);
     LeftPressure::updateW(thisseg);
   }
 
@@ -33,55 +34,72 @@ namespace tube{
     // Change continuity equation for an open boundary
     TRACE(8,"LeftPressure::updateW()");
     const Geom& geom=thisseg.geom;
-    c.Wim1=0;
-    c.Wi=wRl-wL0;
-    c.Wip1=wRr-wL1;
+    cWim1=0;
+    cWi=wRl-wL0;
+    cWip1=wRr-wL1;
 
     // Change momentum equation for open boundary, and prescribed pressure
-    m.Wuim1=0;
-    m.Wui=wRl/SfR-wL0/SfL;
-    m.Wuip1=wRr/SfR-wL1/SfL;
+    mWuim1=0;
+    mWui=wRl/lg.SfR-wL0/lg.SfL;
+    mWuip1=wRr/lg.SfR-wL1/lg.SfL;
 
-    m.Wpim1=0;     
-    m.Wpi=wRl*SfR+SfL-SfR;
-    m.Wpip1=SfR*wRr;
+    mWpim1=0;     
+    mWpi=wRl*lg.SfR+lg.SfL-lg.SfR;
+    mWpip1=lg.SfR*wRr;
     // Change energy equation for open boundary and prescribed pressure
-    e.Wgim1=0;
-    e.Wgi=wRl-wL0;
-    e.Wgip1=wRr-wL1;
+    eWgim1=0;
+    eWgi=wRl-wL0;
+    eWgip1=wRr-wL1;
 
-    e.Wjim1=0;
-    e.Wji=wL0-wRl;
-    e.Wjip1=wL1-wRr;
+    eWjim1=0;
+    eWji=wL0-wRl;
+    eWjip1=wL1-wRr;
 
     d vxi=geom.vx(0);
     d vxip1=geom.vx(1);
     d dxp=vxip1-vxi;
 
-    e.Wc1=0;
-    e.Wc2=SfL/vxi;
-    e.Wc3=SfR/dxp;
-    e.Wc4=-SfR/dxp;
+    d xp2=vxip1;
+    d xp1=vxi;
 
+    d denom=xp1*(1-xp1/xp2);
+    
+    eWc1=0;
+    eWc2=lg.SfL/denom;
+    
+    eWc3=-lg.SfL*pow(xp1/xp2,2)/denom +  lg.SfR/dxp;
+    eWc4=-lg.SfR/dxp;
+
+    
     // TODO Fill this further!
 
   }
   vd LeftPressure::msource() const{
     TRACE(2,"LeftPressure::msource()");
     vd msource(gc->Ns,fillwith::zeros);
-    msource=-1.0*SfL*pL();
+    msource=-1.0*lg.SfL*pL();
     // This one should not yet be scaled. The scaling is done in the
     // error term after adding this source.
     TRACE(-1,"msource:"<<msource);
     return msource;
   }
   vd LeftPressure::esource() const {
-    TRACE(2,"LeftPressure::esource()");
+    TRACE(100,"LeftPressure::esource()");
     vd esource(gc->Ns,fillwith::zeros);
     const dmat& fDFT=gc->fDFT;
-    vd TLt=TL.tdata();
-    vd kappaL=e.kappaL();
-    esource+=-1.0*SfL*fDFT*(kappaL%TLt)/vxi;
+    vd TLt=TL.tdata()+50;
+    TRACE(100,"TL:"<<TL());
+
+    d xp2=lg.vxip1;
+    d xp1=lg.vxi;
+
+    d denom=xp1*(1-xp1/xp2);
+    
+    d num=-(1-pow(xp1/xp2,2));    
+    
+    vd T0=gc->T0*vd(gc->Ns,fillwith::ones);
+    vd kappaL=gc->gas.kappa(T0);
+    esource+=lg.SfL*num*fDFT*(kappaL%TLt)/denom;
     return esource;    
   }
 

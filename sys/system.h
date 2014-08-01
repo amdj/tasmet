@@ -41,7 +41,7 @@ namespace tasystem{
     arma::uvec::fixed<MAXSEGS> segfirstdof; // Vector containing the number of the first column corresponding to the first vertex of segment segfirstcol(i)
     arma::uvec::fixed<MAXSEGS> segndofs;  // Vector containe
     us Ndofs=0;
-    bool hasinit=false;
+    bool hasInit=false;
     
   private:
     void computeNdofs();	// Compute DOFS in system, set     
@@ -53,30 +53,30 @@ namespace tasystem{
     TAsystem(const TAsystem& o);
     TAsystem& operator=(const TAsystem& other);
     void show(bool showvertices=false);
-    us getNsegs() const {return segs.size();}
-    us getNbc() const {return bcvertices.size();}
+    us getNSegs() const {return segs.size();}
+    us getNBc() const {return bcvertices.size();}
     void connectSegs(us seg1,us seg2,SegCoupling);
     // System with a
     // vector of segments
     // ############################## ACCESS METHODS
-    vd Error();			// Total error vector
-    vd GetRes();			// Extract result vector
-    void SetRes(vd resvec);	// Set result vector
-    void addseg(const Seg& s);	// Add a segment to the system. It creates a copy.
-    void addbc(const BcVertex& vertex);
+    vd error();			// Total error vector
+    vd getRes();			// Extract result vector
+    void setRes(vd resvec);	// Set result vector
+    void addSeg(const Seg& s);	// Add a segment to the system. It creates a copy.
+    void addBc(const BcVertex& vertex);
     // ############################## ACCESS METHODS
     
     BcVertex* getBc(us nr) const;
     // void delseg(us n); // Not yet implementen. Delete a segment from the system (we have to determine how elaborated the API has to be.)
     void setGc(const Globalconf& gc); // Reset globalconf configuration
-    dmat Jac();		// Return Jacobian matrix    
+    dmat jac();		// Return Jacobian matrix    
     Seg* operator[](us i) const;    
     Seg* getSeg(us i) { return (*this)[i];} // Easier for cython wrapping
-    void Init();
+    void init();
   private:
     // A vector of boundary conditions is required
 
-    void CheckInit();
+    void checkInit();
     void cleanup();
     // void setnodes(us segnr,us nL,us nR);
     // friend void copysegs(TAsystem& to,const TAsystem& from);

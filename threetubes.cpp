@@ -1,3 +1,5 @@
+#include "fubini.h"
+#include "fubini_fullenergy.h"
 #include "threetubes.h"
 SPOILNAMESPACE
 
@@ -5,7 +7,7 @@ int main(int argc,char* argv[]) {
   cout <<  "Running test..." << endl;
   int loglevel=25;
   us  Nf=0;
-  us gp=4;
+  us gp=40;
   if(argc>1)
     loglevel=atoi(argv[1]);
   if(argc>2)
@@ -21,14 +23,14 @@ int main(int argc,char* argv[]) {
   // double T=1/f;
   cout<< "Loglevel:"<<loglevel<<"\n";
   initlog(loglevel);
-
-
   vd p1(2*Nf+1,arma::fill::ones);
   if(Nf>0)
     p1(1)=1.0;
+  Solver* sol=Fubini_fullenergy(gp,Nf,100,1.0,0.1,p1,loglevel,1.0);
 
-  d kappa=1.0;
-  TRACE(100, "Crash here!");
+
+  // d kappa=1.0;
+  // TRACE(100, "Crash here!");
   // Solver* sol=ThreeTubes(gp,Nf,100,0.1,0.1,p1,loglevel,kappa);
 
   
@@ -50,3 +52,11 @@ int main(int argc,char* argv[]) {
   // cout << sol->sys->GetRes();
   // delete sol;
 }
+
+
+
+
+
+
+
+

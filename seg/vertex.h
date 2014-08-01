@@ -5,64 +5,30 @@
 
 #include "segbase.h"
 #include "var.h"
-#include "equation.h"
-
-#define Neq (5)
+#include "localgeom.h"
 
 
 namespace segment{
   SPOILNAMESPACE
+  class Seg;
   using segment::Geom;
   using variable::var;
 
   
   class Vertex{
   public:
-    us i=0;			// The node number of this vertex
-    us Ncells=0;
-    Equation* eq[Neq];		// Pointer array of all equations
+    LocalGeom lg;
     const Globalconf* gc=NULL;
-    const Vertex* left=NULL;
-    const Vertex* right=NULL;
-    variable::var rho;		// Density
-    variable::var U;		// Volume flow
-    variable::var T;		// Temperature
-    variable::var p;		// Pressure
-    variable::var Ts;		// Solid temperature
-    variable::var* vars[Neq]={&rho,&U,&T,&p,&Ts};
-    
-    d vSf;			// Vertex fluid cross-sectional area
-    d vSs;			// Vertex solid cross-sectional area
-    d vVf;			// Vertex cell fluid volume
-    d vVs;			// Vertex cell solid volume
-
-    d SfR;			// Cross-sectional area of right face
-    d SfL;			// Cross-sectional area of left  face
-
-    d xR;			// Position of right cell wall
-    d xL;			// Position of left cell wall
-    d dxp;			// Distance to nearby right node
-    d dxm;			// Distance to nearby left node
-
-    d vxim1,vxi,vxip1;    		// Vertex position of left and right vertex
-    
-    Vertex();
-    virtual void show() const;
-    virtual ~Vertex();
-    // Standard copy constructor will suffice
+    Vertex(){}
+    virtual vd error() const=0;		       // Compute error for this gridpoint
+    virtual dmat jac() const=0;		       // Fill complete Jacobian for this node
+    virtual void setRes(vd res)=0;			  // Set result vector to res
+    virtual vd getRes() const=0;			  // Extract current result vector
+    virtual void show() const=0;
+    virtual ~Vertex() {}
     Vertex(const Vertex&); 
-    Vertex& operator=(const Vertex& v2); // Copy assignment
-    virtual void Init(us i,const SegBase& thisseg);
-  private:
-    void setVertexGeom(const SegBase& thisseg);	       // Update weight functions of equations
-  public:
-    vd Error();				  // Compute error for this gridpoint
-    dmat Jac();	       // Fill complete Jacobian for this node
-    void SetRes(vd res);			  // Set result vector to res
-    vd GetRes();				  // Extract current result vector
-
-
-
+    Vertex& operator=(const Vertex& v2){WARN("Assigning operators not allowed. Aborting."); abort();} 
+    void init(us i,const SegBase& thisseg);
 
   };
 } // namespace segment

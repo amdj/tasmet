@@ -3,22 +3,22 @@
 
 namespace tube{
 
-  Solidenergy::Solidenergy(TubeVertex& gp):TubeEquation(gp){
+  Solidenergy::Solidenergy(){
     TRACE(7,"SolidSolidenergy constructor done");
   }
 
-  vd Solidenergy::Error(){		// Error in momentum equation
+  vd Solidenergy::error(const TubeVertex& v) const {		// Error in momentum equation
     TRACE(6,"Solidenergy::Error()");
     // vd error(vertex.gc->Ns,fillwith::zeros);
-    vd error=vertex.Ts();
+    vd error=v.Ts();
     return error;
   }
-  dmat Solidenergy::dTsi(){
+  dmat Solidenergy::dTsi(const TubeVertex& v) const {
     TRACE(0,"Solidenergy:dTsi()");
     // Set solid temperature to zero
-    return eye<dmat>(vertex.gc->Ns,vertex.gc->Ns);
+    return eye<dmat>(v.gc->Ns,v.gc->Ns);
   }
-  Solidenergy::~Solidenergy(){
+  Solidenergy::~Solidenergy()  {
     TRACE(-5,"Solidenergy destructor");
   }
 } // namespace tube

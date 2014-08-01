@@ -4,6 +4,7 @@
 
 #include "solver.h"
 #include "gas.h"
+#include "isentropictube.h"
 #include "twimpedance.h"
 #include "pressurebc.h"
 using namespace segment;
@@ -21,20 +22,20 @@ Solver* ThreeTubes(us gp,us Nf,d freq,d L,d S1,d S2,vd p1,int loglevel,d kappa)
   gc.show();
   Geom geom1=Geom::Cylinder(gp,L,R1);
   Geom geom2=Geom::Cylinder(gp,L,R2);
-  Tube t1(geom1);
-  Tube t2(geom2);  
+  IsentropicTube t1(geom1);
+  IsentropicTube t2(geom2);  
   var pL(gc);
   for(us i=0;i<gc.Ns;i++)
     pL.set(i,p1(i));
 
   LeftPressure pleft(0,pL);
   TAsystem sys(gc);
-  sys.addseg(t1);
-  sys.addseg(t2);
-  sys.addseg(t1);  
+  sys.addSeg(t1);
+  sys.addSeg(t2);
+  sys.addSeg(t1);  
   sys.connectSegs(0,1,tasystem::SegCoupling::tailhead);
   sys.connectSegs(1,2,tasystem::SegCoupling::tailhead);  
-  sys.addbc(pleft);
+  sys.addBc(pleft);
   Solver* Sol=new Solver(sys);
   // Sol->sys->show();
   return Sol;  

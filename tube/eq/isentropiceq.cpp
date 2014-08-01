@@ -4,10 +4,9 @@
 
 
 namespace tube{
-  Isentropic::Isentropic(TubeVertex& gp):TubeEquation(gp){
-  }
+  Isentropic::Isentropic(){ }
   Isentropic::~Isentropic(){}
-  vd Isentropic::Error(){
+  vd Isentropic::error(const TubeVertex& v) const {
     TRACE(6,"Isentropic::Error()");
     TRACE(6,"Isentropic::Error() done");
     vd err(v.gc->Ns,fillwith::zeros);
@@ -22,14 +21,14 @@ namespace tube{
     TRACE(6,"Isentropic::Error() done");
     return err;
   }
-  dmat Isentropic::dpi(){
+  dmat Isentropic::dpi(const TubeVertex& v) const {
     TRACE(1,"Isentropic::dpi()");
     dmat dpi(v.gc->Ns,v.gc->Ns,fillwith::eye);
     d p0=v.gc->p0;    
     dpi=dpi/p0;
     return dpi;
   }
-  dmat Isentropic::drhoi(){
+  dmat Isentropic::drhoi(const TubeVertex& v) const {
     TRACE(1,"Isentropic::drhoi()"); 
     dmat drhoi(v.gc->Ns,v.gc->Ns,fillwith::zeros);
 

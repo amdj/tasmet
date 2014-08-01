@@ -21,59 +21,56 @@ namespace tube{
     return *this;
   }
 
-  void RightImpedance::Init(us i,const SegBase& thisseg)
+  void RightImpedance::initTubeVertex(us i,const Tube& thisseg)
   {
     TRACE(8,"RightImpedance::Init(), vertex "<< i <<".");
-    TubeVertex::Init(i,thisseg);
-    eq[1]=&mright;
-    mright.Init(*thisseg.gc);
-    updateW(thisseg.geom);
+    TubeVertex::initTubeVertex(i,thisseg);
+    eq.at(1)=&mright;
+    updateW();
   }
   
-  void RightImpedance::updateW(const Geom& geom){
+  void RightImpedance::updateW(){
     TRACE(8,"RightImpedance::updateW()");
-    c.Wddt=vVf;
-    c.Wim1=wRNm2-wLl;
-    c.Wi  =wRNm1-wLr;
-    c.Wip1=0;
+    cWddt=lg.vVf;
+    cWim1=wRNm2-wLl;
+    cWi  =wRNm1-wLr;
+    cWip1=0;
 
     // Change momentum eq for open boundary
-    mright.Wddt=vVf/vSf;	// VERY IMPORTANT: update this!! (Is still zero)
-    mright.Wuim1=-wLl/SfL+wRNm2/SfR;
-    mright.Wui	=-wLr/SfL+wRNm1/SfR;
-    mright.Wuip1=0;
+    mWddt=lg.vVf/lg.vSf;	// VERY IMPORTANT: update this!! (Is still zero)
+    mWuim1=-wLl/lg.SfL+wRNm2/lg.SfR;
+    mWui	=-wLr/lg.SfL+wRNm1/lg.SfR;
+    mWuip1=0;
 
-    mright.Wpim1=-SfL*wLl;
-    mright.Wpi	=-SfL*wLr+(SfL-SfR);
-    mright.Wpip1=0;
+    mWpim1=-lg.SfL*wLl;
+    mWpi	=-lg.SfL*wLr+(lg.SfL-lg.SfR);
+    mWpip1=0;
     
-    e.Wgim1=-wLl+wRNm2;
-    e.Wgi  =-wLr+wRNm1;
-    e.Wgip1=0;
+    eWgim1=-wLl+wRNm2;
+    eWgi  =-wLr+wRNm1;
+    eWgip1=0;
     
-    e.Wjim1=wLl-wRNm2;
-    e.Wji  =wLr-wRNm1;
-    e.Wjip1=0;
-    
-    d xi=geom.vx(i);
-    d xim1=geom.vx(i-1);	 
-    d dxm=xi-xim1;
-    e.Wc1=-SfL/dxm;
-    e.Wc2= SfL/dxm;
-    e.Wc3=0;
-    e.Wc4=0;
+    eWjim1=wLl-wRNm2;
+    eWji  =wLr-wRNm1;
+    eWjip1=0;
+
+
+    eWc1=-lg.SfL/lg.dxm;
+    eWc2= lg.SfL/lg.dxm;
+    eWc3=0;
+    eWc4=0;
 
     // Conduction terms are not changed.
   }
-  RightImpedanceMomentumEq::RightImpedanceMomentumEq(TubeBcVertex& tv,vd& Z):Momentum(tv),Z(Z){
+  RightImpedanceMomentumEq::RightImpedanceMomentumEq(TubeBcVertex& tv,vd& Z):Z(Z){
     TRACE(6,"RightImpedanceMomentumEq::RightImpedanceMomentumEq()");
     TRACE(6,"Z:\n"<<Z)
       }
-  vd RightImpedanceMomentumEq::Error(){
+  vd RightImpedanceMomentumEq::error(const TubeVertex& v) const{
     TRACE(40,"RightImpedanceMomentumEq::Error()");
-    vd error=Momentum::Error();
+    vd error=Momentum::error(v);
     // SfR*p = SfR*Z*U
-    vd errorZ=v.SfR*Z%(v.wRNm1*v.U()+v.wRNm2*v.left->U());
+    vd errorZ=v.lg.SfR*Z%(v.wRNm1*v.U()+v.wRNm2*v.left->U());
     error+=errorZ;
     return error;
   }
@@ -82,10 +79,10 @@ namespace tube{
   //   dmat dpi=Momentum::dpi();
   //   return dpi;
   // }
-  dmat RightImpedanceMomentumEq::dUi(){
+  dmat RightImpedanceMomentumEq::dUi(const TubeVertex& v) const {
     TRACE(40,"RightImpedanceMomentumEq::dUi()");
-    dmat dUi=Momentum::dUi();
-    dUi+=v.wRNm1*v.SfR*diagmat(Z);
+    dmat dUi=Momentum::dUi(v);
+    dUi+=v.wRNm1*v.lg.SfR*diagmat(Z);
     // For pressure boundary condition
     // dUi.row(0).zeros();
     
@@ -96,10 +93,10 @@ namespace tube{
     return dUi;
   }
 
-  dmat RightImpedanceMomentumEq::dUim1(){
+  dmat RightImpedanceMomentumEq::dUim1(const TubeVertex& v) const {
     TRACE(1,"RightImpedanceMomentumEq::dUim1()");
-    dmat dUim1=Momentum::dUim1();    
-    dUim1+=v.wRNm2*v.SfR*diagmat(Z);
+    dmat dUim1=Momentum::dUim1(v);    
+    dUim1+=v.wRNm2*v.lg.SfR*diagmat(Z);
     return dUim1;
   }
 

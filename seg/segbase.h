@@ -22,21 +22,18 @@ namespace segment{
     
   public:
     SegBase(Geom geom);
-    virtual ~SegBase();
+    virtual ~SegBase(){ cleanup();};
+    void cleanup(){}		   // Stub method in case class contains any dynamic allocated data
     void setRight(const SegBase&);	   // Couple segment to some segment on left side
     void setLeft(const SegBase&);		   // Couple segment to some segment on right side
     // ------------------------------
-
+    virtual void init(const Globalconf&);
     const us& getNumber() const {return number;}
     void setNumber(us number) {this->number=number;} 
     const string& gettype() const;
     const SegBaseVec& getRight() const {return right;}
     const SegBaseVec& getLeft() const {return left;}
     bool operator==(const SegBase& seg2) const; // Check if two segments are the same
-
-  protected:
-    void newgeom(const Geom& newgeom);
-    
   };
   
   

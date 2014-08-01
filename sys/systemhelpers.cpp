@@ -1,6 +1,7 @@
 #include "system.h"
 #include "systemhelpers.h"
-#include "tube.h"
+#include "isentropictube.h"
+#include "laminarduct.h"
 #include "impedancebc.h"
 #include "twimpedance.h"
 #include "pressurebc.h"
@@ -11,6 +12,7 @@ namespace tasystem{
   using tube::RightIsoTWall;  
   using tube::TwImpedance;
   using tube::LeftPressure;
+  using tube::IsentropicTube;
   using segment::connectpos;
   using segment::SegBase;
   
@@ -19,14 +21,14 @@ namespace tasystem{
 
   void copyallsegsbc(TAsystem& to,const TAsystem& from){
     TRACE(14,"copyallsegsbc()");
-    for(us i=0;i<from.getNsegs();i++)
+    for(us i=0;i<from.getNSegs();i++)
       if(from[i]!=NULL)
-	to.addseg(*from[i]);
+	to.addSeg(*from[i]);
       else
 	TRACE(14,"Warning! Segment is NULL");
-    for(us i=0;i<from.getNbc();i++)
+    for(us i=0;i<from.getNBc();i++)
       if(from.getBc(i)!=NULL)
-	to.addbc(*from.getBc(i));
+	to.addBc(*from.getBc(i));
       else
 	TRACE(14,"Warning! Bc is NULL");
     
@@ -35,21 +37,26 @@ namespace tasystem{
   void connectbc(Seg& seg,const BcVertex& bc){
     TRACE(14,"connectbc()");
     if(bc.connectPos()==connectpos::left)
-      seg.setLeftbc(vertexfrombc(copybc(bc)));
+      seg.setLeftBc(vertexfrombc(copybc(bc)));
     else if(bc.connectPos()==connectpos::right)
-      seg.setRightbc(vertexfrombc(copybc(bc)));
+      seg.setRightBc(vertexfrombc(copybc(bc)));
     else
       cout << "WARNING: bconnectbc(): Bc type not understood!\n";
   }
 
   Seg* copyseg(const Seg& orig)
   {
-    if(orig.gettype().compare("Tube")==0){
+    if(orig.gettype().compare("IsentropicTube")==0){
       TRACE(10,"New tube added to system.");
-      return new Tube(static_cast<const Tube&>(orig));
+      return new IsentropicTube(static_cast<const IsentropicTube&>(orig));
+    }
+    else if(orig.gettype().compare("LaminarDuct")==0){
+      TRACE(10,"New tube added to system.");
+      return new tube::LaminarDuct(static_cast<const tube::LaminarDuct&>(orig));
     }
     else{
-      TRACE(50,"Warning: segment " << orig.gettype() << " not yet implemented!");
+      TRACE(50,"Warning: segment " << orig.gettype() << " not yet implemented! Aborting...");
+      abort();
       return NULL;
     }
     

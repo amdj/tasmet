@@ -3,24 +3,24 @@
 
 namespace tasystem{
   using segment::SegBase;
-  dmat TAsystem::Jac(){
+  dmat TAsystem::jac(){
     TRACE(14,"TAsystem::Jac()");
-    CheckInit();
+    checkInit();
     // Something interesting has to be done here later on to connect
     // the different segments in the sense that blocks of Jacobian
     // matrix parts have to be moved to the right place etc. To be
     // continued...
     TRACE(-1,"Ndofs:"<<Ndofs);
     const us& Ns=gc.Ns;
-    us Nsegs=getNsegs();
+    us Nsegs=getNSegs();
     dmat jac(Ndofs,Ndofs);
     us cellblock=Neq*Ns;
-    for(us j=0;j<getNsegs();j++){
+    for(us j=0;j<getNSegs();j++){
       TRACE(14,"System loop, segment " << j);
       segment::Seg& curseg=*segs[j].get();
-      dmat segjac=curseg.Jac();
+      dmat segjac=curseg.jac();
       TRACE(14,"Obtaining sub-Jacobian for segment "<< j << "...");
-      us thisndofs=curseg.getNdofs();
+      us thisndofs=curseg.getNDofs();
       us frow=segfirstdof(j);
       us fcol=segfirstdof(j);	 // First col
       TRACE(14,"First dof:"<< frow);
@@ -78,48 +78,48 @@ namespace tasystem{
     } // end for loop
     return jac;
   }
-  vd TAsystem::Error(){
+  vd TAsystem::error(){
     TRACE(14,"TAsystem::Error()");
-    CheckInit();
+    checkInit();
     vd Error(Ndofs);
-    us Nsegs=getNsegs();
+    us Nsegs=getNSegs();
     us segdofs;
     us startdof=0;
     TRACE(-1,"Nsegs:"<< Nsegs);
     for(us i=0;i<Nsegs;i++){
-      segdofs=segs[i]->getNdofs();
-      Error.subvec(startdof,startdof+segdofs-1)=segs[i]->Error();
+      segdofs=segs[i]->getNDofs();
+      Error.subvec(startdof,startdof+segdofs-1)=segs[i]->error();
       startdof=startdof+segdofs;
     }
     return Error;
   }
-  vd TAsystem::GetRes(){
+  vd TAsystem::getRes(){
     TRACE(14,"TAsystem::GetRes(), Ndofs:"<< Ndofs);
-    CheckInit();
+    checkInit();
     const us& Ns=gc.Ns;
     vd Res(Ndofs);
     us segdofs;
     us startdof=0;
-    us Nsegs=getNsegs();
+    us Nsegs=getNSegs();
     for(us i=0;i<Nsegs;i++){
-      segdofs=segs[i]->getNdofs();
-      Res.subvec(startdof,startdof+segdofs-1)=segs[i]->GetRes();
+      segdofs=segs[i]->getNDofs();
+      Res.subvec(startdof,startdof+segdofs-1)=segs[i]->getRes();
       startdof=startdof+segdofs;
       TRACE(4,"Seg:"<<i<<", Ndofs: "<<segdofs);
 
     }
     return Res;
   }
-  void TAsystem::SetRes(vd Res){
-    CheckInit();
+  void TAsystem::setRes(vd Res){
+    checkInit();
     TRACE(14,"TAsystem::SetRes(vd res)");
     if(Res.size()==Ndofs){
       us segdofs;
       us startdof=0;
-      us Nsegs=getNsegs();
+      us Nsegs=getNSegs();
       for(us i=0;i<Nsegs;i++){
-	segdofs=segs[i]->getNdofs();
-	segs[i]->SetRes(Res.subvec(startdof,startdof+segdofs-1));
+	segdofs=segs[i]->getNDofs();
+	segs[i]->setRes(Res.subvec(startdof,startdof+segdofs-1));
 	startdof=startdof+segdofs;
       }
     }

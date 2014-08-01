@@ -2,10 +2,14 @@
 #ifndef _GEOM_H_
 #define _GEOM_H_
 #include <vtypes.h>
+#include "localgeom.h"
+
 #define MAXGP 500
 
 namespace segment {
   SPOILNAMESPACE
+
+
   class Geom{
   private:
     Geom(vd& x,vd& S,vd& phi,vd& rh,string cshape);
@@ -15,10 +19,11 @@ namespace segment {
     static Geom PrisVertStack(us gp,d L,d S,d phi,d rh); // Prismatic vertical plates stack
     ~Geom();
 
+    LocalGeom localGeom(us i) const;	// Get a local geometry for a certain vertex
     
     bool prismatic=false;
     us gp;         // Number of cell walls
-    us Ncells;	 // Number of cells is gp-1
+    us nCells;	 // Number of cells is gp-1
     d L;		 //Length of the Segment
     vd x;		 // Position of cell walls
     vd S;		 // Cross sectional area as a function of x
@@ -47,7 +52,7 @@ namespace segment {
   };                            /* class Geom */
   
 
-  Geom Cone(us gp,d L,d r1,d r2); // Create a cylindrical-conical tube
+
   
 }                               // namespace segment
 

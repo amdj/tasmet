@@ -17,8 +17,6 @@ namespace tasystem{
       TRACE(3,"Coupling seg1 with its tail to the head of seg2");
       seg1.setRight(seg2);
       seg2.setLeft(seg1);
-      seg1.vvertex[seg1size-1]->right=seg2.vvertex[0].get();
-      seg2.vvertex[0]->left=seg1.vvertex[seg1size-1].get();
 
     }
     else if(coupling==headtail){

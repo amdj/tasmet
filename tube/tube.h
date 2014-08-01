@@ -9,10 +9,7 @@
 #ifndef TUBE_H_
 #define TUBE_H_
 #include "seg.h"
-#include "drag.h"
-#include <vtypes.h>
-#include <math_common.h>
-// #include <Eigen/Sparse>
+#include "tubeequation.h"
 
 
 namespace tube{
@@ -23,31 +20,22 @@ namespace tube{
 
   class Tube:public Seg {
   public:
-    LaminarDragResistance drag;
+    vector<TubeEquation*> eq;
     
     Tube(Geom geom);
     Tube(const Tube& othertube); // Copy constructor copies everything!
     Tube& operator=(const Tube& othertube); // And again, we copy everything.
     ~Tube();
-    virtual void Init(const Globalconf& gc);
-    virtual Vertex* makeVertex(us i,const Globalconf& gc);
-    friend class TubeVertex;
-    friend class Continuity;
-    friend class Momentum;
+    virtual void setLeftBc(Vertex* v);
+    virtual void setRightBc(Vertex* v);    
+    virtual vector<const TubeEquation*> getEq() const=0;
+    virtual void init(const Globalconf& gc);
+    vd getResAt(us varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
+
   private:
     void cleanup();
   };				// Tube class
 
-  class IsentropicTube:public Tube
-  
-  {
-  public:
-    IsentropicTube(Geom geom);
-    IsentropicTube(const IsentropicTube&);
-    IsentropicTube& operator=(const IsentropicTube&);
-    virtual void Init(const Globalconf&);
-    virtual ~IsentropicTube();
-};
   
 } /* namespace tube */
 

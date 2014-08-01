@@ -14,7 +14,11 @@ gc(tube.gc)  {  }
     vd D(gc->Ns,fillwith::zeros);
     return D;
   }
-vc LaminarDragResistance::ComplexResistancecoef(const Vertex& vertex) const {
+
+  
+  
+  
+  vc LaminarDragResistance::ComplexResistancecoef(const TubeVertex& vertex) const {
     TRACE(0,"LaminarDragResistance::ComplexResistancecoef()");
     const us& Nf=gc->Nf;
     const us& i=vertex.i;

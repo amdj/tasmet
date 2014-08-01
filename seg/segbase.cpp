@@ -5,14 +5,8 @@ namespace segment{
   SegBase::SegBase(Geom geom):geom(geom)
   {
   }
-  SegBase::~SegBase(){
-    TRACE(-5,"~SegBase()");
-    }
-  
-  void SegBase::newgeom(const Geom& g){
-    // delete geomptr;
-    // geomptr=new Geom(g);
-  }
+  void SegBase::init(const Globalconf& gc){this->gc=&gc;}  
+
   void SegBase::setLeft(const SegBase& Left){
     TRACE(13,"SegBase::SetLeft()");
     left.push_back(&Left);
