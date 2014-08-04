@@ -3,10 +3,6 @@
 
 namespace tube{
 
-  Solidenergy::Solidenergy(){
-    TRACE(7,"SolidSolidenergy constructor done");
-  }
-
   vd Solidenergy::error(const TubeVertex& v) const {		// Error in momentum equation
     TRACE(6,"Solidenergy::Error()");
     // vd error(vertex.gc->Ns,fillwith::zeros);
@@ -18,7 +14,5 @@ namespace tube{
     // Set solid temperature to zero
     return eye<dmat>(v.gc->Ns,v.gc->Ns);
   }
-  Solidenergy::~Solidenergy()  {
-    TRACE(-5,"Solidenergy destructor");
-  }
+
 } // namespace tube

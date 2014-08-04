@@ -96,7 +96,7 @@ add_executable(test123 test123.cpp)
 add_executable(threetubes threetubes.cpp)
 cython_add_module(pytube pytube.pyx)
 # cython_add_module(doubletube doubletube.pyx)
-set_target_properties(pytube PROPERTIES COMPILE_FLAGS "-Wno-cpp -Wno-strict-aliasing")
+set_target_properties(pytube PROPERTIES COMPILE_FLAGS "-Wno-cpp -Wno-strict-aliasing -Wno-#warnings")
 
 # target_link_libraries(doubletube nonlin math_common armadillo)
 target_link_libraries(test123 nonlin math_common armadillo)

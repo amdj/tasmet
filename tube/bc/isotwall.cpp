@@ -35,9 +35,14 @@ namespace tube{
 
     xhalf=lg.xR-lg.vxi;
     TRACE(30,"xhalf:"<<xhalf);
+
+    // eWjim1=0;
+    // eWji=0;
+    // eWjip1=0;
+    
     eWc1=-lg.SfL/lg.dxm;
     eWc2= lg.SfL/lg.dxm;
-    eWc3= lg.SfR/xhalf;
+    eWc3= lg.SfR/lg.xr;
     eWc4=0;
     
   }
@@ -51,8 +56,9 @@ namespace tube{
     TRACE(0,"Tbc:"<<Tbc);
     vd TRt=Tbc*vd(gc->Ns,fillwith::ones);
     vd T0=gc->T0*vd(gc->Ns,fillwith::ones);
-    vd kappaR=gc->gas.kappa(T0);
-    esource+=-1.0*lg.SfR*fDFT*(kappaR%TRt)/xhalf;
+    vd kappaR=static_cast<const Energy*>(eq[2])->kappaR(*this);    
+    // vd kappaR=gc->gas.kappa(T0);
+    esource+=-1.0*lg.SfR*fDFT*(kappaR%TRt)/lg.xr;
     return esource;  
   }
 

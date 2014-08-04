@@ -90,23 +90,23 @@ namespace segment{
       }
       else if(j==0){
 	if(getLeft().size()==0){	// First node
-	  TRACE(100,"First node not connected to other segments")
+	  TRACE(10,"First node not connected to other segments")
 	  firstcol=Neq*Ns;
 	  lastcol=4*Neq*Ns-1;
 	} else{
-	  TRACE(100,"First node IS connected to other segment")
+	  TRACE(10,"First node IS connected to other segment")
 	  firstcol=0;	  // Fill in
 	  lastcol=3*Neq*Ns-1;	  
 	}
       }	// j==0
       else {			// Last vertex
 	if(getRight().size()==0){
-	  TRACE(100,"Last node not connected to other segments")
+	  TRACE(10,"Last node not connected to other segments")
 	  firstcol=(nVertex-2)*Neq*Ns;
 	  lastcol=(nVertex+1)*Neq*Ns-1;	  
 	}
 	else{
-	  TRACE(100,"Last node IS connected to other segment")
+	  TRACE(10,"Last node IS connected to other segment")
 	  firstcol=(nVertex-1)*Neq*Ns;
 	  lastcol=Jacobian.n_cols-1;
 	}

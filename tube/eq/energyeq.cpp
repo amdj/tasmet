@@ -39,26 +39,27 @@ namespace tube{
     vd Uti=v.U.tdata();
     vd pti=v.p.tdata()+v.getp0t();
     vd Tti=v.T.tdata();
-    // error+=v.eWddt*DDTfd*v.p()/(gamma-1.0);
-    // error+=v.eWgi*gamfac*fDFT*(pti%Uti);
-    // error+=v.eWji*fDFT*(pti%Uti);
+    error+=v.eWddt*DDTfd*v.p()/(gamma-1.0);
+    error+=v.eWgi*gamfac*fDFT*(pti%Uti);
+    // TRACE(100,"v.Wji:"<<v.eWji);
+    error+=v.eWji*fDFT*(pti%Uti);
     error+=fDFT*((v.eWc2*kappaL(v)+v.eWc3*kappaR(v))%Tti);
     
     if(v.left!=NULL){
-      // vd Utim1=v.left->U.tdata();
-      // vd ptim1=v.left->p.tdata()+v.getp0t();
-      // error+=v.eWgim1*gamfac*fDFT*(ptim1%Utim1);
-      // error+=v.eWjim1*fDFT*(ptim1%Uti);
+      vd Utim1=v.left->U.tdata();
+      vd ptim1=v.left->p.tdata()+v.getp0t();
+      error+=v.eWgim1*gamfac*fDFT*(ptim1%Utim1);
+      error+=v.eWjim1*fDFT*(ptim1%Uti);
       // Conduction term
       vd Tim1=v.left->T.tdata();
       error+=v.eWc1*fDFT*(kappaL(v)%Tim1);
 
     }
     if(v.right!=NULL){
-      // vd Utip1=v.right->U.tdata();
-      // vd ptip1=v.right->p.tdata()+v.getp0t();
-      // error+=v.eWgip1*gamfac*fDFT*(ptip1%Utip1);
-      // error+=v.eWjip1*fDFT*(ptip1%Uti);
+      vd Utip1=v.right->U.tdata();
+      vd ptip1=v.right->p.tdata()+v.getp0t();
+      error+=v.eWgip1*gamfac*fDFT*(ptip1%Utip1);
+      error+=v.eWjip1*fDFT*(ptip1%Uti);
       vd Tip1=v.right->T.tdata();
       error+=v.eWc4*fDFT*(kappaR(v)%Tip1);
     }
@@ -108,8 +109,7 @@ namespace tube{
     else		
       dpi+=-d_r(v)*vSf;	// Last vertex
     #endif
-    // return dpi;
-    return v.zero;
+    return dpi;
   }
   dmat Energy::dpim1(const TubeVertex& v) const {
     TRACE(0,"Energy::dpim1()");
@@ -135,8 +135,7 @@ namespace tube{
       dpim1+=(d_l(v)+d_r(v))*vSf;
     }
     #endif
-    // return dpim1;
-    return v.zero;
+    return dpim1;
   }
   dmat Energy::dpip1(const TubeVertex& v) const {
     TRACE(0,"Energy::dpip1()");
@@ -161,8 +160,7 @@ namespace tube{
       dpip1+=(d_l(v)+d_r(v))*vSf;
     }
     #endif
-    // return dpip1;
-    return v.zero;
+    return dpip1;
   }
   dmat Energy::dUi(const TubeVertex& v) const {
     TRACE(0,"Energy::dUi()");
@@ -179,8 +177,7 @@ namespace tube{
       dUi+=v.eWjim1*fDFT*diagmat(v.left->p.tdata()+v.getp0t())*iDFT;
     if(v.right!=NULL)
       dUi+=v.eWjip1*fDFT*diagmat(v.right->p.tdata()+v.getp0t())*iDFT;
-    // return dUi;
-    return v.zero;
+    return dUi;
   }
   dmat Energy::dUim1(const TubeVertex& v) const {
     TRACE(0,"Energy::dUim1()");
@@ -192,8 +189,7 @@ namespace tube{
     if(v.left!=NULL){
       dUim1+=v.eWgim1*gamfac*fDFT*diagmat(v.getp0t()+v.left->p.tdata())*iDFT;
     }
-    // return dUim1;
-    return v.zero;
+    return dUim1;
   }
   dmat Energy::dUip1(const TubeVertex& v) const {
     TRACE(0,"Energy::dUip1()");
@@ -205,8 +201,7 @@ namespace tube{
     if(v.right!=NULL){
       dUip1+=v.eWgip1*gamfac*fDFT*diagmat(v.getp0t()+v.right->p.tdata())*iDFT;
     }
-    // return dUip1;
-    return v.zero;
+    return dUip1;
   }
   dmat Energy::dpip2(const TubeVertex& v) const {
     dmat dpip2=v.zero;
@@ -216,8 +211,7 @@ namespace tube{
       dpip2+=-d_r(v)*vSf;
     }
     #endif 
-    // return dpip2;
-    return v.zero;
+    return dpip2;
   }
   dmat Energy::dpim2(const TubeVertex& v) const {
     dmat dpim2=v.zero;
@@ -227,8 +221,7 @@ namespace tube{
       dpim2+=-d_l(v)*v.lg.vSf;
     }
     #endif 
-    // return dpim2; 
-    return v.zero;   
+    return dpim2; 
   }
   // ############################## TEMPERATURE AND CONDUCTION TERMS
   dmat Energy::dTip1(const TubeVertex& v) const {

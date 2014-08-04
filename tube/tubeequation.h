@@ -5,7 +5,21 @@
 #include "equation.h"
 
 
+
+
 namespace tube{
+
+  enum EqType{
+    Con,			// Continuity
+    Mom,			// Momentum
+    Ene,			// Energy
+    Ise,			// Isentropic
+    Sta,			// State
+    Sol,			// SolidEnergy
+    Non				// None
+  };
+  
+  
   SPOILNAMESPACE  
   using namespace segment;
   using tasystem::Globalconf;
@@ -14,7 +28,8 @@ namespace tube{
   class TubeVertex;
   class TubeEquation:public Equation{
   public:
-      // const dmat& fDFT,iDFT,DDTfd;	// forward, backward dicrete fourier transform, derivative to time matrix (freq domain)
+    virtual enum EqType getType() const { return EqType::Non;}
+    // const dmat& fDFT,iDFT,DDTfd;	// forward, backward dicrete fourier transform, derivative to time matrix (freq domain)
     // ****************************** THIS METHOD SHOULD NOT BE OVERRIDDEN!!!
     dmat jac(const TubeVertex& v) const;		// Returns the local Jacobian of this equation
     // ******************************

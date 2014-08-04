@@ -43,11 +43,11 @@ Solver* Fubini_fullenergy(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
   LeftPressure bleft(0,pL);
   // TwImpedance bright(0);
   // RightImpedance bright(0,Zv);
-  RightIsoTWall bright(0,T0+20);
+  RightIsoTWall bright(0,T0);
   TAsystem sys(gc);
   sys.addSeg(t1);
   sys.addBc(bleft);
-  sys.addBc(bright);
+  // sys.addBc(bright);
   Solver* Sol=new Solver(sys);
   Sol->sys->show(false);
   return Sol;  

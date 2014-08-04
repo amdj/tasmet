@@ -10,6 +10,7 @@ namespace tube{
   class Momentum:public TubeEquation
   {
   public:
+    virtual enum EqType getType() const { return EqType::Mom;}    
     virtual vd error(const TubeVertex&) const;			// Error in momentum equation at node i
     virtual void show() const;
     dmat drhoi(const TubeVertex& v) const;

@@ -2,13 +2,20 @@
 #ifndef _PRESSUREBC_H_
 #define _PRESSUREBC_H_
 
-
+#include "energyeq.h"
 #include "tubebcvertex.h"
 
 namespace tube{
 
   using variable::var;
   using segment::connectpos;
+
+  class PressureBcEnergyEq:public Energy
+  {
+  public:
+    virtual dmat dUi(const TubeVertex& v) const;
+    virtual dmat dUip1(const TubeVertex& v) const;
+  };
   
   class LeftPressure:public TubeBcVertex
   {
@@ -16,6 +23,7 @@ namespace tube{
     variable::var pL;			// Pressure boundary condition
     variable::var TL;			// Temperature boundary conditions
 
+    PressureBcEnergyEq peq;    
     LeftPressure(us,const var&);
     LeftPressure(us,const var&,const var& temp);
     LeftPressure(const LeftPressure& other);

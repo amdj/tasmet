@@ -170,6 +170,10 @@ namespace tube{
       eWjim1=wLl;
       eWji=wLr-wRl;
       eWjip1=-wRr;
+      // TRACE(100,"Hack Wj's to zero");
+      // eWjim1=0;
+      // eWji=0;
+      // eWjip1=0;
 
       eWc1=-lg.SfL/lg.dxm;
       eWc2=lg.SfL/lg.dxm;
@@ -197,6 +201,10 @@ namespace tube{
       eWjim1=0;
       eWji=wL0-wRl;
       eWjip1=wL1-wRr;
+    // TRACE(100,"Hack Wj's to zero");
+    // eWjim1=0;
+    // eWji=0;
+    // eWjip1=0;
 
       eWc1=0;
       eWc2=0;
@@ -210,12 +218,12 @@ namespace tube{
       cWim1=-wLl;
       cWip1=0;
 
-      mWuim1=-wLl/lg.SfL;
-      mWui=-wLr/lg.SfL;
-      mWuip1=0;
+      mWuim1= -wLl/lg.SfL;
+      mWui=   -wLr/lg.SfL;
+      mWuip1= 0;
       
       mWpim1=-lg.SfL*wLl+lg.SfR*wRNm2;
-      mWpi=-lg.SfL*wLr+lg.SfR*wRNm1;
+      mWpi=  -lg.SfL*wLr+lg.SfR*wRNm1;
       mWpip1=0;
 
       eWgim1=-wLl;
@@ -225,6 +233,10 @@ namespace tube{
       eWjim1=wLl-wRNm2;
       eWji=wLr-wRNm1;
       eWjip1=0;
+      // TRACE(100,"Hack Wj's to zero");
+      // eWjim1=0;
+      // eWji=0;
+      // eWjip1=0;
 
       eWc1=-lg.SfL/lg.dxm;
       eWc2=lg.SfL/lg.dxm;
@@ -294,13 +306,13 @@ namespace tube{
   }  
 
   
-  vd  TubeVertex::csource() const {
+  vd TubeVertex::csource() const {
     TRACE(4,"TubeVertex::csource()");
     return zeros(gc->Ns);}
-  vd  TubeVertex::msource() const {
+  vd TubeVertex::msource() const {
     TRACE(4,"TubeVertex::msource()");
     return zeros(gc->Ns);}
-  vd  TubeVertex::esource() const {
+  vd TubeVertex::esource() const {
     TRACE(4,"TubeVertex::esource()");
     return zeros(gc->Ns);}    
     

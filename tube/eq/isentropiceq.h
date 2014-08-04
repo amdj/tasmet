@@ -13,6 +13,7 @@ namespace tube{
 
   class Isentropic:public TubeEquation{
   public:
+    virtual enum EqType getType() const { return EqType::Ise;}
     Isentropic();
     ~Isentropic();
     vd error(const TubeVertex&) const;			// Error in Energy equation at node i

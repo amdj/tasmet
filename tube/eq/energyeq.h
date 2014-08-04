@@ -9,6 +9,7 @@ namespace tube{
   class Energy:public TubeEquation
   {
   public:
+    virtual enum EqType getType() const { return EqType::Ene;}
     // void show() const; 
     vd error(const TubeVertex&) const;			// Error in Energy equation at node i
     virtual dmat dpi(const TubeVertex&) const;
