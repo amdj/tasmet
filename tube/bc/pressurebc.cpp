@@ -67,7 +67,7 @@ namespace tube{
     TubeVertex::initTubeVertex(i,thisseg);
     if(eq[2]->getType()!=EqType::Ise){
       TRACE(100,"Changing energy equation...");
-      eq[2]=&peq;
+      // eq[2]=&peq;
     }
     LeftPressure::updateW(thisseg);
 
@@ -92,11 +92,12 @@ namespace tube{
     mWpip1=lg.SfR*wRr;
     // Change energy equation for open boundary and prescribed pressure
     eWgim1= 0;
-    eWgi=   wRl;
-    eWgip1= wRr;
+    eWgi=   wRl-wL0;
+    eWgip1= wRr-wL1;
 
-    eWgi  -=wL0;
-    eWgip1-=wL1;
+    eWkinim1=0;
+    eWkini=wRl/pow(lg.SfR,2)-wL0/pow(lg.SfL,2);    
+    eWkini=wRr/pow(lg.SfR,2)-wL1/pow(lg.SfL,2);    
     
     eWjim1 = 0;
     eWji   =-wRl;
@@ -105,20 +106,18 @@ namespace tube{
     eWji+=wL0;
     eWjip1+=wL1;
 
-    d xp2=lg.vxip1;
-    d xp1=lg.vxi;
-
-    d denom=xp1*(1-xp1/xp2);
-    
+    d x0=lg.vxi;
+    d x1=lg.vxip1;
+    d denom=x0*(1-x0/x1);
+    TRACE(100,"denom:"<<denom);
+    d x0_ov_x1sq=pow(x0/x1,2);
     eWc1=0;
-    eWc2=lg.SfL/lg.xl;
-    // eWc2=lg.SfL/denom;
-    // eWc2=lg.SfR/dxp;
+    eWc2=lg.SfL/denom;
     eWc3=lg.SfR/lg.dxp;
     // eWc3=-lg.SfL*pow(xp1/xp2,2)/denom +  lg.SfR/dxp;
-    eWc4=-lg.SfR/lg.dxp;
+    eWc4=-lg.SfR/lg.dxp -lg.SfL*x0_ov_x1sq/denom;
 
-    
+
     // TODO Fill this further!
 
   }
@@ -133,10 +132,12 @@ namespace tube{
   }
   vd LeftPressure::esource() const {
     TRACE(100,"LeftPressure::esource()");
-    vd esource(gc->Ns,fillwith::zeros);
+    vd esource=TubeVertex::esource();
     const dmat& fDFT=gc->fDFT;
-    TRACE(100,"Stupid hack to test energy source");
+    // TRACE(100,"Stupid hack to test energy source");
     vd TLt=TL.tdata();
+    d TL0=TL(0);
+    TRACE(100,"TL(0):"<<TL0);
     const Energy& e=static_cast<const Energy&>(*eq[2]);
     d gamma=e.gamma(*this);
     d gamfac=gamma/(gamma-1.0);
@@ -146,14 +147,15 @@ namespace tube{
     d xp2=lg.vxip1;
     d xp1=lg.vxi;
 
-    d denom=xp1*(1-xp1/xp2);
-    
-    d num=-(1-pow(xp1/xp2,2));    
-    
     vd T0=gc->T0*vd(gc->Ns,fillwith::ones);
     vd kappaL=e.kappaL(*this);
     // esource+=lg.SfL*num*fDFT*(kappaL%TLt)/denom;
-    esource+=-1.0*lg.SfL*fDFT*(kappaL%TLt)/lg.xl;
+    d x0=lg.vxi;
+    d x1=lg.vxip1;
+    d denom=x0*(1.0-x0/x1);
+    // TRACE(100,"Denom:"<<denom);
+    d x0_ov_x1sq=pow(x0/x1,2);
+    esource+=-1.0*(1-x0_ov_x1sq)*lg.SfL*fDFT*(kappaL%TLt)/denom;
     // esource+=fDFT*(U.tdata()%pL.tdata());
     // TRACE(100,"wL0:"<<wL0);
     // TRACE(100,"WL1:"<<wL1);

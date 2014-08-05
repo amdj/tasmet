@@ -40,7 +40,7 @@ namespace tube{
   {
   public:
     TwImpedanceMomentumEq mright; // Completely adjusted equation
-    TwImpedanceEnergyEq   eright; // Completely adjusted equation
+    // TwImpedanceEnergyEq   eright; // Completely adjusted equation
     Isentropic is;
     TwImpedance(us segnr);
     TwImpedance(const TwImpedance& o);

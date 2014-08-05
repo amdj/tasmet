@@ -23,7 +23,7 @@ namespace tube{
     variable::var pL;			// Pressure boundary condition
     variable::var TL;			// Temperature boundary conditions
 
-    PressureBcEnergyEq peq;    
+    // PressureBcEnergyEq peq;    
     LeftPressure(us,const var&);
     LeftPressure(us,const var&,const var& temp);
     LeftPressure(const LeftPressure& other);

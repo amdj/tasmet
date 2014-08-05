@@ -5,7 +5,7 @@
 
 
 namespace tube{
-  TwImpedance::TwImpedance(us segnr):TubeBcVertex(segnr),eright(*this){
+  TwImpedance::TwImpedance(us segnr):TubeBcVertex(segnr){
     TRACE(8,"TwImpedance constructor");
     // Change continuity equation for open boundary
   }
@@ -27,7 +27,7 @@ namespace tube{
     TubeVertex::initTubeVertex(i,thisseg);
     eq.at(1)=&mright;
     // eq[2]=&eright;
-    // eq[2]=&is;
+    eq[2]=&is;
     // mright.Init(*thisseg.gc);
     // is.Init(*thisseg.gc);
     // eright.Init(*thisseg.gc);
@@ -56,10 +56,15 @@ namespace tube{
     eWgi  =-wLr+wRNm1;
     eWgip1=0;
     
+    eWkinim1=-wLl/pow(lg.SfL,2)+wRNm2/pow(lg.SfR,2);
+    eWkini=-wLr/pow(lg.SfL,2)+wRNm1/pow(lg.SfR,2);
+    eWkinip1=0;
+    
+    
     eWjim1=wLl-wRNm2;
     eWji  =wLr-wRNm1;
     eWjip1=0;
-    
+
     d xi=geom.vx(i);
     d xim1=geom.vx(i-1);	 
     d dxm=xi-xim1;
@@ -67,7 +72,7 @@ namespace tube{
 
     eWc1=-lg.SfL/lg.dxm;
     eWc2= lg.SfL/lg.dxm;
-    eWc3= lg.SfR/lg.xr;
+    eWc3=0;// lg.SfR/lg.xr;
     eWc4=0;
 
     // Last but not least: point momentum and energy eq to new equation!
@@ -97,7 +102,7 @@ namespace tube{
     vd kappaR=gc->gas.kappa(T0t);
     // vd kappaR=eright.kappaR();
     // TRACE(100,"kappaR:"<<kappaR);    
-    esource+=-1.0*(lg.SfR/xhalf)*fDFT*(kappaR%Trt);
+    // esource+=-1.0*(lg.SfR/xhalf)*fDFT*(kappaR%Trt);
     return esource;  
   }
 

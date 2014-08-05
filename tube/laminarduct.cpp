@@ -32,12 +32,19 @@ namespace tube {
     WARN("Do not use assignment operators for tubes");
     return *this;
   }  
+  LaminarDuct_e& LaminarDuct_e::operator=(const LaminarDuct_e& other){
+    TRACE(13,"LaminarDuct_e copy assignment");
+    LaminarDuct::operator=(other);
+    // drag(geom);
+    WARN("Do not use assignment operators for tubes");
+    return *this;
+  }  
   void LaminarDuct::init(const Globalconf& gc){
     assert(eq.size()==0);
     Tube::init(gc);
   }
-  vector<const TubeEquation*> LaminarDuct::getEq() const {
-    vector<const TubeEquation*> eq;
+  EqVec LaminarDuct::getEq() const {
+    EqVec eq;
     eq.push_back(&c);
     eq.push_back(&m);
     eq.push_back(&e);
@@ -46,6 +53,15 @@ namespace tube {
     return eq;
   }
 
+  EqVec LaminarDuct_e::getEq() const {
+    EqVec eq;
+    eq.push_back(&c);
+    eq.push_back(&m);
+    eq.push_back(&e_full);
+    eq.push_back(&s);
+    eq.push_back(&se);
+    return eq;
+  }
 
 
   LaminarDuct::~LaminarDuct(){

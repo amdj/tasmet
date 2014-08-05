@@ -114,7 +114,6 @@ namespace tube{
     dmat drhoim1=v.zero;
     if(v.left!=NULL)
       drhoim1+=v.cWim1*v.gc->fDFT*v.left->U.diagt()*v.gc->iDFT;
-    TRACE(10,"Thatsadded");
     // Artificial viscosity terms
     #ifdef CONT_VISCOSITY
     const d& vSf=v.lg.vSf;

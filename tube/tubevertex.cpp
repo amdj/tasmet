@@ -167,6 +167,10 @@ namespace tube{
       eWgi=wRl-wLr;
       eWgip1=wRr;
 
+      eWkinim1=-wLl/pow(lg.SfL,2);
+      eWkini=wRl/pow(lg.SfR,2)-wLr/pow(lg.SfL,2);
+      eWkinip1=wRr/pow(lg.SfR,2);
+      
       eWjim1=wLl;
       eWji=wLr-wRl;
       eWjip1=-wRr;
@@ -198,14 +202,15 @@ namespace tube{
       eWgi=wRl;
       eWgip1=wRr;
 
+      eWkinim1=0;
+      eWkini=wRl/pow(lg.SfR,2);
+      eWkinip1=wRr/pow(lg.SfR,2);
+      
       eWjim1=0;
       eWji=wL0-wRl;
       eWjip1=wL1-wRr;
-    // TRACE(100,"Hack Wj's to zero");
-    // eWjim1=0;
-    // eWji=0;
-    // eWjip1=0;
-
+      
+      
       eWc1=0;
       eWc2=0;
       eWc3=lg.SfR/lg.dxp;
@@ -230,6 +235,11 @@ namespace tube{
       eWgi=-wLr;
       eWgip1=0;
 
+      eWkinim1=eWgim1/pow(lg.SfL,2);
+      eWkini=eWgi/pow(lg.SfL,2);
+      eWkinip1=0;
+
+      
       eWjim1=wLl-wRNm2;
       eWji=wLr-wRNm1;
       eWjip1=0;
@@ -314,7 +324,11 @@ namespace tube{
     return zeros(gc->Ns);}
   vd TubeVertex::esource() const {
     TRACE(4,"TubeVertex::esource()");
-    return zeros(gc->Ns);}    
+
+    vd esource=zeros(gc->Ns);
+    esource(0)+=K*(T(0)-gc->T0);
+    return esource;
+  }    
     
   TubeVertex::~TubeVertex(){
     TRACE(-5,"~TubeVertex()");

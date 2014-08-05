@@ -26,10 +26,11 @@ namespace tube{
     const TubeVertex* right=NULL;
     d wLl,wRr,wLr,wRl;		// Weight functions for equations
     d wL0,wL1,wRNm1,wRNm2;    	// Special boundary weight functions
-
+    const d K=10.0;
     d cWddt,cWim1,cWi,cWip1;
     d mWddt,mWuim1,mWui,mWuip1,mWpim1,mWpi,mWpip1;
     d eWddt,eWgim1,eWgi,eWgip1,eWjim1,eWji,eWjip1,eWc1,eWc2,eWc3,eWc4;      
+    d eWkini,eWkinim1,eWkinip1;
     
     variable::var rho;		// Density
     variable::var U;		// Volume flow

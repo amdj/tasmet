@@ -42,7 +42,7 @@ namespace variable {
     const d& operator()(us i) const;				   // Extract amplitude data result at specific frequency
     d& operator()(us i);				   // Extract amplitude data result at specific frequency    
 
-    vd operator()() const { return amplitudedata;} //Extract result
+    const vd& operator()() const { return amplitudedata;} //Extract result
 						   //vector
     var operator*(const var& variable) const;		   // Multiply two variables in time domain
     var operator*(const d& scalar) const;   // Multiply a variable with a scalar. This operation is possible for both
@@ -51,7 +51,7 @@ namespace variable {
 
     vd getResfluc() const { return amplitudedata.subvec(1,Ns-1);}
     vc getcRes() const; //Implementation for complex amplitude vector
-    vd tdata() const  {return timedata; } //Get time data vector
+    const vd& tdata() const  {return timedata; } //Get time data vector
     d tdata(d t) const; //Extract the estimated value for a given time t
     dmat diagt() const {return diagmat(timedata);}
     dmat diag() const {return diagmat(amplitudedata);}    

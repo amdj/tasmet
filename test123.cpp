@@ -5,6 +5,7 @@
 #include "isentropictube.h"
 #include "twimpedance.h"
 #include "pressurebc.h"
+#include "laminarduct.h"
 #include "tubevertex.h"
 #include "impedancebc.h"
 #include "isotwall.h"
@@ -20,7 +21,7 @@ int main(int argc,char* argv[]) {
   cout <<  "Running test..." << endl;
   int loglevel=25;
   us gp=4;
-  us Nf=1;
+  us Nf=0;
   us Ns=2*Nf+1;
   double f=100;
   double omg=2*number_pi*f;
@@ -32,8 +33,11 @@ int main(int argc,char* argv[]) {
   cout<< "Loglevel:"<<loglevel<<"\n";
   initlog(loglevel);
   d L=0.01;
-  d rtube=5e-3;
-  d S=number_pi*pow(rtube,2);
+
+  d S=1;
+  
+  d rtube=sqrt(S/number_pi);
+
   d phi=1.0;
   d PI=2*number_pi*rtube;
   d rh=S/PI;
@@ -46,7 +50,7 @@ int main(int argc,char* argv[]) {
   d kappa=0.1;
   Globalconf gc(Nf,f,"air",T0,p0,0,kappa);
   Geom geom1=Geom::Cylinder(gp,L,rtube);
-  IsentropicTube t1(geom1);
+  LaminarDuct_e t1(geom1);
   // t1.Init(gc);
   var pL(gc,0);
   if(Nf>0)
@@ -54,12 +58,12 @@ int main(int argc,char* argv[]) {
   tube::LeftPressure bcleft(0,pL);
   // tube::RightImpedance bcright(0,415*vd(Ns,fillwith::ones));
   // tube::TwImpedance bcright(0);
-  tube::RightIsoTWall bcright(0,T0+10);
+  // tube::RightIsoTWall bcright(0,T0+10);
   TAsystem sys(gc);
   sys.addSeg(t1);  
   // sys.connectSegs(0,1,SegCoupling::tailhead);
   sys.addBc(bcleft);
-  sys.addBc(bcright);
+  // sys.addBc(bcright);
     
   // cout << sys.getSeg(0)->GetRes() << "\n";
   Solver sol(sys);
@@ -67,14 +71,14 @@ int main(int argc,char* argv[]) {
   // sys.getSeg(0)->Error();
   // sol.sys->getSeg(0)->Jac();
   sol.sys->init();
-  // sys.show(true);
+  sys.show(true);
   // sol.sys->show(true);
   cout << "Jac:\n"<< sol.sys->jac();
 // sol.sys
 
   // Solver sol2(sol);
   cout << "Error:\n" << sol.sys->error();
-  sol.doIter();
+  // sol.doIter();
     // // // vd x=t1.GetRmomes();
   // // vd err=sol.sys->Error();
   // // cout << "error:\n"<<err;
