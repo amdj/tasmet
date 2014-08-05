@@ -98,7 +98,8 @@ namespace tube{
     eWkinim1=0;
     eWkini=wRl/pow(lg.SfR,2)-wL0/pow(lg.SfL,2);    
     eWkini=wRr/pow(lg.SfR,2)-wL1/pow(lg.SfL,2);    
-    
+
+    // Deprecated
     eWjim1 = 0;
     eWji   =-wRl;
     eWjip1 =-wRr;
@@ -122,7 +123,7 @@ namespace tube{
 
   }
   vd LeftPressure::msource() const{
-    TRACE(100,"LeftPressure::msource()");
+    TRACE(5,"LeftPressure::msource()");
     vd msource(gc->Ns,fillwith::zeros);
     msource=-1.0*lg.SfL*pL();
     // This one should not yet be scaled. The scaling is done in the
@@ -131,7 +132,7 @@ namespace tube{
     return msource;
   }
   vd LeftPressure::esource() const {
-    TRACE(100,"LeftPressure::esource()");
+    TRACE(5,"LeftPressure::esource()");
     vd esource=TubeVertex::esource();
     const dmat& fDFT=gc->fDFT;
     // TRACE(100,"Stupid hack to test energy source");
