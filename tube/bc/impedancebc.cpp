@@ -50,11 +50,6 @@ namespace tube{
     eWgi  =-wLr+wRNm1;
     eWgip1=0;
     
-    eWjim1=wLl-wRNm2;
-    eWji  =wLr-wRNm1;
-    eWjip1=0;
-
-
     eWc1=-lg.SfL/lg.dxm;
     eWc2= lg.SfL/lg.dxm;
     eWc3=0;

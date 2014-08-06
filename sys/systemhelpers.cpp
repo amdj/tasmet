@@ -54,10 +54,6 @@ namespace tasystem{
       TRACE(10,"New "<<orig.gettype()<<" added to system.");
       return new tube::LaminarDuct(static_cast<const tube::LaminarDuct&>(orig));
     }
-    else if(orig.gettype().compare("LaminarDuct_e")==0){
-      TRACE(10,"New "<<orig.gettype()<<" added to system.");
-      return new tube::LaminarDuct_e(static_cast<const tube::LaminarDuct_e&>(orig));
-    }
     else{
       TRACE(50,"Warning: segment " << orig.gettype() << " not yet implemented! Aborting...");
       abort();

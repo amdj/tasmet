@@ -16,40 +16,36 @@
 #include "energyeq.h"
 #include "stateeq.h"
 #include "solidenergyeq.h"
-#include "energyeq_full.h"
+#include "energyeq.h"
+#include "laminardrag.h"
 
 namespace tube{
   SPOILNAMESPACE
 
-  typedef vector<const TubeEquation*> EqVec;  
+
   using namespace segment;
 
   class LaminarDuct:public Tube
   {
   public:
-    LaminarDuct(Geom geom);
+    LaminarDuct(const Geom& geom);
     LaminarDuct(const LaminarDuct&);
     LaminarDuct& operator=(const LaminarDuct&);
     virtual void init(const Globalconf&);
+    virtual const DragResistance& getDragResistance() const {return laminardrag;}
+    // virtual const HeatSource& getHeatSource() const=0;
     void cleanup();
     EqVec getEq() const;
+    virtual ~LaminarDuct();
     Continuity c;		// Continuity equation
     Momentum m;			// Momentum equation
     Energy e;			// Full energy equation
     State s;			// State equation (ideal gas)
-    Solidenergy se;		// Solid energy equation
-    virtual ~LaminarDuct();
+    SolidTPrescribed se;		// Solid energy equation
+  private:
+    LaminarDragResistance laminardrag;
   };
 
-  class LaminarDuct_e: public LaminarDuct{
-  public:
-    LaminarDuct_e(Geom geom):LaminarDuct(geom) {  type="LaminarDuct_e";}
-    LaminarDuct_e(const LaminarDuct_e& other): LaminarDuct_e(other.geom){}
-    LaminarDuct_e& operator=(const LaminarDuct_e& other);
-    virtual ~LaminarDuct_e() {}
-    EqVec getEq() const;
-    Energy_full e_full;  
-  };  
   
 } /* namespace tube */
 

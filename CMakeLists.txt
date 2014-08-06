@@ -49,14 +49,14 @@ AUX_SOURCE_DIRECTORY(seg segsources)
 AUX_SOURCE_DIRECTORy(sys syssources)
 AUX_SOURCE_DIRECTORy(sol solsources)
 AUX_SOURCE_DIRECTORy(tube/eq tubeeq)
-# AUX_SOURCE_DIRECTORy(tube/drag tubedrag)
+AUX_SOURCE_DIRECTORy(tube/drag tubedrag)
 AUX_SOURCE_DIRECTORy(tube/heat tubeheat)
 AUX_SOURCE_DIRECTORy(tube/bc tubebc)
 AUX_SOURCE_DIRECTORy(common commonsources)
 set (nonlinear_SRC ${tubesources} ${varsources} ${segsources}
   ${syssources} ${solsources}
   ${varsources} ${commonsources}
-  ${tubeeq} ${tubeheat} ${tubebc})
+  ${tubeeq} ${tubeheat} ${tubebc} ${tubedrag})
 
  # ${tubedrag}
 include_directories(
@@ -71,7 +71,7 @@ include_directories(
   tube
   common
   models
-#  tube/drag
+ tube/drag
   tube/bc
   tube/eq
   tube/heat

@@ -14,6 +14,7 @@ namespace segment {
   public:
     LocalGeom(){ TRACE(10,"Created empty LocalGeom"); }
     virtual ~LocalGeom(){}
+    const Geom* geom=NULL;
     us i;			// Vertex number
     us nCells;
     d vSf;			// Vertex fluid cross-sectional area
@@ -23,7 +24,8 @@ namespace segment {
 
     d SfR;			// Cross-sectional area of right face
     d SfL;			// Cross-sectional area of left  face
-
+    d vrh;			// vertex hydraulic radius
+    
     d xR;			// Absolute position of right cell wall
     d xL;			// Absolute position of left cell wall
     d xr,xl;			// Postition of right and left wall relative to vertex position

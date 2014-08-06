@@ -63,13 +63,15 @@ namespace tasystem{
       }
   }
   typedef tuple<d,d> dtuple;
-  void Solver::solve(d funtol,d reltol){
+  void Solver::solve(us maxiter,d funtol,d reltol){
     TRACE(20,"Solver started.");
     vd error=sys->error();
     d funer=arma::norm(error,2);
     d reler=0;
     us nloop=0;
-    while((funer>funtol || reler>reltol) && nloop<SOLVER_MAXITER)
+    if(maxiter==0)
+      maxiter=SOLVER_MAXITER;
+    while((funer>funtol || reler>reltol) && nloop<maxiter)
       {
 	dtuple ers=doIter();
 	funer=std::get<0>(ers);
@@ -77,7 +79,7 @@ namespace tasystem{
 	cout << "Iteration: "<<nloop<<" , function error: "<<funer<<" , relative error:" << reler<< ".\n";
 	nloop++;
       }
-    if(nloop==SOLVER_MAXITER)
+    if(nloop==maxiter)
       WARN("Solver reached maximum number of iterations! Results might not be reliable!");
     cout << "Solver done.\n";
   }

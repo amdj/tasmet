@@ -17,15 +17,15 @@ namespace tube{
     if(v.i>0 || (v.i==0 && v.left!=NULL)){
       // Standard implementation of a no-slip (wall) boundary
       // condition
-      vd rhoim1=v.left->rho.tdata();
-      vd Uim1=v.left->U.tdata();
+      const vd& rhoim1=v.left->rho.tdata();
+      const vd& Uim1=v.left->U.tdata();
       error+=v.cWim1*v.gc->fDFT*(rhoim1%Uim1);
     }
     if(v.i<v.nCells-1 || (v.i==v.nCells-1 && v.right!=NULL) ){
       // Standard implementation of a no-slip (wall) boundary
       // condition
-      vd rhoip1=v.right->rho.tdata();
-      vd Uip1=v.right->U.tdata();
+      const vd& rhoip1=v.right->rho.tdata();
+      const vd& Uip1=v.right->U.tdata();
       error+=v.cWip1*v.gc->fDFT*(rhoip1%Uip1);
     }
 

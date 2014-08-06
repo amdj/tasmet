@@ -8,7 +8,7 @@
 
 #include "laminarduct.h"
 #include "tubevertex.h"
-
+#include "tube.h"
 // Tried to keep the method definition a bit in order in which a
   // tube is created, including all its components. First a tube is
   // created, which has a geometry and a global
@@ -19,29 +19,28 @@
   // precisely, in the final solution the continuity, momentum, energy
   // and a suitable equation of state should hold.
 namespace tube {
-  LaminarDuct::LaminarDuct(Geom geom):Tube(geom){
+
+  LaminarDuct::LaminarDuct(const Geom& geom):Tube(geom),laminardrag(*this){
     // Fill vector of gridpoints with data:
     TRACE(13,"LaminarDuct constructor()...");
     type="LaminarDuct";
   }
-  LaminarDuct::LaminarDuct(const LaminarDuct& other):LaminarDuct(other.geom){}
+  LaminarDuct::LaminarDuct(const LaminarDuct& other):LaminarDuct(other.geom){
+  }
   LaminarDuct& LaminarDuct::operator=(const LaminarDuct& other){
     TRACE(13,"LaminarDuct copy assignment");
     Tube::operator=(other);
     // drag(geom);
-    WARN("Do not use assignment operators for tubes");
-    return *this;
-  }  
-  LaminarDuct_e& LaminarDuct_e::operator=(const LaminarDuct_e& other){
-    TRACE(13,"LaminarDuct_e copy assignment");
-    LaminarDuct::operator=(other);
-    // drag(geom);
-    WARN("Do not use assignment operators for tubes");
+    cleanup();
     return *this;
   }  
   void LaminarDuct::init(const Globalconf& gc){
-    assert(eq.size()==0);
     Tube::init(gc);
+    c.init(*this);
+    m.init(*this);
+    e.init(*this);
+    s.init(*this);
+    se.init(*this);
   }
   EqVec LaminarDuct::getEq() const {
     EqVec eq;
@@ -53,22 +52,11 @@ namespace tube {
     return eq;
   }
 
-  EqVec LaminarDuct_e::getEq() const {
-    EqVec eq;
-    eq.push_back(&c);
-    eq.push_back(&m);
-    eq.push_back(&e_full);
-    eq.push_back(&s);
-    eq.push_back(&se);
-    return eq;
-  }
-
-
   LaminarDuct::~LaminarDuct(){
     TRACE(15,"~LaminarDuct()");
     cleanup();
   }
-  void LaminarDuct::cleanup(){}
+  void LaminarDuct::cleanup(){ Tube::cleanup();}
 
   
 } /* namespace tube */

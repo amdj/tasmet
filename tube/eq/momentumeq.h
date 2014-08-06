@@ -1,15 +1,18 @@
 #pragma once
 
 #include "tubeequation.h"
-
+#include "drag.h"
 
 namespace tube{
   SPOILNAMESPACE
   class TubeVertex;
-  
+  class Tube;
   class Momentum:public TubeEquation
   {
   public:
+    const DragResistance* drag=NULL;
+
+    virtual void init(const Tube& t);    
     virtual enum EqType getType() const { return EqType::Mom;}    
     virtual vd error(const TubeVertex&) const;			// Error in momentum equation at node i
     virtual void show() const;

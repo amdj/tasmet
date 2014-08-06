@@ -28,7 +28,7 @@ cdef extern from "solver.h" namespace "tasystem":
         void doIter(d dampfac)
         TAsystem* sys
         void init()
-        void solve()
+        void solve(us maxiter)
     
 
 cdef extern from "geom.h" namespace "tube":

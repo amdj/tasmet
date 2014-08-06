@@ -36,7 +36,7 @@ namespace tube{
     Momentum m;			// Momentum equation
     Isentropic is;		// Isentropic energy
     State s;			// State equation (ideal gas)
-    Solidenergy se;		// Solid energy equation
+    SolidTPrescribed se;		// Solid energy equation
     virtual ~IsentropicTube();
   };
   

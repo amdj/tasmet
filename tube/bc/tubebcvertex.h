@@ -14,7 +14,7 @@
 #include "bcvertex.h"
 
 namespace tube{
-
+  using segment::BcVertex;
   class TubeBcVertex:public TubeVertex,public BcVertex
   {
   public:

@@ -14,12 +14,9 @@ namespace tube{
   class Isentropic:public TubeEquation{
   public:
     virtual enum EqType getType() const { return EqType::Ise;}
-    Isentropic();
-    ~Isentropic();
-    vd error(const TubeVertex&) const;			// Error in Energy equation at node i
-    dmat dpi(const TubeVertex&) const;
-    dmat drhoi(const TubeVertex&) const;
-
+    virtual vd error(const TubeVertex&) const;			// Error in Energy equation at node i
+    virtual dmat dpi(const TubeVertex&) const;
+    virtual dmat drhoi(const TubeVertex&) const;
   };
 }
 

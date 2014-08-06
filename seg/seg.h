@@ -19,7 +19,7 @@ namespace segment{
   protected:
     us nDofs=0;
   public:    
-    Seg(Geom geom); // nL,nR initiated as 0
+    Seg(const Geom& geom); // nL,nR initiated as 0
     Seg(const Seg&);		       // Copy constructor, really copies everything
     Seg& operator=(const Seg&);
 

@@ -33,8 +33,13 @@ namespace tube {
     return *this;
   }  
   void IsentropicTube::init(const Globalconf& gc){
-    assert(eq.size()==0);
     Tube::init(gc);
+    c.init(*this);
+    m.init(*this);
+    is.init(*this);
+    s.init(*this);
+    se.init(*this);
+
   }
   vector<const TubeEquation*> IsentropicTube::getEq() const {
     vector<const TubeEquation*> eq;

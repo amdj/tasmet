@@ -19,22 +19,20 @@ namespace tube{
 
   class TwImpedanceMomentumEq:public Momentum{
   public:
-    TwImpedanceMomentumEq();
-    ~TwImpedanceMomentumEq(){}
     virtual vd error(const TubeVertex&) const;
     virtual dmat dUi(const TubeVertex&) const;
     virtual dmat dUim1(const TubeVertex&) const;
   }; 
-  class TwImpedanceEnergyEq:public Energy{
-  private:
-    const TwImpedance& impedancevertex;
-  public:
-    TwImpedanceEnergyEq(TwImpedance&);
-    ~TwImpedanceEnergyEq(){}
-    virtual vd error(const TubeVertex&) const;
-    virtual dmat dUi(const TubeVertex&) const;
-    virtual dmat dUim1(const TubeVertex&) const;
-  }; 
+  // class TwImpedanceEnergyEq:public Energy{
+  // private:
+  //   const TwImpedance& impedancevertex;
+  // public:
+  //   TwImpedanceEnergyEq(TwImpedance&);
+  //   ~TwImpedanceEnergyEq(){}
+  //   virtual vd error(const TubeVertex&) const;
+  //   virtual dmat dUi(const TubeVertex&) const;
+  //   virtual dmat dUim1(const TubeVertex&) const;
+  // }; 
 
   class TwImpedance:public TubeBcVertex // Adiabatic impedance boundary condition
   {
@@ -52,9 +50,8 @@ namespace tube{
     virtual enum connectpos connectPos() const {return connectpos::right;}
   private:
     virtual void updateW(const SegBase&);
-    d xhalf;			// Distance to right wall
     friend class TwImpedanceMomentumEq;
-    friend class TwImpedanceEnergyEq;
+    // friend class TwImpedanceEnergyEq;
     
   };
 

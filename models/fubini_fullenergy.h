@@ -32,7 +32,7 @@ Solver* Fubini_fullenergy(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
   Globalconf gc(Nf,freq,"air",T0,p0,Mass,kappa);
   gc.show();
   Geom geom1=Geom::Cylinder(gp,L,R);
-  LaminarDuct_e t1(geom1);
+  LaminarDuct t1(geom1);
   // TRACE(30,"p1:"<<p1);
   var pL(gc);
   for(us i=0;i<Ns;i++)

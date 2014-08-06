@@ -5,7 +5,7 @@
 namespace segment{
   
   
-  Seg::Seg(Geom geom):SegBase(geom){
+  Seg::Seg(const Geom& geom):SegBase(geom){
     TRACE(13,"Seg::Seg(Geom)");
     nDofs=0;
     type="Seg";

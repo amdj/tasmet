@@ -50,7 +50,7 @@ int main(int argc,char* argv[]) {
   d kappa=0.1;
   Globalconf gc(Nf,f,"air",T0,p0,0,kappa);
   Geom geom1=Geom::Cylinder(gp,L,rtube);
-  LaminarDuct_e t1(geom1);
+  LaminarDuct t1(geom1);
   // t1.Init(gc);
   var pL(gc,0);
   if(Nf>0)
@@ -76,7 +76,8 @@ int main(int argc,char* argv[]) {
   cout << "Jac:\n"<< sol.sys->jac();
 // sol.sys
 
-  // Solver sol2(sol);
+  // Solver sol2(sol);n
+  cout << "Result:\n" << sol.sys->getRes();  
   cout << "Error:\n" << sol.sys->error();
   // sol.doIter();
     // // // vd x=t1.GetRmomes();

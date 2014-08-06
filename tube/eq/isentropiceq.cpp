@@ -4,11 +4,8 @@
 
 
 namespace tube{
-  Isentropic::Isentropic(){ }
-  Isentropic::~Isentropic(){}
   vd Isentropic::error(const TubeVertex& v) const {
     TRACE(6,"Isentropic::Error()");
-    TRACE(6,"Isentropic::Error() done");
     vd err(v.gc->Ns,fillwith::zeros);
     d T0=v.gc->T0;
     d p0=v.gc->p0;
@@ -35,7 +32,6 @@ namespace tube{
     d T0=v.gc->T0;
     d p0=v.gc->p0;
     d rho0=v.gc->gas.rho(T0,p0);
-
     d gamma=v.gc->gas.gamma(T0);
     drhoi+=-1.0*(gamma/rho0)*v.gc->fDFT*
       diagmat(pow(v.rho.tdata()/rho0,(gamma-1.0)))*v.gc->iDFT;

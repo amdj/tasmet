@@ -21,7 +21,7 @@ namespace segment{
     string type;
     
   public:
-    SegBase(Geom geom);
+    SegBase(const Geom& geom);
     virtual ~SegBase(){ cleanup();};
     void cleanup(){}		   // Stub method in case class contains any dynamic allocated data
     void setRight(const SegBase&);	   // Couple segment to some segment on left side

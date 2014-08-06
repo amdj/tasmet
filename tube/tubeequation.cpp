@@ -1,5 +1,6 @@
 #include "tubeequation.h"
 #include "tubevertex.h"
+#include "tube.h"
 
 namespace tube{
   inline double min(d x,d y)  {
@@ -142,7 +143,7 @@ namespace tube{
     }
     else{
       WARN("Impossible! v.lg.i falls out of range. Something wrong. Aborting...");
-	abort();
+      abort();
     }
     // Last node
       // return ones<vd>(Ns);
@@ -161,7 +162,7 @@ namespace tube{
     }
   return num_over_denom;
   }
-
+  // ############################################################
   // Below, there is nothing more than an outline of the empty stencil
   dmat TubeEquation::drhoim2(const TubeVertex& v) const {
     TRACE(0,"TubeEquation::drhoim2()");

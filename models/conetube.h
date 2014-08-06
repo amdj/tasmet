@@ -4,6 +4,7 @@
 
 #include "solver.h"
 #include "gas.h"
+#include "laminarduct.h"
 #include "isentropictube.h"
 #include "twimpedance.h"
 #include "pressurebc.h"
@@ -26,8 +27,8 @@ Solver* ConeTube(us gp,us Nf,d freq,d L,d r1,d r2,vd p1,int loglevel,d kappa)
   gc.show();
   
   Geom geom1(Geom::Cone(gp,L,r1,r2));
-  IsentropicTube t1(geom1);
-  
+  LaminarDuct t1(geom1);
+  // IsentropicTube t1(geom1);  
   // TRACE(30,"p1:"<<p1);
   
   var pL(gc);
@@ -39,7 +40,7 @@ Solver* ConeTube(us gp,us Nf,d freq,d L,d r1,d r2,vd p1,int loglevel,d kappa)
   TAsystem sys(gc);
   sys.addSeg(t1);
   sys.addBc(pleft);
-  sys.addBc(rightbc);
+  // sys.addBc(rightbc);
   // vd Z=(z0/S)*vd(Ns,fillwith::ones);
   // RightImpedance iright(0,Z);
   // TwImpedance iright(1);

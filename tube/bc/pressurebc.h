@@ -1,21 +1,22 @@
 #pragma once
 #ifndef _PRESSUREBC_H_
 #define _PRESSUREBC_H_
+#include "var.h"
 
 #include "energyeq.h"
 #include "tubebcvertex.h"
 
 namespace tube{
-
+  SPOILNAMESPACE
   using variable::var;
   using segment::connectpos;
 
-  class PressureBcEnergyEq:public Energy
-  {
-  public:
-    virtual dmat dUi(const TubeVertex& v) const;
-    virtual dmat dUip1(const TubeVertex& v) const;
-  };
+  // class PressureBcEnergyEq:public Energy
+  // {
+  // public:
+  //   virtual dmat dUi(const TubeVertex& v) const;
+  //   virtual dmat dUip1(const TubeVertex& v) const;
+  // };
   
   class LeftPressure:public TubeBcVertex
   {

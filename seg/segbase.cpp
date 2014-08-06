@@ -2,7 +2,7 @@
 
 namespace segment{
 
-  SegBase::SegBase(Geom geom):geom(geom)
+  SegBase::SegBase(const Geom& geom):geom(geom)
   {
   }
   void SegBase::init(const Globalconf& gc){this->gc=&gc;}  

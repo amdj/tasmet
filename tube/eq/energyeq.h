@@ -15,13 +15,17 @@ namespace tube{
     virtual dmat dpi(const TubeVertex&) const;
     virtual dmat dUi(const TubeVertex&) const;
     virtual dmat dTi(const TubeVertex&) const;
+    virtual dmat drhoi(const TubeVertex&) const;
     
-    virtual dmat dpip1(const TubeVertex&) const;
     virtual dmat dpip2(const TubeVertex&) const;
     virtual dmat dpim2(const TubeVertex&) const;
+
+    virtual dmat drhoip1(const TubeVertex&) const;
     virtual dmat dUip1(const TubeVertex&) const;
+    virtual dmat dpip1(const TubeVertex&) const;
     virtual dmat dTip1(const TubeVertex&) const;
     
+    virtual dmat drhoim1(const TubeVertex&) const;
     virtual dmat dUim1(const TubeVertex&) const;
     virtual dmat dpim1(const TubeVertex&) const;
     virtual dmat dTim1(const TubeVertex&) const;
@@ -32,6 +36,5 @@ namespace tube{
 				// boundary of the vertex
     d gamma(const TubeVertex&) const;			// Time-avg ratio of specific heats
   };
-
 }      // namespace tube
 #endif /* _ENERGYEQ_H_ */

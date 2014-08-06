@@ -24,11 +24,13 @@ cdef class pytube:
     cdef Tube* tube[5]
     cdef us ntubes
     cdef us Nf
+    cdef d freq
     def __cinit__(self,us gp,us Nf,d freq,d L,d S,d T0,d p0,\
                   n.ndarray[n.float64_t,ndim=1] p1, cshape,int loglevel,d kappa,case='fubini',d S2=0):
         self.sol=NULL
         self.ntubes=0
         self.Nf=Nf
+        self.freq=freq
         assert(L>0)
         assert(gp>3)
         if case =='fubini':
@@ -66,8 +68,10 @@ cdef class pytube:
             del self.sol
     cpdef getNf(self):
         return self.Nf
-    cpdef solve(self):
-        self.sol[0].solve()    
+    cpdef getFreq(self):
+        return self.freq
+    cpdef solve(self,maxiter=10):
+        self.sol[0].solve(maxiter)    
     cpdef getgp(self):
         return self.gp
     cpdef getx(self,i=0):
@@ -95,6 +99,8 @@ cdef class pytube:
             return dvectond(self.tube[i].getResAt(2,freqnr))
         elif _type=='volu':
             return dvectond(self.tube[i].getResAt(1,freqnr))
+        elif _type=='stemp':
+            return dvectond(self.tube[i].getResAt(4,freqnr))
         else:
             return None
     # def getResult(self):

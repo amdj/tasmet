@@ -28,7 +28,7 @@ namespace segment{
     vd S=number_pi*pow(r,2);
     vd rh=S/(2.0*number_pi*r);
 
-    Geom geom(x,S,phi,rh,"circ");
+    Geom geom(x,S,phi,rh,"blapprox");
     if(r1==r2)
       geom.setPrismatic(true);
     return geom;

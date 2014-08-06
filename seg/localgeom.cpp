@@ -11,6 +11,7 @@ namespace segment{
 
   LocalGeom::LocalGeom(const Geom& geom,us i)
   {
+    this->geom=&geom; 		// Save a pointer to the geometry instance
     const vd& vx=geom.vx;
     this->i=i;
     nCells=geom.nCells;
@@ -39,7 +40,7 @@ namespace segment{
     vSs=geom.vSs(i);
     vVf=geom.vVf(i);
     vVs=geom.vVs(i);
-
+    vrh=geom.vrh(i);
     xr=xR-vxi;
     xl=vxi-xL;
     assert(xl>0); assert(xr>0);
