@@ -63,25 +63,23 @@ namespace tube{
     }
 
     // Artificial viscosity ter
-    d dx=1.0;//v.lg.vVf/v.vSf;
     #ifdef MOM_VISCOSITY
     if(v.i>0 && v.i<v.nCells-1){
-      d dxp=v.right->lg.vVf/v.right->lg.vSf;
-      d dxm=v.left->lg.vVf/v.left->lg.vSf;      
-      error+=-v.gc->rho0*d_r(v)*dx*(v.right->U()-v.U());
-      error+= v.gc->rho0*d_l(v)*dx*(v.U()-v.left->U());
+      error+=-v.gc->rho0*d_r(v)*(v.right->U()-v.U());
+      error+= v.gc->rho0*d_l(v)*(v.U()-v.left->U());
     }
     else if(v.i==0){
-      error+=-v.gc->rho0*d_r(v)*dx*(v.right->right->U()-v.right->U());
-      error+= v.gc->rho0*d_l(v)*dx*(v.right->U()-v.U());
+      error+=-v.gc->rho0*d_r(v)*(v.right->right->U()-v.right->U());
+      error+= v.gc->rho0*d_l(v)*(v.right->U()-v.U());
     }
     else {
-      error+=-v.gc->rho0*d_r(v)*dx*(v.U()-v.left->U());
-      error+= v.gc->rho0*d_l(v)*dx*(v.left->U()-v.left->left->U());
+      error+=-v.gc->rho0*d_r(v)*(v.U()-v.left->U());
+      error+= v.gc->rho0*d_l(v)*(v.left->U()-v.left->left->U());
     }
     #endif
+
     // Drag term
-    // error+=vVf*tube.drag(i)/vSf;
+    error+=v.mWddt*drag->drag(v);
 
     
     // (Boundary) source term
@@ -104,6 +102,7 @@ namespace tube{
     else
       dUi+=-v.gc->rho0*d_r(v);
     #endif
+    dUi+=v.mWddt*drag->dUi(v);
     return dUi;
   }
     dmat Momentum::drhoi(const TubeVertex& v) const {
