@@ -28,15 +28,6 @@ namespace tube{
   class LaminarDuct:public Tube
   {
   public:
-    LaminarDuct(const Geom& geom);
-    LaminarDuct(const LaminarDuct&);
-    LaminarDuct& operator=(const LaminarDuct&);
-    virtual void init(const Globalconf&);
-    virtual const DragResistance& getDragResistance() const {return laminardrag;}
-    // virtual const HeatSource& getHeatSource() const=0;
-    void cleanup();
-    EqVec getEq() const;
-    virtual ~LaminarDuct();
     Continuity c;		// Continuity equation
     Momentum m;			// Momentum equation
     Energy e;			// Full energy equation
@@ -44,6 +35,22 @@ namespace tube{
     SolidTPrescribed se;		// Solid energy equation
   private:
     LaminarDragResistance laminardrag;
+    HeatSource heat;
+
+  public:
+    LaminarDuct(const Geom& geom);
+    LaminarDuct(const LaminarDuct&);
+    LaminarDuct& operator=(const LaminarDuct&);
+    virtual void init(const Globalconf&);
+    virtual const DragResistance& getDragResistance() const {return laminardrag;}
+    virtual const HeatSource& getHeatSource() const=0; // Yup,
+    // abstract class. HopkinsLaminarTube implements  one version of
+    // this heat source. Later on, AnneLaminarTube implements another
+    // version of the heat source. This version is more applicable to
+    // wide tubes for arbitrary cross-sectional geometries.
+    void cleanup();
+    EqVec getEq() const;
+    virtual ~LaminarDuct();
   };
 
   

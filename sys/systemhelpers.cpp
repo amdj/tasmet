@@ -2,6 +2,7 @@
 #include "systemhelpers.h"
 #include "isentropictube.h"
 #include "laminarduct.h"
+#include "hopkinslaminarduct.h"
 #include "impedancebc.h"
 #include "twimpedance.h"
 #include "pressurebc.h"
@@ -50,9 +51,9 @@ namespace tasystem{
       TRACE(10,"New "<<orig.gettype()<<" added to system.");
       return new IsentropicTube(static_cast<const IsentropicTube&>(orig));
     }
-    else if(orig.gettype().compare("LaminarDuct")==0){
+    else if(orig.gettype().compare("HopkinsLaminarDuct")==0){
       TRACE(10,"New "<<orig.gettype()<<" added to system.");
-      return new tube::LaminarDuct(static_cast<const tube::LaminarDuct&>(orig));
+      return new tube::HopkinsLaminarDuct(static_cast<const tube::HopkinsLaminarDuct&>(orig));
     }
     else{
       TRACE(50,"Warning: segment " << orig.gettype() << " not yet implemented! Aborting...");

@@ -28,37 +28,30 @@ namespace tube{
     TRACE(6,"Momentum::Error()");
     vd error(v.gc->Ns,fillwith::zeros);
 
-    vd rhoti=v.rho.tdata();
-    vd Uti=v.U.tdata();
+    const vd& rhoti=v.rho.tdata();
+    const vd& Uti=v.U.tdata();
     error+=v.mWddt*v.gc->DDTfd*v.gc->fDFT*(Uti%rhoti);
     error+=v.mWui*v.gc->fDFT*(rhoti%Uti%Uti);
     
     // Pressure terms    
-    vd pi=v.p();
+    const vd& pi=v.p();
     error+=v.mWpi*pi;
-
-    vd rhotim1(v.gc->Ns,fillwith::zeros);
-    vd Utim1(v.gc->Ns,fillwith::zeros);
-    vd pim1(v.gc->Ns,fillwith::zeros);
-    vd Utip1(v.gc->Ns,fillwith::zeros);
-    vd rhotip1(v.gc->Ns,fillwith::zeros);
-    vd pip1(v.gc->Ns,fillwith::zeros);
 
     
     if(v.left!=NULL){
-      rhotim1=v.left->rho.tdata();
-      Utim1=v.left->U.tdata();
+      const vd& rhotim1=v.left->rho.tdata();
+      const vd& Utim1=v.left->U.tdata();
       error+=v.mWuim1*v.gc->fDFT*(rhotim1%Utim1%Utim1);
       // Pressure term
-      pim1=v.left->p();
+      const vd& pim1=v.left->p();
       error+=v.mWpim1*pim1;
     }
     if(v.right!=NULL){
-      Utip1=v.right->U.tdata();
-      rhotip1=v.right->rho.tdata();
+      const vd& Utip1=v.right->U.tdata();
+      const vd& rhotip1=v.right->rho.tdata();
       error+=v.mWuip1*v.gc->fDFT*(rhotip1%Utip1%Utip1);
       // Pressure term    
-      pip1=v.right->p();
+      const vd& pip1=v.right->p();
       error+=v.mWpip1*pip1;
     }
 

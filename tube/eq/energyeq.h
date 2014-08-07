@@ -2,13 +2,15 @@
 #ifndef _ENERGYEQ_H_
 #define _ENERGYEQ_H_
 #include "tubeequation.h"
-
+#include "heat.h"
 
 namespace tube{
   SPOILNAMESPACE
   class Energy:public TubeEquation
   {
+    const HeatSource* heat;
   public:
+    virtual void init(const Tube&);
     virtual enum EqType getType() const { return EqType::Ene;}
     // void show() const; 
     vd error(const TubeVertex&) const;			// Error in Energy equation at node i

@@ -28,7 +28,7 @@ class nonlinpost(object):
             self.p.append(tube.getResVar("pres",2*i-1)+1j*tube.getResVar("pres",2*i))
             self.T.append(tube.getResVar("temp",2*i-1)+1j*tube.getResVar("temp",2*i))
             self.U.append(tube.getResVar("volu",2*i-1)+1j*tube.getResVar("volu",2*i))
-
+            self.Ts.append(tube.getResVar("stemp",2*i-1)+1j*tube.getResVar("stemp",2*i))
     def mkfDFT(self):
         Ns=self.Ns
         self.fDFT=n.zeros((Ns,Ns),float)
@@ -48,12 +48,13 @@ class nonlinpost(object):
                 self.iDFT[k,2*r]=-n.sin(2.0*n.pi*r*k/Ns)                
         # self.iDFT[:,0]=1.
     def getp(self,i):
-            
         return self.p[i]
     def getrho(self,i):
         return self.rho[i]
     def getT(self,i):
         return self.T[i]
+    def getTs(self,i):
+        return self.Ts[i]
     def getU(self,i):
         return self.U[i]
 

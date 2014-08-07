@@ -12,6 +12,7 @@
 #include "tubeequation.h"
 #include "tubevertex.h"
 #include "drag.h"
+#include "heat.h"
 
 namespace tube{
   SPOILNAMESPACE
@@ -28,17 +29,15 @@ namespace tube{
     Tube& operator=(const Tube& othertube); // And again, we copy everything.
     ~Tube();
     virtual EqVec getEq() const=0;    	// Some derived class needs to define the equation array
-    virtual const DragResistance& getDragResistance() const {return nodragatall;}
-
+    virtual const DragResistance& getDragResistance() const=0;
+    virtual const HeatSource& getHeatSource() const=0;
     virtual void setLeftBc(Vertex* v);
     virtual void setRightBc(Vertex* v);    
     virtual void init(const Globalconf& gc);
     vd getResAt(us varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
   protected:
     void cleanup();
-  private:
-    DragResistance nodragatall;    
-    // HeatSource noheatatall;    
+
   };				// Tube class
 
   

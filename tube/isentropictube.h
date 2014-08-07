@@ -25,10 +25,16 @@ namespace tube{
 
   class IsentropicTube:public Tube
   {
+    DragResistance nodrag;
+    HeatSource noheat;
+    
   public:
     IsentropicTube(Geom geom);
     IsentropicTube(const IsentropicTube&);
     IsentropicTube& operator=(const IsentropicTube&);
+    virtual const DragResistance& getDragResistance() const {return nodrag;}
+    virtual const HeatSource& getHeatSource() const {return noheat;}
+      
     virtual void init(const Globalconf&);
     void cleanup();
     vector<const TubeEquation*> getEq() const;

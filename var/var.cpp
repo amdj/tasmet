@@ -87,6 +87,7 @@ namespace variable {
     vd thisadata=this->tdata();
     return var(*(this->gc),scalar*thisadata);
   }
+  
   // Get methods (which require implementation)
   const d& var::operator()(us i) const {//Extract result at specific frequency
       TRACE(0,"var::operator(us i)");
@@ -123,16 +124,17 @@ namespace variable {
   }
 
   // Set methods
-  void var::set(us freqnr,d val) { //Set result for specific frequency zero,real one, -imag one, etc
-    assert(freqnr<Ns);
+  void var::set(int freqnr,d val) { //Set result for specific frequency zero,real one, -imag one, etc
+    assert(freqnr<Ns && freqnr>=0);
     updateNf();
     amplitudedata[freqnr]=val;
     idft();
     TRACE(-3,"var::set(d val,us freqnr) adata:"<<amplitudedata);
   }
-  void var::set(const vc res)
+  void var::set(const vc& res)
   {
     TRACE(0,"var::set(const vc& res)");
+    assert(res.size()==gc->Nf+1);
     updateNf();
     amplitudedata(0)=res(0).real();
     for(us i=1;i<Nf+1;i++){
@@ -182,7 +184,21 @@ namespace variable {
     cout << amplitudedata[Ns-1] << "]\n";
 
   }
-
+  dmat var::freqMultiplyMat() const{
+    dmat result(gc->Ns,gc->Ns,fillwith::zeros);
+    result(0,0)=amplitudedata(0);
+    if(Nf>0){
+      for(us j=1;j<gc->Nf+1;j++){
+	result(2*j-1,2*j-1)= amplitudedata(2*j-1);
+	result(2*j-1,2*j  )=-amplitudedata(2*j  ); // Yes only one
+						   // minus sign
+	result(2*j  ,2*j-1)= amplitudedata(2*j);      
+	result(2*j  ,2*j  )= amplitudedata(2*j-1);      
+      }	// end for loop
+    }	// if(Nf>0)
+    return result;
+  }
+  
   // Internal methods for syncing time and amplitude data
   void var::dft() {
     TRACE(0,"var::dft()");
@@ -207,9 +223,6 @@ namespace variable {
     var newvar(*(this->gc));
     newvar.settdata(tdata);
     return newvar;
-  }
-  var::~var() {// The destructor
-    TRACE(-5,"var destructor called");
   }
   //***************************************** End of the var class
 

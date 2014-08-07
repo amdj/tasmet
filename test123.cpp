@@ -5,7 +5,7 @@
 #include "isentropictube.h"
 #include "twimpedance.h"
 #include "pressurebc.h"
-#include "laminarduct.h"
+#include "hopkinslaminarduct.h"
 #include "tubevertex.h"
 #include "impedancebc.h"
 #include "isotwall.h"
@@ -50,7 +50,7 @@ int main(int argc,char* argv[]) {
   d kappa=0.1;
   Globalconf gc(Nf,f,"air",T0,p0,0,kappa);
   Geom geom1=Geom::Cylinder(gp,L,rtube);
-  LaminarDuct t1(geom1);
+  HopkinsLaminarDuct t1(geom1);
   // t1.Init(gc);
   var pL(gc,0);
   if(Nf>0)

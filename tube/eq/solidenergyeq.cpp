@@ -12,8 +12,7 @@ namespace tube{
     this->Tr=Tr;
   }
   void SolidTPrescribed::setTs(d T){
-    Tset=true;
-    Tl=Tr=T;
+    setTs(T,T);
   }
   vd SolidTPrescribed::error(const TubeVertex& v) const {		// Error in momentum equation
     TRACE(6,"SolidTPrescribed::Error()");
@@ -21,8 +20,10 @@ namespace tube{
     assert(v.gc!=NULL);
     assert(v.lg.geom!=NULL);
     vd error;
-    if(Tset==false)
-      error=v.Ts()-v.gc->T0;
+    if(Tset==false){
+      error=v.Ts();
+      error(0)+=-v.gc->T0;
+    }
     else
       error=v.Ts()-(Tl+(v.lg.vxi/v.lg.geom->L)*(Tr-Tl));
     return error;

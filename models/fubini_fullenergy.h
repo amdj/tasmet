@@ -6,7 +6,7 @@
 #include "gas.h"
 #include "twimpedance.h"
 #include "impedancebc.h"
-#include "laminarduct.h"
+#include "hopkinslaminarduct.h"
 #include "pressurebc.h"
 using namespace segment;
 using namespace tasystem;
@@ -32,7 +32,7 @@ Solver* Fubini_fullenergy(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
   Globalconf gc(Nf,freq,"air",T0,p0,Mass,kappa);
   gc.show();
   Geom geom1=Geom::Cylinder(gp,L,R);
-  LaminarDuct t1(geom1);
+  HopkinsLaminarDuct t1(geom1);
   // TRACE(30,"p1:"<<p1);
   var pL(gc);
   for(us i=0;i<Ns;i++)

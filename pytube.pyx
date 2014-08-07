@@ -45,6 +45,7 @@ cdef class pytube:
             self.ntubes=1
         elif case == 'cone':
             assert(S2>0)
+            print('Case ConeTube')
             r1=np.sqrt(S/np.pi)
             r2=np.sqrt(S2/np.pi)
             self.sol=ConeTube(gp,Nf,freq,L,r1,r2,dndtovec(p1),loglevel,kappa)

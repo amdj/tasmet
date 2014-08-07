@@ -9,18 +9,20 @@
 #ifndef HOPKINSLAMINARDUCT_H_
 #define HOPKINSLAMINARDUCT_H_
 #include "laminarduct.h"
-
+#include "hopkinsheat.h"
 namespace tube{
 
   class HopkinsLaminarDuct:public LaminarDuct{
+    HopkinsHeatSource hopkinsheat;
+    HeatSource noheatatall;
   public:
-    HopkinsLaminarDuct(const Geom& geom):LaminarDuct(geom){}
-    HopkinsLaminarDuct(const HopkinsLaminarDuct& o):HopkinsLaminarDuct(o.geom){}
+    HopkinsLaminarDuct(const Geom& geom):LaminarDuct(geom),hopkinsheat(*this){    type="HopkinsLaminarDuct";}
+    HopkinsLaminarDuct(const HopkinsLaminarDuct& o);
     HopkinsLaminarDuct& operator=(const HopkinsLaminarDuct&);
+    virtual const HeatSource& getHeatSource() const { return hopkinsheat;}
+    // virtual const HeatSource& getHeatSource() const { return noheatatall;}
   };
-
-  HopkinsLaminarDuct ColdHopkinsLaminarDuct(const Geom& geom	\
-					    ,const Globalconf& gc);
+  HopkinsLaminarDuct HopkinsLaminarDuctTs(const Geom& geom,d Ts);
 
 
 

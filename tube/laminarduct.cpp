@@ -25,13 +25,27 @@ namespace tube {
     TRACE(13,"LaminarDuct constructor()...");
     type="LaminarDuct";
   }
-  LaminarDuct::LaminarDuct(const LaminarDuct& other):LaminarDuct(other.geom){
+  LaminarDuct::LaminarDuct(const LaminarDuct& o):LaminarDuct(o.geom){
+    c=o.c;
+    m=o.m;
+    e=o.e;
+    s=o.s;
+    se=o.se;
+    laminardrag=o.laminardrag;
+    heat=o.heat;
   }
-  LaminarDuct& LaminarDuct::operator=(const LaminarDuct& other){
+  LaminarDuct& LaminarDuct::operator=(const LaminarDuct& o){
     TRACE(13,"LaminarDuct copy assignment");
-    Tube::operator=(other);
+    Tube::operator=(o);
     // drag(geom);
     cleanup();
+    c=o.c;
+    m=o.m;
+    e=o.e;
+    s=o.s;
+    se=o.se;
+    laminardrag=o.laminardrag;
+    heat=o.heat;    
     return *this;
   }  
   void LaminarDuct::init(const Globalconf& gc){

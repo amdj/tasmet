@@ -4,7 +4,7 @@
 
 #include "solver.h"
 #include "gas.h"
-#include "laminarduct.h"
+#include "hopkinslaminarduct.h"
 #include "isentropictube.h"
 #include "twimpedance.h"
 #include "pressurebc.h"
@@ -27,7 +27,7 @@ Solver* ConeTube(us gp,us Nf,d freq,d L,d r1,d r2,vd p1,int loglevel,d kappa)
   gc.show();
   
   Geom geom1(Geom::Cone(gp,L,r1,r2));
-  LaminarDuct t1(geom1);
+  HopkinsLaminarDuct t1=HopkinsLaminarDuctTs(geom1,T0);
   // IsentropicTube t1(geom1);  
   // TRACE(30,"p1:"<<p1);
   

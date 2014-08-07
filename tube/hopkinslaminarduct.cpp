@@ -3,10 +3,20 @@
 
 namespace tube{
 
-
-  HopkinsLaminarDuct ColdHopkinsLaminarDuct(const Geom& geom,const Globalconf& gc){
+  HopkinsLaminarDuct::HopkinsLaminarDuct(const HopkinsLaminarDuct& o):HopkinsLaminarDuct(o.geom)
+  {
+    LaminarDuct::operator=(o);
+    hopkinsheat=o.hopkinsheat;    
+  }
+  HopkinsLaminarDuct& HopkinsLaminarDuct::operator=(const HopkinsLaminarDuct& o)
+  {
+    LaminarDuct::operator=(o);
+    hopkinsheat=o.hopkinsheat;
+    return *this;
+  }
+  HopkinsLaminarDuct HopkinsLaminarDuctTs(const Geom& geom,d Ts){
     HopkinsLaminarDuct d(geom);
-     d.se.setTs(gc.T0);
+    d.se.setTs(Ts);
     return d;
   }
   

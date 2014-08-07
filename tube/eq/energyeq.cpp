@@ -1,6 +1,6 @@
 #include "energyeq.h"
 #include "tubevertex.h"
-
+#include "tube.h"
 
 // #define EN_VISCOSITY
 
@@ -24,6 +24,10 @@ namespace tube{
   //     ;      
 
   // }
+  void Energy::init(const Tube& t){
+    TRACE(8,"Energy::init(tube)");
+    heat=&t.getHeatSource();
+  }
   vd Energy::error(const TubeVertex& v) const {		// Error in momentum equation
     TRACE(6,"Energy::Error(), i="<<v.i);
     assert(v.gc!=NULL);
@@ -34,10 +38,10 @@ namespace tube{
     d gamma=this->gamma(v);
     d gamfac=gamma/(gamma-1.0);
 
-    vd Uti=v.U.tdata();
+    const vd& Uti=v.U.tdata();
     vd pti=v.p.tdata()+v.getp0t();
-    vd Tti=v.T.tdata();
-    vd rhoti=v.rho.tdata();
+    const vd& Tti=v.T.tdata();
+    const vd& rhoti=v.rho.tdata();
 
     
     error+=v.eWddt*DDTfd*v.p()/(gamma-1.0); // Static enthalpy term
@@ -49,25 +53,25 @@ namespace tube{
     error+=fDFT*((v.eWc2*kappaL(v)+v.eWc3*kappaR(v))%Tti);
     // TRACE(100,"error:"<<error);
     if(v.left!=NULL){
-      vd Utim1=v.left->U.tdata();
+      const vd& Utim1=v.left->U.tdata();
       vd ptim1=v.left->p.tdata()+v.getp0t();
-      vd rhotim1=v.left->rho.tdata();
+      const vd& rhotim1=v.left->rho.tdata();
       error+=fDFT*(v.eWgim1*gamfac*ptim1%Utim1);
       error+=fDFT*(v.eWkinim1*0.5*rhotim1%pow(Utim1,3));
 
       // Conduction term
-      vd Tim1=v.left->T.tdata();
+      const vd& Tim1=v.left->T.tdata();
       error+=v.eWc1*fDFT*(kappaL(v)%Tim1);
 
     }
     // TRACE(100,"error:"<<error);
     if(v.right!=NULL){
-      vd Utip1=v.right->U.tdata();
+      const vd& Utip1=v.right->U.tdata();
       vd ptip1=v.right->p.tdata()+v.getp0t();
-      vd rhotip1=v.right->rho.tdata(); 
+      const vd& rhotip1=v.right->rho.tdata(); 
       error+=fDFT*(v.eWgip1*gamfac*ptip1%Utip1);
       error+=fDFT*(v.eWkinip1*0.5*rhotip1%pow(Utip1,3));
-      vd Tip1=v.right->T.tdata();
+      const vd& Tip1=v.right->T.tdata();
       error+=v.eWc4*fDFT*(kappaR(v)%Tip1);
     }
 
@@ -87,9 +91,11 @@ namespace tube{
       error+=d_l(v)*(v.left->p()-v.left->left->p())*vSf;
     }
     #endif
-
+    assert(heat!=NULL);
+    error+=v.eWddt*heat->heat(v);
     // (Boundary source term)
     error+=v.esource();
+    
     // TRACE(100,"error:"<<error);
     return error;
   }
@@ -150,7 +156,7 @@ namespace tube{
     const dmat& DDTfd=v.gc->DDTfd;
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      
-    vd Uti=v.U.tdata();
+    const vd& Uti=v.U.tdata();
     dmat dpip1=v.zero;
     d gamma=this->gamma(v);
     d gamfac=gamma/(gamma-1.0);
@@ -179,15 +185,15 @@ namespace tube{
     d gamma=this->gamma(v);
     d gamfac=gamma/(gamma-1.0);
 
-    vd rhoti=v.rho.tdata();
-    vd Uti=v.U.tdata();
+    const vd& rhoti=v.rho.tdata();
+    const vd& Uti=v.U.tdata();
     vd pti=v.p.tdata()+v.getp0t();
-
     d vSfsq=pow(v.lg.vSf,2);
     dUi+=DDTfd*fDFT*diagmat(v.eWddt*rhoti%Uti/vSfsq)*iDFT; // This term should get a eWuddt factor later on
     dUi+=fDFT*diagmat(v.eWgi*gamfac*pti)*iDFT;
     dUi+=fDFT*diagmat(v.eWkini*3*0.5*rhoti%pow(Uti,2))*iDFT;
-
+    assert(heat!=NULL);
+    dUi+=v.eWddt*heat->dUi(v);
     return dUi;
   }
   dmat Energy::drhoi(const TubeVertex& v) const {
@@ -199,7 +205,7 @@ namespace tube{
     d gamma=this->gamma(v);
     d gamfac=gamma/(gamma-1.0);
 
-    vd Uti=v.U.tdata();
+    const vd& Uti=v.U.tdata();
     d vSfsq=pow(v.lg.vSf,2);
     drhoi+=DDTfd*fDFT*diagmat(0.5*v.eWddt*pow(Uti,2)/vSfsq)*iDFT; // This term should get a eWuddt factor later on
     drhoi+=fDFT*diagmat(v.eWkini*0.5*pow(Uti,3))*iDFT;
@@ -214,9 +220,9 @@ namespace tube{
     d gamfac=gamma/(gamma-1.0);
     dmat dUim1=v.zero;
     if(v.left!=NULL){
-      vd Utim1=v.left->U.tdata();
+      const vd& Utim1=v.left->U.tdata();
       vd ptim1=v.left->p.tdata()+v.getp0t();
-      vd rhotim1=v.left->rho.tdata(); 
+      const vd& rhotim1=v.left->rho.tdata(); 
       dUim1+=fDFT*diagmat(v.eWgim1*gamfac*ptim1)*iDFT;
       dUim1+=fDFT*diagmat(v.eWkinim1*3*0.5*rhotim1%pow(Utim1,2))*iDFT;
 
@@ -231,9 +237,9 @@ namespace tube{
     d gamfac=gamma/(gamma-1.0);
     dmat dUip1=v.zero;
     if(v.right!=NULL){
-      vd Utip1=v.right->U.tdata();
+      const vd& Utip1=v.right->U.tdata();
       vd ptip1=v.right->p.tdata()+v.getp0t();
-      vd rhotip1=v.right->rho.tdata(); 
+      const vd& rhotip1=v.right->rho.tdata(); 
       dUip1+=fDFT*diagmat(v.eWgip1*gamfac*ptip1)*iDFT;
       dUip1+=fDFT*diagmat(v.eWkinip1*3*0.5*rhotip1%pow(Utip1,2))*iDFT;
 
@@ -248,7 +254,7 @@ namespace tube{
     d gamfac=gamma/(gamma-1.0);
     dmat drhoim1=v.zero;
     if(v.left!=NULL){
-      vd Utim1=v.left->U.tdata();
+      const vd& Utim1=v.left->U.tdata();
       drhoim1+=fDFT*diagmat(v.eWkinim1*0.5*pow(Utim1,3))*iDFT;
     }
     return drhoim1;
@@ -261,8 +267,8 @@ namespace tube{
     d gamfac=gamma/(gamma-1.0);
     dmat drhoip1=v.zero;
     if(v.right!=NULL){
-      vd rhotip1=v.right->rho.tdata();
-      vd Utip1=v.right->U.tdata();
+      const vd& rhotip1=v.right->rho.tdata();
+      const vd& Utip1=v.right->U.tdata();
       drhoip1+=fDFT*diagmat(v.eWkinip1*0.5*pow(Utip1,3))*iDFT;
     }
     return drhoip1;
@@ -309,6 +315,8 @@ namespace tube{
     TRACE(0,"Energy::dTi()");
     dmat dTi=v.zero;
     dTi+=fDFT*diagmat(v.eWc2*kappaL(v)+v.eWc3*kappaR(v))*iDFT;
+    assert(heat!=NULL);
+    dTi+=v.eWddt*heat->dTi(v);
     return dTi;
   }
   dmat Energy::dTim1(const TubeVertex& v) const {
@@ -340,7 +348,7 @@ namespace tube{
     //   kappaL=v.wL1*kappaitp1+v.wL0*kappait;
     // }
     // else{
-    //   vd Ttim1=v.left->T.tdata();
+    //   const vd& Ttim1=v.left->T.tdata();
     //   vd kappaitm1=v.gc->gas.kappa(Ttim1);
     //   kappaL=v.wLr*kappait+v.wLl*kappaitm1;
     // }
@@ -357,16 +365,16 @@ namespace tube{
     const dmat& iDFT=v.gc->iDFT;      
     
     // vd kappaR(v.gc->Ns,fillwith::zeros);
-    // vd Tti=v.T.tdata();
+    // const vd& Tti=v.T.tdata();
     // vd kappait=v.gc->gas.kappa(Tti);
 
     // if(v.right==NULL){
-    //   vd Ttim1=v.left->T.tdata();
+    //   const vd& Ttim1=v.left->T.tdata();
     //   vd kappaitm1=v.gc->gas.kappa(Ttim1);
     //   kappaR=v.wRNm2*kappaitm1+v.wRNm1*kappait;
     // }
     // else{
-    //   vd Ttip1=v.right->T.tdata();
+    //   const vd& Ttip1=v.right->T.tdata();
     //   vd kappaitp1=v.gc->gas.kappa(Ttip1);
     //   kappaR=v.wRl*kappait+v.wRr*kappaitp1;
     // }
