@@ -109,6 +109,4 @@ namespace segment{
     cout << "--------------------------\n"	\
       ;
   }
-
-  Geom::~Geom(){}
 } // namespace segment

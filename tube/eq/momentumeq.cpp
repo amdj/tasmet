@@ -82,7 +82,6 @@ namespace tube{
     assert(drag!=NULL);
     error+=v.mWddt*drag->drag(v);
 
-    
     // (Boundary) source term
     error+=v.msource();
     return error;

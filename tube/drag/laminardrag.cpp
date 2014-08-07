@@ -6,7 +6,9 @@ namespace tube{
   
   LaminarDragResistance::LaminarDragResistance(const Tube& t):zfd(t){
     TRACE(10,"LaminarDragResistanc::LaminarDragResistance()");
+    TRACE(11,"Entering redefinition of Rottfuncs");
     rf=rottfuncs::RottFuncs(t.geom.shape); // Reinitialize thermoviscous functions with right shape
+    TRACE(11,"Exiting redefinition of Rottfuncs");
   }
 
   vc LaminarDragResistance::ComplexResistancecoef(const TubeVertex& v) const {
