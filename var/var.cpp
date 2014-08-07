@@ -139,7 +139,7 @@ namespace variable {
     amplitudedata(0)=res(0).real();
     for(us i=1;i<Nf+1;i++){
       amplitudedata(2*i-1)=res(i).real();
-      amplitudedata(2*i)=-1.0*res(i).imag();
+      amplitudedata(2*i)=res(i).imag();
     }
     idft();
   }
