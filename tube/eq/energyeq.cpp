@@ -263,7 +263,7 @@ namespace tube{
     if(v.right!=NULL){
       vd rhotip1=v.right->rho.tdata();
       vd Utip1=v.right->U.tdata();
-      drhoip1+=fDFT*diagmat(v.eWkinip1*0.5*pow(rhotip1,3))*iDFT;
+      drhoip1+=fDFT*diagmat(v.eWkinip1*0.5*pow(Utip1,3))*iDFT;
     }
     return drhoip1;
   }

@@ -79,6 +79,7 @@ namespace tube{
     #endif
 
     // Drag term
+    assert(drag!=NULL);
     error+=v.mWddt*drag->drag(v);
 
     
@@ -102,6 +103,7 @@ namespace tube{
     else
       dUi+=-v.gc->rho0*d_r(v);
     #endif
+    assert(drag!=NULL);
     dUi+=v.mWddt*drag->dUi(v);
     return dUi;
   }
