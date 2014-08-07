@@ -79,7 +79,8 @@ namespace tube{
     vd heat(v.gc->Ns,fillwith::zeros);
     variable::var htcoefH(v.gc);
     htcoefH.set(HeatTransferCoefH(v));
-    heat+=htcoefH()%(v.T()-v.Ts());
+    TRACE(100,"TminTs:\n"<<v.T()-v.Ts());
+    heat+=htcoefH.freqMultiplyMat()*(v.T()-v.Ts());
     return heat;    
   }
   dmat HopkinsHeatSource::dTi(const TubeVertex& v) const{
@@ -93,7 +94,6 @@ namespace tube{
   vc HopkinsHeatSource::HeatTransferCoefH(const TubeVertex& v) const{
     TRACE(8,"HopkinsHeatSource::HeatTransferCoefH()");
     const us& Nf=v.gc->Nf;
-    const us& i=v.i;
     d T0=v.T(0);	// Time-averaged temperature
     d kappa0=v.gc->gas.kappa(T0);
     d p0=v.p(0)+v.gc->p0;
@@ -103,14 +103,14 @@ namespace tube{
 
     d omg=v.gc->omg;
     vc htcoefH(Nf+1,fillwith::zeros);
+    htcoefH(0)=(*zeroheatH_funptr)(kappa0,rh);
     if(Nf>0){
       vd omgvec=omg*linspace(1,Nf,Nf);
       vd deltak=sqrt(2*kappa0/(rho0*cp0*omgvec));
       vc fk=rf.fx(rh/deltak); // Thermal rott function
-      // htcoefH.subvec(1,Nf)=I*rho0*cp0*omgvec%(fk/(1-fk));
+      htcoefH.subvec(1,Nf)=I*rho0*cp0*omgvec%(fk/(1-fk));
     }
-    htcoefH(0)=(*zeroheatH_funptr)(kappa0,rh);
-    // TRACE(100,"htcoefH0:"<<htcoefH(0));
+    TRACE(100,"htcoefH0:"<<htcoefH(0));
     return htcoefH;
   }
 

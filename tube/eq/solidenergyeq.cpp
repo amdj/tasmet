@@ -24,8 +24,10 @@ namespace tube{
       error=v.Ts();
       error(0)+=-v.gc->T0;
     }
-    else
-      error=v.Ts()-(Tl+(v.lg.vxi/v.lg.geom->L)*(Tr-Tl));
+    else{
+      error=v.Ts();
+      error(0)+=-(Tl+(v.lg.vxi/v.lg.geom->L)*(Tr-Tl));
+    }
     return error;
   }
   dmat SolidTPrescribed::dTsi(const TubeVertex& v) const {

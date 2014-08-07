@@ -20,7 +20,6 @@ namespace tube{
     HopkinsLaminarDuct(const HopkinsLaminarDuct& o);
     HopkinsLaminarDuct& operator=(const HopkinsLaminarDuct&);
     virtual const HeatSource& getHeatSource() const { return hopkinsheat;}
-    // virtual const HeatSource& getHeatSource() const { return noheatatall;}
   };
   HopkinsLaminarDuct HopkinsLaminarDuctTs(const Geom& geom,d Ts);
 

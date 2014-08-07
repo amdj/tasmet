@@ -43,7 +43,7 @@ namespace tube{
       TRACE(100,"omgvec:\n"<<omgvec);
       vd deltanu=sqrt(2*mu0/(rho0*omgvec));
       vd rh_over_deltanu=rh/deltanu;
-      vc fnu=rf.fx(rh_over_deltanu); // Viscous rott function
+      vc fnu=rf.fx(rh/deltanu); // Viscous rott function
       rescoef.subvec(1,Nf)=I*rho0*omgvec%(fnu/(1.0-fnu));
     }
     rescoef(0)=zfd(mu0,rh);	// Zero frequency drag divided by zero-frequency velocity
