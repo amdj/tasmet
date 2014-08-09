@@ -42,13 +42,15 @@ Solver* Fubini_fullenergy(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
   // cout << Zv;
   LeftPressure bleft(0,pL);
   TwImpedance bright(0);
+  t1.addBc(bleft);
+  t1.addBc(bright);
+
   // RightImpedance bright(0,Zv);
   TAsystem sys(gc);
+
   sys.addSeg(t1);
-  sys.addBc(bleft);
-  sys.addBc(bright);
   Solver* Sol=new Solver(sys);
-  Sol->sys->show(false);
+  Sol->sys.show(false);
   return Sol;  
 }
 

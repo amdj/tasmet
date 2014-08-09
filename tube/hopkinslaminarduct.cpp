@@ -16,9 +16,11 @@ namespace tube{
   }
   HopkinsLaminarDuct HopkinsLaminarDuctTs(const Geom& geom,d Ts){
     HopkinsLaminarDuct d(geom);
-    d.se.setTs(Ts);
+    d.se.setTs(geom,Ts);
     return d;
   }
-  
+  SegBase* HopkinsLaminarDuct::copy() const{
+    return new HopkinsLaminarDuct(*this);
+  }
 
 }

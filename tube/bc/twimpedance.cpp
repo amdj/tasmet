@@ -3,7 +3,7 @@
 #include "tube.h"
 #include "twimpedance.h"
 #include "tubevertex.h"
-
+#include "w.h"
 
 namespace tube{
   TwImpedance::TwImpedance(us segnr):TubeBcVertex(segnr){
@@ -36,37 +36,36 @@ namespace tube{
   
   void TwImpedance::updateW(const SegBase& thisseg){
     TRACE(8,"TwImpedance::updateW()");
-
+    w(*this);
     cWddt=lg.vVf;
-    cWim1=wRNm2-wLl;
-    cWi  =wRNm1-wLr;
+    cWim1=w.wRNm2-w.wLl;
+    cWi  =w.wRNm1-w.wLr;
     cWip1=0;
 
     // Change momentum eq for open boundary
     mWddt=lg.vVf/lg.vSf;	// VERY IMPORTANT: update this!! (Is still zero)
-    mWuim1=-wLl/lg.SfL+wRNm2/lg.SfR;
-    mWui	=-wLr/lg.SfL+wRNm1/lg.SfR;
+    mWuim1=-w.wLl/lg.SfL+w.wRNm2/lg.SfR;
+    mWui	=-w.wLr/lg.SfL+w.wRNm1/lg.SfR;
     mWuip1=0;
 
-    mWpim1=-lg.SfL*wLl;
-    mWpi	=-lg.SfL*wLr+(lg.SfL-lg.SfR);
+    mWpim1=-w.vSfL*w.wLl;
+    mWpi	=-w.vSfL*w.wLr+(lg.SfL-lg.SfR);
     mWpip1=0;
     
-    eWgim1=-wLl+wRNm2;
-    eWgi  =-wLr+wRNm1;
+    eWgim1=-w.wLl+w.wRNm2;
+    eWgi  =-w.wLr+w.wRNm1;
     eWgip1=0;
 
-    d SfLsq=pow(lg.SfL,2);
+    d SfLsq=pow(w.vSfL,2);
     d SfRsq=pow(lg.SfR,2);
-    eWkinim1=-wLl/SfLsq+wRNm2/SfRsq;
-    eWkini=-wLr/SfLsq+wRNm1/SfRsq;
+    eWkinim1=-w.wLl/SfLsq+w.wRNm2/SfRsq;
+    eWkini=-w.wLr/SfLsq+w.wRNm1/SfRsq;
     eWkinip1=0;
 
-    eWc1=-lg.SfL/lg.dxm;
-    eWc2= lg.SfL/lg.dxm;
+    eWc1=-w.vSfL/w.dxm;
+    eWc2= lg.vSf/w.dxm;
     eWc3=lg.SfR/lg.xr;
     eWc4=0;
-
   }
 
   vd TwImpedance::esource() const {
@@ -80,9 +79,9 @@ namespace tube{
     d c0=gc->gas.cm(T0);
     d gamma=gc->gas.gamma(T0);
     // vd p0t=p0*vd(gc->Ns,fillwith::ones);
-    vd urt=(wRNm1*U.tdata()+wRNm2*left->U.tdata())/lg.SfR;
-    vd prt=p0*pow(1.0+((gamma-1.0)/2.0)*urt/c0,2.0*gamma/(gamma-1.0));
-    // vd prt=(p0+wRNm1*p.tdata()+wRNm2*left->p.tdata());
+    // vd urt=(wRNm1*U.tdata()+wRNm2*left->U.tdata())/lg.SfR;
+    // vd prt=p0*pow(1.0+((gamma-1.0)/2.0)*urt/c0,2.0*gamma/(gamma-1.0));
+    vd prt=(p0+w.wRNm1*p.tdata()+w.wRNm2*left->p.tdata());
     // TRACE(100,"prt:"<<prt);
     vd Trt=T0*pow(prt/p0,(gamma-1.0)/gamma);		// Adiabatic compression/expansion
     // TRACE(100,"Trt:"<<Trt);
@@ -143,7 +142,7 @@ namespace tube{
     d c0=v.gc->gas.cm(T0);
     d p0=v.gc->p0;
     d gamma=v.gc->gas.gamma(T0);
-    vd ur=(v.wRNm1*v.U()+v.wRNm2*v.left->U())/v.lg.SfR;
+    vd ur=(v.w.wRNm1*v.U()+v.w.wRNm2*v.left->U())/v.lg.SfR;
     vd urtd=v.gc->iDFT*ur;
     vd pr=v.gc->fDFT*(p0*pow(1.0+((gamma-1.0)/2.0)*urtd/c0,2.0*gamma/(gamma-1.0))-p0);
     vd errorZ=v.lg.SfR*pr;
@@ -161,11 +160,11 @@ namespace tube{
     d gamma=v.gc->gas.gamma(T0);
     d z0=p0*gamma/c0;
     // TRACE(30,"z0:"<<z0);
-    vd ur=(v.wRNm1*v.U()+v.wRNm2*v.left->U())/v.lg.SfR;
+    vd ur=(v.w.wRNm1*v.U()+v.w.wRNm2*v.left->U())/v.lg.SfR;
     vd urtd=v.gc->iDFT*ur;
     dmat Z=v.gc->fDFT*(z0/v.lg.SfR)*diagmat(pow(1.0+((gamma-1.0)/2.0)*urtd/c0,(gamma+1.0)/(gamma-1.0)))*v.gc->iDFT;
 
-    dUi+=v.wRNm1*v.lg.SfR*Z;
+    dUi+=v.w.wRNm1*v.lg.SfR*Z;
     return dUi;
   }
 
@@ -179,11 +178,11 @@ namespace tube{
     d gamma=v.gc->gas.gamma(T0);
     d z0=p0*gamma/c0;
 
-    vd ur=(v.wRNm1*v.U()+v.wRNm2*v.left->U())/v.lg.SfR;
+    vd ur=(v.w.wRNm1*v.U()+v.w.wRNm2*v.left->U())/v.lg.SfR;
     vd urtd=v.gc->iDFT*ur;
     dmat Z=v.gc->fDFT*(z0/v.lg.SfR)*diagmat(pow(1.0+((gamma-1.0)/2.0)*urtd/c0,(gamma+1.0)/(gamma-1.0)))*v.gc->iDFT;
     TRACE(-2,"Z:"<<Z);
-    dUim1+=v.wRNm2*v.lg.SfR*Z;
+    dUim1+=v.w.wRNm2*v.lg.SfR*Z;
     return dUim1;
   }
 

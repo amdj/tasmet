@@ -49,9 +49,19 @@ int main(int argc,char* argv[]) {
   d Mach=0.1;
   d kappa=0.1;
   Globalconf gc(Nf,f,"air",T0,p0,0,kappa);
+  Globalconf air=Globalconf::airSTP(Nf,f);
+  air=gc;
   Geom geom1=Geom::Cylinder(gp,L,rtube);
-  HopkinsLaminarDuct t1(geom1);
-  // t1.Init(gc);
+  IsentropicTube t1(geom1);
+
+  // TRACE(100,"Thisrho:");  
+  TRACE(100,"Thisrho:"<< gc.gas.rho(T0,p0));
+  Globalconf gc2=Globalconf::airSTP(2,100);
+  // gc2=gc;
+  // TRACE(100,"Thisrho:");   
+  // TRACE(100,"Thisrho:"<< gc2.gas.rho(T0,p0));
+  // TRACE(100,"Thisrho:");  
+
   var pL(gc,0);
   if(Nf>0)
     pL.set(1,1);
@@ -59,26 +69,41 @@ int main(int argc,char* argv[]) {
   // tube::RightImpedance bcright(0,415*vd(Ns,fillwith::ones));
   // tube::TwImpedance bcright(0);
   // tube::RightIsoTWall bcright(0,T0+10);
-  TAsystem sys(gc);
-  sys.addSeg(t1);  
-  // sys.connectSegs(0,1,SegCoupling::tailhead);
-  sys.addBc(bcleft);
-  // sys.addBc(bcright);
-    
+  // TRACE(100,"Add bc to tube...");
+  t1.addBc(bcleft);
+  // TRACE(100,"Add bc to tube done...");
+
+  // TRACE(100,"Creating empty TAsystem...");
+  TAsystem sys(air);
+  // TRACE(100,"Filling TAsystem with a segment...");
+  // auto t2(t1);
+  sys.addSeg(t1); 
+  // TRACE(100,"Filling segment done...");      
+  // // sys.connectSegs(0,1,SegCoupling::tailhead);
+  sys.init();
+  // // sys.addBc(bcright);
+  // TRACE(100,"Copy TAsystem...");    
+  // // TAsystem sys2(gc);
+  // // sys2.addSeg(t2);
+  // TRACE(100,"Copy TAsystem done...");      
+  // TRACE(100,"Running init on first sys:=================================");
+  // TRACE(100,"---------------------------------------------------sys init done. now starting sys2 init9");
+  // sys2.init();
+  // sys2.show();
   // cout << sys.getSeg(0)->GetRes() << "\n";
   Solver sol(sys);
-  // sol.sys->Init();
+  // sol.sys.init();
   // sys.getSeg(0)->Error();
   // sol.sys->getSeg(0)->Jac();
-  sol.sys->init();
-  sys.show(true);
+  // sol.sys->init();
+  // sys.show(true);
   // sol.sys->show(true);
-  cout << "Jac:\n"<< sol.sys->jac();
+  // cout << "Jac:\n"<< sol.sys->jac();
 // sol.sys
 
   // Solver sol2(sol);n
-  cout << "Result:\n" << sol.sys->getRes();  
-  cout << "Error:\n" << sol.sys->error();
+  cout << "Result:\n" << sol.sys.getRes();  
+  cout << "Error:\n" << sol.sys.error();
   // sol.doIter();
     // // // vd x=t1.GetRmomes();
   // // vd err=sol.sys->Error();

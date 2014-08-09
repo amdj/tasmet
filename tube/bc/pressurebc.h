@@ -9,7 +9,6 @@
 namespace tube{
   SPOILNAMESPACE
   using variable::var;
-  using segment::connectpos;
 
   // class PressureBcEnergyEq:public Energy
   // {
@@ -31,6 +30,7 @@ namespace tube{
     LeftPressure& operator=(const LeftPressure&);
     ~LeftPressure(){}
     virtual void initTubeVertex(us i,const Tube&);
+    virtual TubeBcVertex* copy() const { return new LeftPressure(*this);}
   private:
     void updateW(const SegBase&);
   public:

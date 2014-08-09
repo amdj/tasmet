@@ -24,7 +24,7 @@ namespace segment {
     us gp;         // Number of cell walls
     us nCells;	 // Number of cells is gp-1
     d L;		 //Length of the Segment
-    vd x;		 // Position of cell walls
+    vd x;		 // Position of *CELL WALLS*
     vd S;		 // Cross sectional area as a function of x
     vd phi;		 // Volume porosity at position of cell walls
     string shape;	 // Shape keyword: currently available: 'circ','vert','blapprox'
@@ -45,7 +45,7 @@ namespace segment {
     vd vphi;			// Volume porosity of vertex
     vd vrh;			// Hydraulic radius of vertex
 
-    void show();
+    void show() const;
     void setPrismatic(bool isprismatic){prismatic=isprismatic;}
 
   };                            /* class Geom */

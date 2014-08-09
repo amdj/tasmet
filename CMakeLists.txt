@@ -37,8 +37,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CLANG_FLAGS} ")
 #           between the various stages of compilation.  This fails to
 #           work on some systems where the assembler is unable to
 #           read from a pipe; but the GNU assembler has no trouble.
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pipe -fPIC -Wall \
- -Wno-unused-function -Woverloaded-virtual  \
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -pipe -fPIC -Wall \
+ -Wno-unused-function -Woverloaded-virtual -Wextra -Wno-unused-parameter \
  -Wno-unused-variable -Wno-unused-but-set-variable \
  -Wno-return-local-addr -Wno-cpp  -Wno-address")
 

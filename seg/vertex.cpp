@@ -4,16 +4,14 @@
 
 namespace segment{
 
-  Vertex::Vertex(const Vertex& o):Vertex(){
-    TRACE(8,"Vertex copy constructor. Copying only LocalGeom");
-    lg=o.lg;
-  }
-  void Vertex::init(us i,const SegBase& thisseg){
+  void Vertex::init(us i,const Globalconf& gc1){
     TRACE(8,"Vertex::Init()");
-    gc=thisseg.gc;
-    lg=thisseg.geom.localGeom(i);
+    this->i=i;
+    TRACE(100,"Address of gc I got:"<<&gc1);
+    this->gc=&gc1;
   }
-
+  void Vertex::setLeft(const Vertex& v) { left.push_back(&v);}
+  void Vertex::setRight(const Vertex& v) {right.push_back(&v);}
 
 } // namespace segment
 

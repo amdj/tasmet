@@ -5,13 +5,9 @@ namespace tasystem{
 
   void coupleSegs(const SegConnection& sc,TAsystem& sys){
     TRACE(14,"coupleSegs()");
-    Seg& seg1=*sys.getSeg(sc.firstseg);
-    Seg& seg2=*sys.getSeg(sc.secondseg);
+    SegBase& seg1=*sys.getSeg(sc.firstseg);
+    SegBase& seg2=*sys.getSeg(sc.secondseg);
     SegCoupling coupling=sc.coupling;
-    us seg1size=seg1.vvertex.size();
-    us seg2size=seg2.vvertex.size();
-    assert(seg1size>0);
-    assert(seg2size>0);
     if (coupling==tailhead){
       // Seg1 is coupled with its tail to Seg2's head
       TRACE(3,"Coupling seg1 with its tail to the head of seg2");

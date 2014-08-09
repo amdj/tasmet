@@ -36,12 +36,12 @@ cdef class pytube:
         if case =='fubini':
             print('Case Fubini')
             self.sol=Fubini(gp,Nf,freq,L,S,dndtovec(p1),loglevel,kappa)
-            self.tube[0]=<Tube*> self.sol[0].sys[0].getSeg(0)
+            self.tube[0]=<Tube*> self.sol[0].sys.getSeg(0)
             self.ntubes=1
         elif case =='fubini_fullenergy':
             print('Case Fubini_fullenergy')
             self.sol=Fubini_fullenergy(gp,Nf,freq,L,S,dndtovec(p1),loglevel,kappa)
-            self.tube[0]=<Tube*> self.sol[0].sys[0].getSeg(0)
+            self.tube[0]=<Tube*> self.sol[0].sys.getSeg(0)
             self.ntubes=1
         elif case == 'cone':
             assert(S2>0)
@@ -49,21 +49,21 @@ cdef class pytube:
             r1=np.sqrt(S/np.pi)
             r2=np.sqrt(S2/np.pi)
             self.sol=ConeTube(gp,Nf,freq,L,r1,r2,dndtovec(p1),loglevel,kappa)
-            self.tube[0]=<Tube*> self.sol[0].sys[0].getSeg(0)
+            self.tube[0]=<Tube*> self.sol[0].sys.getSeg(0)
             self.ntubes=1
         elif case == 'threetubes':
             assert(S2>0)
             
             self.sol=ThreeTubes(gp,Nf,freq,L,S,S2,dndtovec(p1),loglevel,kappa)
-            self.tube[0]=<Tube*> self.sol[0].sys[0].getSeg(0)
-            self.tube[1]=<Tube*> self.sol[0].sys[0].getSeg(1)
-            self.tube[2]=<Tube*> self.sol[0].sys[0].getSeg(2)
+            self.tube[0]=<Tube*> self.sol[0].sys.getSeg(0)
+            self.tube[1]=<Tube*> self.sol[0].sys.getSeg(1)
+            self.tube[2]=<Tube*> self.sol[0].sys.getSeg(2)
             self.ntubes=3
         else:
             print('Warning: no valid case selected! Tried was: %s' %case)
 
     def show(self):
-        self.sol[0].sys[0].show()    
+        self.sol[0].sys.show()    
     def __dealloc__(self):
         if self.sol!=NULL:
             del self.sol
@@ -83,13 +83,13 @@ cdef class pytube:
         return dvectond(self.tube[i].geom.vSf)
 
     cpdef error(self):
-        return dvectond(self.sol[0].sys[0].error())
+        return dvectond(self.sol[0].sys.error())
     cpdef getRes(self):
-        return dvectond(self.sol[0].sys[0].getRes())
+        return dvectond(self.sol[0].sys.getRes())
     cpdef doIter(self,d relaxfac):
         self.sol[0].doIter(relaxfac)
     cpdef setRes(self,n.ndarray[n.float64_t,ndim=1] res):
-        self.sol[0].sys[0].setRes(dndtovec(res))
+        self.sol[0].sys.setRes(dndtovec(res))
     cpdef getResVar(self,_type,freqnr,i=0):
         assert(i<self.ntubes)
         if _type=='pres':

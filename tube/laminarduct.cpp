@@ -23,7 +23,6 @@ namespace tube {
   LaminarDuct::LaminarDuct(const Geom& geom):Tube(geom),laminardrag(*this){
     // Fill vector of gridpoints with data:
     TRACE(13,"LaminarDuct constructor()...");
-    type="LaminarDuct";
   }
   LaminarDuct::LaminarDuct(const LaminarDuct& o):LaminarDuct(o.geom){
     c=o.c;

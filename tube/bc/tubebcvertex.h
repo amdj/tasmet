@@ -11,29 +11,29 @@
 
 
 #include "tubevertex.h"
-#include "bcvertex.h"
+
 
 namespace tube{
-  using segment::BcVertex;
-  class TubeBcVertex:public TubeVertex,public BcVertex
+  enum connectpos{ left,right};
+  
+  class TubeBcVertex:public TubeVertex
   {
+    us segnumber;
+
   public:
-    TubeBcVertex(us segnr): BcVertex(segnr){
-      TRACE(8,"TubeBcVertex(segnr)");
-    }
-    TubeBcVertex(TubeBcVertex& o):TubeBcVertex(o.segNumber()) {TRACE(8,"TubeBcVertex copy cc.");}
-    TubeBcVertex& operator=(const TubeBcVertex& o)
-    {
-      TRACE(8,"TubeBcVertex::operator=()");
-      setSegNumber(o.segNumber());
-      return *this;      
-    }
+    TubeBcVertex(us segnr);
+    TubeBcVertex(const TubeBcVertex& o);
+    TubeBcVertex& operator=(const TubeBcVertex& o);
     virtual ~TubeBcVertex(){}
-    // virtual Vertex* copy(const SegBase&)=0; // Copy the boundary condition vertex
+    virtual string gettype() const=0;
+    virtual enum connectpos connectPos() const=0;
+    us segNumber() const {return segnumber;}
+    void setSegNumber(us nr){segnumber=nr;}
+    virtual TubeBcVertex* copy() const=0; // Return a copy casted as class
+				    // Vertex. Used when init(gc) is run
+				    // for a tube
   };
   
-
-
 
 } // namespace tube
 

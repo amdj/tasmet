@@ -1,8 +1,9 @@
 #include "system.h"
-#include "segbase.h"
+
 
 namespace tasystem{
   using segment::SegBase;
+
   dmat TAsystem::jac(){
     TRACE(14,"TAsystem::Jac()");
     checkInit();
@@ -10,14 +11,15 @@ namespace tasystem{
     // the different segments in the sense that blocks of Jacobian
     // matrix parts have to be moved to the right place etc. To be
     // continued...
-    TRACE(-1,"Ndofs:"<<Ndofs);
     const us& Ns=gc.Ns;
+    us Ndofs=getNDofs();
     us Nsegs=getNSegs();
+    TRACE(-1,"Ndofs:"<<Ndofs);
     dmat jac(Ndofs,Ndofs);
     us cellblock=Neq*Ns;
     for(us j=0;j<getNSegs();j++){
       TRACE(14,"System loop, segment " << j);
-      segment::Seg& curseg=*segs[j].get();
+      segment::SegBase& curseg=*segs[j].get();
       dmat segjac=curseg.jac();
       TRACE(14,"Obtaining sub-Jacobian for segment "<< j << "...");
       us thisndofs=curseg.getNDofs();
@@ -81,7 +83,8 @@ namespace tasystem{
   vd TAsystem::error(){
     TRACE(14,"TAsystem::Error()");
     checkInit();
-    vd Error(Ndofs);
+    us Ndofs=getNDofs();
+    vd Error(getNDofs());
     us Nsegs=getNSegs();
     us segdofs;
     us startdof=0;
@@ -94,8 +97,10 @@ namespace tasystem{
     return Error;
   }
   vd TAsystem::getRes(){
-    TRACE(14,"TAsystem::GetRes(), Ndofs:"<< Ndofs);
+    TRACE(14,"TAsystem::getRes()");
     checkInit();
+    us Ndofs=getNDofs();
+    TRACE(14,"TAsystem::GetRes(), Ndofs:"<< Ndofs);
     const us& Ns=gc.Ns;
     vd Res(Ndofs);
     us segdofs;
@@ -113,6 +118,7 @@ namespace tasystem{
   void TAsystem::setRes(vd Res){
     checkInit();
     TRACE(14,"TAsystem::SetRes(vd res)");
+    us Ndofs=getNDofs();
     if(Res.size()==Ndofs){
       us segdofs;
       us startdof=0;

@@ -16,7 +16,7 @@ namespace tasystem{
       // Eigen::SimplicialLDLT<esdmat> solver(jac2);
       // Eigen::SparseQR<esdmat,Eigen::COLAMDOrdering<int> > solver(jac2);      
       // TRACE(10,"Converting data to Eigen...");
-      // esdmat jac2=sys->Jac();
+      // esdmat jac2=sys.Jac();
       TRACE(10,"Creating solver...");
       esdmat eig_K=math_common::ArmaToEigen(sdmat(K)); // Eigen matrix
       Eigen::SparseLU<esdmat> solver(eig_K);
@@ -35,37 +35,20 @@ namespace tasystem{
   }
   
 
-  Solver::Solver(const TAsystem& sys1) {
+  Solver::Solver(const TAsystem& sys1):sys(sys1) {
     TRACE(15,"Solver(TAsystem&)");
-    sys=new TAsystem(sys1);
   }
-  Solver::Solver(const Solver& other){
-    if(other.sys!=NULL)
-      sys=new TAsystem(*other.sys);
-    else
-      sys=NULL;
-  }
+  Solver::Solver(const Solver& o): Solver(o.sys){}
   Solver& Solver::operator=(const Solver& other){
-    if(sys!=NULL)
-      delete sys;
-    if(other.sys!=NULL)
-      sys=new TAsystem(*other.sys);
-    else
-      sys=NULL;
+    sys=other.sys;
     return *this;
   }
-  
-  Solver::~Solver(){
-      TRACE(-5,"~Solver()");
-      if(sys!=NULL){
-	delete sys;
-	sys=NULL;
-      }
-  }
+ 
+
   typedef tuple<d,d> dtuple;
   void Solver::solve(us maxiter,d funtol,d reltol){
     TRACE(20,"Solver started.");
-    vd error=sys->error();
+    vd error=sys.error();
     d funer=arma::norm(error,2);
     d reler=0;
     us nloop=0;
@@ -88,16 +71,16 @@ namespace tasystem{
     assert(dampfac>0 && dampfac<=1.0);
     TRACE(15,"Solver::DoIter()");
     TRACE(10,"Computing error...");
-    vd err=sys->error();
+    vd err=sys.error();
     assert(err.size()>0);
     TRACE(10,"Updating result vector...");
-    vd oldx=sys->getRes();
+    vd oldx=sys.getRes();
     
     d funer=arma::norm(err,2);
     us Ndofs=err.size();
 
     TRACE(15,"Computing Jacobian...");
-    dmat jac(sys->jac());
+    dmat jac(sys.jac());
     assert(jac.n_cols==err.size());
     assert(jac.n_rows==err.size());
     vd dx;
@@ -111,7 +94,7 @@ namespace tasystem{
     }
     d reler=arma::norm(dx,2);
     TRACE(10,"Solving linear system done.");      
-    sys->setRes(oldx+dx);
+    sys.setRes(oldx+dx);
     TRACE(10,"Iteration done...");
     return std::make_tuple(funer,reler);		// Return function error
   } // Solver::DoIter()

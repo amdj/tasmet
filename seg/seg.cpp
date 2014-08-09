@@ -1,37 +1,47 @@
 #include "seg.h"
-#include "bcvertex.h"
-#define Neq (5)
+
 
 namespace segment{
+   
+
+    
+  // Vertex* vertexfrombc(BcVertex* orig){
+  //   if(orig->gettype().compare("RightImpedance")==0)
+  //     return static_cast<Vertex*>(static_cast<RightImpedance*>(orig));
+  //   else if(orig->gettype().compare("TwImpedance")==0)
+  //     return static_cast<Vertex*>(static_cast<TwImpedance*>(orig));
+  //   else if(orig->gettype().compare("RightIsoTWall")==0)
+  //     return static_cast<Vertex*>(static_cast<RightIsoTWall*>(orig));
+  //   else if(orig->gettype().compare("LeftPressure")==0)
+  //     return static_cast<Vertex*>(static_cast<LeftPressure*>(orig));
+  //   else{
+  //     WARN("Boundary condition type not understood");
+  //     abort();
+  //   }
+  // }
   
-  
+ 
   Seg::Seg(const Geom& geom):SegBase(geom){
     TRACE(13,"Seg::Seg(Geom)");
-    nDofs=0;
-    type="Seg";
     // The Jacobian matrix is larger than the number of dofs for the
     // connection terms other segments
     // us& Ns=gc.Ns;
   }
   Seg::Seg(const Seg& other): SegBase(other){
-    TRACE(13,"Seg copy constructor");
-    this->gc=other.gc;
+    exit(1);
+  }
+  Seg& Seg::operator=(const Seg& o){
+    SegBase::operator=(o);
+    return *this;
   }
   void Seg::init(const tasystem::Globalconf& gc){
     TRACE(13,"Seg::init()");
     // NO Do not clear segments! Boundary conditions have been added
     // vvertex.clear();
     SegBase::init(gc);
-    
-    us nVertex=geom.nCells;
-    nDofs=geom.nCells*gc.Ns*Neq;
-    this->gc=&gc;
 
   } // Seg::Init
-  void Seg::cleanup(){
-    nDofs=0;
-  }
-  void Seg::show(bool showVertices){
+  void Seg::show(bool showVertices) const {
     TRACE(13,"Seg::show()");
     geom.show();
     for(auto s=getLeft().begin();s!=getLeft().end();s++)
@@ -42,26 +52,10 @@ namespace segment{
     if(showVertices==true)
       this->showVertices();
   }
-  void Seg::showVertices(){
+  void Seg::showVertices() const {
     for(us i=0;i<vvertex.size();i++)
       vvertex[i]->show();
   }
-
-  void Seg::setLeftBc(Vertex* v){ // The segment owns the bc from then on!
-    TRACE(13,"Seg::setLeftbc()");
-    us nVertex=vvertex.size();
-    
-    assert(nVertex>0);
-    vvertex[0].reset(v);
-  }
-
-  void Seg::setRightBc(Vertex* v){
-    TRACE(13,"Seg::setRightbc()");
-    us nVertex=vvertex.size();
-    assert(nVertex>0);
-    vvertex[nVertex-1].reset(v);
-  }    
-  
   dmat Seg::jac() const{			// Return Jacobian matrix of error operator
     // sdmat Seg::Jac(){			// Return Jacobian matrix of error operator    
     TRACE(8," Seg::Jac() for Segment "<< getNumber() << ".");
@@ -119,7 +113,7 @@ namespace segment{
   }
   vd Seg::getRes() const {
     TRACE(8,"Seg::GetRes()");
-    vd Result(nDofs,fillwith::zeros);
+    vd Result(getNDofs(),fillwith::zeros);
     us Ns=gc->Ns;
     for(us k=0; k<vvertex.size();k++)
       {
@@ -132,7 +126,7 @@ namespace segment{
     TRACE(8,"Seg::Error()");
     const us& Ns=gc->Ns;
     us nVertex=vvertex.size();    
-    vd error(nDofs,fillwith::zeros);
+    vd error(getNDofs(),fillwith::zeros);
     for(us k=0; k<nVertex;k++)
       {
 	error.subvec(k*Ns*Neq,k*Ns*Neq+Ns*Neq-1)=vvertex[k]->error();

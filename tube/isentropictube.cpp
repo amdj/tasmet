@@ -22,9 +22,10 @@ namespace tube {
   IsentropicTube::IsentropicTube(Geom geom):Tube(geom){
     // Fill vector of gridpoints with data:
     TRACE(13,"IsentropicTube constructor()...");
-    type="IsentropicTube";
   }
-  IsentropicTube::IsentropicTube(const IsentropicTube& other):IsentropicTube(other.geom){}
+  IsentropicTube::IsentropicTube(const IsentropicTube& other):Tube(other){
+    TRACE(13,"IsentropicTube copy cc");
+  }
   IsentropicTube& IsentropicTube::operator=(const IsentropicTube& other){
     TRACE(13,"IsentropicTube copy assignment");
     Tube::operator=(other);
@@ -39,7 +40,6 @@ namespace tube {
     is.init(*this);
     s.init(*this);
     se.init(*this);
-
   }
   vector<const TubeEquation*> IsentropicTube::getEq() const {
     vector<const TubeEquation*> eq;

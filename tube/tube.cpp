@@ -22,47 +22,92 @@ namespace tube {
   Tube::Tube(const Geom& geom):Seg(geom){
     // Fill vector of gridpoints with data:
     TRACE(13,"Tube constructor()...");
-    type="Tube";
   }
   void Tube::cleanup(){
     TRACE(13,"Tube::cleanup()");
-    Seg::cleanup();
-    vvertex.clear();
+    // bcLeft.reset();
+    // bcRight.reset();
+    // vvertex.clear();
   }
-  Tube::Tube(const Tube& other):Tube(other.geom){}
+  Tube::Tube(const Tube& other):Tube(other.geom){
+    copyTube(other);
+  }
   Tube& Tube::operator=(const Tube& other){
     TRACE(13,"Tube copy assignment");
-    geom=other.geom;
     cleanup();
-    WARN("Do not use assignment operators for tubes");
+    Seg::operator=(other);
+    copyTube(other);
     return *this;
   }
-  void Tube::setLeftBc(Vertex* v){
-    TRACE(13,"Tube::setLeftBc()");
-    Seg::setLeftBc(v);
-    us nVertex=vvertex.size();
-    static_cast<TubeVertex*>(vvertex[0].get())->right=static_cast<TubeVertex*>(vvertex[1].get());
-    static_cast<TubeVertex*>(vvertex[1].get())->left=static_cast<TubeVertex*>(vvertex[0].get());
-    static_cast<TubeVertex*>(vvertex[0].get())->left=NULL;
-    vvertex[0]->init(0,*this);
+  void Tube::copyTube(const Tube& other){
+    TRACE(13,"Tube::copyTube()");
+    cleanup();
+    if(other.bcLeft){
+      TRACE(12,"Other has bc connected left side");
+      bcLeft.reset(other.bcLeft->copy());
+    }
+    if(other.bcRight)
+      bcRight.reset(other.bcLeft->copy());
   }
-  void Tube::setRightBc(Vertex* v){
-    TRACE(13,"Tube::setRightBc()");
-    Seg::setRightBc(v);
-    us nVertex=vvertex.size();
-    static_cast<TubeVertex*>(vvertex[nVertex-2].get())->right=static_cast<TubeVertex*>(vvertex[nVertex-1].get());
-    static_cast<TubeVertex*>(vvertex[nVertex-1].get())->left=static_cast<TubeVertex*>(vvertex[nVertex-2].get());
-    static_cast<TubeVertex*>(vvertex[nVertex-1].get())->right=NULL;
-    vvertex[nVertex-1]->init(nVertex-1,*this);
+  
+  void Tube::addBc(const TubeBcVertex& bc){
+    TRACE(14,"Tube::addBc(bc)");
+    if(bc.connectPos()==connectpos::left)
+      {
+	TRACE(12,"Bc connected left side");
+	bcLeft.reset(bc.copy());
+	if(bcLeft)
+	  TRACE(12,"bcLeft is now "<< bool(bcLeft));
+      }
+    else if(bc.connectPos()==connectpos::right)
+      {
+	TRACE(12,"Bc connected right side");
+	bcRight.reset(bc.copy());
+      }
+    else
+      {      
+	cout << "WARNING: bconnectbc(): Bc  not understood!\n";
+      }
   }
+  us Tube::getNDofs() const {
+    TRACE(14,"Tube::getNDofs()");
+    if(gc!=NULL)
+      return vvertex.size()*gc->Ns*Neq;
+    else
+      return 0;
+  }
+  TubeVertex* Tube::leftTubeVertex() const{
+    TRACE(13,"Tube::leftTubeVertex()");
+    if(bcLeft){
+      TRACE(13,"Tube::leftTubeVertex() returning a boundary vertex");
+      return static_cast<TubeVertex*>(bcLeft->copy());
+    }
+    else{
+      TRACE(13,"Tube::leftTubeVertex() returning an ordinary vertex");
+      return new TubeVertex();
+    }
+  }
+  TubeVertex* Tube::rightTubeVertex() const{
+    if(bcRight)
+      return static_cast<TubeVertex*>(bcRight->copy());
+    else
+      return new TubeVertex();
+  }
+
+
   void Tube::init(const tasystem::Globalconf& g){
     TRACE(13,"Tube::Init()");
     Seg::init(g);
+    vvertex.clear();
     if(vvertex.size()==0){
-      for(us i=0;i<geom.nCells;i++)
-	vvertex.emplace_back(new TubeVertex());
+      vvertex.emplace_back(leftTubeVertex());
+      for(us i=1;i<geom.nCells-1;i++)
+    	vvertex.emplace_back(new TubeVertex());
+      vvertex.emplace_back(rightTubeVertex());
     }
+
     us nVertex=vvertex.size();    
+    assert(nVertex==geom.nCells);
     // And initialize again.
     for(us i=0;i<vvertex.size();i++){
       TubeVertex* cvertex=static_cast<TubeVertex*>(vvertex[i].get());
@@ -72,7 +117,11 @@ namespace tube {
       cvertex->initTubeVertex(i,*this);
     }
 
-  }
+  } // Tube::init(gc)
+  
+    
+
+  
   vd Tube::getResAt(us varnr,us freqnr) const{
     const us& nCells=geom.nCells;
     vd res(nCells);

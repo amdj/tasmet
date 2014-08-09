@@ -24,18 +24,21 @@ Solver* ThreeTubes(us gp,us Nf,d freq,d L,d S1,d S2,vd p1,int loglevel,d kappa)
   Geom geom2=Geom::Cylinder(gp,L,R2);
   IsentropicTube t1(geom1);
   IsentropicTube t2(geom2);  
+  IsentropicTube t3(geom1);
   var pL(gc);
   for(us i=0;i<gc.Ns;i++)
     pL.set(i,p1(i));
 
   LeftPressure pleft(0,pL);
   TAsystem sys(gc);
+  t1.addBc(pleft);
   sys.addSeg(t1);
   sys.addSeg(t2);
-  sys.addSeg(t1);  
+  sys.addSeg(t3);  
+
   sys.connectSegs(0,1,tasystem::SegCoupling::tailhead);
   sys.connectSegs(1,2,tasystem::SegCoupling::tailhead);  
-  sys.addBc(pleft);
+
   Solver* Sol=new Solver(sys);
   // Sol->sys->show();
   return Sol;  

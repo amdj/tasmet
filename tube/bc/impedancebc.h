@@ -15,7 +15,7 @@
 
 
 namespace tube{
-  using segment::connectpos;
+
 
   class RightImpedanceMomentumEq:public Momentum{
   public:
@@ -45,8 +45,9 @@ namespace tube{
     virtual void initTubeVertex(us i,const Tube&);
     virtual string gettype() const {return string("RightImpedance");}
     virtual enum connectpos connectPos() const {return connectpos::right;}
+    virtual TubeBcVertex* copy() const {return new RightImpedance(*this);}
   protected:
-    void updateW();
+    void updateW(const Tube&);
 
   };
 

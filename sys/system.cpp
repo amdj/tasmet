@@ -1,6 +1,4 @@
 #include "system.h"
-#include "impedancebc.h"
-
 
 
 namespace tasystem{
@@ -8,65 +6,88 @@ namespace tasystem{
 
   TAsystem::TAsystem(const Globalconf& gc):gc(gc){
     TRACE(14,"TAsystem::TAsystem(gc)");
-    segfirstdof.zeros();
-    segndofs.zeros();
   }
-  TAsystem::TAsystem(const TAsystem& o) :TAsystem(o.gc)
+  TAsystem::TAsystem(const TAsystem& o)
   {
     TRACE(14,"TAsystem::TAsystem(TAsystem&)");
-    cleanup();
-    TRACE(14,"TAsystem copy cc");
-    copyallsegsbc(*this,o);
+    copyTAsystem(o);
+  }
+  void TAsystem::copyTAsystem(const TAsystem& o){
+    TRACE(14,"TAsystem::copyTAsystem()");
+    gc=Globalconf(o.gc);
+    assert(getNSegs()==0);
+    for(us i=0;i<o.getNSegs();i++)
+      {
+	TRACE(14,"Copying segment "<<i << "...");
+	assert(o.getSeg(i)!=NULL);
+	addSeg(*o.getSeg(i));
+	assert(getNSegs()==i+1);
+      }
+    TRACE(100,"Copy segconnections switched off.");
     segConnections=o.segConnections;
     hasInit=false;
+
   }
+  TAsystem& TAsystem::operator=(const TAsystem& other){
+    TRACE(14,"TAsystem::operator=()");
+    cleanup();
+    copyTAsystem(other);
+    return *this;
+  }
+  void TAsystem::cleanup(){
+    segs.clear();
+    segConnections.clear();
+    segfirstdof.zeros();
+    segndofs.zeros();
+    hasInit=false;
+  }
+  void TAsystem::addSeg(const SegBase& seg){
+    TRACE(14,"TAsystem::addseg()");
+    hasInit=false;
+    segs.emplace_back(seg.copy());
+    segs[getNSegs()-1]->setNumber(getNSegs()-1);
+  }
+  SegBase* TAsystem::getSeg(us i) const { return (*this)[i];}
+  
+  SegBase* TAsystem::operator[](us i) const {
+    us nSegs=getNSegs();
+    if(i<nSegs)
+      return segs[i].get();
+    else
+      return NULL;
+  }
+
   void TAsystem::init(){
     TRACE(14,"TAsystem::init()");
     us Nsegs=getNSegs();
-    us Nbc=getNBc();
+    us Ndofs=0;
+    segfirstdof(0)=0;
     for(us i=0;i<Nsegs;i++)
       {
 	TRACE(9,"Initializing Segment "<<i<<"...");
-	segs[i]->init(gc);
-      }
-    for(us i=0;i<Nbc;i++)
-      {
-    	TRACE(9,"Connecting boundary condition "<<i<<"...");
-    	connectbc(*segs[bcvertices[i]->segNumber()],*bcvertices[i]);
-      }
-    us i=0;
-    for(auto v=segConnections.begin();v!=segConnections.end();++v){
-      TRACE(90,"Connecting segment connection " << i << "...");
-      coupleSegs(*v,*this);
-      i++;
-    }
+	assert(segs.at(i));
+	segs.at(i)->init(gc);
+	us thisndofs=segs.at(i)->getNDofs();
+	TRACE(12,"Ndofs for segment "<< i << ": "<<thisndofs);
 
-    // Now the weight functions are not yet updated for the vertices
-    // that have to be connected. For now we see no other option than
-    // running seg->init again
-    for(us i=0;i<Nsegs;i++)
-      {
-	TRACE(9,"Initializing Segment "<<i<<"...");
-	segs[i]->init(gc);
+	segndofs(i)=thisndofs;
+	Ndofs+=thisndofs;
+	if(i>0)
+	  segfirstdof(i)=segfirstdof(i-1)+segndofs(i-1);
+	TRACE(12,"This segment ndofs:"<< thisndofs);
       }
-    
-    
-    computeNdofs();
+    TRACE(10,"Segment initialization done. Total NDofs:"<< Ndofs);
+    // for(auto v=segConnections.begin();v!=segConnections.end();++v){
+    //   TRACE(90,"Connecting segment connection " << i << "...");
+    //   coupleSegs(*v,*this);
+    //   i++;
+    // }
     if(Ndofs>MAXNDOFS)
       {
-	WARN("Way too many DOFS required: Ndofs=" <<Ndofs << ". Exiting...\n");
-	exit(1);
+    	WARN("Way too many DOFS required: Ndofs=" <<Ndofs << ". Exiting...\n");
+    	exit(1);
       }
     hasInit=true;
-  }
-
-  TAsystem& TAsystem::operator=(const TAsystem& other){
-    cleanup();
-    gc=other.gc;
-    copyallsegsbc(*this,other);
-    segConnections=other.segConnections;
-    hasInit=false;
-    return *this;
   }
   TAsystem::~TAsystem() {
     TRACE(-5,"~TAsystem()");
@@ -74,21 +95,13 @@ namespace tasystem{
   }
 
   
-  void TAsystem::computeNdofs()
+  us TAsystem::getNDofs()
   {
-    TRACE(14,"TAsystem::computeNdofs()");
-    Ndofs=0;
-    segfirstdof(0)=0;
-
+    TRACE(14,"TAsystem::getNDofs()");
+    us Ndofs=0;
     for(us i=0;i<getNSegs();i++)
-      {
-	assert(segs[i].get()!=NULL);
-	us thisndofs=segs[i]->getNDofs();
-	TRACE(12,"This segment ndofs:"<< thisndofs);
-	Ndofs+=thisndofs;
-	segndofs(i)=thisndofs;
-	if(i>0) segfirstdof(i)=segfirstdof(i-1)+segndofs(i-1);
-      }
+      Ndofs+=segs.at(i)->getNDofs();
+    return Ndofs;
   }
   void TAsystem::connectSegs(us seg1,us seg2,SegCoupling sc){
     TRACE(14,"TAsystem::ConnectSegs()");
@@ -113,32 +126,6 @@ namespace tasystem{
       segs[i]->show(showvertices);
     }
   }
-  void TAsystem::cleanup(){
-    Ndofs=0;
-    segs.clear();
-    bcvertices.clear();
-    segConnections.clear();
-    hasInit=false;
-  }
-  BcVertex* TAsystem::getBc(us i) const {
-    us Nbc=getNBc();
-    if(i<Nbc)
-      return bcvertices[i].get();
-    else
-      return NULL;
-	
-  }
-  void TAsystem::addSeg(const Seg& seg){
-    TRACE(14,"TAsystem::addseg()");
-    hasInit=false;
-    segs.emplace_back((copyseg(seg)));
-    segs[getNSegs()-1]->setNumber(getNSegs()-1);
-  }
-  void TAsystem::addBc(const BcVertex& vertex){
-    TRACE(14,"TAsystem::addbc()");
-    bcvertices.emplace_back(copybc(vertex));
-    hasInit=false;
-  }
   void TAsystem::checkInit(){
     TRACE(14,"TAsystem::CheckInit()");
     if(!hasInit){
@@ -157,14 +144,5 @@ namespace tasystem{
   //   segs[segnr]->setnodes(nl,nr);
   // }
 
-  Seg* TAsystem::operator[](us i) const {
-    us nSegs=getNSegs();
-    
-    if(i<nSegs)
-      return (segs[i].get());
-    else
-      return NULL;
-  }
-  
 } // namespace tasystem
 

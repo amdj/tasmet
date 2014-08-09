@@ -4,8 +4,11 @@ namespace segment{
 
   SegBase::SegBase(const Geom& geom):geom(geom)
   {
+    TRACE(10,"SegBase::SegBase(geom)");
   }
-  void SegBase::init(const Globalconf& gc){this->gc=&gc;}  
+  SegBase::SegBase(const SegBase& o): SegBase(o.geom){}
+  SegBase& SegBase::operator=(const SegBase& o){geom=o.geom; return *this;}
+  void SegBase::init(const Globalconf& gc1){this->gc=&gc1;}  
 
   void SegBase::setLeft(const SegBase& Left){
     TRACE(13,"SegBase::SetLeft()");
@@ -16,7 +19,7 @@ namespace segment{
     right.push_back(&Right);
   }
   
-  const string& SegBase::gettype() const {return type;}
+
   bool SegBase::operator==(const SegBase& other) const {return (this->number==other.number);}
 
 

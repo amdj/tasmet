@@ -28,7 +28,6 @@ namespace variable {
     const Globalconf* gc=NULL;
     us Nf=0,Ns=0;
     
-    
     var() {}
     var(const Globalconf&);	// Initialize with zeros
     var(const Globalconf *g): var(*g){}
@@ -55,7 +54,7 @@ namespace variable {
     dmat diagt() const {return diagmat(timedata);}
     dmat diag() const {return diagmat(amplitudedata);}    
     //Set methods
-    void set(int freq,double val); //Set result vector at specific frequency
+    void set(us freq,double val); //Set result vector at specific frequency
     void set(const vd values); //Set result vector to these values
     void set(const vc& values); //Set result vector to these values, complex numbers
     void setResfluc(vd& values); //Set result vector for only unsteady Fourier components

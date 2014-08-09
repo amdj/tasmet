@@ -13,8 +13,8 @@ namespace tube{
   dmat TubeEquation::jac(const TubeVertex& v) const {
     // Compute the Jacobian for the subsystem around the current gridpoint
     TRACE(0,"TubeEquation::Jac()");
-    us i=v.lg.i;
-    us nCells=v.lg.nCells;
+    us i=v.i;
+    us nCells=v.nCells;
     const us Ns=v.gc->Ns;
     TRACE(2,"Assignment of Ns survived, Ns="<< v.gc->Ns);
     us bw=Ns-1;
@@ -28,7 +28,7 @@ namespace tube{
     TRACE(-2,"gc dft size:"<< v.gc->fDFT.size());
     // submat: first row,first col,last row, last col
     long int offset=0;
-    if(i==v.lg.nCells-1 && v.right==NULL)
+    if(i==nCells-1 && v.right==NULL)
       offset=Ns*Neq;
     if(i==0 && v.left==NULL){ // Most left node
       // TRACE(100,"First vertex not coupled to other left vertex");
@@ -47,7 +47,7 @@ namespace tube{
       result.submat(0,offset+3*Ns,bw,offset+3*Ns+bw)=dpim1(v);
       result.submat(0,offset+4*Ns,bw,offset+4*Ns+bw)=dTsim1(v);
     }
-    if(i==v.lg.nCells-1 && v.right==NULL){
+    if(i==nCells-1 && v.right==NULL){
       // TRACE(100,"Last vertex not coupled to other right vertex");
       result.submat(0,0   ,bw,     bw)=drhoim2(v);
       result.submat(0,1*Ns,bw,  Ns+bw)=dUim2(v);
@@ -88,7 +88,7 @@ namespace tube{
   dmat TubeEquation::d_r(const TubeVertex& v) const {
     TRACE(3,"TubeEquation::d_r()");
     const us Ns=v.gc->Ns;
-    if(v.i==v.lg.nCells-1)
+    if(v.right==NULL)
       return d_l(v);
     else {
       dmat Dr(Ns,Ns,fillwith::zeros);
@@ -104,7 +104,7 @@ namespace tube{
   dmat TubeEquation::d_l(const TubeVertex& v) const {
     TRACE(3,"TubeEquation::d_l()");
     const us Ns=v.gc->Ns;
-    if(v.i==0)
+    if(v.left==NULL)
       return d_r(v);
     else{
       dmat Dl(Ns,Ns,fillwith::zeros);
@@ -122,27 +122,23 @@ namespace tube{
     vd pi(Ns);
     vd pip1(Ns);
     vd pim1(Ns);    
-    TRACE(3,"SFSG"<<v.lg.i);
-    if(v.lg.i>0 && v.lg.i<v.lg.nCells-1){
-      TRACE(3,"SFSG1");
+
+    if(v.i>0 && v.i<v.nCells-1){
       pi=v.p();
       pip1=v.right->p();
       pim1=v.left->p();
-    } else if(v.lg.i==0){
-      TRACE(3,"SFSG2");
+    } else if(v.i==0){
       pi=v.p();
-      TRACE(3,"SFSG");
       pim1=v.right->p();
       pip1=v.right->right->p();
     }
-    else if(v.lg.i==v.lg.nCells-1){
-      TRACE(3,"SFSG3");
+    else if(v.i==v.nCells-1){
       pi=v.left->p();
       pip1=v.left->p();
       pim1=v.left->left->p();
     }
     else{
-      WARN("Impossible! v.lg.i falls out of range. Something wrong. Aborting...");
+      WARN("Impossible! v.i falls out of range. Something wrong. Aborting...");
       abort();
     }
     // Last node

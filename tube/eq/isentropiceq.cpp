@@ -4,6 +4,9 @@
 
 
 namespace tube{
+  void Isentropic::init(const Tube& t) {
+    TRACE(6,"Isentropic::init(t)");
+  }
   vd Isentropic::error(const TubeVertex& v) const {
     TRACE(6,"Isentropic::Error()");
     vd err(v.gc->Ns,fillwith::zeros);

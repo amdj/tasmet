@@ -8,6 +8,8 @@ namespace tube{
   class Continuity:public TubeEquation{	// Tube continuity equation 
   public:
     virtual enum EqType getType() const { return EqType::Con;}
+
+    virtual void init(const Tube& t);    
     virtual vd error(const TubeVertex&) const;			// Error in this equation at this node
     virtual dmat drhoip1(const TubeVertex&) const; // Derivative of continuity equation to density at node
 		    // i + 1

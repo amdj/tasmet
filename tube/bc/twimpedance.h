@@ -14,8 +14,7 @@
 #include "energyeq.h"
 #include "isentropiceq.h"
 namespace tube{
-  using segment::connectpos;
-  class TwImpedance;
+
 
   class TwImpedanceMomentumEq:public Momentum{
   public:
@@ -48,6 +47,7 @@ namespace tube{
     virtual void initTubeVertex(us i,const Tube& thisseg);
     virtual string gettype() const {return string("TwImpedance");}
     virtual enum connectpos connectPos() const {return connectpos::right;}
+    virtual TubeBcVertex* copy() const {return new TwImpedance(*this);}
   private:
     virtual void updateW(const SegBase&);
     friend class TwImpedanceMomentumEq;

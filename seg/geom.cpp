@@ -90,7 +90,7 @@ namespace segment{
     }
     TRACE(-1,"Celldata vx:"<<vx);
   }
-  void Geom::show(){
+  void Geom::show() const {
     if(true)
       {
 	cout << "-------- Geometry --------\n"	\

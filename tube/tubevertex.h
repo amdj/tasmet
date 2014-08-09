@@ -5,50 +5,71 @@
 
 #include "vertex.h"
 #include "tubeequation.h"
+#include "localgeom.h"
+#include "w.h"
+namespace segment{class SegBase;}
+
 
 
 namespace tube{    
   SPOILNAMESPACE
-
-  class Tube;
   using segment::SegBase;
+  using segment::LocalGeom;
+  class Tube;
 
+  // Abstract base class Vertex contains:
+  // i: vertex nr
+  // gc: pointer to Globalconf
+  // VertexVec left,right : vector of pointers to left and right
+  // vertices. Reserved for later more complicated stuff.
+  
   class TubeVertex:public segment::Vertex{ //Gridpoint at a position in a Tube
-
   public:
-    // protected:
+    LocalGeom lg;
+    W::W w;
     dmat zero;			// Zeros matrix of right size
-    us i,nCells;
     const TubeVertex* left=NULL;
     const TubeVertex* right=NULL;
-    d wLl,wRr,wLr,wRl;		// Weight functions for equations
-    d wL0,wL1,wRNm1,wRNm2;    	// Special boundary weight functions
+    us nCells;    
+
+    // Equation-specific weight factors
     d cWddt,cWim1,cWi,cWip1;
+    // Continuity artificial viscosity weight factor
+    d cWart;		       
     d mWddt,mWuim1,mWui,mWuip1,mWpim1,mWpi,mWpip1;
-    d eWddt,eWgim1,eWgi,eWgip1,eWc1,eWc2,eWc3,eWc4;      
+    d eWddt,eWddtkin,eWgim1,eWgi,eWgip1,eWc1,eWc2,eWc3,eWc4;      
     d eWkini,eWkinim1,eWkinip1;
-    
+
+    // This is also the order in which they appear in the variable ptr
+    // vector.
     variable::var rho;		// Density
     variable::var U;		// Volume flow
     variable::var T;		// Temperature
     variable::var p;		// Pressure
     variable::var Ts;		// Solid temperature
-    vector<variable::var*> vars={&rho,&U,&T,&p,&Ts};
-    vector<const TubeEquation*> eq;
+    variable::var* vars[Neq]={&rho,&U,&T,&p,&Ts};
+    vector<const TubeEquation*> eq; // Vector of pointers to the
+				    // equations to solve for.
 
-    TubeVertex();
-    TubeVertex(const TubeVertex&);
-    TubeVertex& operator=(const TubeVertex&);
-    virtual ~TubeVertex();
+
+    TubeVertex(){vars[0]=&rho; vars[1]=&U; vars[2]=&T; vars[3]=&p; vars[4]=&Ts;}
+    virtual ~TubeVertex(){}
+    virtual void setLeft(const Vertex&);
+    virtual void setRight(const Vertex&);
+    
+    
     virtual void show() const;
     virtual vd error() const;		       // Compute error for this gridpoint
     virtual dmat jac() const;		       // Fill complete Jacobian for this node
     virtual void setRes(vd res);			  // Set result vector to res
 
     virtual vd getRes() const;			  // Extract current result vector
+    // Convenience function, we need a lot of static (background
+    // pressure) addings in the equations.
     vd getp0t() const;
   private:
     void updateW(const SegBase& thisseg);
+    void updateWEqs(const SegBase& thisseg,const W::W& w);
   public:
     virtual void initTubeVertex(us i,const Tube&);   
     // These virtual functions are required such that boundary

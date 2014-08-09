@@ -13,39 +13,30 @@
 #define MAXNDOFS 20000
 #include <memory>
 #include <vtypes.h>
-#include "tube.h"
-#include "bcvertex.h"
 #include "globalconf.h"
-#include "systemhelpers.h"
 #include "segconnection.h"
-
+#include "segbase.h"
 #define MAXSEGS 30
 
 namespace tasystem{
   SPOILNAMESPACE
 
-  using segment::Seg;
-  using segment::BcVertex;
-  using tube::Tube;
-
-
   class TAsystem;
-  using segment::Seg;
+  using segment::SegBase;
 
   class TAsystem{
   private:
-    vector<std::unique_ptr<Seg> > segs;		// The stl library does not have fixed-size vectors, so we fall back to basic C arrays since we do not want to use boost.
-    vector<std::unique_ptr<BcVertex> > bcvertices;
-    Globalconf gc;
+
+    vector<std::unique_ptr<SegBase> > segs;		// The stl library does not have fixed-size vectors, so we fall back to basic C arrays since we do not want to use boost.
+
     vector<SegConnection> segConnections;
     arma::uvec::fixed<MAXSEGS> segfirstdof; // Vector containing the number of the first column corresponding to the first vertex of segment segfirstcol(i)
     arma::uvec::fixed<MAXSEGS> segndofs;  // Vector containe
-    us Ndofs=0;
     bool hasInit=false;
-    
+  public:
+    Globalconf gc;    
   private:
-    void computeNdofs();	// Compute DOFS in system, set     
-    
+    us getNDofs();	// Compute DOFS in system, set     
     
   public:
     TAsystem(const Globalconf& g);
@@ -54,7 +45,6 @@ namespace tasystem{
     TAsystem& operator=(const TAsystem& other);
     void show(bool showvertices=false);
     us getNSegs() const {return segs.size();}
-    us getNBc() const {return bcvertices.size();}
     void connectSegs(us seg1,us seg2,SegCoupling);
     // System with a
     // vector of segments
@@ -62,20 +52,21 @@ namespace tasystem{
     vd error();			// Total error vector
     vd getRes();			// Extract result vector
     void setRes(vd resvec);	// Set result vector
-    void addSeg(const Seg& s);	// Add a segment to the system. It creates a copy.
-    void addBc(const BcVertex& vertex);
+    void addSeg(const SegBase& s);	// Add a segment to the
+					// system. It creates a copy
+					// and ads it to segs by emplace_back.
+
     // ############################## ACCESS METHODS
-    
-    BcVertex* getBc(us nr) const;
+
     // void delseg(us n); // Not yet implementen. Delete a segment from the system (we have to determine how elaborated the API has to be.)
     void setGc(const Globalconf& gc); // Reset globalconf configuration
     dmat jac();		// Return Jacobian matrix    
-    Seg* operator[](us i) const;    
-    Seg* getSeg(us i) { return (*this)[i];} // Easier for cython wrapping
+    SegBase* operator[](us i) const;    
+    SegBase* getSeg(us i) const; // Easier for cython wrapping
     void init();
   private:
     // A vector of boundary conditions is required
-
+    void copyTAsystem(const TAsystem& other);
     void checkInit();
     void cleanup();
     // void setnodes(us segnr,us nL,us nR);

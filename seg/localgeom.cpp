@@ -16,25 +16,15 @@ namespace segment{
     this->i=i;
     nCells=geom.nCells;
     vxi=vx(i);
-    vxip1=0;			// To be filled below
-    vxim1=0;			// To be filled below
     // initialize distances to next node to zero
-    dxm=dxp=0;
-    if(i>0){
-      vxim1=vx(i-1);
-      dxm=vxi-vxim1;
-    }
-    // ****************************** Initalization of vxipm and dxpm
-    if(i<nCells-1){
-      vxip1=vx(i+1);
-      dxp=vxip1-vxi;
-    }
+
+    SfL=geom.Sf(i);
+    SfR=geom.Sf(i+1);
 
     xR=geom.x(i+1);		// Position of right cell wall
     xL=geom.x(i);			// Position of left cell wall
     // Left and right cross-sectional area
-    SfL=geom.Sf(i);
-    SfR=geom.Sf(i+1);
+
     // Geometric parameters
     vSf=geom.vSf(i);
     vSs=geom.vSs(i);

@@ -4,6 +4,7 @@
 #include <vtypes.h>
 #include "globalconf.h"
 #include "geom.h"
+#define Neq (5)
 
 namespace segment{
   class SegBase;
@@ -12,25 +13,38 @@ namespace segment{
 
   class SegBase{
   private:
-    us number=0;
+    us number=0;		// Required for TAsystem. Not used in
+				// any segment code
   public:
     Geom geom;			// The geometry    
     const Globalconf* gc=NULL;	// Global configuration of the system
   protected:
     SegBaseVec left,right;
-    string type;
-    
+
   public:
     SegBase(const Geom& geom);
-    virtual ~SegBase(){ cleanup();};
+    SegBase(const SegBase& o);
+    SegBase& operator=(const SegBase&);
+    virtual us getNDofs() const=0;
+    virtual ~SegBase(){ cleanup();}
     void cleanup(){}		   // Stub method in case class contains any dynamic allocated data
     void setRight(const SegBase&);	   // Couple segment to some segment on left side
-    void setLeft(const SegBase&);		   // Couple segment to some segment on right side
+    void setLeft(const SegBase&);		   // Couple segment
+						   // to some segment
+						   // on right side
+    virtual string getType() const=0;
     // ------------------------------
-    virtual void init(const Globalconf&);
+    virtual void init(const Globalconf&); // Implementation updates gc
+    // ptr of this instance.
+    virtual vd error() const=0;
+    virtual void show(bool) const=0;
+    virtual dmat jac() const=0;
+    virtual void setRes(vd res)=0;
+    virtual vd getRes() const=0;
+    virtual SegBase* copy() const=0;
+    
     const us& getNumber() const {return number;}
     void setNumber(us number) {this->number=number;} 
-    const string& gettype() const;
     const SegBaseVec& getRight() const {return right;}
     const SegBaseVec& getLeft() const {return left;}
     bool operator==(const SegBase& seg2) const; // Check if two segments are the same

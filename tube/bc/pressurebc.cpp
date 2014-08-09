@@ -61,11 +61,13 @@ namespace tube{
   }
   void LeftPressure::initTubeVertex(us i,const Tube& thisseg)
   {
-    TRACE(8,"LeftPressure::Init()");
+    TRACE(8,"LeftPressure::initTubeVertex()");
+    TubeVertex::initTubeVertex(i,thisseg);
+
     pL.gc=thisseg.gc;
     TL.gc=thisseg.gc;
-    TubeVertex::initTubeVertex(i,thisseg);
-    if(eq[2]->getType()!=EqType::Ise){
+
+    if(eq.at(2)->getType()!=EqType::Ise){
       TRACE(100,"Changing energy equation...");
       // eq[2]=&peq;
     }
@@ -78,38 +80,39 @@ namespace tube{
     // Change continuity equation for an open boundary
     TRACE(80,"LeftPressure::updateW()");
     const Geom& geom=thisseg.geom;
+
     cWim1=0;
-    cWi=wRl-wL0;
-    cWip1=wRr-wL1;
+    cWi=w.wRl-w.wL0;
+    cWip1=w.wRr-w.wL1;
 
     // Change momentum equation for open boundary, and prescribed pressure
     mWuim1=0;
-    mWui=wRl/lg.SfR-wL0/lg.SfL;
-    mWuip1=wRr/lg.SfR-wL1/lg.SfL;
+    mWui=w.wRl/lg.SfR-w.wL0/lg.SfL;
+    mWuip1=w.wRr/lg.SfR-w.wL1/lg.SfL;
 
     mWpim1=0;     
-    mWpi=wRl*lg.SfR+lg.SfL-lg.SfR;
-    mWpip1=lg.SfR*wRr;
+    mWpi=w.wRl*lg.SfR+lg.SfL-lg.SfR;
+    mWpip1=lg.SfR*w.wRr;
     // Change energy equation for open boundary and prescribed pressure
     eWgim1= 0;
-    eWgi=   wRl-wL0;
-    eWgip1= wRr-wL1;
+    eWgi=   w.wRl-w.wL0;
+    eWgip1= w.wRr-w.wL1;
 
     eWkinim1=0;
-    eWkini=wRl/pow(lg.SfR,2)-wL0/pow(lg.SfL,2);    
-    eWkinip1=wRr/pow(lg.SfR,2)-wL1/pow(lg.SfL,2);    
+    eWkini=w.wRl/pow(lg.SfR,2)-w.wL0/pow(lg.SfL,2);    
+    eWkinip1=w.wRr/pow(lg.SfR,2)-w.wL1/pow(lg.SfL,2);    
 
     d x0=lg.vxi;
-    d x1=lg.vxip1;
+    d x1=w.vxip1;
     d denom=x0*(1-x0/x1);
     TRACE(100,"denom:"<<denom);
     d x0_ov_x1sq=pow(x0/x1,2);
     eWc1=0;
     eWc2=lg.SfL/denom;
     // eWc2
-    eWc3=lg.SfR/lg.dxp;
+    eWc3=w.vSfR/w.dxp;
     // eWc3=-lg.SfL*pow(xp1/xp2,2)/denom +  lg.SfR/dxp;
-    eWc4=-lg.SfR/lg.dxp -lg.SfL*x0_ov_x1sq/denom;
+    eWc4=-w.vSfR/lg.dxp -lg.SfL*x0_ov_x1sq/denom;
 
 
     // TODO Fill this further!
@@ -137,15 +140,15 @@ namespace tube{
     d gamfac=gamma/(gamma-1.0);
     
     // TRACE(100,"TL:"<<TL());
-
-    d xp2=lg.vxip1;
+    const LocalGeom rlg(lg.geom->localGeom(i+1));
+    d xp2=rlg.vxi;
     d xp1=lg.vxi;
 
     vd T0=gc->T0*vd(gc->Ns,fillwith::ones);
     vd kappaL=e.kappaL(*this);
     // esource+=lg.SfL*num*fDFT*(kappaL%TLt)/denom;
     d x0=lg.vxi;
-    d x1=lg.vxip1;
+    d x1=rlg.vxi;
     d denom=x0*(1.0-x0/x1);
     // TRACE(100,"Denom:"<<denom);
     d x0_ov_x1sq=pow(x0/x1,2);

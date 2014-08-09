@@ -45,13 +45,11 @@ namespace tube{
 
     
     error+=v.eWddt*DDTfd*v.p()/(gamma-1.0); // Static enthalpy term
-    d vSfsq=pow(v.lg.vSf,2);
-    error+=v.eWddt*DDTfd*fDFT*(0.5*rhoti%Uti%Uti/vSfsq); // This term should get a eWuddt factor later on
+    error+=v.eWddtkin*DDTfd*fDFT*(rhoti%Uti%Uti); // This term should get a eWddtkin factor later on
     error+=v.eWgi*fDFT*(gamfac*pti%Uti);
-    // TRACE(100,"error:"<<error);
     error+=fDFT*(0.5*v.eWkini*rhoti%pow(Uti,3));
     error+=fDFT*((v.eWc2*kappaL(v)+v.eWc3*kappaR(v))%Tti);
-    // TRACE(100,"error:"<<error);
+
     if(v.left!=NULL){
       const vd& Utim1=v.left->U.tdata();
       vd ptim1=v.left->p.tdata()+v.getp0t();
@@ -188,8 +186,7 @@ namespace tube{
     const vd& rhoti=v.rho.tdata();
     const vd& Uti=v.U.tdata();
     vd pti=v.p.tdata()+v.getp0t();
-    d vSfsq=pow(v.lg.vSf,2);
-    dUi+=DDTfd*fDFT*diagmat(v.eWddt*rhoti%Uti/vSfsq)*iDFT; // This term should get a eWuddt factor later on
+    dUi+=DDTfd*fDFT*diagmat(2*v.eWddtkin*rhoti%Uti)*iDFT; // This term should get a eWuddt factor later on
     dUi+=fDFT*diagmat(v.eWgi*gamfac*pti)*iDFT;
     dUi+=fDFT*diagmat(v.eWkini*3*0.5*rhoti%pow(Uti,2))*iDFT;
     assert(heat!=NULL);
@@ -206,8 +203,7 @@ namespace tube{
     d gamfac=gamma/(gamma-1.0);
 
     const vd& Uti=v.U.tdata();
-    d vSfsq=pow(v.lg.vSf,2);
-    drhoi+=DDTfd*fDFT*diagmat(0.5*v.eWddt*pow(Uti,2)/vSfsq)*iDFT; // This term should get a eWuddt factor later on
+    drhoi+=DDTfd*fDFT*diagmat(v.eWddtkin*pow(Uti,2))*iDFT; // This term should get a eWuddt factor later on
     drhoi+=fDFT*diagmat(v.eWkini*0.5*pow(Uti,3))*iDFT;
 
     return drhoi;
