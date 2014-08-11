@@ -49,7 +49,7 @@ namespace W{
       const LocalGeom rlg=geom.localGeom(i+1);
       vSfL=lg.SfL;
       wL0=rlg.vxi/(rlg.vxi-lg.vxi);
-      wL1=-rlg.vxi/(rlg.vxi-lg.vxi);
+      wL1=-lg.vxi/(rlg.vxi-lg.vxi);
     }
     
     if(i<v.nCells-1){
