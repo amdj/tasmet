@@ -45,7 +45,7 @@ namespace tube{
     ~TwImpedance(){}
     virtual vd esource() const;		// Source term for constant temperature
     virtual void initTubeVertex(us i,const Tube& thisseg);
-    virtual string gettype() const {return string("TwImpedance");}
+    virtual string getType() const {return string("TwImpedance");}
     virtual enum connectpos connectPos() const {return connectpos::right;}
     virtual TubeBcVertex* copy() const {return new TwImpedance(*this);}
   private:

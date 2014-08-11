@@ -110,9 +110,9 @@ int main(int argc,char* argv[]) {
   // // cout << "error:\n"<<err;
 
   // cout << "err:\n"<<er;
-  // dmat Jac=sol.sys->Jac();
+  dmat Jac=sol.sys.jac();
   // sol1.sys->show();
-  // cout << "Jac:\n"<< Jac;
+  cout << "Jac:\n"<< Jac;
 
   return 0;
 }

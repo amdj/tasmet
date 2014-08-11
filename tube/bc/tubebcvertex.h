@@ -25,7 +25,7 @@ namespace tube{
     TubeBcVertex(const TubeBcVertex& o);
     TubeBcVertex& operator=(const TubeBcVertex& o);
     virtual ~TubeBcVertex(){}
-    virtual string gettype() const=0;
+    virtual string getType() const=0;
     virtual enum connectpos connectPos() const=0;
     us segNumber() const {return segnumber;}
     void setSegNumber(us nr){segnumber=nr;}

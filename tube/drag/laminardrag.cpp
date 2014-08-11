@@ -40,7 +40,7 @@ namespace tube{
     vc rescoef(Nf+1);
     if(Nf>0){
       vd omgvec=omg*linspace(1,Nf,Nf);
-      TRACE(100,"omgvec:\n"<<omgvec);
+      // TRACE(100,"omgvec:\n"<<omgvec);
       vd deltanu=sqrt(2*mu0/(rho0*omgvec));
       vd rh_over_deltanu=rh/deltanu;
       vc fnu=rf.fx(rh/deltanu); // Viscous rott function

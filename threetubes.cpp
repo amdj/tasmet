@@ -1,6 +1,4 @@
-#include "fubini.h"
-#include "fubini_fullenergy.h"
-#include "threetubes.h"
+#include "models.h"
 SPOILNAMESPACE
 
 int main(int argc,char* argv[]) {

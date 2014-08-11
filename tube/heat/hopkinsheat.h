@@ -18,8 +18,7 @@ namespace tube{
     string cshape;
     d (*zeroheatH_funptr)(d,d);
     rottfuncs::RottFuncs rf;
-    vc HeatTransferCoefH(const TubeVertex&) const;
-
+  
     // This function computes for all nonzero frequencies the heat
     // transfer coeficient mathcalH.
 
@@ -33,6 +32,7 @@ namespace tube{
     virtual dmat dTi(const TubeVertex& v) const;
   private:
     void setZeroFreq(const string&);
+  vc HeatTransferCoefH(const TubeVertex&) const;
   };
 
 } // namespace tube

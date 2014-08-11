@@ -1,6 +1,4 @@
-#pragma once
-#ifndef _THREETUBES_H_
-#define _THREETUBES_H_
+#include "models.h"
 
 #include "solver.h"
 #include "gas.h"
@@ -46,4 +44,3 @@ Solver* ThreeTubes(us gp,us Nf,d freq,d L,d S1,d S2,vd p1,int loglevel,d kappa)
 
 
 
-#endif /* _THREETUBES_H_ */

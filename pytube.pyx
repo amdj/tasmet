@@ -3,17 +3,10 @@ import numpy as np
 cimport numpy as np
 
 
-cdef extern from "fubini.h" namespace "":
+cdef extern from "models.h" namespace "":
     Solver* Fubini(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
-
-cdef extern from "fubini_fullenergy.h" namespace "":
     Solver* Fubini_fullenergy(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
-    
-    
-cdef extern from "threetubes.h" namespace "":
     Solver* ThreeTubes(us gp,us Nf,d freq,d L,d S1,d S2,vd p1,int loglevel,d kappa)
-
-cdef extern from "conetube.h" namespace "":
     Solver* ConeTube(us gp,us Nf,d freq,d L,d r1,d r2,vd p1,int loglevel,d kappa)
 
     
@@ -62,8 +55,8 @@ cdef class pytube:
         else:
             print('Warning: no valid case selected! Tried was: %s' %case)
 
-    def show(self):
-        self.sol[0].sys.show()    
+    def show(self,vertex):
+        self.sol[0].sys.show(vertex)    
     def __dealloc__(self):
         if self.sol!=NULL:
             del self.sol

@@ -7,7 +7,10 @@ namespace segment{
     TRACE(10,"SegBase::SegBase(geom)");
   }
   SegBase::SegBase(const SegBase& o): SegBase(o.geom){}
-  SegBase& SegBase::operator=(const SegBase& o){geom=o.geom; return *this;}
+  SegBase& SegBase::operator=(const SegBase& o){
+    geom=o.geom;
+    return *this;
+  }
   void SegBase::init(const Globalconf& gc1){this->gc=&gc1;}  
 
   void SegBase::setLeft(const SegBase& Left){

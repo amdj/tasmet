@@ -26,8 +26,10 @@ namespace segment{
     SegBase(const SegBase& o);
     SegBase& operator=(const SegBase&);
     virtual us getNDofs() const=0;
-    virtual ~SegBase(){ cleanup();}
-    void cleanup(){}		   // Stub method in case class contains any dynamic allocated data
+    virtual ~SegBase(){}
+
+    const SegBaseVec& getRight() const {return right;}
+    const SegBaseVec& getLeft() const {return left;}
     void setRight(const SegBase&);	   // Couple segment to some segment on left side
     void setLeft(const SegBase&);		   // Couple segment
 						   // to some segment
@@ -45,8 +47,6 @@ namespace segment{
     
     const us& getNumber() const {return number;}
     void setNumber(us number) {this->number=number;} 
-    const SegBaseVec& getRight() const {return right;}
-    const SegBaseVec& getLeft() const {return left;}
     bool operator==(const SegBase& seg2) const; // Check if two segments are the same
   };
   

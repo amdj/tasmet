@@ -10,7 +10,7 @@ set(CMAKE_CXX_FLAGS "-march=native -mtune=native ")
 set(PYVER 3.4m)
 
 ######################### VERBOSE MAKEFILE
-#set(CMAKE_VERBOSE_MAKEFILE on)
+# set(CMAKE_VERBOSE_MAKEFILE on)
 ##########################################
 
 
@@ -29,14 +29,15 @@ set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 ${CMAKE_CURRENT_LIST_DIR}/cmake )
 set(CLANG_FLAGS "-Wno-unknown-warning-option")
 
-set(CMAKE_CXX_COMPILER clang++)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CLANG_FLAGS} ")
+# set(CMAKE_CXX_COMPILER clang++)
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CLANG_FLAGS} ")
 # set(CMAKE_CXX_COMPILER g++)
 
 # -pipe Use pipes rather than temporary files for communication
 #           between the various stages of compilation.  This fails to
 #           work on some systems where the assembler is unable to
-#           read from a pipe; but the GNU assembler has no trouble.
+#           read from a pipe; but the GNU assembler has no troubl.
+
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -pipe -fPIC -Wall \
  -Wno-unused-function -Woverloaded-virtual -Wextra -Wno-unused-parameter \
  -Wno-unused-variable -Wno-unused-but-set-variable \
@@ -48,6 +49,7 @@ AUX_SOURCE_DIRECTORY(var varsources)
 AUX_SOURCE_DIRECTORY(seg segsources)
 AUX_SOURCE_DIRECTORy(sys syssources)
 AUX_SOURCE_DIRECTORy(sol solsources)
+AUX_SOURCE_DIRECTORy(models modelssources)
 AUX_SOURCE_DIRECTORy(tube/eq tubeeq)
 AUX_SOURCE_DIRECTORy(tube/drag tubedrag)
 AUX_SOURCE_DIRECTORy(tube/heat tubeheat)
@@ -56,7 +58,9 @@ AUX_SOURCE_DIRECTORy(common commonsources)
 set (nonlinear_SRC ${tubesources} ${varsources} ${segsources}
   ${syssources} ${solsources}
   ${varsources} ${commonsources}
-  ${tubeeq} ${tubeheat} ${tubebc} ${tubedrag})
+  ${tubeeq} ${tubeheat} ${tubebc} ${tubedrag}
+  ${modelssources}
+  )
 
  # ${tubedrag}
 include_directories(
@@ -71,7 +75,7 @@ include_directories(
   tube
   common
   models
- tube/drag
+  tube/drag
   tube/bc
   tube/eq
   tube/heat
@@ -96,7 +100,9 @@ add_executable(test123 test123.cpp)
 add_executable(threetubes threetubes.cpp)
 cython_add_module(pytube pytube.pyx)
 # cython_add_module(doubletube doubletube.pyx)
-set_target_properties(pytube PROPERTIES COMPILE_FLAGS "-Wno-cpp -Wno-strict-aliasing -Wno-#warnings")
+set_target_properties(pytube PROPERTIES COMPILE_FLAGS "-Wno-cpp -Wno-strict-aliasing")
+
+
 
 # target_link_libraries(doubletube nonlin math_common armadillo)
 target_link_libraries(test123 nonlin math_common armadillo)

@@ -17,15 +17,14 @@ namespace tube{
     HeatSource noheatatall;
   public:
     HopkinsLaminarDuct(const Geom& geom):LaminarDuct(geom),hopkinsheat(*this){}
-    
     HopkinsLaminarDuct(const HopkinsLaminarDuct& o);
     HopkinsLaminarDuct& operator=(const HopkinsLaminarDuct&);
     virtual const HeatSource& getHeatSource() const { return hopkinsheat;}
-    virtual SegBase* copy() const;
+    virtual SegBase* copy() const{return new HopkinsLaminarDuct(*this);}
     virtual string getType() const {return string("HopkinsLaminarDuct");}
   };
   HopkinsLaminarDuct HopkinsLaminarDuctTs(const Geom& geom,d Ts);
-
+  HopkinsLaminarDuct HopkinsLaminarDuctTs(const Geom& geom,d Tl,d Tr);
 
 
   

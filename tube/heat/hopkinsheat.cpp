@@ -75,16 +75,16 @@ namespace tube{
   }
   
   vd HopkinsHeatSource::heat(const TubeVertex& v) const{
-    TRACE(10,"HopkinsHeatSource::heat(v)");
+    TRACE(5,"HopkinsHeatSource::heat(v)");
     vd heat(v.gc->Ns,fillwith::zeros);
     variable::var htcoefH(v.gc);
     htcoefH.set(HeatTransferCoefH(v));
-    TRACE(100,"TminTs:\n"<<v.T()-v.Ts());
+    // TRACE(100,"TminTs:\n"<<v.T()-v.Ts());
     heat+=htcoefH.freqMultiplyMat()*(v.T()-v.Ts());
     return heat;    
   }
   dmat HopkinsHeatSource::dTi(const TubeVertex& v) const{
-    TRACE(10,"HopkinsHeatSource::dTi(v)");
+    TRACE(5,"HopkinsHeatSource::dTi(v)");
     variable::var htcoefH(v.gc);
     htcoefH.set(HeatTransferCoefH(v));
     dmat dTi(v.gc->Ns,v.gc->Ns,fillwith::zeros);
@@ -110,7 +110,7 @@ namespace tube{
       vc fk=rf.fx(rh/deltak); // Thermal rott function
       htcoefH.subvec(1,Nf)=I*rho0*cp0*omgvec%(fk/(1-fk));
     }
-    TRACE(100,"htcoefH0:"<<htcoefH(0));
+    // TRACE(100,"htcoefH0:"<<htcoefH(0));
     return htcoefH;
   }
 

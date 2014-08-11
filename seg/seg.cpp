@@ -27,9 +27,7 @@ namespace segment{
     // connection terms other segments
     // us& Ns=gc.Ns;
   }
-  Seg::Seg(const Seg& other): SegBase(other){
-    exit(1);
-  }
+  Seg::Seg(const Seg& other): SegBase(other){}
   Seg& Seg::operator=(const Seg& o){
     SegBase::operator=(o);
     return *this;
@@ -37,18 +35,21 @@ namespace segment{
   void Seg::init(const tasystem::Globalconf& gc){
     TRACE(13,"Seg::init()");
     // NO Do not clear segments! Boundary conditions have been added
-    // vvertex.clear();
+    vvertex.clear();
     SegBase::init(gc);
 
   } // Seg::Init
   void Seg::show(bool showVertices) const {
-    TRACE(13,"Seg::show()");
+    TRACE(18,"Seg::show()");
+    cout << "Showing segment of type " << getType() << "\n";
+    cout << "Number: "<< getNumber() << ".\n";
+    cout << "Geometry: \n";
     geom.show();
+
     for(auto s=getLeft().begin();s!=getLeft().end();s++)
 	cout << "Left segment:" << *s << "\n";
     for(auto s=getRight().begin();s!=getRight().end();s++)
 	cout << "Right segment:" << *s << "\n";
-
     if(showVertices==true)
       this->showVertices();
   }

@@ -45,7 +45,7 @@ namespace variable {
     return result;
   }
   void var::updateNf(){
-    TRACE(0,"var::updateNf()");
+    TRACE(-2,"var::updateNf()");
     if(this->Ns!=gc->Ns){
       TRACE(5,"UPDATENF untested code");
       assert((gc->Ns%2)==1);	// Check if number of samples is not even
@@ -62,25 +62,14 @@ namespace variable {
       idft();
     }
   }
-  // var var::operator()(const var& v) { //Copy constructor
-  //   TRACE(0,"var copy constructor");
-  //   assert(v.gc!=NULL);
-  //   vd tdata=v.tdata();
-  //   return var(*(this->gc),tdata);
-  // }
-  // var& var::operator=(const var& v){
-  //   TRACE(0,"var::operator=(const var& v)");
-  //   this->timedata=v.timedata;
-  //   //	TRACE(0,"this->timedata:" <<this->timedata);
-  //   //	TRACE(0,"v.timedata:" <<v.timedata);
-  //   this->amplitudedata=v.amplitudedata;
-  //   return *this;
-  // }
-  var var::operator*(const var& var2) const { // Multiply two variables in timed
+  var& var::operator*(const var& var2) { // Multiply two
+    // variables in time domain
     TRACE(0,"var::operator*(const var& var2) const");
     assert(this->Ns==var2.Ns);
+
     vd tdata=this->tdata()%var2.tdata();
-    return var(*(this->gc),tdata);
+    this->settdata(tdata);
+    return *this;
   }
   var var::operator*(const d& scalar) const {	// Post-multiplication with scalar
     assert(this->gc!=NULL);
@@ -90,20 +79,20 @@ namespace variable {
   
   // Get methods (which require implementation)
   const d& var::operator()(us i) const {//Extract result at specific frequency
-      TRACE(0,"var::operator(us i)");
+      TRACE(-2,"var::operator(us i)");
       assert(i<Ns);
       TRACE(-1,"amplitudedata: "<<amplitudedata);
       return amplitudedata(i);
   }
   d& var::operator()(us i) {//Extract result at specific frequency
-      TRACE(0,"var::operator(us i)");
+      TRACE(-2,"var::operator(us i)");
       assert(i<Ns);
       TRACE(-1,"amplitudedata: "<<amplitudedata);
       return amplitudedata(i);
     }  
   vc var::getcRes() const
   {
-    TRACE(0,"var::getcRes()");
+    TRACE(-2,"var::getcRes()");
     //	TRACE(0,"amplitudedata:" << amplitudedata);
     vc cadata(Nf+1);
     cadata(0)=amplitudedata(0);
@@ -114,6 +103,7 @@ namespace variable {
   }
   d var::tdata(d t) const //Extract the value for a given time
   {
+    TRACE(-2,"var::tdata(d t)");
     d result=0;
     vc cres=getcRes();
     for(us n=0;n<Nf+1;n++)
@@ -125,6 +115,7 @@ namespace variable {
 
   // Set methods
   void var::set(us freqnr,d val) { //Set result for specific frequency zero,real one, -imag one, etc
+    TRACE(-2,"var::set("<<freqnr<<","<<val<<")");
     assert(freqnr<Ns && freqnr>=0);
     updateNf();
     amplitudedata[freqnr]=val;

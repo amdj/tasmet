@@ -19,6 +19,7 @@ namespace W{
     int UsignL;
     int UsignR;
     W();
+    void show() const;
     void operator()(const tube::TubeVertex& v);
   };   	// Class W
 }	// namespace W

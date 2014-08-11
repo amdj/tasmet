@@ -42,6 +42,7 @@ namespace tube{
     
   //   return dUip1;
   // }  
+
   LeftPressure::LeftPressure(us segnr,const var& pres,const var& temp):TubeBcVertex(segnr),pL(pres),TL(temp) {
     TRACE(8,"LeftPressure full constructor");
   }
@@ -66,7 +67,7 @@ namespace tube{
 
     pL.gc=thisseg.gc;
     TL.gc=thisseg.gc;
-
+    // TRACE(100,"TL:"<<TL());
     if(eq.at(2)->getType()!=EqType::Ise){
       TRACE(100,"Changing energy equation...");
       // eq[2]=&peq;
@@ -74,7 +75,10 @@ namespace tube{
     LeftPressure::updateW(thisseg);
 
   }
-
+  void LeftPressure::show() const {
+    cout << "LeftPressure boundary condition set at left side of tube.\n";
+    TubeVertex::show();
+  }
   void LeftPressure::updateW(const SegBase& thisseg)
   {
     // Change continuity equation for an open boundary
@@ -108,11 +112,12 @@ namespace tube{
     TRACE(100,"denom:"<<denom);
     d x0_ov_x1sq=pow(x0/x1,2);
     eWc1=0;
-    eWc2=lg.SfL/denom;
-    // eWc2
-    eWc3=w.vSfR/w.dxp;
-    // eWc3=-lg.SfL*pow(xp1/xp2,2)/denom +  lg.SfR/dxp;
-    eWc4=-w.vSfR/lg.dxp -lg.SfL*x0_ov_x1sq/denom;
+    // eWc2=lg.SfL/denom;
+    eWc2=lg.SfL/x0;
+    eWc3=lg.vSf/w.dxp;
+    eWc4=-w.vSfR/w.dxp;    
+    // eWc3=-w.SfL*pow(xp1/xp2,2)/denom +  w.vSf/dxp;
+    // eWc4=-w.vSfR/w.dxp -lg.SfL*x0_ov_x1sq/denom;
 
 
     // TODO Fill this further!
@@ -152,7 +157,10 @@ namespace tube{
     d denom=x0*(1.0-x0/x1);
     // TRACE(100,"Denom:"<<denom);
     d x0_ov_x1sq=pow(x0/x1,2);
-    esource+=-1.0*(1-x0_ov_x1sq)*lg.SfL*fDFT*(kappaL%TLt)/denom;
+    // TRACE(12,"esource:"<<esource);
+    // esource+=-1.0*(1-x0_ov_x1sq)*lg.SfL*fDFT*(kappaL%TLt)/denom;
+    esource+=-1.0*lg.SfL*fDFT*(kappaL%TLt)/x0;
+    // TRACE(12,"esource:"<<esource);
     // esource+=fDFT*(U.tdata()%pL.tdata());
     // TRACE(100,"wL0:"<<wL0);
     // TRACE(100,"WL1:"<<wL1);

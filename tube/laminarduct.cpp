@@ -24,14 +24,13 @@ namespace tube {
     // Fill vector of gridpoints with data:
     TRACE(13,"LaminarDuct constructor()...");
   }
-  LaminarDuct::LaminarDuct(const LaminarDuct& o):LaminarDuct(o.geom){
-    c=o.c;
-    m=o.m;
-    e=o.e;
-    s=o.s;
-    se=o.se;
-    laminardrag=o.laminardrag;
-    heat=o.heat;
+  LaminarDuct::LaminarDuct(const LaminarDuct& o):Tube(o),
+						 c(o.c),m(o.m),e(o.e)	\
+						,s(o.s),se(o.se),	\
+						 laminardrag(o.laminardrag)	\
+						,heat(o.heat)
+  {
+    TRACE(13,"LaminarDuct copy constructor()...");
   }
   LaminarDuct& LaminarDuct::operator=(const LaminarDuct& o){
     TRACE(13,"LaminarDuct copy assignment");

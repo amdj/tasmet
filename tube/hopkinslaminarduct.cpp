@@ -3,10 +3,8 @@
 
 namespace tube{
 
-  HopkinsLaminarDuct::HopkinsLaminarDuct(const HopkinsLaminarDuct& o):HopkinsLaminarDuct(o.geom)
+  HopkinsLaminarDuct::HopkinsLaminarDuct(const HopkinsLaminarDuct& o):LaminarDuct(o),hopkinsheat(o.hopkinsheat)
   {
-    LaminarDuct::operator=(o);
-    hopkinsheat=o.hopkinsheat;    
   }
   HopkinsLaminarDuct& HopkinsLaminarDuct::operator=(const HopkinsLaminarDuct& o)
   {
@@ -19,8 +17,11 @@ namespace tube{
     d.se.setTs(geom,Ts);
     return d;
   }
-  SegBase* HopkinsLaminarDuct::copy() const{
-    return new HopkinsLaminarDuct(*this);
+  HopkinsLaminarDuct HopkinsLaminarDuctTs(const Geom& geom,d Tl,d Tr){
+    HopkinsLaminarDuct d(geom);
+    d.se.setTs(geom,Tl,Tr);
+    return d;
   }
+  
 
 }

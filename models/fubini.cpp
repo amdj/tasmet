@@ -1,19 +1,18 @@
-#pragma once
-#ifndef _FUBINIFULLENERGY_H_
-#define _FUBINIFULLENERGY_H_
+#include "models.h"
 
-#include "solver.h"
+
 #include "gas.h"
 #include "twimpedance.h"
-#include "impedancebc.h"
-#include "hopkinslaminarduct.h"
+#include "isotwall.h"
+#include "laminarduct.h"
+#include "isentropictube.h"
 #include "pressurebc.h"
 using namespace segment;
 using namespace tasystem;
 using namespace tube;
 using namespace variable;
 using namespace gases;
-Solver* Fubini_fullenergy(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
+Solver* Fubini(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
 {
   initlog(loglevel);
   d dx=L/gp;
@@ -29,10 +28,10 @@ Solver* Fubini_fullenergy(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
   d Mass=0;
   us Ns=2*Nf+1;
   cout << "Kappa: " << kappa << "\n";
-  Globalconf gc(Nf,freq,"air",T0,p0,Mass,kappa);
+Globalconf gc=Globalconf::airSTP(Nf,freq);
   gc.show();
   Geom geom1=Geom::Cylinder(gp,L,R);
-  HopkinsLaminarDuct t1(geom1);
+  IsentropicTube t1(geom1);
   // TRACE(30,"p1:"<<p1);
   var pL(gc);
   for(us i=0;i<Ns;i++)
@@ -42,35 +41,17 @@ Solver* Fubini_fullenergy(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
   // cout << Zv;
   LeftPressure bleft(0,pL);
   TwImpedance bright(0);
+  // RightImpedance bright(0,Zv);
+  // RightIsoTWall bright(0,T0);
+  TAsystem sys(gc);
   t1.addBc(bleft);
   t1.addBc(bright);
-
-  // RightImpedance bright(0,Zv);
-  TAsystem sys(gc);
 
   sys.addSeg(t1);
   Solver* Sol=new Solver(sys);
   Sol->sys.show(false);
   return Sol;  
 }
-
-
-
-#endif /* _FUBINIFULLENERGY_H_ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

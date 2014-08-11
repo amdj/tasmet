@@ -25,11 +25,11 @@ namespace tube {
   }
   void Tube::cleanup(){
     TRACE(13,"Tube::cleanup()");
-    // bcLeft.reset();
-    // bcRight.reset();
-    // vvertex.clear();
+    bcLeft.reset();
+    bcRight.reset();
+    vvertex.clear();
   }
-  Tube::Tube(const Tube& other):Tube(other.geom){
+  Tube::Tube(const Tube& other):Seg(other){
     copyTube(other);
   }
   Tube& Tube::operator=(const Tube& other){
@@ -38,6 +38,16 @@ namespace tube {
     Seg::operator=(other);
     copyTube(other);
     return *this;
+  }
+  void Tube::show(bool showvertices) const {
+    TRACE(18,"Tube::show()");
+    Seg::show(showvertices);
+    if(bcLeft)
+      cout << "Left side contains internal boundary condition of type " << bcLeft->getType() << ".\n";
+    if(bcRight)
+      cout << "Right side contains internal boundary condition of type " << bcRight->getType() << ".\n";
+
+    
   }
   void Tube::copyTube(const Tube& other){
     TRACE(13,"Tube::copyTube()");

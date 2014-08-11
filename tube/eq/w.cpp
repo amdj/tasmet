@@ -4,6 +4,24 @@ namespace W{
   SPOILNAMESPACE
   using segment::LocalGeom;
   W::W(){}
+  void W::show() const {
+    cout << "wLl   :"<<wLl<<"\n";
+    cout << "wLr   :"<<wLr<<"\n";
+    cout << "wRl   :"<<wRl<<"\n";
+    cout << "wRr   :"<<wRr<<"\n";
+    cout << "wL0   :"<<wL0<<"\n";
+    cout << "wL1   :"<<wL1<<"\n";
+    cout << "wRNm1 :"<<wRNm1<<"\n";
+    cout << "wRNm2 :"<<wRNm2<<"\n";
+    cout << "vSfL  :"<<vSfL<<"\n";
+    cout << "vSfR  :"<<vSfR<<"\n";
+    cout << "dxm   :"<<dxm<<"\n";
+    cout << "dxp   :"<<dxp<<"\n";
+    cout << "UsignL:"<<UsignL<<"\n";
+    cout << "UsignR:"<<UsignR<<"\n";
+    
+    
+  }
   void W::operator()(const tube::TubeVertex& v){
     const segment::Geom& geom=*v.lg.geom;
     const segment::LocalGeom& lg=v.lg;
@@ -18,6 +36,7 @@ namespace W{
     dxm=dxp=0;
 
     vxi=lg.vxi;
+    
     if(i>0) {   
       const LocalGeom llg=geom.localGeom(i-1);
       vxim1=llg.vxi;
@@ -29,6 +48,7 @@ namespace W{
     }
     if(i==0){
       const LocalGeom rlg=geom.localGeom(i+1);
+      vSfL=lg.SfL;
       wL0=rlg.vxi/(rlg.vxi-lg.vxi);
       wL1=-rlg.vxi/(rlg.vxi-lg.vxi);
     }
@@ -46,6 +66,7 @@ namespace W{
       const LocalGeom llg=geom.localGeom(i-1);
       wRNm1=(llg.vxi-lg.xR)/(llg.vxi-lg.vxi);
       wRNm2=(lg.xR-lg.vxi)/(llg.vxi-lg.vxi);
+      vSfR=lg.SfR;
     }    
       
   } // W(thisseg)

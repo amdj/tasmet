@@ -56,16 +56,26 @@ namespace tube{
   void TubeVertex::show() const{
     // cout << "----------------- TubeVertex " << lg.i << "----\n";
     cout << "Not up-to-date function.\n";
-    // cout << "wLl      : "<<wLl<<"\n"			\
-    // 	 << "wLr      : "<<wLr      <<"\n"	\
-    // 	 << "wRl      : "<<wRl      <<"\n"	\
-    // 	 << "wRr      : "<<wRr      <<"\n"	\
-    // 	 << "wL0      : "<<wL0      <<"\n"	\
-    // 	 << "wL1      : "<<wL1      <<"\n"	\
-    // 	 << "wRNm1    : "<<wRNm1      <<"\n"	\
-    // 	 << "wRNm2    : "<<wRNm2      <<"\n"	\
-    //   ;
-
+    cout << "Ts(0):"<< Ts(0) <<"\n";
+    w.show();
+    cout << "cWddt    :"<<cWddt<<"\n";
+    cout << "cWim1    :"<<cWim1<<"\n";
+    cout << "cWi      :"<<cWi<<"\n";
+    cout << "cWip1    :"<<cWip1<<"\n";
+    cout << "cWart    :"<<cWart<<"\n";
+    cout << "eWddt    :"<<eWddt<<"\n";
+    cout << "eWgim1   :"<<eWgim1<<"\n";
+    cout << "eWgi     :"<<eWgi<<"\n";
+    cout << "eWgip1   :"<<eWgip1<<"\n";
+    cout << "eWkinim1 :"<<eWkinim1<<"\n";
+    cout << "eWkini   :"<<eWkini<<"\n";
+    cout << "eWkinip1 :"<<eWkinip1<<"\n";
+    cout << "eWc1    :"<<eWc1<<"\n";
+    cout << "eWc2    :"<<eWc2<<"\n";
+    cout << "eWc3    :"<<eWc3<<"\n";
+    cout << "eWc4    :"<<eWc4<<"\n";
+    
+    
   }
   void TubeVertex::updateW(const SegBase& thisseg){
     TRACE(8,"TubeVertex::updateW()");

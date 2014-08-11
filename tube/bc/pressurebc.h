@@ -23,7 +23,8 @@ namespace tube{
     variable::var pL;			// Pressure boundary condition
     variable::var TL;			// Temperature boundary conditions
 
-    // PressureBcEnergyEq peq;    
+    // PressureBcEnergyEq peq;
+    virtual void show() const;
     LeftPressure(us,const var&);
     LeftPressure(us,const var&,const var& temp);
     LeftPressure(const LeftPressure& other);
@@ -34,7 +35,7 @@ namespace tube{
   private:
     void updateW(const SegBase&);
   public:
-    virtual string gettype() const {return string("LeftPressure");}
+    virtual string getType() const {return string("LeftPressure");}
     virtual enum connectpos connectPos() const {return connectpos::left;}
     virtual vd msource() const;	// Prescribed left pressure
     virtual vd esource() const;	// Same
