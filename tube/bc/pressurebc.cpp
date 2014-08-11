@@ -116,7 +116,7 @@ namespace tube{
     eWc2=lg.SfL/x0;
     eWc3=lg.vSf/w.dxp;
     eWc4=-w.vSfR/w.dxp;    
-    // eWc3=-w.SfL*pow(xp1/xp2,2)/denom +  w.vSf/dxp;
+    // eWc3=-w.vSfL*pow(x0/x1,2)/denom +  lg.vSf/w.dxp;
     // eWc4=-w.vSfR/w.dxp -lg.SfL*x0_ov_x1sq/denom;
 
 
@@ -153,14 +153,16 @@ namespace tube{
     vd kappaL=e.kappaL(*this);
     // esource+=lg.SfL*num*fDFT*(kappaL%TLt)/denom;
     d x0=lg.vxi;
-    d x1=rlg.vxi;
+    d x1=lg.vxi+w.dxp;
     d denom=x0*(1.0-x0/x1);
     // TRACE(100,"Denom:"<<denom);
     d x0_ov_x1sq=pow(x0/x1,2);
-    // TRACE(12,"esource:"<<esource);
+    TRACE(12,"esource:"<<esource);
     // esource+=-1.0*(1-x0_ov_x1sq)*lg.SfL*fDFT*(kappaL%TLt)/denom;
     esource+=-1.0*lg.SfL*fDFT*(kappaL%TLt)/x0;
-    // TRACE(12,"esource:"<<esource);
+    TRACE(100,"esourcefac:"<<-1.0*lg.SfL/x0);
+    // TRACE(100,"esourcefac:"<<-1.0*(1-x0_ov_x1sq)*lg.SfL/denom);
+    TRACE(12,"esource:"<<esource);
     // esource+=fDFT*(U.tdata()%pL.tdata());
     // TRACE(100,"wL0:"<<wL0);
     // TRACE(100,"WL1:"<<wL1);
@@ -170,3 +172,6 @@ namespace tube{
   }
 
 } // namespace tube
+
+
+

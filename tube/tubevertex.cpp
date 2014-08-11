@@ -119,9 +119,9 @@ namespace tube{
       eWgi=w.wRl-w.wLr;
       eWgip1=w.UsignR*w.wRr;
 
-      eWkinim1=-w.wLl/vSfLsq;
-      eWkini=w.wRl/vSfsq-w.wLr/vSfLsq;
-      eWkinip1=w.wRr/vSfRsq;
+      eWkinim1=-0.5*w.wLl/vSfLsq;
+      eWkini=0.5*w.wRl/vSfsq-w.wLr/vSfLsq;
+      eWkinip1=0.5*w.wRr/vSfRsq;
       
       eWc1=-w.vSfL/w.dxm;
       eWc2= lg.vSf/w.dxm;
@@ -147,8 +147,8 @@ namespace tube{
       eWgip1=w.wRr;
 
       eWkinim1=0;
-      eWkini=w.wRl/vSfsq;
-      eWkinip1=w.wRr/vSfRsq;
+      eWkini=0.5*w.wRl/vSfsq;
+      eWkinip1=0.5*w.wRr/vSfRsq;
 
       eWc1=0;
       eWc2=0;
@@ -173,8 +173,8 @@ namespace tube{
       eWgi=-w.wLr;
       eWgip1=0;
 
-      eWkinim1=-w.wLl/vSfLsq;
-      eWkini=-w.wLr/vSfsq;
+      eWkinim1=-0.5*w.wLl/vSfLsq;
+      eWkini=-0.5*w.wLr/vSfsq;
       eWkinip1=0;
 
       eWc1=-w.vSfL/w.dxm;

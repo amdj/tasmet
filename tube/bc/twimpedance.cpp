@@ -37,7 +37,6 @@ namespace tube{
   void TwImpedance::updateW(const SegBase& thisseg){
     TRACE(8,"TwImpedance::updateW()");
     w(*this);
-    cWddt=lg.vVf;
     cWim1=w.wRNm2-w.wLl;
     cWi  =w.wRNm1-w.wLr;
     cWip1=0;
@@ -58,8 +57,8 @@ namespace tube{
 
     d SfLsq=pow(w.vSfL,2);
     d SfRsq=pow(lg.SfR,2);
-    eWkinim1=-w.wLl/SfLsq+w.wRNm2/SfRsq;
-    eWkini=-w.wLr/SfLsq+w.wRNm1/SfRsq;
+    eWkinim1=-0.5*w.wLl/SfLsq+w.wRNm2/SfRsq;
+    eWkini=-0.5*w.wLr/SfLsq+w.wRNm1/SfRsq;
     eWkinip1=0;
 
     eWc1=-w.vSfL/w.dxm;

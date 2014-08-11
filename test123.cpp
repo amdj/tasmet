@@ -52,8 +52,8 @@ int main(int argc,char* argv[]) {
   Globalconf air=Globalconf::airSTP(Nf,f);
   air=gc;
   Geom geom1=Geom::Cylinder(gp,L,rtube);
-  IsentropicTube t1(geom1);
-
+  // IsentropicTube t1(geom1);
+  HopkinsLaminarDuct t1(geom1);
   // TRACE(100,"Thisrho:");  
   TRACE(100,"Thisrho:"<< gc.gas.rho(T0,p0));
   Globalconf gc2=Globalconf::airSTP(2,100);
@@ -113,6 +113,7 @@ int main(int argc,char* argv[]) {
   dmat Jac=sol.sys.jac();
   // sol1.sys->show();
   cout << "Jac:\n"<< Jac;
-
+  sol.sys.show(true);
   return 0;
 }
+

@@ -49,7 +49,7 @@ namespace tube{
     eWgim1=-w.wLl+w.wRNm2;
     eWgi  =-w.wLr+w.wRNm1;
     eWgip1=0;
-    
+    WARN("Not updated for kinetic energy terms!");
     eWc1=-w.vSfL/lg.dxm;
     eWc2= w.vSfL/lg.dxm;
     eWc3=0;

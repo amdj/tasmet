@@ -47,7 +47,7 @@ namespace tube{
     error+=v.eWddt*DDTfd*v.p()/(gamma-1.0); // Static enthalpy term
     error+=v.eWddtkin*DDTfd*fDFT*(rhoti%Uti%Uti); // This term should get a eWddtkin factor later on
     error+=v.eWgi*fDFT*(gamfac*pti%Uti);
-    error+=fDFT*(0.5*v.eWkini*rhoti%pow(Uti,3));
+    error+=fDFT*(v.eWkini*rhoti%pow(Uti,3));
     error+=fDFT*((v.eWc2*kappaL(v)+v.eWc3*kappaR(v))%Tti);
 
     if(v.left!=NULL){
@@ -55,7 +55,7 @@ namespace tube{
       vd ptim1=v.left->p.tdata()+v.getp0t();
       const vd& rhotim1=v.left->rho.tdata();
       error+=fDFT*(v.eWgim1*gamfac*ptim1%Utim1);
-      error+=fDFT*(v.eWkinim1*0.5*rhotim1%pow(Utim1,3));
+      error+=fDFT*(v.eWkinim1*rhotim1%pow(Utim1,3));
 
       // Conduction term
       const vd& Tim1=v.left->T.tdata();
@@ -68,7 +68,7 @@ namespace tube{
       vd ptip1=v.right->p.tdata()+v.getp0t();
       const vd& rhotip1=v.right->rho.tdata(); 
       error+=fDFT*(v.eWgip1*gamfac*ptip1%Utip1);
-      error+=fDFT*(v.eWkinip1*0.5*rhotip1%pow(Utip1,3));
+      error+=fDFT*(v.eWkinip1*rhotip1%pow(Utip1,3));
       const vd& Tip1=v.right->T.tdata();
       error+=v.eWc4*fDFT*(kappaR(v)%Tip1);
     }
@@ -188,7 +188,7 @@ namespace tube{
     vd pti=v.p.tdata()+v.getp0t();
     dUi+=DDTfd*fDFT*diagmat(2*v.eWddtkin*rhoti%Uti)*iDFT; // This term should get a eWuddt factor later on
     dUi+=fDFT*diagmat(v.eWgi*gamfac*pti)*iDFT;
-    dUi+=fDFT*diagmat(v.eWkini*3*0.5*rhoti%pow(Uti,2))*iDFT;
+    dUi+=fDFT*diagmat(v.eWkini*3*rhoti%pow(Uti,2))*iDFT;
     assert(heat!=NULL);
     dUi+=v.eWddt*heat->dUi(v);
     return dUi;
@@ -204,7 +204,7 @@ namespace tube{
 
     const vd& Uti=v.U.tdata();
     drhoi+=DDTfd*fDFT*diagmat(v.eWddtkin*pow(Uti,2))*iDFT; // This term should get a eWuddt factor later on
-    drhoi+=fDFT*diagmat(v.eWkini*0.5*pow(Uti,3))*iDFT;
+    drhoi+=fDFT*diagmat(v.eWkini*pow(Uti,3))*iDFT;
 
     return drhoi;
   }  
@@ -220,7 +220,7 @@ namespace tube{
       vd ptim1=v.left->p.tdata()+v.getp0t();
       const vd& rhotim1=v.left->rho.tdata(); 
       dUim1+=fDFT*diagmat(v.eWgim1*gamfac*ptim1)*iDFT;
-      dUim1+=fDFT*diagmat(v.eWkinim1*3*0.5*rhotim1%pow(Utim1,2))*iDFT;
+      dUim1+=fDFT*diagmat(v.eWkinim1*3*rhotim1%pow(Utim1,2))*iDFT;
 
     }
     return dUim1;
@@ -237,7 +237,7 @@ namespace tube{
       vd ptip1=v.right->p.tdata()+v.getp0t();
       const vd& rhotip1=v.right->rho.tdata(); 
       dUip1+=fDFT*diagmat(v.eWgip1*gamfac*ptip1)*iDFT;
-      dUip1+=fDFT*diagmat(v.eWkinip1*3*0.5*rhotip1%pow(Utip1,2))*iDFT;
+      dUip1+=fDFT*diagmat(v.eWkinip1*3*rhotip1%pow(Utip1,2))*iDFT;
 
     }
     return dUip1;
@@ -251,7 +251,7 @@ namespace tube{
     dmat drhoim1=v.zero;
     if(v.left!=NULL){
       const vd& Utim1=v.left->U.tdata();
-      drhoim1+=fDFT*diagmat(v.eWkinim1*0.5*pow(Utim1,3))*iDFT;
+      drhoim1+=fDFT*diagmat(v.eWkinim1*pow(Utim1,3))*iDFT;
     }
     return drhoim1;
   }
@@ -265,7 +265,7 @@ namespace tube{
     if(v.right!=NULL){
       const vd& rhotip1=v.right->rho.tdata();
       const vd& Utip1=v.right->U.tdata();
-      drhoip1+=fDFT*diagmat(v.eWkinip1*0.5*pow(Utip1,3))*iDFT;
+      drhoip1+=fDFT*diagmat(v.eWkinip1*pow(Utip1,3))*iDFT;
     }
     return drhoip1;
   }

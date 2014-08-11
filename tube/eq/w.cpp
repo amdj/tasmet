@@ -44,7 +44,6 @@ namespace W{
       wLl=(lg.vxi-lg.xL)/(lg.vxi-llg.vxi);
       wLr=(lg.xL-llg.vxi)/(lg.vxi-llg.vxi);
       vSfL=llg.vSf;
-      dxm=vxi-vxim1;
     }
     if(i==0){
       const LocalGeom rlg=geom.localGeom(i+1);
@@ -57,10 +56,9 @@ namespace W{
       const LocalGeom rlg=geom.localGeom(i+1);
       vxip1=rlg.vxi;
       dxp=vxip1-vxi;      
+      vSfR=rlg.vSf;
       wRr=(lg.xR-lg.vxi)/(rlg.vxi-lg.vxi);
       wRl=(rlg.vxi-lg.xR)/(rlg.vxi-lg.vxi);
-      vSfR=rlg.vSf;
-      dxp=vxip1-vxi;
     }
     if(i==v.nCells-1){
       const LocalGeom llg=geom.localGeom(i-1);
