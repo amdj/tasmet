@@ -19,7 +19,7 @@ Solver* ConeTube(us gp,us Nf,d freq,d L,d r1,d r2,vd p1,int loglevel,d kappa)
   Globalconf gc=Globalconf::airSTP(Nf,freq);
   
   Geom geom1(Geom::Cone(gp,L,r1,r2));
-  HopkinsLaminarDuct t1=HopkinsLaminarDuct(geom1);
+  HopkinsLaminarDuct t1(HopkinsLaminarDuctTs(geom1,gc.T0));
   // IsentropicTube t1(geom1);
   // TRACE(100,"Set to isentropic. Still problem with HopkinsLaminarDuct for temperature stuff.");
   // TRACE(30,"p1:"<<p1);

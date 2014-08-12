@@ -90,7 +90,7 @@ int main(int argc,char* argv[]) {
   // sys2.init();
   // sys2.show();
   // cout << sys.getSeg(0)->GetRes() << "\n";
-  Solver sol(sys);
+  // Solver sol(sys);
   // sol.sys.init();
   // sys.getSeg(0)->Error();
   // sol.sys->getSeg(0)->Jac();
@@ -101,18 +101,18 @@ int main(int argc,char* argv[]) {
 // sol.sys
 
   // Solver sol2(sol);n
-  cout << "Result:\n" << sol.sys.getRes();  
-  cout << "Error:\n" << sol.sys.error();
+  cout << "Result:\n" << sys.getRes();  
+  cout << "Error:\n" << sys.error();
   // sol.doIter();
     // // // vd x=t1.GetRmomes();
   // // vd err=sol.sys->Error();
   // // cout << "error:\n"<<err;
 
   // cout << "err:\n"<<er;
-  dmat Jac=sol.sys.jac();
+  dmat Jac=sys.jac();
   // sol1.sys->show();
   cout << "Jac:\n"<< Jac;
-  sol.sys.show(true);
+  // sol.sys.show(true);
   return 0;
 }
 

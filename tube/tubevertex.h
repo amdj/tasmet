@@ -51,13 +51,8 @@ namespace tube{
     vector<const TubeEquation*> eq; // Vector of pointers to the
 				    // equations to solve for.
 
-
-    TubeVertex(){vars[0]=&rho; vars[1]=&U; vars[2]=&T; vars[3]=&p; vars[4]=&Ts;}
-    virtual ~TubeVertex(){}
     virtual void setLeft(const Vertex&);
     virtual void setRight(const Vertex&);
-    
-    
     virtual void show() const;
     virtual vd error() const;		       // Compute error for this gridpoint
     virtual dmat jac() const;		       // Fill complete Jacobian for this node
@@ -68,8 +63,10 @@ namespace tube{
     // pressure) addings in the equations.
     vd getp0t() const;
   private:
+    void connectTubeLeft(const SegBase& thisseg);
+    void connectTubeRight(const SegBase& thisseg);
     void updateW(const SegBase& thisseg);
-    void updateWEqs(const SegBase& thisseg,const W::W& w);
+    void updateWEqs(const SegBase& thisseg);
   public:
     virtual void initTubeVertex(us i,const Tube&);   
     // These virtual functions are required such that boundary

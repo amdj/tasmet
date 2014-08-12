@@ -2,7 +2,6 @@
 // Author: J.A. de Jong
 #include "impedancebc.h"
 #include "tubevertex.h"
-#include "momscale.h"
 #include "w.h"
 
 namespace tube{
@@ -81,11 +80,6 @@ namespace tube{
     dUi+=v.w.wRNm1*v.lg.SfR*diagmat(Z);
     // For pressure boundary condition
     // dUi.row(0).zeros();
-    
-    // For velocity boundary condition
-    // dUi.row(0).zeros();
-    // dUi(0,0)=MOM_SCALE0*MOM_SCALE;
-      
     return dUi;
   }
 

@@ -36,7 +36,6 @@ namespace tasystem{
       TRACE(14,"Jacobian submat succesfully filled.");
       us thisnr=curseg.getNumber();
       if(curseg.getLeft().size()>0){
-      	TRACE(14,"Coupling to left segment..");
 	const SegBase& left=*(curseg.getLeft()[0]);
       	// Couple Jacobian terms
       	us othernr=left.getNumber();
@@ -45,13 +44,13 @@ namespace tasystem{
       	us otherndofs=segndofs(othernr);
       	// Find out if other segment is coupled to the left, or to the right
       	if(left.getRight()[0]->getNumber()==thisnr){
-      	  TRACE(14,"tail of left segment "<< thisnr << " coupled to head of current segment");
+      	  TRACE(14,"Tail of left segment "<< othernr << " coupled to head of segment " << thisnr<<".");
       	  jac.submat(frow,firstcolother+otherndofs-cellblock,lrow,firstcolother+otherndofs-1)= \
       	    segjac.cols(0,cellblock-1);
-	  // TRACE(100,"Coupling jacobian terms:\n"<<segjac.cols(0,cellblock-1));
       	}    
       	else{			// headhead coupling
-
+	  WARN("Head-head coupling not yet implemented! Exiting.");
+	  exit(1);
       	} // 
       }	  // curseg.Left()!=NULL
 
@@ -67,13 +66,12 @@ namespace tasystem{
       	// Find out if other segment is coupled to the left, or to the right
       	if(curseg.getRight()[0]->getLeft()[0]->getNumber()==thisnr){
 	  TRACE(14,"Tail of segment "<< thisnr << " connected to head of seg " << right.getNumber() << ".");
-      	  // tail of left segment coupled to head of current segment
       	  jac.submat(frow,firstcolother,lrow,firstcolother+cellblock-1)=	\
       	    segjac.cols(segjac.n_cols-cellblock,segjac.n_cols-1);
-	  // TRACE(100,"Coupling jacobian terms:\n"<<segjac.cols(segjac.n_cols-cellblock,segjac.n_cols-1));
       	}    
       	else{			// headhead coupling
-
+	  WARN("Head-head coupling not yet implemented! Exiting.");
+	  exit(1);
       	} // 
       }	  // curseg.Right()!=NULL
       TRACE(-1,"Creation of Jacobian for segment "<< j << "done."<<endl);

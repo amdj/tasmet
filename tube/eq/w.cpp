@@ -36,7 +36,7 @@ namespace W{
     dxm=dxp=0;
 
     vxi=lg.vxi;
-    
+    vSf=lg.vSf;
     if(i>0) {   
       const LocalGeom llg=geom.localGeom(i-1);
       vxim1=llg.vxi;

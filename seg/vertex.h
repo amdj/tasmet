@@ -12,22 +12,18 @@ namespace segment{
   class Seg;
   using variable::var;
   using tasystem::Globalconf;
+  
   class Vertex;
   
   typedef std::vector<const Vertex*>  VertexVec;
   class Vertex{
-    VertexVec left,right;
   public:
     const tasystem::Globalconf* gc=NULL;
     us i;
 
-    Vertex() {}
     virtual ~Vertex(){}
-    const VertexVec& getLeft() const {return left;}
-    const VertexVec& getRight() const {return right;}
-    virtual void setLeft(const Vertex& v);
-    virtual void setRight(const Vertex& v);
-
+    // const VertexVec& getLeft() const {return vleft;}
+    // const VertexVec& getRight() const {return vright;}
     virtual vd error() const=0;		       // Compute error for this gridpoint
     virtual dmat jac() const=0;		       // Fill complete Jacobian for this node
     virtual void setRes(vd res)=0;			  // Set result vector to res

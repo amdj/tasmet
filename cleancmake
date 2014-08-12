@@ -1,9 +1,6 @@
 #!/bin/bash
 #make clean
 rm -rf CMakeFiles
-rm -rf Testing
 rm cmake_install.cmake
-rm CTestTestfile.cmake
 rm CMakeCache.txt
 rm Makefile
-rm test

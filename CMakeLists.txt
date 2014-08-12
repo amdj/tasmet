@@ -14,9 +14,6 @@ set(PYVER 3.4m)
 ##########################################
 
 
-
-
-
 ############################## Not so often changed
 set(PYTHON_LIBRARY libpython${PYVER}.so)
 add_definitions(-DLOGLEVEL=nonlinearlogger)
@@ -31,7 +28,7 @@ set(CLANG_FLAGS "-Wno-unknown-warning-option")
 
 # set(CMAKE_CXX_COMPILER clang++)
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CLANG_FLAGS} ")
-# set(CMAKE_CXX_COMPILER g++)
+set(CMAKE_CXX_COMPILER g++)
 
 # -pipe Use pipes rather than temporary files for communication
 #           between the various stages of compilation.  This fails to
@@ -100,7 +97,7 @@ add_executable(test123 test123.cpp)
 add_executable(threetubes threetubes.cpp)
 cython_add_module(pytube pytube.pyx)
 # cython_add_module(doubletube doubletube.pyx)
-set_target_properties(pytube PROPERTIES COMPILE_FLAGS "-Wno-cpp -Wno-strict-aliasing")
+set_target_properties(pytube PROPERTIES COMPILE_FLAGS "-Wno-cpp  -Wno-strict-aliasing")
 
 
 
@@ -131,3 +128,17 @@ target_link_libraries(pytube nonlin math_common armadillo)
 
 
 #set_target_properties(math_common PROPERTIES VERSION ${math_common_VERSION_STR#ING} SOVERSION ${math_common_VERSION_MAJOR})
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -34,7 +34,7 @@ namespace tube{
     IsentropicTube& operator=(const IsentropicTube&);
     virtual const DragResistance& getDragResistance() const {return nodrag;}
     virtual const HeatSource& getHeatSource() const {return noheat;}
-    virtual string getType() const {return string("IsentropicTube");}
+    virtual string getName() const {return string("Isentropic tube");}
     virtual SegBase* copy() const {TRACE(10,"IsentropicTube copy()");return new IsentropicTube(*this);}
     virtual void init(const Globalconf&);
     void cleanup();

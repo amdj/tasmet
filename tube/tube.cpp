@@ -46,7 +46,6 @@ namespace tube {
       cout << "Left side contains internal boundary condition of type " << bcLeft->getType() << ".\n";
     if(bcRight)
       cout << "Right side contains internal boundary condition of type " << bcRight->getType() << ".\n";
-
     
   }
   void Tube::copyTube(const Tube& other){
@@ -108,25 +107,25 @@ namespace tube {
   void Tube::init(const tasystem::Globalconf& g){
     TRACE(13,"Tube::Init()");
     Seg::init(g);
-    vvertex.clear();
     if(vvertex.size()==0){
       vvertex.emplace_back(leftTubeVertex());
       for(us i=1;i<geom.nCells-1;i++)
     	vvertex.emplace_back(new TubeVertex());
       vvertex.emplace_back(rightTubeVertex());
+      us nVertex=vvertex.size();    
+      assert(nVertex==geom.nCells);
+      // And initialize again.
+      for(us i=0;i<vvertex.size();i++){
+	TubeVertex* cvertex=static_cast<TubeVertex*>(vvertex[i].get());
+	TRACE(13,"Starting intialization of Vertex "<< i);
+	if(i<nVertex-1) cvertex->setRight(*vvertex[i+1].get());
+	if(i>0) cvertex->setLeft(*vvertex[i-1].get());
+	cvertex->initTubeVertex(i,*this);
+      }
     }
-
-    us nVertex=vvertex.size();    
-    assert(nVertex==geom.nCells);
-    // And initialize again.
-    for(us i=0;i<vvertex.size();i++){
-      TubeVertex* cvertex=static_cast<TubeVertex*>(vvertex[i].get());
-      TRACE(13,"Starting intialization of Vertex "<< i);
-      if(i<nVertex-1) cvertex->right=static_cast<TubeVertex*>(vvertex[i+1].get());
-      if(i>0) cvertex->left=static_cast<TubeVertex*>(vvertex[i-1].get());
-      cvertex->initTubeVertex(i,*this);
+    else{
+      WARN("Tube already initialized!");
     }
-
   } // Tube::init(gc)
   
     

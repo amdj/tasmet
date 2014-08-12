@@ -34,7 +34,10 @@ namespace segment{
     void setLeft(const SegBase&);		   // Couple segment
 						   // to some segment
 						   // on right side
-    virtual string getType() const=0;
+    virtual string getType() const=0;		   // This param is
+    // important for connecting the segments
+    
+    virtual string getName() const=0; // This one is jus the name
     // ------------------------------
     virtual void init(const Globalconf&); // Implementation updates gc
     // ptr of this instance.

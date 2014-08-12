@@ -23,7 +23,6 @@ namespace tasystem{
 	addSeg(*o.getSeg(i));
 	assert(getNSegs()==i+1);
       }
-    TRACE(100,"Copy segconnections switched off.");
     segConnections=o.segConnections;
     hasInit=false;
 
@@ -61,6 +60,14 @@ namespace tasystem{
     TRACE(14,"TAsystem::init()");
     us Nsegs=getNSegs();
     us Ndofs=0;
+
+    us i=0;
+    for(auto v=segConnections.begin();v!=segConnections.end();++v){
+      TRACE(90,"Connecting segment connection " << i << "...");
+      coupleSegs(*v,*this);
+      i++;
+    }
+    
     segfirstdof(0)=0;
     for(us i=0;i<Nsegs;i++)
       {
@@ -77,11 +84,6 @@ namespace tasystem{
 	TRACE(12,"This segment ndofs:"<< thisndofs);
       }
     TRACE(10,"Segment initialization done. Total NDofs:"<< Ndofs);
-    // for(auto v=segConnections.begin();v!=segConnections.end();++v){
-    //   TRACE(90,"Connecting segment connection " << i << "...");
-    //   coupleSegs(*v,*this);
-    //   i++;
-    // }
     if(Ndofs>MAXNDOFS)
       {
     	WARN("Way too many DOFS required: Ndofs=" <<Ndofs << ". Exiting...\n");

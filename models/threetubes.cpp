@@ -38,7 +38,6 @@ Solver* ThreeTubes(us gp,us Nf,d freq,d L,d S1,d S2,vd p1,int loglevel,d kappa)
   sys.connectSegs(1,2,tasystem::SegCoupling::tailhead);  
 
   Solver* Sol=new Solver(sys);
-  // Sol->sys->show();
   return Sol;  
 }
 

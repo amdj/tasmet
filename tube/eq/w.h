@@ -15,7 +15,7 @@ namespace W{
     d wL0,wL1,wRNm1,wRNm2;    	// Special boundary weight functions
     d vxim1,vxi,vxip1;
     d dxm,dxp;
-    d vSfR,vSfL;
+    d vSfR,vSfL,vSf;
     int UsignL;
     int UsignR;
     W();

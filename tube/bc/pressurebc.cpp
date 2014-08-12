@@ -64,7 +64,6 @@ namespace tube{
   {
     TRACE(8,"LeftPressure::initTubeVertex()");
     TubeVertex::initTubeVertex(i,thisseg);
-
     pL.gc=thisseg.gc;
     TL.gc=thisseg.gc;
     // TRACE(100,"TL:"<<TL());
@@ -91,11 +90,11 @@ namespace tube{
 
     // Change momentum equation for open boundary, and prescribed pressure
     mWuim1=0;
-    mWui=w.wRl/lg.SfR-w.wL0/lg.SfL;
-    mWuip1=w.wRr/lg.SfR-w.wL1/lg.SfL;
+    mWui=w.wRl/w.vSfR-w.wL0/w.vSfL;
+    mWuip1=w.wRr/w.vSfR-w.wL1/w.vSfL;
 
     mWpim1=0;     
-    mWpi=w.wRl*lg.SfR+lg.SfL-lg.SfR;
+    mWpi=w.wRl*w.vSfR+w.vSfL-w.vSfR;
     mWpip1=w.vSfR*w.wRr;
     // Change energy equation for open boundary and prescribed pressure
     eWgim1= 0;
@@ -103,10 +102,10 @@ namespace tube{
     eWgip1= w.wRr-w.wL1;
 
     eWkinim1=0;
-    eWkini=w.wRl/pow(lg.SfR,2)-w.wL0/pow(lg.SfL,2);    
-    eWkinip1=w.wRr/pow(lg.SfR,2)-w.wL1/pow(lg.SfL,2);    
+    eWkini=w.wRl/pow(w.vSfR,2)-w.wL0/pow(w.vSfL,2);    
+    eWkinip1=w.wRr/pow(w.vSfR,2)-w.wL1/pow(w.vSfL,2);    
 
-    d x0=lg.vxi;
+    d x0=w.vxi;
     d x1=w.vxip1;
     d denom=x0*(1-x0/x1);
     TRACE(100,"denom:"<<denom);
