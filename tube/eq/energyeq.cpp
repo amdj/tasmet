@@ -43,7 +43,6 @@ namespace tube{
     const vd& Tti=v.T.tdata();
     const vd& rhoti=v.rho.tdata();
 
-    
     error+=v.eWddt*DDTfd*v.p()/(gamma-1.0); // Static enthalpy term
     error+=v.eWddtkin*DDTfd*fDFT*(rhoti%Uti%Uti); // This term should get a eWddtkin factor later on
     error+=v.eWgi*fDFT*(gamfac*pti%Uti);
@@ -75,6 +74,7 @@ namespace tube{
 
     // Artificial viscosity terms      
     #ifdef EN_VISCOSITY
+    TRACE(100,"Energy viscosity defined");
     const d& vSf=v.lg.vSf;
     if(v.i>0 && v.i<v.nCells-1){
       error+=-d_r(v)*(v.right->p() -v.p())*vSf;
@@ -298,10 +298,10 @@ namespace tube{
     const dmat& iDFT=v.gc->iDFT;      
 
     dmat dTip1=v.zero;
-    if(v.right!=NULL)    
-      {
-	dTip1+=v.eWc4*fDFT*diagmat(kappaR(v))*iDFT;
-      }
+    TRACE(100,"dTip1, right is"<<v.right);
+    if(v.right!=NULL) {
+      dTip1+=v.eWc4*fDFT*diagmat(kappaR(v))*iDFT;
+    }
     return dTip1;
   }
   dmat Energy::dTi(const TubeVertex& v) const {

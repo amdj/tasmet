@@ -159,7 +159,7 @@ namespace tube{
     TRACE(12,"esource:"<<esource);
     // esource+=-1.0*(1-x0_ov_x1sq)*lg.SfL*fDFT*(kappaL%TLt)/denom;
     esource+=-1.0*lg.SfL*fDFT*(kappaL%TLt)/x0;
-    TRACE(100,"esourcefac:"<<-1.0*lg.SfL/x0);
+    // TRACE(100,"esourcefac:"<<-1.0*lg.SfL/x0);
     // TRACE(100,"esourcefac:"<<-1.0*(1-x0_ov_x1sq)*lg.SfL/denom);
     TRACE(12,"esource:"<<esource);
     // esource+=fDFT*(U.tdata()%pL.tdata());

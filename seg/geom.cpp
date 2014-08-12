@@ -14,6 +14,12 @@ namespace segment{
   Geom Geom::Cylinder(us gp, d L,d r){
     return Cone(gp,L,r,r);
   }
+  Geom Geom::CylinderBlApprox(us gp, d L,d r){
+    Geom geom=Cone(gp,L,r,r);
+    geom.shape=string("blapprox");
+    return geom;
+  }
+
   Geom Geom::Cone(us gp,d L,d r1,d r2){
     TRACE(10,"Geom::Cone()");
     assert(gp>3);

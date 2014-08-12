@@ -3,6 +3,7 @@
 #include "solver.h"
 #include "gas.h"
 #include "isentropictube.h"
+#include "hopkinslaminarduct.h"
 #include "twimpedance.h"
 #include "pressurebc.h"
 using namespace segment;
@@ -10,6 +11,7 @@ using namespace tasystem;
 using namespace tube;
 using namespace variable;
 using namespace gases;
+
 Solver* ThreeTubes(us gp,us Nf,d freq,d L,d S1,d S2,vd p1,int loglevel,d kappa)
 {
   initlog(loglevel);
@@ -18,11 +20,19 @@ Solver* ThreeTubes(us gp,us Nf,d freq,d L,d S1,d S2,vd p1,int loglevel,d kappa)
   d R2=sqrt(S2/number_pi);
   Globalconf gc=Globalconf::airSTP(Nf,freq,0,kappa);
   gc.show();
-  Geom geom1=Geom::Cylinder(gp,L,R1);
-  Geom geom2=Geom::Cylinder(gp,L,R2);
-  IsentropicTube t1(geom1);
-  IsentropicTube t2(geom2);  
-  IsentropicTube t3(geom1);
+  // Geom geom1=Geom::Cylinder(gp,L,R1);
+  // Geom geom2=Geom::Cylinder(gp,L,R2);
+
+  Geom geom1=Geom::CylinderBlApprox(gp,L,R1);
+  
+  TRACE(100,"Threetubes hacked to contant cs-area case");
+  HopkinsLaminarDuct t1(geom1);
+  HopkinsLaminarDuct t2(geom1);  
+  HopkinsLaminarDuct t3(geom1);
+  // IsentropicTube t1(geom1);
+  // IsentropicTube t2(geom2);  
+  // IsentropicTube t3(geom1);
+
   var pL(gc);
   for(us i=0;i<gc.Ns;i++)
     pL.set(i,p1(i));
@@ -38,6 +48,8 @@ Solver* ThreeTubes(us gp,us Nf,d freq,d L,d S1,d S2,vd p1,int loglevel,d kappa)
   sys.connectSegs(1,2,tasystem::SegCoupling::tailhead);  
 
   Solver* Sol=new Solver(sys);
+  Sol->sys.show(false);
+  Sol->sys.init();
   return Sol;  
 }
 

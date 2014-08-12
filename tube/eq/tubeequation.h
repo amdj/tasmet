@@ -1,7 +1,6 @@
 #pragma once
 #ifndef _TUBEEQUATION_H_
 #define _TUBEEQUATION_H_
-#define Neq (5)
 #include <vtypes.h>
 
 

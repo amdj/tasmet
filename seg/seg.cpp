@@ -34,18 +34,15 @@ namespace segment{
   }
   void Seg::init(const tasystem::Globalconf& gc){
     TRACE(13,"Seg::init()");
-    // NO Do not clear segments! Boundary conditions have been added
-    vvertex.clear();
     SegBase::init(gc);
-
   } // Seg::Init
   void Seg::show(bool showVertices) const {
     TRACE(18,"Seg::show()");
-    cout << "Showing segment of type " << getType() << "\n";
+    cout << "Showing segment of type " << getType() <<" with number "<<getNumber()<< ".\n";
     cout << "Number: "<< getNumber() << ".\n";
     cout << "Geometry: \n";
     geom.show();
-
+    assert(vvertex.size()!=0);
     for(auto s=getLeft().begin();s!=getLeft().end();s++)
 	cout << "Left segment:" << *s << "\n";
     for(auto s=getRight().begin();s!=getRight().end();s++)
@@ -72,6 +69,7 @@ namespace segment{
     for(us j=0;j<nVertex;j++){			   // Fill the Jacobian
       TRACE(3,"Obtaining vertex Jacobian...");
       vJac=vvertex[j]->jac();
+      assert(vJac.n_cols==3*Neq*Ns);      
       // The row height of a vertex jacobian matrix is Neq*Ns, The
       // column with is 3*Neq*Ns, since the neigbouring vertex has to
       // be found
@@ -94,7 +92,7 @@ namespace segment{
 	  lastcol=3*Neq*Ns-1;	  
 	}
       }	// j==0
-      else {			// Last vertex
+      else if(j==nVertex-1){	// Last vertex
 	if(getRight().size()==0){
 	  TRACE(10,"Last node not connected to other segments")
 	  firstcol=(nVertex-2)*Neq*Ns;
@@ -102,13 +100,21 @@ namespace segment{
 	}
 	else{
 	  TRACE(10,"Last node IS connected to other segment")
-	  firstcol=(nVertex-1)*Neq*Ns;
-	  lastcol=Jacobian.n_cols-1;
+	  firstcol=(j)*Neq*Ns;
+	  lastcol=(j+3)*Neq*Ns-1;
 	}
       }	// j==nVertex-1
+      else
+	{
+	  WARN("Something went terribly wrong.");
+	  exit(1);
+	}
+      
       TRACE(3,"Filling segment Jacobian with vertex subpart...");
       Jacobian.submat(firstrow,firstcol,lastrow,lastcol)=vJac;      
     }	// end for
+    // cout <<"Segment" << getNumber() <<" Jacobian done. Jac is:\n"<< Jacobian;
+    // cout << "Number of colums in this jacobian" << Jacobian.n_cols<<"\n";
     TRACE(8,"Segment Jacobian done.");
     return Jacobian;
   }

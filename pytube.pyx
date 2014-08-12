@@ -55,8 +55,11 @@ cdef class pytube:
         else:
             print('Warning: no valid case selected! Tried was: %s' %case)
 
-    def show(self,vertex):
-        self.sol[0].sys.show(vertex)    
+    def show(self,showvertex):
+        if showvertex is False:
+            self.sol[0].sys.show(False)
+        else:
+            self.sol[0].sys.show(True)
     def __dealloc__(self):
         if self.sol!=NULL:
             del self.sol

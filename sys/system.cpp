@@ -67,7 +67,6 @@ namespace tasystem{
       coupleSegs(*v,*this);
       i++;
     }
-    
     segfirstdof(0)=0;
     for(us i=0;i<Nsegs;i++)
       {

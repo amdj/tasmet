@@ -16,8 +16,10 @@ namespace tube{
     // The default boundary implementation is an adiabatic no-slip wall.
     TRACE(6,"Continuity::Error()");
     vd error(v.gc->Ns,fillwith::zeros);
+    TRACE(10,"Ns:"<<v.gc->Ns);
     error+=v.cWddt*v.gc->DDTfd*v.rho();
     error+=v.cWi*v.gc->fDFT*(v.rho.tdata()%v.U.tdata());
+    TRACE(10,"SFSG");
     if(v.i>0 || (v.i==0 && v.left!=NULL)){
       // Standard implementation of a no-slip (wall) boundary
       // condition
@@ -25,6 +27,8 @@ namespace tube{
       const vd& Uim1=v.left->U.tdata();
       error+=v.cWim1*v.gc->fDFT*(rhoim1%Uim1);
     }
+    TRACE(10,"SFSG, i="<<v.i);
+    TRACE(10,"Right:,"<<v.right);    
     if(v.i<v.nCells-1 || (v.i==v.nCells-1 && v.right!=NULL) ){
       // Standard implementation of a no-slip (wall) boundary
       // condition
@@ -32,7 +36,7 @@ namespace tube{
       const vd& Uip1=v.right->U.tdata();
       error+=v.cWip1*v.gc->fDFT*(rhoip1%Uip1);
     }
-
+    TRACE(10,"SFSG");
     #ifdef CONT_VISCOSITY
     if(v.i>0 && v.i<v.nCells-1){
       error+=-d_r(v)*(v.right->rho() -v.rho())*v.cWart;
@@ -49,6 +53,7 @@ namespace tube{
     #endif
     // (Boundary) source term
     error+=v.csource();
+    TRACE(10,"SFSG");    
     return error;
   }
   dmat Continuity::drhoi(const TubeVertex& v) const {

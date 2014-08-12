@@ -28,6 +28,7 @@ namespace tasystem{
     }
     catch(...)
       {
+	WARN("Solution not found! Returning.");
 	// Todo something useful
       }
 

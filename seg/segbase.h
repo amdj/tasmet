@@ -6,6 +6,7 @@
 #include "geom.h"
 #define Neq (5)
 
+
 namespace segment{
   class SegBase;
   using tasystem::Globalconf;
@@ -20,7 +21,6 @@ namespace segment{
     const Globalconf* gc=NULL;	// Global configuration of the system
   protected:
     SegBaseVec left,right;
-
   public:
     SegBase(const Geom& geom);
     SegBase(const SegBase& o);

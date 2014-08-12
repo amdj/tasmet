@@ -108,10 +108,12 @@ namespace tube {
     TRACE(13,"Tube::Init()");
     Seg::init(g);
     if(vvertex.size()==0){
+      TRACE(100,"Filling vertices. Current size:"<<vvertex.size());
       vvertex.emplace_back(leftTubeVertex());
       for(us i=1;i<geom.nCells-1;i++)
     	vvertex.emplace_back(new TubeVertex());
       vvertex.emplace_back(rightTubeVertex());
+
       us nVertex=vvertex.size();    
       assert(nVertex==geom.nCells);
       // And initialize again.
@@ -121,8 +123,8 @@ namespace tube {
 	if(i<nVertex-1) cvertex->setRight(*vvertex[i+1].get());
 	if(i>0) cvertex->setLeft(*vvertex[i-1].get());
 	cvertex->initTubeVertex(i,*this);
-      }
-    }
+      }	// for
+    }	// if
     else{
       WARN("Tube already initialized!");
     }

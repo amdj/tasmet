@@ -28,7 +28,7 @@ namespace H{
     return 2*kappa/pow(rh,2);
   }
   d zeroheat_blapprox(d dummy,d dummy2){
-    TRACE(50,"zeroheat_blapprox");
+    TRACE(5,"zeroheat_blapprox");
     return 0; }
   d zeroheat_inviscid(d dummy,d dummy2){
     TRACE(50,"zeroheat_inviscid");

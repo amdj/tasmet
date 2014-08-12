@@ -47,7 +47,7 @@ namespace tube{
     variable::var T;		// Temperature
     variable::var p;		// Pressure
     variable::var Ts;		// Solid temperature
-    variable::var* vars[Neq]={&rho,&U,&T,&p,&Ts};
+    variable::var* vars[5]={&rho,&U,&T,&p,&Ts};
     vector<const TubeEquation*> eq; // Vector of pointers to the
 				    // equations to solve for.
 

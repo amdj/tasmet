@@ -7,9 +7,8 @@ namespace tube{
 
   void TubeVertex::show() const{
     // cout << "----------------- TubeVertex " << lg.i << "----\n";
-    cout << "Not up-to-date function.\n";
-    cout << "Ts(0):"<< Ts(0) <<"\n";
-    w.show();
+    cout << "Showing weight functions for TubeVertex "<< i <<"\n";
+    // w.show();
     cout << "cWddt    :"<<cWddt<<"\n";
     cout << "cWim1    :"<<cWim1<<"\n";
     cout << "cWi      :"<<cWi<<"\n";
@@ -22,10 +21,13 @@ namespace tube{
     cout << "eWkinim1 :"<<eWkinim1<<"\n";
     cout << "eWkini   :"<<eWkini<<"\n";
     cout << "eWkinip1 :"<<eWkinip1<<"\n";
-    cout << "eWc1    :"<<eWc1<<"\n";
-    cout << "eWc2    :"<<eWc2<<"\n";
-    cout << "eWc3    :"<<eWc3<<"\n";
-    cout << "eWc4    :"<<eWc4<<"\n";
+    cout << "eWc1     :"<<eWc1<<"\n";
+    cout << "eWc2     :"<<eWc2<<"\n";
+    cout << "eWc3     :"<<eWc3<<"\n";
+    cout << "eWc4     :"<<eWc4<<"\n";
+    cout << "Tube on left  side:" << left <<"\n";
+    cout << "This tube         :" << this <<"\n";
+    cout << "Tube on right side:" << right <<"\n"   ;
   }
 
   void TubeVertex::setLeft(const Vertex& v){
@@ -70,6 +72,8 @@ namespace tube{
     // Update weight factors
     TRACE(10,"Now running updateW()");
     TubeVertex::updateW(thisseg);
+    // Finally, updating the real weight factors
+    updateWEqs(thisseg);
   }
   void TubeVertex::updateW(const SegBase& thisseg){
     TRACE(8,"TubeVertex::updateW()");
@@ -94,16 +98,13 @@ namespace tube{
     if(i==nCells-1 && thisseg.getRight().size()!=0){
       const SegBase& right=*thisseg.getRight().at(0);
       if(right.getType().compare("Tube")==0){ // Its a Tube
-	TRACE(100,"connectTubeRight()");
-	// connectRight(w);
+	connectTubeRight(thisseg);
       }
       else{
 	WARN("Right segment's type not understood from connection point of view. Exiting.");
 	exit(1);
       }
     }
-    // Finally, updating the real weight factors
-    updateWEqs(thisseg);
   }
 
   void TubeVertex::updateWEqs(const SegBase& thisseg){
@@ -113,13 +114,13 @@ namespace tube{
     cWddt=lg.vVf;
     mWddt=lg.vVf/w.vSf;
     eWddt=lg.vVf;
-    eWddtkin=0.5*eWddt/pow(w.vSf,2);
+    eWddtkin=0.5*eWddt/pow(lg.vSf,2);
     cWart=w.vSf;
     d vSfsq=pow(w.vSf,2);
     auto& vleft=thisseg.getLeft();
     auto& vright=thisseg.getRight();    
     
-    if((i>0 && i<nCells-1) || (i==0 && vleft.size()!=0) || (i==nCells-1 && vright.size()!=0)){
+    if((i>0 && i<nCells-1) || (i==0 && left!=NULL) || (i==nCells-1 && right!=NULL)){
       d vSfLsq=pow(w.vSfL,2);
       d vSfRsq=pow(w.vSfR,2);
       cWim1=-w.UsignL*w.wLl;
@@ -130,24 +131,32 @@ namespace tube{
       mWui=(w.wRl-w.wLr)/w.vSf;
       mWuip1=w.UsignR*w.wRr/w.vSfR;
 
-      mWpim1=-w.vSfL*w.wLl;
-      mWpi  = w.vSf*(w.wRl-w.wLr);
-      mWpip1= w.vSfR*w.wRr;
-
+      // Old one:
+      // mWpim1=-w.vSfL*w.wLl;
+      // mWpi  = w.vSf*(w.wRl-w.wLr);
+      // mWpip1= w.vSfR*w.wRr;
+      // This works better!
+      mWpim1=-lg.SfL*w.wLl;
+      mWpi  = lg.vSf*(w.wRl-w.wLr);
+      mWpip1= lg.SfR*w.wRr;
+      
+      
       eWgim1=-w.UsignL*w.wLl;
       eWgi=w.wRl-w.wLr;
       eWgip1=w.UsignR*w.wRr;
 
-      eWkinim1=-0.5*w.wLl/vSfLsq;
-      eWkini=0.5*w.wRl/vSfsq-w.wLr/vSfLsq;
-      eWkinip1=0.5*w.wRr/vSfRsq;
+      // Old one:
+      eWkinim1=-0.5*w.UsignL*w.wLl/vSfLsq;
+      eWkini=0.5*(w.wRl/vSfsq-w.wLr/vSfsq);
+      eWkinip1=0.5*w.UsignR*w.wRr/vSfRsq;
       
-      eWc1=-w.vSfL/w.dxm;
-      eWc2= w.vSf/w.dxm;
-      eWc3= w.vSf/w.dxp;
-      eWc4=-w.vSfR/w.dxp;
+      eWc1=-lg.SfL/w.dxm;
+      eWc2= lg.SfL/w.dxm;
+      eWc3= lg.SfR/w.dxp;
+      eWc4=-lg.SfR/w.dxp;
     }
     else if(i==0){
+      TRACE(100,"Building for first cell adiabatic wall");
       d vSfRsq=pow(w.vSfR,2);
       cWim1=0;
       cWi=w.wRl;
@@ -175,6 +184,7 @@ namespace tube{
       eWc4=-w.vSfR/w.dxp;
     }
     else if(i==nCells-1){
+      TRACE(100,"Building for last cell adiabatic wall");
       d vSfLsq=pow(w.vSfL,2);
       cWi=-w.wLr;
       cWim1=-w.wLl;
@@ -206,11 +216,11 @@ namespace tube{
       abort();
     }
     // Contribution from changing cross-sectional area
-    mWpi+=w.vSfL-w.vSfR;
+    mWpi+=lg.SfL-lg.SfR;
   }
 
   void TubeVertex::connectTubeLeft(const SegBase& thisseg){
-    TRACE(15,"TubeVertex::connectLeft()");
+    TRACE(15,"TubeVertex::connectTubeLeft()");
     auto vleft=thisseg.getLeft();
     const Tube& thistube=static_cast<const Tube&>(thisseg);
     const SegBase& left=*thisseg.getLeft().at(0);
@@ -223,6 +233,7 @@ namespace tube{
     if(lefttube.vvertex.size()==0){ // Pre-init the segment
       // For this one, little situation rebuild everything to
       // non-const? I do not think so.
+      TRACE(18,"Forward initializing Tube on left side.");      
       Tube& lefttube_nonconst=const_cast<Tube&>(lefttube);
       lefttube_nonconst.init(*thisseg.gc);
     }
@@ -248,12 +259,14 @@ namespace tube{
       w.UsignL=-1;
       w.vSfL=left.geom.vSf(0);	
     }
+    w.dxm=lg.vxi-vxim1;      
     w.wLl=(lg.vxi)/(lg.vxi-vxim1);	
     w.wLr=1-w.wLl;
   } // connectTubeLeft()
     
     
   void TubeVertex::connectTubeRight(const SegBase& thisseg){
+    TRACE(15,"TubeVertex::connectTubeRight()");
     auto vright=thisseg.getRight();
     const Tube& thistube=static_cast<const Tube&>(thisseg);
     const SegBase& right=*thisseg.getRight().at(0);
@@ -263,6 +276,7 @@ namespace tube{
     if(righttube.vvertex.size()==0){ // Pre-init the segment
       // For this one, little situation rebuild everything to
       // non-const? I do not think so.
+      TRACE(18,"Forward initializing Tube on right side.");
       Tube& righttube_nonconst=const_cast<Tube&>(righttube);
       righttube_nonconst.init(*thisseg.gc);
     }
@@ -284,6 +298,7 @@ namespace tube{
       w.UsignR=-1;
       w.vSfR=right.geom.vSf(rightnCells-1);
     }
+    w.dxp=vxip1-lg.vxi;
     w.wRr=(lg.xR-lg.vxi)/(vxip1-lg.vxi);
     w.wRl=(vxip1-lg.xR)/(vxip1-lg.vxi);
   } // connectTubeRight()
@@ -332,6 +347,8 @@ namespace tube{
     TRACE(5,"Ns:"<<Ns);
     TRACE(5,"Neq:"<<Neq);    
     dmat Jac(Neq*Ns,3*Neq*Ns,fillwith::zeros);
+    TRACE(5,"Pointer to left TubeVertex:"<<left);
+    TRACE(5,"Pointer to right TubeVertex:"<<right);
     us firstcol=0;
     us lastcol=Jac.n_cols-1;
     for(us k=0;k<Neq;k++){
