@@ -58,16 +58,16 @@ namespace tube{
     // Artificial viscosity ter
     #ifdef MOM_VISCOSITY
     if(v.left!=NULL && v.right!=NULL){
-      error+=-v.gc->rho0*d_r(v)*(v.right->U()-v.U());
-      error+= v.gc->rho0*d_l(v)*(v.U()-v.left->U());
+      error+=v.gc->rho0*d_r(v)*(v.U()-v.right->U());
+      error+=v.gc->rho0*d_l(v)*(v.U()-v.left->U());
     }
     else if(v.left==NULL){
-      error+=v.gc->rho0*d_r(v)*(v.right->U()-v.right->right->U());
-      error+=v.gc->rho0*d_l(v)*(v.right->U()-v.U());
+      error+=v.gc->rho0*d_r(v)*(v.U()-v.right->U());
+      error+=v.gc->rho0*d_l(v)*(v.U()-v.right->right->U());
     }
     else if(v.right==NULL) {
-      error+=v.gc->rho0*d_r(v)*(v.left->U()-v.U());
-      error+=v.gc->rho0*d_l(v)*(v.left->U()-v.left->left->U());
+      error+=v.gc->rho0*d_l(v)*(v.U()-v.left->U());
+      error+=v.gc->rho0*d_r(v)*(v.U()-v.left->left->U());
     }
     #endif
 
@@ -87,13 +87,13 @@ namespace tube{
     dUi+=2.0*v.mWui*v.gc->fDFT*(v.rho.diagt()*v.U.diagt())*v.gc->iDFT;
     // Artificial viscosity terms
     #ifdef MOM_VISCOSITY
-    if(v.left!=NULL && v.right!=NULL){
-      dUi+=v.gc->rho0*(d_l(v)+d_r(v));
-    }
-    else if(v.left==NULL)
-      dUi+=-v.gc->rho0*d_l(v);
-    else if(v.right==NULL)
-      dUi+=-v.gc->rho0*d_r(v);
+    // if(v.left!=NULL && v.right!=NULL){
+    dUi+=v.gc->rho0*(d_l(v)+d_r(v));
+    // }
+    // else if(v.left==NULL)
+    //   dUi+=-v.gc->rho0*d_l(v);
+    // else if(v.right==NULL)
+    //   dUi+=-v.gc->rho0*d_r(v);
     #endif
     assert(drag!=NULL);
     dUi+=v.mWddt*drag->dUi(v);
@@ -128,11 +128,11 @@ namespace tube{
     }
     #ifdef MOM_VISCOSITY
     // Artificial viscosity terms
-    if(v.left!=NULL && v.right!=NULL){
+    if(v.left!=NULL){
       dUim1+=-v.gc->rho0*d_l(v);
     }
-    else if(v.right==NULL)
-      dUim1+=v.gc->rho0*(d_r(v)+d_l(v));
+    // else if(v.right==NULL)
+    //   dUim1+=v.gc->rho0*(d_r(v)+d_l(v));
     #endif
     
     return dUim1;
@@ -161,11 +161,11 @@ namespace tube{
     }
     #ifdef MOM_VISCOSITY
     // Artificial viscosity terms
-    if(v.left!=NULL && v.right!=NULL){
+    if(v.right!=NULL){
       dUip1+=-v.gc->rho0*d_r(v);
     }
-    else if(v.left==NULL)
-      dUip1+=v.gc->rho0*(d_r(v)+d_l(v));
+    // else if(v.left==NULL)
+    //   dUip1+=v.gc->rho0*(d_r(v)+d_l(v));
     #endif
     return dUip1;
   }
@@ -183,7 +183,7 @@ namespace tube{
     dmat dUip2=v.zero;
     #ifdef MOM_VISCOSITY
     if(v.left==NULL)
-      dUip2+=-v.gc->rho0*d_r(v);
+      dUip2+=-v.gc->rho0*d_l(v);
     #endif
     return dUip2;
   }
@@ -191,7 +191,7 @@ namespace tube{
     dmat dUim2=v.zero;
     #ifdef MOM_VISCOSITY
     if(v.right==NULL )
-      dUim2+=-v.gc->rho0*d_l(v);
+      dUim2+=-v.gc->rho0*d_r(v);
     #endif
     return dUim2;
   }  

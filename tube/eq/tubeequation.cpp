@@ -77,11 +77,14 @@ namespace tube{
 
   // Artificial viscosity matrices
   vd eps(const vd& nu,d kappa) {
+    TRACE(10,"Temporarily overwriting eps to 0.5");
     vd eps(nu.size());
     for(us i=0;i<eps.size(); i++)
       {
+	// eps(i)=0.5;
 	eps(i)=max(min(0.5,kappa*nu(i)),kappa*1e-2);
       }
+    // TRACE(50,"Max eps:"<< max(eps));
     return eps;
   }
 

@@ -16,7 +16,7 @@ namespace tube{
     TRACE(10,"Ns:"<<v.gc->Ns);
     error+=v.cWddt*v.gc->DDTfd*v.rho();
     error+=v.cWi*v.gc->fDFT*(v.rho.tdata()%v.U.tdata());
-    if(v.i>0 || (v.i==0 && v.left!=NULL)){
+    if(v.left!=NULL){
       // Standard implementation of a no-slip (wall) boundary
       // condition
       const vd& rhoim1=v.left->rho.tdata();
@@ -24,7 +24,7 @@ namespace tube{
       error+=v.cWim1*v.gc->fDFT*(rhoim1%Uim1);
     }
     // TRACE(10,"Right:,"<<v.right);    
-    if(v.i<v.nCells-1 || (v.i==v.nCells-1 && v.right!=NULL) ){
+    if(v.right!=NULL ){
       // Standard implementation of a no-slip (wall) boundary
       // condition
       const vd& rhoip1=v.right->rho.tdata();
@@ -32,17 +32,18 @@ namespace tube{
       error+=v.cWip1*v.gc->fDFT*(rhoip1%Uip1);
     }
     #ifdef CONT_VISCOSITY
+    // This is not correct for non-const cs-area: it will create mass
     if(v.left!=NULL && v.right!=NULL){
       error+=d_r(v)*(v.rho()-v.right->rho())*v.cWart;
-      error+=d_l(v)*(v.rho() -v.left->rho())  *v.cWart;
+      error+=d_l(v)*(v.rho() -v.left->rho())*v.cWart;
     }
     else if(v.left==NULL){		// First v
-      error+=d_r(v)*(v.right->rho()-v.right->right->rho())*v.cWart;
-      error+=d_l(v)*(v.right->rho()-v.rho())*v.cWart;
+      // error+=2*d_l(v)*(v.rho()-v.right->right->rho())*v.cWart;
+      error+=2*d_r(v)*(v.rho()-v.right->rho())*v.cWart;
     }
     else if(v.right==NULL) {			// Last v
-      error+=d_r(v)*(v.left->rho()-v.rho())*v.cWart;
-      error+=d_l(v)*(v.left->rho()-v.left->left->rho())*v.cWart;
+      error+=2*d_l(v)*(v.rho()-v.left->rho())*v.cWart;
+      // error+=d_r(v)*(v.left->rho()-v.left->left->rho())*v.cWart;
     }
     #endif
     // (Boundary) source term
@@ -57,13 +58,13 @@ namespace tube{
 
     // Artificial viscosity terms
     #ifdef CONT_VISCOSITY
-    if(v.left!=NULL && v.right!=NULL){
-      drhoi+=(d_l(v)+d_r(v))*v.cWart;	// Middle vertex
-    }
-    else if(v.left==NULL)
-      drhoi+=-d_l(v)*v.cWart;	// First vertex
-    else if(v.right==NULL)	
-      drhoi+=-d_r(v)*v.cWart;	// Last vertex
+    // if(v.left!=NULL && v.right!=NULL){
+    drhoi+=(d_l(v)+d_r(v))*v.cWart;	// Middle vertex
+    // }
+    // else if(v.left==NULL)
+    //   drhoi+=-d_l(v)*v.cWart;	// First vertex
+    // else if(v.right==NULL)	
+    //   drhoi+=-d_r(v)*v.cWart;	// Last vertex
     #endif
     return drhoi;
   }
@@ -96,11 +97,10 @@ namespace tube{
       drhoip1=v.cWip1*v.gc->fDFT*v.right->U.diagt()*v.gc->iDFT;
     // Artificial viscosity terms
     #ifdef CONT_VISCOSITY
-    if(v.left!=NULL && v.right!=NULL){
+    if(v.right!=NULL)
       drhoip1+=-d_r(v)*v.cWart;
-    }
-    else if(v.left==NULL)		// First vertex
-      drhoip1+=(d_l(v)+d_r(v))*v.cWart;
+    if(v.left==NULL)		// First vertex
+      drhoip1+=-d_l(v)*v.cWart;
     #endif
     return drhoip1;
   }
@@ -112,30 +112,29 @@ namespace tube{
       drhoim1+=v.cWim1*v.gc->fDFT*v.left->U.diagt()*v.gc->iDFT;
     // Artificial viscosity terms
     #ifdef CONT_VISCOSITY
-    if(v.left!=NULL && v.right!=NULL){
+    if(v.left!=NULL)
       drhoim1+=-d_l(v)*v.cWart;
-    }
-    else if(v.right==NULL){		// Last vertex
-      drhoim1+=(d_l(v)+d_r(v))*v.cWart;
-    }
+    if(v.right==NULL)		// Last vertex
+      drhoim1+=-(d_l(v))*v.cWart;
+
     #endif
     return drhoim1;
   }
   dmat Continuity::drhoim2(const TubeVertex& v) const {
     dmat drhoim2=v.zero;
     #ifdef CONT_VISCOSITY
-    if(v.right==NULL){
-      drhoim2+=-d_l(v)*v.cWart;
-    }
+    // if(v.right==NULL){
+      // drhoim2+=-d_r(v)*v.cWart;
+    // }
     #endif    
     return drhoim2;
   }
   dmat Continuity::drhoip2(const TubeVertex& v) const {
     dmat drhoip2=v.zero;
     #ifdef CONT_VISCOSITY
-    if(v.left==NULL){
-      drhoip2+=-d_r(v)*v.cWart;
-    }
+    // if(v.left==NULL){
+      // drhoip2+=-d_l(v)*v.cWart;
+    // }
     #endif
     return drhoip2;
   }
