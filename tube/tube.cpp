@@ -56,7 +56,7 @@ namespace tube {
       bcLeft.reset(other.bcLeft->copy());
     }
     if(other.bcRight)
-      bcRight.reset(other.bcLeft->copy());
+      bcRight.reset(other.bcRight->copy());
   }
   
   void Tube::addBc(const TubeBcVertex& bc){

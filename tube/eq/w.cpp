@@ -54,6 +54,7 @@ namespace W{
     
     if(i<v.nCells-1){
       const LocalGeom rlg=geom.localGeom(i+1);
+      TRACE(100,"Smaller than nCells-1");
       vxip1=rlg.vxi;
       dxp=vxip1-vxi;      
       vSfR=rlg.vSf;

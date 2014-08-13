@@ -94,7 +94,6 @@ namespace tube{
       dmat Dr(Ns,Ns,fillwith::zeros);
       d rj=v.gc->c0;
       vd eps1=eps(nu(v),v.gc->kappa);
-
       Dr.diag()=rj*eps1;
       return Dr;
     }
@@ -110,7 +109,6 @@ namespace tube{
       dmat Dl(Ns,Ns,fillwith::zeros);
       d rj=v.gc->c0;
       vd eps1=eps(nu(v),v.gc->kappa);
-
       Dl.diag()=rj*eps1;
       return Dl;
     }
@@ -123,7 +121,7 @@ namespace tube{
     vd pip1(Ns);
     vd pim1(Ns);    
 
-    if(v.i>0 && v.i<v.nCells-1){
+    if((v.i>0 && v.i<v.nCells-1) || (v.i==0 && v.left!=NULL) ||(v.i==v.nCells-1 && v.right!=NULL)){
       pi=v.p();
       pip1=v.right->p();
       pim1=v.left->p();

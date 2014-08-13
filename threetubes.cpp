@@ -35,7 +35,7 @@ int main(int argc,char* argv[]) {
 
   sol->sys.show(true);
 
-  // sol->solve();
+  sol->solve();
   // sol->sys.getRes();
   // sol->sys->Init();
   // cout << "segjac\n" << sol->sys.getSeg(0)->Jac();
@@ -45,7 +45,7 @@ int main(int argc,char* argv[]) {
   // cout << "Jac:\n" <<jac;
 
   // cout << "\nDeterminant jac:"<< arma::det(jac)<<"\n"; 
-  sol->doIter();
+  // sol->doIter();
   // sol->sys->show(true);
 
   // cout << sol->sys.getRes();

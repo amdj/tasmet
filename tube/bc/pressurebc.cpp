@@ -81,8 +81,7 @@ namespace tube{
   void LeftPressure::updateW(const SegBase& thisseg)
   {
     // Change continuity equation for an open boundary
-    TRACE(80,"LeftPressure::updateW()");
-    const Geom& geom=thisseg.geom;
+    TRACE(8,"LeftPressure::updateW()");
 
     cWim1=0;
     cWi=w.wRl-w.wL0;
@@ -105,8 +104,11 @@ namespace tube{
     eWkini=w.wRl/pow(w.vSfR,2)-w.wL0/pow(w.vSfL,2);    
     eWkinip1=w.wRr/pow(w.vSfR,2)-w.wL1/pow(w.vSfL,2);    
 
+    TRACE(100,"Sf:"<<w.vSf);
     d x0=w.vxi;
     d x1=w.vxip1;
+    TRACE(100,"x0:"<<x1);
+    TRACE(100,"x1:"<<x1);
     d denom=x0*(1-x0/x1);
     TRACE(100,"denom:"<<denom);
     d x0_ov_x1sq=pow(x0/x1,2);
@@ -118,17 +120,11 @@ namespace tube{
     // eWc3=-w.vSfL*pow(x0/x1,2)/denom +  lg.vSf/w.dxp;
     // eWc4=-w.vSfR/w.dxp -lg.SfL*x0_ov_x1sq/denom;
 
-
-    // TODO Fill this further!
-
   }
   vd LeftPressure::msource() const{
     TRACE(5,"LeftPressure::msource()");
     vd msource(gc->Ns,fillwith::zeros);
     msource=-1.0*lg.SfL*pL();
-    // This one should not yet be scaled. The scaling is done in the
-    // error term after adding this source.
-    // TRACE(-1,"msource:"<<msource);
     return msource;
   }
   vd LeftPressure::esource() const {

@@ -3,6 +3,7 @@
 
 #include "gas.h"
 #include "twimpedance.h"
+#include "impedancebc.h"
 #include "isotwall.h"
 #include "laminarduct.h"
 #include "isentropictube.h"
@@ -28,7 +29,7 @@ Solver* Fubini(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
   d Mass=0;
   us Ns=2*Nf+1;
   cout << "Kappa: " << kappa << "\n";
-Globalconf gc=Globalconf::airSTP(Nf,freq);
+  Globalconf gc=Globalconf::airSTP(Nf,freq);
   gc.show();
   Geom geom1=Geom::Cylinder(gp,L,R);
   IsentropicTube t1(geom1);

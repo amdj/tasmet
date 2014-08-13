@@ -120,9 +120,11 @@ namespace tube{
     auto& vleft=thisseg.getLeft();
     auto& vright=thisseg.getRight();    
     
-    if((i>0 && i<nCells-1) || (i==0 && left!=NULL) || (i==nCells-1 && right!=NULL)){
-      d vSfLsq=pow(w.vSfL,2);
-      d vSfRsq=pow(w.vSfR,2);
+    if((left!=NULL) && right!=NULL){
+      const LocalGeom& llg=thisseg.geom.localGeom(left->i);
+      const LocalGeom& rlg=thisseg.geom.localGeom(right->i);
+      d vSfLsq=pow(llg.vSf,2);
+      d vSfRsq=pow(rlg.vSf,2);
       cWim1=-w.UsignL*w.wLl;
       cWi=w.wRl-w.wLr;
       cWip1=w.UsignR*w.wRr;
@@ -150,10 +152,10 @@ namespace tube{
       eWkini=0.5*(w.wRl/vSfsq-w.wLr/vSfsq);
       eWkinip1=0.5*w.UsignR*w.wRr/vSfRsq;
       
-      eWc1=-lg.SfL/w.dxm;
+      eWc1=-llg.vSf/w.dxm;
       eWc2= lg.SfL/w.dxm;
       eWc3= lg.SfR/w.dxp;
-      eWc4=-lg.SfR/w.dxp;
+      eWc4=-rlg.vSf/w.dxp;
     }
     else if(i==0){
       TRACE(100,"Building for first cell adiabatic wall");

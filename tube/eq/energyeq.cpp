@@ -298,7 +298,7 @@ namespace tube{
     const dmat& iDFT=v.gc->iDFT;      
 
     dmat dTip1=v.zero;
-    TRACE(100,"dTip1, right is"<<v.right);
+    // TRACE(100,"dTip1, right is"<<v.right);
     if(v.right!=NULL) {
       dTip1+=v.eWc4*fDFT*diagmat(kappaR(v))*iDFT;
     }

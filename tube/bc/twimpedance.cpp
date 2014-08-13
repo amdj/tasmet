@@ -29,14 +29,13 @@ namespace tube{
     eq.at(1)=&mright;
     // eq.at(2)=&is;
     mright.init(thisseg);
-    is.init(thisseg);
+    // is.init(thisseg);
     // eright.Init(*thisseg.gc);
-    updateW(thisseg);
+    TwImpedance::updateW(thisseg);
   }
   
   void TwImpedance::updateW(const SegBase& thisseg){
     TRACE(8,"TwImpedance::updateW()");
-    w(*this);
     cWim1=w.wRNm2-w.wLl;
     cWi  =w.wRNm1-w.wLr;
     cWip1=0;
@@ -47,8 +46,8 @@ namespace tube{
     mWui	=-w.wLr/lg.SfL+w.wRNm1/lg.SfR;
     mWuip1=0;
 
-    mWpim1=-w.vSfL*w.wLl;
-    mWpi	=-w.vSfL*w.wLr+(lg.SfL-lg.SfR);
+    mWpim1=-lg.SfL*w.wLl;
+    mWpi	=-lg.SfL*w.wLr+(lg.SfL-lg.SfR);
     mWpip1=0;
     
     eWgim1=-w.wLl+w.wRNm2;
@@ -57,8 +56,8 @@ namespace tube{
 
     d SfLsq=pow(w.vSfL,2);
     d SfRsq=pow(lg.SfR,2);
-    eWkinim1=-0.5*w.wLl/SfLsq+w.wRNm2/SfRsq;
-    eWkini=-0.5*w.wLr/SfLsq+w.wRNm1/SfRsq;
+    eWkinim1=-0.5*w.wLl/SfLsq+0.5*w.wRNm2/SfRsq;
+    eWkini=-0.5*w.wLr/SfLsq+0.5*w.wRNm1/SfRsq;
     eWkinip1=0;
 
     eWc1=-w.vSfL/w.dxm;
