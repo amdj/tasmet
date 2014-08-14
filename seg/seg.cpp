@@ -140,6 +140,18 @@ namespace segment{
       }
     return error;
   }
+  vd Seg::domg() const{
+    TRACE(8,"Seg::Error()");
+    const us& Ns=gc->Ns;
+    us nVertex=vvertex.size();    
+    vd domg(getNDofs(),fillwith::zeros);
+    for(us k=0; k<nVertex;k++)
+      {
+	domg.subvec(k*Ns*Neq,k*Ns*Neq+Ns*Neq-1)=vvertex[k]->domg();
+      }
+    return domg;
+  }
+
   void Seg::setRes(vd res){
     TRACE(8,"Seg::SetRes()");
     // const us& Neq=(vvertex[0]).Neq;

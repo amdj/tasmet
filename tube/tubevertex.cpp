@@ -314,7 +314,7 @@ namespace tube{
 
   vd TubeVertex::error() const
   {
-    TRACE(4,"TubeVertex::Error() for TubeVertex "<< i << ".");
+    TRACE(4,"TubeVertex::error() for TubeVertex "<< i << ".");
     // TRACE(4,"Check for position i>0 && i<gp-1...");
     // assert(i>0 && i<seg.geom.gp-1);
     const us& Ns=gc->Ns;
@@ -326,6 +326,18 @@ namespace tube{
       }
     TRACE(4,"TubeVertex::Error() done.");
     return error;
+  }
+  vd TubeVertex::domg() const
+  {
+    TRACE(4,"TubeVertex::domg() for TubeVertex "<< i << ".");
+    const us& Ns=gc->Ns;
+    TRACE(4,"Assignment of Ns survived:"<< Ns);
+    vd domg(Neq*Ns);
+    for(us k=0;k<Neq;k++)
+      {
+	domg.subvec(k*Ns,(k+1)*Ns-1)=eq[k]->domg(*this);
+      }
+    return domg;
   }
   vd TubeVertex::getRes() const {			// Get current result vector
     TRACE(4,"TubeVertex::GetRes()");

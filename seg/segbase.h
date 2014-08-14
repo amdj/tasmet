@@ -44,6 +44,7 @@ namespace segment{
     virtual vd error() const=0;
     virtual void show(bool) const=0;
     virtual dmat jac() const=0;
+    virtual vd domg() const=0;	// Derivative of error w.r.t. base frequency.
     virtual void setRes(vd res)=0;
     virtual vd getRes() const=0;
     virtual SegBase* copy() const=0;

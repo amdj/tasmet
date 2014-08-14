@@ -9,7 +9,9 @@ namespace tube{
   inline double max(d x,d y)  {
     return x<=y? y : x;
   }
-
+  vd TubeEquation::domg(const TubeVertex& v) const{
+    return vd(v.gc->Ns,fillwith::zeros);
+  } 
   dmat TubeEquation::jac(const TubeVertex& v) const {
     // Compute the Jacobian for the subsystem around the current gridpoint
     TRACE(0,"TubeEquation::Jac()");

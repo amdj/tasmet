@@ -29,6 +29,7 @@ namespace segment{
     virtual void setRes(vd res)=0;			  // Set result vector to res
     virtual vd getRes() const=0;			  // Extract current result vector
     virtual void show() const=0;
+    virtual vd domg() const=0;
     Vertex& operator=(const Vertex& v2){WARN("Operator=() not allowed. Aborting."); abort();} 
     void init(us i,const Globalconf& gc);
   };
