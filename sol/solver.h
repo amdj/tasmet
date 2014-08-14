@@ -3,13 +3,15 @@
 #define _SOLVER_H_
 #include "system.h"
 #include <math_common.h>
+#include <memory>
+
 #define SOLVER_MAXITER 100
 namespace tasystem{
   using std::tuple;
 
   class Solver
   {
-
+std::unique_ptr<TAsystem*> TheSys;
   public:
     TAsystem sys;
     Solver(const TAsystem& tasys);
