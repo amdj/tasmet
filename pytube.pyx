@@ -8,6 +8,7 @@ cdef extern from "models.h" namespace "":
     Solver* Fubini_fullenergy(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
     Solver* ThreeTubes(us gp,us Nf,d freq,d L,d S1,d S2,vd p1,int loglevel,d kappa)
     Solver* ConeTube(us gp,us Nf,d freq,d L,d r1,d r2,vd p1,int loglevel,d kappa)
+    Solver* ThreeTubesConduction(us gp,us Nf,d freq,d L,d S1,d S2,vd p1,int loglevel,d kappa,d Tr)
 
     
 #Pytube compatible with paper_1 Fubini code
@@ -18,8 +19,8 @@ cdef class pytube:
     cdef us ntubes
     cdef us Nf
     cdef d freq
-    def __cinit__(self,us gp,us Nf,d freq,d L,d S,d T0,d p0,\
-                  n.ndarray[n.float64_t,ndim=1] p1, cshape,int loglevel,d kappa,case='fubini',d S2=0):
+    def __cinit__(self,us gp,us Nf,d freq,d L,d S,\
+                  n.ndarray[n.float64_t,ndim=1] p1, cshape,int loglevel,d kappa,case='fubini',d S2=0,d Tr=0):
         self.sol=NULL
         self.ntubes=0
         self.Nf=Nf
@@ -46,8 +47,17 @@ cdef class pytube:
             self.ntubes=1
         elif case == 'threetubes':
             assert(S2>0)
-            
+            print('Case threetubes')            
             self.sol=ThreeTubes(gp,Nf,freq,L,S,S2,dndtovec(p1),loglevel,kappa)
+            self.tube[0]=<Tube*> self.sol[0].sys.getSeg(0)
+            self.tube[1]=<Tube*> self.sol[0].sys.getSeg(1)
+            self.tube[2]=<Tube*> self.sol[0].sys.getSeg(2)
+            self.ntubes=3
+        elif case == 'threetubesconduction':
+            print('Case threetubesconduction')            
+            assert(S2>0)
+            assert(Tr>0)
+            self.sol=ThreeTubesConduction(gp,Nf,freq,L,S,S2,dndtovec(p1),loglevel,kappa,Tr)
             self.tube[0]=<Tube*> self.sol[0].sys.getSeg(0)
             self.tube[1]=<Tube*> self.sol[0].sys.getSeg(1)
             self.tube[2]=<Tube*> self.sol[0].sys.getSeg(2)
@@ -68,12 +78,12 @@ cdef class pytube:
     cpdef getFreq(self):
         return self.freq
     cpdef solve(self,maxiter=10):
-        self.sol[0].solve(maxiter)    
+        self.sol[0].solve()    
     cpdef getgp(self):
         return self.gp
     cpdef getx(self,i=0):
         assert(i<self.ntubes)
-        return dvectond(self.tube[i].geom.vx)
+        return dvectond(self.tube[i].geom.xv)
     cpdef getSf(self,i=0):
         assert(i<self.ntubes)
         return dvectond(self.tube[i].geom.vSf)
@@ -82,7 +92,7 @@ cdef class pytube:
         return dvectond(self.sol[0].sys.error())
     cpdef getRes(self):
         return dvectond(self.sol[0].sys.getRes())
-    cpdef doIter(self,d relaxfac):
+    cpdef doIter(self,d relaxfac=1.0):
         self.sol[0].doIter(relaxfac)
     cpdef setRes(self,n.ndarray[n.float64_t,ndim=1] res):
         self.sol[0].sys.setRes(dndtovec(res))

@@ -9,7 +9,7 @@ namespace tube{
   private:
     bool Tset=false;
     d Tl=0,Tr=0;
-    vd vx;
+    vd xv;
     d L;
   public:
     SolidTPrescribed();

@@ -4,6 +4,7 @@
 namespace tasystem{
 
   vd solvesys_eigen(const dmat& K,const vd& f)  {
+    // TRACE(15,"Eigen solver used for large system");
     // Solve a linear system using Eigen sparse
     // Form: K*x=f
     assert(f.size()>0);
@@ -49,12 +50,16 @@ namespace tasystem{
   typedef tuple<d,d> dtuple;
   void Solver::solve(us maxiter,d funtol,d reltol){
     TRACE(20,"Solver started.");
+
     vd error=sys.error();
     d funer=arma::norm(error,2);
     d reler=0;
     us nloop=0;
     if(maxiter==0)
       maxiter=SOLVER_MAXITER;
+    TRACE(15,"maxiter:"<< maxiter);
+    TRACE(15,"funtol:"<< funtol);
+    TRACE(15,"reltol:"<< reltol);
     while((funer>funtol || reler>reltol) && nloop<maxiter)
       {
 	dtuple ers=doIter();
@@ -86,11 +91,11 @@ namespace tasystem{
     assert(jac.n_rows==err.size());
     vd dx;
     if(Ndofs>500){
-      TRACE(10,"Using eigen sparse solver to solve system.");
+      TRACE(15,"Using eigen sparse solver to solve system.");
       dx=-1.0*dampfac*solvesys_eigen(jac,err);
     }
     else{
-      TRACE(10,"Using dense Arma solver to solve system.");
+      TRACE(15,"Using dense Arma solver to solve system.");
       dx=-1.0*dampfac*arma::solve(jac,err);
     }
     d reler=arma::norm(dx,2);

@@ -31,40 +31,39 @@ namespace W{
     // functions
     UsignR=UsignL=1;
 
-    vxim1=vxi=vxip1=0;
+    xvim1=xvi=xvip1=0;
     vSfR=vSfL=0;
     dxm=dxp=0;
 
-    vxi=lg.vxi;
+    xvi=lg.xvi;
     vSf=lg.vSf;
     if(i>0) {   
       const LocalGeom llg=geom.localGeom(i-1);
-      vxim1=llg.vxi;
-      dxm=vxi-vxim1;
-      wLl=(lg.vxi-lg.xL)/(lg.vxi-llg.vxi);
-      wLr=(lg.xL-llg.vxi)/(lg.vxi-llg.vxi);
+      xvim1=llg.xvi;
+      dxm=xvi-xvim1;
+      wLl=(lg.xvi-lg.xL)/(lg.xvi-llg.xvi);
+      wLr=(lg.xL-llg.xvi)/(lg.xvi-llg.xvi);
       vSfL=llg.vSf;
     }
     if(i==0){
       const LocalGeom rlg=geom.localGeom(i+1);
       vSfL=lg.SfL;
-      wL0=rlg.vxi/(rlg.vxi-lg.vxi);
-      wL1=-lg.vxi/(rlg.vxi-lg.vxi);
+      wL0=rlg.xvi/(rlg.xvi-lg.xvi);
+      wL1=-lg.xvi/(rlg.xvi-lg.xvi);
     }
     
     if(i<v.nCells-1){
       const LocalGeom rlg=geom.localGeom(i+1);
-      TRACE(100,"Smaller than nCells-1");
-      vxip1=rlg.vxi;
-      dxp=vxip1-vxi;      
+      xvip1=rlg.xvi;
+      dxp=xvip1-xvi;      
       vSfR=rlg.vSf;
-      wRr=(lg.xR-lg.vxi)/(rlg.vxi-lg.vxi);
-      wRl=(rlg.vxi-lg.xR)/(rlg.vxi-lg.vxi);
+      wRr=(lg.xR-lg.xvi)/(rlg.xvi-lg.xvi);
+      wRl=(rlg.xvi-lg.xR)/(rlg.xvi-lg.xvi);
     }
     if(i==v.nCells-1){
       const LocalGeom llg=geom.localGeom(i-1);
-      wRNm1=(llg.vxi-lg.xR)/(llg.vxi-lg.vxi);
-      wRNm2=(lg.xR-lg.vxi)/(llg.vxi-lg.vxi);
+      wRNm1=(llg.xvi-lg.xR)/(llg.xvi-lg.xvi);
+      wRNm2=(lg.xR-lg.xvi)/(llg.xvi-lg.xvi);
       vSfR=lg.SfR;
     }    
       

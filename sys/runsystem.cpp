@@ -15,7 +15,7 @@ namespace tasystem{
     us Ndofs=getNDofs();
     us Nsegs=getNSegs();
     TRACE(-1,"Ndofs:"<<Ndofs);
-    dmat jac(Ndofs,Ndofs);
+    dmat jac(Ndofs,Ndofs,fillwith::zeros);
     us cellblock=Neq*Ns;
     for(us j=0;j<getNSegs();j++){
       TRACE(14,"System loop, segment " << j);
@@ -76,6 +76,7 @@ namespace tasystem{
       }	  // curseg.Right()!=NULL
       TRACE(-1,"Creation of Jacobian for segment "<< j << "done."<<endl);
     } // end for loop
+    // TRACE(15,"Jac\n"<<jac);
     return jac;
   }
   vd TAsystem::error(){

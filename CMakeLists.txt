@@ -26,9 +26,9 @@ set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 ${CMAKE_CURRENT_LIST_DIR}/cmake )
 set(CLANG_FLAGS "-Wno-unknown-warning-option")
 
-# set(CMAKE_CXX_COMPILER clang++)
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CLANG_FLAGS} ")
-set(CMAKE_CXX_COMPILER g++)
+set(CMAKE_CXX_COMPILER clang++)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CLANG_FLAGS} ")
+# set(CMAKE_CXX_COMPILER g++)
 
 # -pipe Use pipes rather than temporary files for communication
 #           between the various stages of compilation.  This fails to

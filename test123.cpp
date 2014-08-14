@@ -60,9 +60,9 @@ int main(int argc,char* argv[]) {
   var pL(gc,0);
   if(Nf>0)
     pL.set(1,1);
-  tube::LeftPressure bcleft(0,pL);
+  tube::LeftPressure bcleft(pL);
   // tube::RightImpedance bcright(0,415*vd(Ns,fillwith::ones));
-  tube::TwImpedance bcright(0);
+  tube::TwImpedance bcright;
   // tube::RightIsoTWall bcright(0,T0+10);
   // TRACE(100,"Add bc to tube...");
   t1.addBc(bcleft);

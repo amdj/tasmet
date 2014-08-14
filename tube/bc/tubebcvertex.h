@@ -18,17 +18,13 @@ namespace tube{
   
   class TubeBcVertex:public TubeVertex
   {
-    us segnumber;
-
   public:
-    TubeBcVertex(us segnr);
+    TubeBcVertex();
     TubeBcVertex(const TubeBcVertex& o);
     TubeBcVertex& operator=(const TubeBcVertex& o);
     virtual ~TubeBcVertex(){}
     virtual string getType() const=0;
     virtual enum connectpos connectPos() const=0;
-    us segNumber() const {return segnumber;}
-    void setSegNumber(us nr){segnumber=nr;}
     virtual TubeBcVertex* copy() const=0; // Return a copy casted as class
 				    // Vertex. Used when init(gc) is run
 				    // for a tube

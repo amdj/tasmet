@@ -39,7 +39,7 @@ namespace tube{
     TwImpedanceMomentumEq mright; // Completely adjusted equation
     // TwImpedanceEnergyEq   eright; // Completely adjusted equation
     // Isentropic is;
-    TwImpedance(us segnr);
+    TwImpedance();
     TwImpedance(const TwImpedance& o);
     TwImpedance& operator=(const TwImpedance&);
     ~TwImpedance(){}

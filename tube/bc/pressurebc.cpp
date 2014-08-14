@@ -43,10 +43,10 @@ namespace tube{
   //   return dUip1;
   // }  
 
-  LeftPressure::LeftPressure(us segnr,const var& pres,const var& temp):TubeBcVertex(segnr),pL(pres),TL(temp) {
+  LeftPressure::LeftPressure(const var& pres,const var& temp):TubeBcVertex(),pL(pres),TL(temp) {
     TRACE(8,"LeftPressure full constructor");
   }
-  LeftPressure::LeftPressure(us segnr,const var& pres):TubeBcVertex(segnr),pL(pres),TL(*pres.gc){
+  LeftPressure::LeftPressure(const var& pres):TubeBcVertex(),pL(pres),TL(*pres.gc){
     TRACE(8,"LeftPressure constructor for given pressure. Temperature computed");    
     const Globalconf* gc=pres.gc;
     d T0=gc->T0;
@@ -56,7 +56,7 @@ namespace tube{
     TL.settdata(TLt);
     // TRACE(100,"TL(0):"<<TL);
   }
-  LeftPressure::LeftPressure(const LeftPressure& other):LeftPressure(other.segNumber(),other.pL,other.TL)
+  LeftPressure::LeftPressure(const LeftPressure& other):LeftPressure(other.pL,other.TL)
   {
     TRACE(8,"LeftPressure copy constructor");
   }
@@ -105,8 +105,8 @@ namespace tube{
     eWkinip1=w.wRr/pow(w.vSfR,2)-w.wL1/pow(w.vSfL,2);    
 
     TRACE(100,"Sf:"<<w.vSf);
-    d x0=w.vxi;
-    d x1=w.vxip1;
+    d x0=w.xvi;
+    d x1=w.xvip1;
     TRACE(100,"x0:"<<x1);
     TRACE(100,"x1:"<<x1);
     d denom=x0*(1-x0/x1);
@@ -141,14 +141,14 @@ namespace tube{
     
     // TRACE(100,"TL:"<<TL());
     const LocalGeom rlg(lg.geom->localGeom(i+1));
-    d xp2=rlg.vxi;
-    d xp1=lg.vxi;
+    d xp2=rlg.xvi;
+    d xp1=lg.xvi;
 
     vd T0=gc->T0*vd(gc->Ns,fillwith::ones);
     vd kappaL=e.kappaL(*this);
     // esource+=lg.SfL*num*fDFT*(kappaL%TLt)/denom;
-    d x0=lg.vxi;
-    d x1=lg.vxi+w.dxp;
+    d x0=lg.xvi;
+    d x1=lg.xvi+w.dxp;
     d denom=x0*(1.0-x0/x1);
     // TRACE(100,"Denom:"<<denom);
     d x0_ov_x1sq=pow(x0/x1,2);

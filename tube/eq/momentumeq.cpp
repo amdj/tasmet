@@ -2,7 +2,7 @@
 // #include "drag.h"
 #include "tube.h"
 #include "tubevertex.h"
-// #define MOM_VISCOSITY
+#define MOM_VISCOSITY
 
 namespace tube{
 
@@ -61,14 +61,6 @@ namespace tube{
       error+=v.gc->rho0*d_r(v)*(v.U()-v.right->U());
       error+=v.gc->rho0*d_l(v)*(v.U()-v.left->U());
     }
-    else if(v.left==NULL){
-      error+=v.gc->rho0*d_r(v)*(v.U()-v.right->U());
-      error+=v.gc->rho0*d_l(v)*(v.U()-v.right->right->U());
-    }
-    else if(v.right==NULL) {
-      error+=v.gc->rho0*d_l(v)*(v.U()-v.left->U());
-      error+=v.gc->rho0*d_r(v)*(v.U()-v.left->left->U());
-    }
     #endif
 
     // Drag term
@@ -87,13 +79,9 @@ namespace tube{
     dUi+=2.0*v.mWui*v.gc->fDFT*(v.rho.diagt()*v.U.diagt())*v.gc->iDFT;
     // Artificial viscosity terms
     #ifdef MOM_VISCOSITY
-    // if(v.left!=NULL && v.right!=NULL){
-    dUi+=v.gc->rho0*(d_l(v)+d_r(v));
-    // }
-    // else if(v.left==NULL)
-    //   dUi+=-v.gc->rho0*d_l(v);
-    // else if(v.right==NULL)
-    //   dUi+=-v.gc->rho0*d_r(v);
+    if(v.left!=NULL && v.right!=NULL){
+      dUi+=v.gc->rho0*(d_l(v)+d_r(v));
+    }
     #endif
     assert(drag!=NULL);
     dUi+=v.mWddt*drag->dUi(v);
@@ -126,13 +114,11 @@ namespace tube{
     if(v.left!=NULL){
       dUim1+=2.0*v.mWuim1*v.gc->fDFT*v.left->rho.diagt()*v.left->U.diagt()*v.gc->iDFT;
     }
-    #ifdef MOM_VISCOSITY
     // Artificial viscosity terms
-    if(v.left!=NULL){
+    #ifdef MOM_VISCOSITY
+    if(v.left!=NULL && v.right!=NULL){
       dUim1+=-v.gc->rho0*d_l(v);
     }
-    // else if(v.right==NULL)
-    //   dUim1+=v.gc->rho0*(d_r(v)+d_l(v));
     #endif
     
     return dUim1;
@@ -161,11 +147,9 @@ namespace tube{
     }
     #ifdef MOM_VISCOSITY
     // Artificial viscosity terms
-    if(v.right!=NULL){
+    if(v.left!=NULL && v.right!=NULL){
       dUip1+=-v.gc->rho0*d_r(v);
     }
-    // else if(v.left==NULL)
-    //   dUip1+=v.gc->rho0*(d_r(v)+d_l(v));
     #endif
     return dUip1;
   }
@@ -182,16 +166,16 @@ namespace tube{
     // TRACE(50,"i:"<<i);
     dmat dUip2=v.zero;
     #ifdef MOM_VISCOSITY
-    if(v.left==NULL)
-      dUip2+=-v.gc->rho0*d_l(v);
+    // if(v.left==NULL)
+      // dUip2+=-v.gc->rho0*d_l(v);
     #endif
     return dUip2;
   }
   dmat Momentum::dUim2(const TubeVertex& v) const {
     dmat dUim2=v.zero;
     #ifdef MOM_VISCOSITY
-    if(v.right==NULL )
-      dUim2+=-v.gc->rho0*d_r(v);
+    // if(v.right==NULL )
+      // dUim2+=-v.gc->rho0*d_r(v);
     #endif
     return dUim2;
   }  

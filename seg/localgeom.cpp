@@ -12,10 +12,10 @@ namespace segment{
   LocalGeom::LocalGeom(const Geom& geom,us i)
   {
     this->geom=&geom; 		// Save a pointer to the geometry instance
-    const vd& vx=geom.vx;
+    const vd& xv=geom.xv;
     this->i=i;
     nCells=geom.nCells;
-    vxi=vx(i);
+    xvi=xv(i);
     // initialize distances to next node to zero
 
     SfL=geom.Sf(i);
@@ -31,8 +31,8 @@ namespace segment{
     vVf=geom.vVf(i);
     vVs=geom.vVs(i);
     vrh=geom.vrh(i);
-    xr=xR-vxi;
-    xl=vxi-xL;
+    xr=xR-xvi;
+    xl=xvi-xL;
     assert(xl>0); assert(xr>0);
   }
   void LocalGeom::show(){

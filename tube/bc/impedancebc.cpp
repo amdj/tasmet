@@ -5,17 +5,16 @@
 #include "w.h"
 
 namespace tube{
-  RightImpedance::RightImpedance(us segnr,vd Z1):TubeBcVertex(segnr),Z(Z1),mright(*this,Z){
+  RightImpedance::RightImpedance(vd Z1):TubeBcVertex(),Z(Z1),mright(*this,Z){
     TRACE(8,"RightImpedance constructor");
     // Change continuity equation for open boundary
   }
-  RightImpedance::RightImpedance(const RightImpedance& other):RightImpedance(other.segNumber(),other.Z)
+  RightImpedance::RightImpedance(const RightImpedance& other):RightImpedance(other.Z)
   {
     TRACE(8,"RightImpedance copy cc."); 
   }
   RightImpedance& RightImpedance::operator=(const RightImpedance& o){
     TRACE(8,"RightImpedance copy assignment operator");
-    setSegNumber(o.segNumber());
     Z=o.Z;
     return *this;
   }

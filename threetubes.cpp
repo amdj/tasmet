@@ -1,11 +1,12 @@
 #include "models.h"
 SPOILNAMESPACE
+#include "tube.h"
 
 int main(int argc,char* argv[]) {
   cout <<  "Running test..." << endl;
-  int loglevel=25;
-  us  Nf=4;
-  us gp=60;
+  int loglevel=20;
+  us Nf=0;
+  us gp=4;
   d freq=100;
   
   if(argc>1)
@@ -31,24 +32,15 @@ int main(int argc,char* argv[]) {
   d S2=S1;
   d kappa=1;
   d L=0.1;
-  Solver* sol=ThreeTubes(gp,Nf,freq,L,S1,S2,p1,loglevel,kappa);
+  Solver* sol=ThreeTubesConduction(gp,Nf,freq,L,S1,S2,p1,loglevel,kappa,393.15);
 
   sol->sys.show(true);
 
   sol->solve();
-  // sol->sys.getRes();
-  // sol->sys->Init();
-  // cout << "segjac\n" << sol->sys.getSeg(0)->Jac();
-  // cout << "\n" << sol->sys->Jac();
-  // dmat jac=sol->sys.jac();
-  // cout << "error\n" << sol->sys.error();
-  // cout << "Jac:\n" <<jac;
-
-  // cout << "\nDeterminant jac:"<< arma::det(jac)<<"\n"; 
-  // sol->doIter();
-  // sol->sys->show(true);
-
-  // cout << sol->sys.getRes();
+  // cout <<"Result:\n"<<  sol->sys.getRes();
+  cout <<"Result:\n"<< static_cast<tube::Tube*>(sol->sys.getSeg(0))->getResAt(2,0);
+  cout <<"Result:\n"<< static_cast<tube::Tube*>(sol->sys.getSeg(1))->getResAt(2,0);
+  cout <<"Result:\n"<< static_cast<tube::Tube*>(sol->sys.getSeg(2))->getResAt(2,0);
   delete sol;
   return 0;
 }

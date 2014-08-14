@@ -13,9 +13,10 @@ namespace W{
   public:
     d wLl,wRr,wLr,wRl;		// Basis weight functions
     d wL0,wL1,wRNm1,wRNm2;    	// Special boundary weight functions
-    d vxim1,vxi,vxip1;
+    d xvim1,xvi,xvip1;
     d dxm,dxp;
-    d vSfR,vSfL,vSf;
+    d vSfR,vSfL,vSf;		// Cross sectional area at x-position
+				// of vertex.
     int UsignL;
     int UsignR;
     W();

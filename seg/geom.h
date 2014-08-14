@@ -36,7 +36,7 @@ namespace segment {
 
     vd rh;		 // Hydraulic radius 
 
-    vd vx;		 // Vertex positions    
+    vd xv;		 // Vertex positions    
     vd vS;		 // Vertex cross-sectional area
     vd vSf;		 // Fluid-occupied cross-sectional area for vertex
     vd vSs;		 // Solid-occupied cross-sectional area for vertex

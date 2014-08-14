@@ -12,10 +12,11 @@ namespace tube{
   class RightIsoTWall:public TubeBcVertex // Right isothermal wall boundary
   {
   public:
-    RightIsoTWall(us segnr,d Tbc);
+    RightIsoTWall(d Tbc);
     RightIsoTWall(const RightIsoTWall& o);
     RightIsoTWall& operator=(const RightIsoTWall&);
     ~RightIsoTWall(){}
+    virtual void show() const;
     virtual vd esource() const;		// Source term for constant temperature
     virtual TubeBcVertex* copy() const {return new RightIsoTWall(*this);}
     virtual void initTubeVertex(us i,const Tube& thisseg);

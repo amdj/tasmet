@@ -8,4 +8,7 @@ Solver* ConeTube(us gp,us Nf,d freq,d L,d r1,d r2,vd p1,int loglevel,d kappa);
 Solver* ThreeTubes(us gp,us Nf,d freq,d L,d S1,d S2,vd p1,int loglevel,d kappa);
 Solver* Fubini(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa);
 Solver* Fubini_fullenergy(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa);
+Solver* ThreeTubesConduction(us gp,us Nf,d freq,d L,d S1,d S2,vd p1,int loglevel,d kappa,d Tr);
+
+
 #endif /* _MODELS_H_ */

@@ -38,7 +38,7 @@ namespace tube{
     RightImpedanceMomentumEq mright; // Completely adjusted equation
     
     
-    RightImpedance(us segnr,vd Z);
+    RightImpedance(vd Z);
     RightImpedance(const RightImpedance& o);
     RightImpedance& operator=(const RightImpedance&);
     ~RightImpedance(){}

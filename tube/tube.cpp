@@ -41,12 +41,15 @@ namespace tube {
   }
   void Tube::show(bool showvertices) const {
     TRACE(18,"Tube::show()");
-    Seg::show(showvertices);
-    if(bcLeft)
+    cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++";
+    if(bcLeft){
       cout << "Left side contains internal boundary condition of type " << bcLeft->getType() << ".\n";
-    if(bcRight)
+    }
+    if(bcRight){
       cout << "Right side contains internal boundary condition of type " << bcRight->getType() << ".\n";
-    
+    }
+    Seg::show(showvertices);
+    cout << "********************************************************************************\n";
   }
   void Tube::copyTube(const Tube& other){
     TRACE(13,"Tube::copyTube()");
@@ -108,7 +111,7 @@ namespace tube {
     TRACE(13,"Tube::Init()");
     Seg::init(g);
     if(vvertex.size()==0){
-      TRACE(100,"Filling vertices. Current size:"<<vvertex.size());
+      TRACE(13,"Filling vertices. Current size:"<<vvertex.size());
       vvertex.emplace_back(leftTubeVertex());
       for(us i=1;i<geom.nCells-1;i++)
     	vvertex.emplace_back(new TubeVertex());
@@ -126,7 +129,7 @@ namespace tube {
       }	// for
     }	// if
     else{
-      WARN("Tube already initialized!");
+      TRACE(13,"Tube already initialized!");
     }
   } // Tube::init(gc)
   

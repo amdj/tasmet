@@ -25,8 +25,8 @@ namespace tube{
 
     // PressureBcEnergyEq peq;
     virtual void show() const;
-    LeftPressure(us,const var&);
-    LeftPressure(us,const var&,const var& temp);
+    LeftPressure(const var&);
+    LeftPressure(const var&,const var& temp);
     LeftPressure(const LeftPressure& other);
     LeftPressure& operator=(const LeftPressure&);
     ~LeftPressure(){}

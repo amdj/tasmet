@@ -6,14 +6,14 @@
 namespace tube{
 
   void TubeVertex::show() const{
-    // cout << "----------------- TubeVertex " << lg.i << "----\n";
+    cout << "----------------- TubeVertex " << lg.i << "----\n";
     cout << "Showing weight functions for TubeVertex "<< i <<"\n";
     // w.show();
     cout << "cWddt    :"<<cWddt<<"\n";
     cout << "cWim1    :"<<cWim1<<"\n";
     cout << "cWi      :"<<cWi<<"\n";
     cout << "cWip1    :"<<cWip1<<"\n";
-    cout << "cWart    :"<<cWart<<"\n";
+    // cout << "cWarti    :"<<cWarti<<"\n";
     cout << "eWddt    :"<<eWddt<<"\n";
     cout << "eWgim1   :"<<eWgim1<<"\n";
     cout << "eWgi     :"<<eWgi<<"\n";
@@ -115,33 +115,30 @@ namespace tube{
     mWddt=lg.vVf/w.vSf;
     eWddt=lg.vVf;
     eWddtkin=0.5*eWddt/pow(lg.vSf,2);
-    cWart=w.vSf;
+
     d vSfsq=pow(w.vSf,2);
     auto& vleft=thisseg.getLeft();
     auto& vright=thisseg.getRight();    
-    
+    cWart1=cWart2=cWart3=cWart4=0;		           
     if((left!=NULL) && right!=NULL){
-      const LocalGeom& llg=thisseg.geom.localGeom(left->i);
-      const LocalGeom& rlg=thisseg.geom.localGeom(right->i);
-      d vSfLsq=pow(llg.vSf,2);
-      d vSfRsq=pow(rlg.vSf,2);
+      d vSfLsq=pow(w.vSfL,2);
+      d vSfRsq=pow(w.vSfR,2);
       cWim1=-w.UsignL*w.wLl;
       cWi=w.wRl-w.wLr;
       cWip1=w.UsignR*w.wRr;
 
+      cWart1=-0.5*(w.vSf+w.vSfL);
+      cWart2= 0.5*(w.vSf+w.vSfL);
+      cWart3= 0.5*(w.vSf+w.vSfR);
+      cWart4=-0.5*(w.vSf+w.vSfR);
+      
       mWuim1=-w.UsignL*w.wLl/w.vSfL;
       mWui=(w.wRl-w.wLr)/w.vSf;
       mWuip1=w.UsignR*w.wRr/w.vSfR;
 
-      // Old one:
-      // mWpim1=-w.vSfL*w.wLl;
-      // mWpi  = w.vSf*(w.wRl-w.wLr);
-      // mWpip1= w.vSfR*w.wRr;
-      // This works better!
       mWpim1=-lg.SfL*w.wLl;
       mWpi  = lg.vSf*(w.wRl-w.wLr);
       mWpip1= lg.SfR*w.wRr;
-      
       
       eWgim1=-w.UsignL*w.wLl;
       eWgi=w.wRl-w.wLr;
@@ -151,11 +148,12 @@ namespace tube{
       eWkinim1=-0.5*w.UsignL*w.wLl/vSfLsq;
       eWkini=0.5*(w.wRl/vSfsq-w.wLr/vSfsq);
       eWkinip1=0.5*w.UsignR*w.wRr/vSfRsq;
-      
-      eWc1=-llg.vSf/w.dxm;
-      eWc2= lg.SfL/w.dxm;
-      eWc3= lg.SfR/w.dxp;
-      eWc4=-rlg.vSf/w.dxp;
+      TRACE(100,"w.dxm:"<< w.dxm);
+      TRACE(100,"w.dxp:"<< w.dxp);
+      eWc1=-0.5*(w.vSfL+w.vSf)/w.dxm;
+      eWc2= 0.5*(w.vSfL+w.vSf)/w.dxm;
+      eWc3= 0.5*(w.vSf+w.vSfR)/w.dxp;
+      eWc4=-0.5*(w.vSf+w.vSfR)/w.dxp;
     }
     else if(i==0){
       TRACE(100,"Building for first cell adiabatic wall");
@@ -182,7 +180,7 @@ namespace tube{
 
       eWc1=0;
       eWc2=0;
-      eWc3=w.vSf/w.dxp;
+      eWc3=w.vSfR/w.dxp;
       eWc4=-w.vSfR/w.dxp;
     }
     else if(i==nCells-1){
@@ -209,7 +207,7 @@ namespace tube{
       eWkinip1=0;
 
       eWc1=-w.vSfL/w.dxm;
-      eWc2=w.vSf/w.dxm;
+      eWc2=w.vSfL/w.dxm;
       eWc3=0;
       eWc4=0;
     }
@@ -241,7 +239,7 @@ namespace tube{
     }
 
     const us& leftnCells=left.geom.nCells;
-    d vxim1;
+    d xvim1;
     if(left.getRight()[0]->getNumber()==thisseg.getNumber()){
       TRACE(8,"Segment " << thisseg.getNumber()<< " connected with "	\
 	    << "head to tail of segment"<< left.getNumber() << ".");
@@ -250,19 +248,19 @@ namespace tube{
       // not been already.
       this->left=static_cast<const TubeVertex*>(lefttube.vvertex.at(leftnCells-1).get());
       const d& Lleft=left.geom.L;
-      vxim1=left.geom.vx(leftnCells-1)-Lleft;
+      xvim1=left.geom.xv(leftnCells-1)-Lleft;
       w.vSfL=left.geom.vSf(leftnCells-1);
     }
     else{
       TRACE(8,"Segment " << thisseg.getNumber()<< " connected with "	\
 	    << "head to head of segment"<< left.getNumber() << ".");
       this->left=static_cast<const TubeVertex*>(lefttube.vvertex.at(0).get());
-      vxim1=-left.geom.vx(0);
+      xvim1=-left.geom.xv(0);
       w.UsignL=-1;
       w.vSfL=left.geom.vSf(0);	
     }
-    w.dxm=lg.vxi-vxim1;      
-    w.wLl=(lg.vxi)/(lg.vxi-vxim1);	
+    w.dxm=lg.xvi-xvim1;      
+    w.wLl=(lg.xvi)/(lg.xvi-xvim1);	
     w.wLr=1-w.wLl;
   } // connectTubeLeft()
     
@@ -283,26 +281,26 @@ namespace tube{
       righttube_nonconst.init(*thisseg.gc);
     }
     
-    d vxip1;
+    d xvip1;
     const us& rightnCells=right.geom.nCells;    
     if(right.getLeft()[0]->getNumber()==thisseg.getNumber()){
       TRACE(8,"Connected current tail to right segment's head");
       //   	  d L=geom.L;
       this->right=static_cast<const TubeVertex*>(righttube.vvertex.at(0).get());
-      vxip1=right.geom.vx(0)+thisseg.geom.L;
+      xvip1=right.geom.xv(0)+thisseg.geom.L;
       w.vSfR=right.geom.vSf(0);
     }
     else{
       TRACE(8,"Connected current tail to right segment's tail");
       this->right=static_cast<const TubeVertex*>(righttube.vvertex.at(rightnCells-1).get());
       const d& Lright=right.geom.L;
-      vxip1=Lright-right.geom.vx(rightnCells-1)+thisseg.geom.L;
+      xvip1=Lright-right.geom.xv(rightnCells-1)+thisseg.geom.L;
       w.UsignR=-1;
       w.vSfR=right.geom.vSf(rightnCells-1);
     }
-    w.dxp=vxip1-lg.vxi;
-    w.wRr=(lg.xR-lg.vxi)/(vxip1-lg.vxi);
-    w.wRl=(vxip1-lg.xR)/(vxip1-lg.vxi);
+    w.dxp=xvip1-lg.xvi;
+    w.wRr=(lg.xR-lg.xvi)/(xvip1-lg.xvi);
+    w.wRl=(xvip1-lg.xR)/(xvip1-lg.xvi);
   } // connectTubeRight()
 
   

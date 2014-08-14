@@ -11,7 +11,7 @@ namespace tube{
   }
   void SolidTPrescribed::setTs(const Geom& g,d Tl,d Tr){
     Tset=true;
-    this->vx=g.vx;
+    this->xv=g.xv;
     this->L=g.L;
     this->Tl=Tl;
     this->Tr=Tr;
@@ -29,7 +29,7 @@ namespace tube{
     }
     else{
       error=v.Ts();
-      error(0)+=-(Tl+(vx(v.i)/L)*(Tr-Tl));
+      error(0)+=-(Tl+(xv(v.i)/L)*(Tr-Tl));
     }
     return error;
   }

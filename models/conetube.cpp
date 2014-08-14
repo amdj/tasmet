@@ -28,8 +28,8 @@ Solver* ConeTube(us gp,us Nf,d freq,d L,d r1,d r2,vd p1,int loglevel,d kappa)
   for(us i=0;i<gc.Ns;i++)
     pL.set(i,p1(i));
 
-  LeftPressure pleft(0,pL);
-  // TwImpedance rightbc(0);
+  LeftPressure pleft(pL);
+  // TwImpedance rightbc;
   t1.addBc(pleft);
 
   TAsystem sys(gc);

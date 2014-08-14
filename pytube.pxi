@@ -29,12 +29,12 @@ cdef extern from "solver.h" namespace "tasystem":
         TAsystem sys
         void init()
         void solve(us maxiter)
-    
+        void solve()    
 
 cdef extern from "geom.h" namespace "tube":
     cdef cppclass Geom:
         Geom(us gp,d L,d S,d phi,d rh,string cshape) except +
-        vd vx
+        vd xv
         vd vSf
         vd vSs
         vd x

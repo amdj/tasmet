@@ -6,17 +6,16 @@
 #include "w.h"
 
 namespace tube{
-  TwImpedance::TwImpedance(us segnr):TubeBcVertex(segnr){
+  TwImpedance::TwImpedance():TubeBcVertex(){
     TRACE(8,"TwImpedance constructor");
     // Change continuity equation for open boundary
   }
-  TwImpedance::TwImpedance(const TwImpedance& other):TwImpedance(other.segNumber())
+  TwImpedance::TwImpedance(const TwImpedance& other):TwImpedance()
   {
     TRACE(8,"TwImpedance copy cc.");
   }
   TwImpedance& TwImpedance::operator=(const TwImpedance& o){
     TRACE(8,"TwImpedance copy assignment operator");
-    setSegNumber(o.segNumber());
     return *this;
   }
   // vd TwImpedanceEnergyEq::error(const TubeVertex& v) const {

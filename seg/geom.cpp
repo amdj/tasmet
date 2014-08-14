@@ -76,7 +76,7 @@ namespace segment{
     gp=x.size();
     nCells=gp-1;
     
-    vx=vd(nCells);
+    xv=vd(nCells);
     vS=vd(nCells);
     vSf=vd(nCells);
     vSs=vd(nCells);
@@ -85,7 +85,7 @@ namespace segment{
     vVf=vd(nCells);
     vVs=vd(nCells);
     for(us j=0;j<nCells;j++){	// Cell-centered scheme
-      vx(j)=(x(j+1)+x(j))/2;
+      xv(j)=(x(j+1)+x(j))/2;
       vS(j)=(S(j+1)+S(j))/2;
       vSf(j)=(Sf(j+1)+Sf(j))/2;
       vSs(j)=(Ss(j+1)+Ss(j))/2;
@@ -94,7 +94,7 @@ namespace segment{
       vVf(j)=vSf(j)*(x(j+1)-x(j));
       vVs(j)=vSs(j)*(x(j+1)-x(j));
     }
-    TRACE(-1,"Celldata vx:"<<vx);
+    TRACE(-1,"Celldata xv:"<<xv);
   }
   void Geom::show() const {
     if(true)

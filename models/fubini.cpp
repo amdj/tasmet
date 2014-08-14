@@ -40,8 +40,8 @@ Solver* Fubini(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
 
   vd Zv=(z0/S)*vd(2*Nf+1,fillwith::ones);
   // cout << Zv;
-  LeftPressure bleft(0,pL);
-  TwImpedance bright(0);
+  LeftPressure bleft(pL);
+  TwImpedance bright;
   // RightImpedance bright(0,Zv);
   // RightIsoTWall bright(0,T0);
   TAsystem sys(gc);
