@@ -136,6 +136,11 @@ namespace tube{
       cWart3= 0.5*(w.vSf+w.vSfR);
       cWart4=-0.5*(w.vSf+w.vSfR);
 
+      mWart1=-1;
+      mWart2= 1;
+      mWart3= 1;
+      mWart4=-1;
+
       
       mWuim1=-w.UsignL*w.wLl/w.vSfL;
       mWui=(w.wRl-w.wLr)/w.vSf;

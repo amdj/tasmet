@@ -22,6 +22,7 @@ int main(int argc,char* argv[]) {
   // double f=100;
   // double omg=2*number_pi*f;
   // double T=1/f;
+  d T0=293.15;
   cout<< "Loglevel:"<<loglevel<<"\n";
   initlog(loglevel);
   vd p1(2*Nf+1,arma::fill::zeros);
@@ -32,7 +33,7 @@ int main(int argc,char* argv[]) {
   d S2=S1;
   d kappa=1;
   d L=0.1;
-  Solver* sol=ThreeTubesConduction(gp,Nf,freq,L,S1,S2,p1,loglevel,kappa,393.15);
+  Solver* sol=ThreeTubesEngine(gp,Nf,freq,T0,p1,loglevel,kappa);
 
   sol->sys().show(true);
 

@@ -57,8 +57,8 @@ namespace tube{
     // Artificial viscosity ter
     #ifdef MOM_VISCOSITY
     if(v.left!=NULL && v.right!=NULL){
-      error+=d_r(v)*fDFT*(v.rho.tdata()%v.U.tdata()-v.right->rho.tdata()%v.right->U.tdata());
-      error+=d_l(v)*fDFT*(v.rho.tdata()%v.U.tdata()-v.left->rho.tdata()%v.left->U());
+      error+=d_l(v)*fDFT*(v.mWart2*v.rho.tdata()%v.U.tdata()+v.mWart1*v.left->rho.tdata()%v.left->U.tdata());
+      error+=d_r(v)*fDFT*(v.mWart3*v.rho.tdata()%v.U.tdata()+v.mWart4*v.right->rho.tdata()%v.right->U.tdata());
     }
     #endif
 
@@ -82,7 +82,7 @@ namespace tube{
     // Artificial viscosity terms
     #ifdef MOM_VISCOSITY
     if(v.left!=NULL && v.right!=NULL)
-      dUi+=(d_l(v)+d_r(v))*fDFT*v.rho.diagt()*iDFT;
+      dUi+=(v.mWart2*d_l(v)+v.mWart2*d_r(v))*fDFT*v.rho.diagt()*iDFT;
     #endif
     assert(drag!=NULL);
     dUi+=v.mWddt*drag->dUi(v);
@@ -97,7 +97,7 @@ namespace tube{
     drhoi+=v.mWui*v.gc->fDFT*v.U.diagt()*v.U.diagt()*v.gc->iDFT;
     #ifdef MOM_VISCOSITY
     if(v.left!=NULL && v.right!=NULL)
-      drhoi+=(d_l(v)+d_r(v))*fDFT*v.U.diagt()*iDFT;
+      drhoi+=(v.mWart2*d_l(v)+v.mWart3*d_r(v))*fDFT*v.U.diagt()*iDFT;
     #endif
 
     return drhoi;
@@ -118,7 +118,7 @@ namespace tube{
       drhoim1+=v.mWuim1*v.gc->fDFT*v.left->U.diagt()*v.left->U.diagt()*v.gc->iDFT;
     #ifdef MOM_VISCOSITY
     if(v.left!=NULL && v.right!=NULL)
-      drhoim1+=-d_l(v)*fDFT*v.left->U.diagt()*iDFT;
+      drhoim1+=v.mWart1*d_l(v)*fDFT*v.left->U.diagt()*iDFT;
     #endif
 
     return drhoim1;
@@ -135,7 +135,7 @@ namespace tube{
     // Artificial viscosity terms
     #ifdef MOM_VISCOSITY
     if(v.left!=NULL && v.right!=NULL){
-      dUim1+=-d_l(v)*fDFT*v.left->rho.diagt()*iDFT;
+      dUim1+=v.mWart1*d_l(v)*fDFT*v.left->rho.diagt()*iDFT;
     }
     #endif
     
@@ -160,7 +160,7 @@ namespace tube{
     #ifdef MOM_VISCOSITY
     // Artificial viscosity terms
     if(v.left!=NULL && v.right!=NULL){
-      drhoip1+=-d_r(v)*fDFT*v.right->U.diagt()*iDFT;
+      drhoip1+=v.mWart4*d_r(v)*fDFT*v.right->U.diagt()*iDFT;
     }
     #endif
 
@@ -178,7 +178,7 @@ namespace tube{
     #ifdef MOM_VISCOSITY
     // Artificial viscosity terms
     if(v.left!=NULL && v.right!=NULL){
-      dUip1+=-d_r(v)*fDFT*v.right->rho.diagt()*iDFT;
+      dUip1+=v.mWart4*d_r(v)*fDFT*v.right->rho.diagt()*iDFT;
     }
     #endif
     return dUip1;

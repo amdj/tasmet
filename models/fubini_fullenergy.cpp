@@ -36,9 +36,9 @@ Solver* Fubini_fullenergy(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
   vd Zv=(z0/S)*vd(2*Nf+1,fillwith::ones);
   // cout << Zv;
   LeftPressure bleft(pL);
-  // TwImpedance bright(0);
+  TwImpedance bright;
   t1.addBc(bleft);
-  // t1.addBc(bright);
+  t1.addBc(bright);
 
   // RightImpedance bright(0,Zv);
   taSystem sys(gc);

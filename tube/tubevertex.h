@@ -36,6 +36,7 @@ namespace tube{
     d cWddt,cWim1,cWi,cWip1;
     // Continuity artificial viscosity weight factor
     d cWart1,cWart2,cWart3,cWart4;		       
+    d mWart1,mWart2,mWart3,mWart4;		       
     d mWddt,mWuim1,mWui,mWuip1,mWpim1,mWpi,mWpip1;
     d eWddt,eWddtkin,eWgim1,eWgi,eWgip1,eWc1,eWc2,eWc3,eWc4;      
     d eWkini,eWkinim1,eWkinip1;

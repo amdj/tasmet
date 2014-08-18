@@ -22,15 +22,18 @@ Solver* ThreeTubesEngine(us gp,us Nf,d freq,d Tr,vd p1,int loglevel,d kappa)
   d p0=376e3;
   d T0=293.15;
 
-  us gp1=120;  
-  us gp2=80;
-  us gp3=25;
 
   d L1=90e-2;
   d L2=35e-3;
   d L3=1-L1-L2;
 
-
+  us gp1=700;  
+  us gp2=round(gp1*L2/L1);
+  us gp3=round(gp1*L3/L1);
+  
+  cout << "gp1: "<< gp1<< "\n";
+  cout << "gp2: "<< gp2<< "\n";
+  cout << "gp3: "<< gp3<< "\n";
   d Rtube=38.2e-3/2;
   d S=number_pi*pow(Rtube,2);
   
