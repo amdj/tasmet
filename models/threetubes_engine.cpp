@@ -27,9 +27,11 @@ Solver* ThreeTubesEngine(us gp,us Nf,d freq,d Tr,vd p1,int loglevel,d kappa)
   d L2=35e-3;
   d L3=1-L1-L2;
 
-  us gp1=700;  
-  us gp2=round(gp1*L2/L1);
-  us gp3=round(gp1*L3/L1);
+  d Ltot=L1+L2+L3;
+  
+  us gp1=round(gp*L1/Ltot);  
+  us gp2=round(gp*L2/Ltot);
+  us gp3=round(gp*L3/Ltot);
   
   cout << "gp1: "<< gp1<< "\n";
   cout << "gp2: "<< gp2<< "\n";
