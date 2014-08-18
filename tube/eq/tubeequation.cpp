@@ -85,7 +85,7 @@ namespace tube{
       {
 	// eps(i)=0.5;
 	// eps(i)=min(0.5,kappa*nu(i));
-	eps(i)=max(min(0.5,kappa*nu(i)),kappa*1e-2);
+	eps(i)=max(min(0.5,kappa*nu(i)),kappa*1e-3);
       }
     // TRACE(50,"Max eps:"<< max(eps));
     return eps;
