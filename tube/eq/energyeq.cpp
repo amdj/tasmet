@@ -2,28 +2,19 @@
 #include "tubevertex.h"
 #include "tube.h"
 
-// #define EN_VISCOSITY
+#include "artvisco.h"
 
 
 namespace tube{
 
-  // void Energy::show() const{
-  //   cout << "--------- Showing energy weight factors for i=" << v.i <<"\n" \
-  // 	 << "v.eWddt      : "<<v.eWddt      <<"\n"					\
-  // 	 << "v.eWgim1     : "<<v.eWgim1<<"\n"						\
-  // 	 << "v.eWgi       : "<<v.eWgi      <<"\n"					\
-  // 	 << "v.eWgip1     : "<<v.eWgip1<<"\n"						\
-  // 	 << "v.eWjim1     : "<<v.eWjim1      <<"\n"					\
-  // 	 << "v.eWji       : "<<v.eWji      <<"\n"					\
-  // 	 << "v.eWjip1     : "<<v.eWjip1      <<"\n"					\
-  // 	 << "v.eWc1     : "<<v.eWc1      <<"\n"					\
-  // 	 << "v.eWc2     : "<<v.eWc2      <<"\n"					\
-  // 	 << "v.eWc3     : "<<v.eWc3      <<"\n"					\
-  // 	 << "v.eWc4     : "<<v.eWc4      <<"\n"	\
-
-  //     ;      
-
-  // }
+  void Energy::show() const{
+    cout << "Full energy equation\n";
+    #ifdef EN_VISCOSITY
+    cout << "Artificial viscosity turned ON for energy equation\n";
+    #else
+    cout << "Artificial viscosity turned OFF for energy equation\n";
+    #endif
+  }
   void Energy::init(const Tube& t){
     TRACE(8,"Energy::init(tube)");
     heat=&t.getHeatSource();
@@ -74,26 +65,16 @@ namespace tube{
 
     // Artificial viscosity terms      
     #ifdef EN_VISCOSITY
-    TRACE(100,"Energy viscosity defined");
-    const d& vSf=v.lg.vSf;
-    if(v.i>0 && v.i<v.nCells-1){
-      error+=-d_r(v)*(v.right->p() -v.p())*vSf;
-      error+= d_l(v)*(v.p() -v.left->p())  *vSf;
-    }
-    else if(v.i==0){		// First v
-      error+=-d_r(v)*(v.right->right->p()-v.right->p())*vSf;
-      error+=d_l(v)*(v.right->p()-v.p())*vSf;
-    }
-    else {			// Last v
-      error+=-d_r(v)*(v.p()-v.left->p())*vSf;
-      error+=d_l(v)*(v.left->p()-v.left->left->p())*vSf;
+    TRACE(10,"Energy viscosity defined");
+    if(v.left!=NULL && v.right!=NULL){
+      error+=d_l(v)*(v.cWart2*v.p()+v.cWart1*v.left->p() );
+      error+=d_r(v)*(v.cWart3*v.p()+v.cWart4*v.right->p() );
     }
     #endif
     assert(heat!=NULL);
     error+=v.eWddt*heat->heat(v);
     // (Boundary source term)
     error+=v.esource();
-    
     // TRACE(100,"error:"<<error);
     return error;
   }
@@ -112,15 +93,9 @@ namespace tube{
 
     // Artificial viscosity terms    
     #ifdef EN_VISCOSITY
-    const d& vVf=v.lg.vVf;
-    const d& vSf=v.lg.vSf;
-    if(v.i>0 && v.i<v.nCells-1){
-      dpi+=(d_l(v)+d_r(v))*vSf;	// Middle vertex
+    if(v.left!=NULL && v.right!=NULL){
+      dpi+=d_l(v)*v.cWart2+d_r(v)*v.cWart3;	// Middle vertex
     }
-    else if(v.i==0)
-      dpi+=-d_l(v)*vSf;	// First vertex
-    else		
-      dpi+=-d_r(v)*vSf;	// Last vertex
     #endif
     return dpi;
   }
@@ -139,12 +114,8 @@ namespace tube{
 
     // Artificial viscosity terms
     #ifdef EN_VISCOSITY
-    const d& vSf=v.lg.vSf;
-    if(v.i>0 && v.i<v.nCells-1){
-      dpim1+=-d_l(v)*vSf;
-    }
-    else if(v.i==v.nCells-1){		// Last vertex
-      dpim1+=(d_l(v)+d_r(v))*vSf;
+    if(v.left!=NULL && v.right!=NULL){
+      dpim1+=d_l(v)*v.cWart1;
     }
     #endif
     return dpim1;
@@ -164,12 +135,8 @@ namespace tube{
 
     // Artificial viscosity terms
     #ifdef EN_VISCOSITY    
-    const d& vSf=v.lg.vSf;
-    if(v.i>0 && v.i<v.nCells-1){
-      dpip1+=-d_r(v)*vSf;
-    }
-    else if(v.i==0){		// First vertex
-      dpip1+=(d_l(v)+d_r(v))*vSf;
+    if(v.left!=NULL && v.right!=NULL){
+      dpip1+=d_r(v)*v.cWart4;
     }
     #endif
     return dpip1;
@@ -273,20 +240,20 @@ namespace tube{
   dmat Energy::dpip2(const TubeVertex& v) const {
     dmat dpip2=v.zero;
     #ifdef EN_VISCOSITY
-    if(v.i==0 && v.left==NULL){
-      const d& vSf=v.lg.vSf;
-      dpip2+=-d_r(v)*vSf;
-    }
+    // if(v.i==0 && v.left==NULL){
+    //   const d& vSf=v.lg.vSf;
+    //   dpip2+=-d_r(v)*vSf;
+    // }
     #endif 
     return dpip2;
   }
   dmat Energy::dpim2(const TubeVertex& v) const {
     dmat dpim2=v.zero;
     #ifdef EN_VISCOSITY
-    if(v.i==v.nCells-1 && v.right==NULL){
-      const d& vSf=v.lg.vSf;
-      dpim2+=-d_l(v)*v.lg.vSf;
-    }
+    // if(v.i==v.nCells-1 && v.right==NULL){
+    //   const d& vSf=v.lg.vSf;
+    //   dpim2+=-d_l(v)*v.lg.vSf;
+    // }
     #endif 
     return dpim2; 
   }

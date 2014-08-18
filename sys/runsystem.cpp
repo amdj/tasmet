@@ -4,8 +4,8 @@
 namespace tasystem{
   using segment::SegBase;
 
-  dmat TAsystem::jac(){
-    TRACE(14,"TAsystem::Jac()");
+  dmat taSystem::jac(){
+    TRACE(14,"taSystem::Jac()");
     checkInit();
     // Something interesting has to be done here later on to connect
     // the different segments in the sense that blocks of Jacobian
@@ -20,7 +20,7 @@ namespace tasystem{
     for(us j=0;j<getNSegs();j++){
       TRACE(14,"System loop, segment " << j);
       segment::SegBase& curseg=*segs[j].get();
-      dmat segjac=curseg.jac();
+      dmat&& segjac=curseg.jac();
       TRACE(14,"Obtaining sub-Jacobian for segment "<< j << "...");
       us thisndofs=curseg.getNDofs();
       us frow=segfirstdof(j);
@@ -79,8 +79,8 @@ namespace tasystem{
     // TRACE(15,"Jac\n"<<jac);
     return jac;
   }
-  vd TAsystem::error(){
-    TRACE(14,"TAsystem::Error()");
+  vd taSystem::error(){
+    TRACE(14,"taSystem::Error()");
     checkInit();
     us Ndofs=getNDofs();
     vd Error(getNDofs());
@@ -95,11 +95,11 @@ namespace tasystem{
     }
     return Error;
   }
-  vd TAsystem::getRes(){
-    TRACE(14,"TAsystem::getRes()");
+  vd taSystem::getRes(){
+    TRACE(14,"taSystem::getRes()");
     checkInit();
     us Ndofs=getNDofs();
-    TRACE(14,"TAsystem::GetRes(), Ndofs:"<< Ndofs);
+    TRACE(14,"taSystem::GetRes(), Ndofs:"<< Ndofs);
     const us& Ns=gc.Ns;
     vd Res(Ndofs);
     us segdofs;
@@ -114,9 +114,9 @@ namespace tasystem{
     }
     return Res;
   }
-  void TAsystem::setRes(vd Res){
+  void taSystem::setRes(vd Res){
     checkInit();
-    TRACE(14,"TAsystem::SetRes(vd res)");
+    TRACE(14,"taSystem::SetRes(vd res)");
     us Ndofs=getNDofs();
     if(Res.size()==Ndofs){
       us segdofs;
@@ -132,5 +132,5 @@ namespace tasystem{
       {
 	WARN("Amount of DOFS in result vector does not match system size!");
       }
-  } // TAsystem::SetRes()
+  } // taSystem::SetRes()
 } //namespace tasystem

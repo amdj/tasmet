@@ -14,6 +14,7 @@ namespace segment {
   private:
     Geom(vd& x,vd& S,vd& phi,vd& rh,string cshape);
   public:
+    static Geom VertPlates(us gp,d L,d S,d phi,d y0);
     static Geom CylinderBlApprox(us gp,d L,d r);
     static Geom Cylinder(us gp,d L,d r);
     static Geom Cone(us gp,d L,d r1,d r2); // Return a cone

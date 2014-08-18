@@ -34,13 +34,13 @@ int main(int argc,char* argv[]) {
   d L=0.1;
   Solver* sol=ThreeTubesConduction(gp,Nf,freq,L,S1,S2,p1,loglevel,kappa,393.15);
 
-  sol->sys.show(true);
+  sol->sys().show(true);
 
   sol->solve();
   // cout <<"Result:\n"<<  sol->sys.getRes();
-  cout <<"Result:\n"<< static_cast<tube::Tube*>(sol->sys.getSeg(0))->getResAt(2,0);
-  cout <<"Result:\n"<< static_cast<tube::Tube*>(sol->sys.getSeg(1))->getResAt(2,0);
-  cout <<"Result:\n"<< static_cast<tube::Tube*>(sol->sys.getSeg(2))->getResAt(2,0);
+  cout <<"Result:\n"<< static_cast<tube::Tube*>(sol->sys().getSeg(0))->getResAt(2,0);
+  cout <<"Result:\n"<< static_cast<tube::Tube*>(sol->sys().getSeg(1))->getResAt(2,0);
+  cout <<"Result:\n"<< static_cast<tube::Tube*>(sol->sys().getSeg(2))->getResAt(2,0);
   delete sol;
   return 0;
 }

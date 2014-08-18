@@ -68,9 +68,9 @@ int main(int argc,char* argv[]) {
   t1.addBc(bcleft);
   t1.addBc(bcright);
 
-  // TRACE(100,"Creating empty TAsystem...");
-  TAsystem sys(air);
-  // TRACE(100,"Filling TAsystem with a segment...");
+  // TRACE(100,"Creating empty taSystem...");
+  taSystem sys(air);
+  // TRACE(100,"Filling taSystem with a segment...");
   // auto t2(t1);
   sys.addSeg(t1); 
   // TRACE(100,"Filling segment done...");      
@@ -78,10 +78,10 @@ int main(int argc,char* argv[]) {
   sys.init();
   sys.show(false);
   // // sys.addBc(bcright);
-  // TRACE(100,"Copy TAsystem...");    
-  // // TAsystem sys2(gc);
+  // TRACE(100,"Copy taSystem...");    
+  // // taSystem sys2(gc);
   // // sys2.addSeg(t2);
-  // TRACE(100,"Copy TAsystem done...");      
+  // TRACE(100,"Copy taSystem done...");      
   // TRACE(100,"Running init on first sys:=================================");
   // TRACE(100,"---------------------------------------------------sys init done. now starting sys2 init9");
 
@@ -94,7 +94,7 @@ int main(int argc,char* argv[]) {
   // // cout << "error:\n"<<err;
 
   // cout << "err:\n"<<er;
-  dmat Jac=sol.sys.jac();
+  dmat Jac=sol.sys().jac();
   // sol1.sys->show();
   cout << "Jac:\n"<< Jac;
 

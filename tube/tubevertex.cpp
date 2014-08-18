@@ -120,17 +120,22 @@ namespace tube{
     auto& vleft=thisseg.getLeft();
     auto& vright=thisseg.getRight();    
     cWart1=cWart2=cWart3=cWart4=0;		           
-    if((left!=NULL) && right!=NULL){
+    if(left!=NULL && right!=NULL){
       d vSfLsq=pow(w.vSfL,2);
       d vSfRsq=pow(w.vSfR,2);
       cWim1=-w.UsignL*w.wLl;
       cWi=w.wRl-w.wLr;
       cWip1=w.UsignR*w.wRr;
 
+      // cWart1=-0.5*(w.vSf+w.vSfL)/w.dxm;
+      // cWart2= 0.5*(w.vSf+w.vSfL)/w.dxm;
+      // cWart3= 0.5*(w.vSf+w.vSfR)/w.dxp;
+      // cWart4=-0.5*(w.vSf+w.vSfR)/w.dxp;
       cWart1=-0.5*(w.vSf+w.vSfL);
       cWart2= 0.5*(w.vSf+w.vSfL);
       cWart3= 0.5*(w.vSf+w.vSfR);
       cWart4=-0.5*(w.vSf+w.vSfR);
+
       
       mWuim1=-w.UsignL*w.wLl/w.vSfL;
       mWui=(w.wRl-w.wLr)/w.vSf;
@@ -144,19 +149,18 @@ namespace tube{
       eWgi=w.wRl-w.wLr;
       eWgip1=w.UsignR*w.wRr;
 
-      // Old one:
       eWkinim1=-0.5*w.UsignL*w.wLl/vSfLsq;
       eWkini=0.5*(w.wRl/vSfsq-w.wLr/vSfsq);
       eWkinip1=0.5*w.UsignR*w.wRr/vSfRsq;
-      TRACE(100,"w.dxm:"<< w.dxm);
-      TRACE(100,"w.dxp:"<< w.dxp);
+      TRACE(1,"w.dxm:"<< w.dxm);
+      TRACE(1,"w.dxp:"<< w.dxp);
       eWc1=-0.5*(w.vSfL+w.vSf)/w.dxm;
       eWc2= 0.5*(w.vSfL+w.vSf)/w.dxm;
       eWc3= 0.5*(w.vSf+w.vSfR)/w.dxp;
       eWc4=-0.5*(w.vSf+w.vSfR)/w.dxp;
     }
     else if(i==0){
-      TRACE(100,"Building for first cell adiabatic wall");
+      TRACE(15,"Building for first cell adiabatic wall");
       d vSfRsq=pow(w.vSfR,2);
       cWim1=0;
       cWi=w.wRl;
@@ -184,7 +188,7 @@ namespace tube{
       eWc4=-w.vSfR/w.dxp;
     }
     else if(i==nCells-1){
-      TRACE(100,"Building for last cell adiabatic wall");
+      TRACE(15,"Building for last cell adiabatic wall");
       d vSfLsq=pow(w.vSfL,2);
       cWi=-w.wLr;
       cWim1=-w.wLl;

@@ -62,13 +62,13 @@ namespace segment{
     dmat Jacobian (nVertex*Neq*Ns,(nVertex+2)*Neq*Ns,fillwith::zeros);    
     // if(Jacobian.size()==0)
       // Jacobian=dmat(nVertex*Neq*Ns,(nVertex+2)*Neq*Ns);    
-    dmat vJac(Neq*Ns,3*Neq*Ns,fillwith::zeros);
+
     us firstrow,firstcol,lastrow,lastcol;
     TRACE(8,"Filling Segment Jacobian matrix for segment "<< getNumber() <<"...");
     // #pragma omp parallel for
     for(us j=0;j<nVertex;j++){			   // Fill the Jacobian
       TRACE(3,"Obtaining vertex Jacobian...");
-      vJac=vvertex[j]->jac();
+      dmat&& vJac=vvertex[j]->jac();
       assert(vJac.n_cols==3*Neq*Ns);      
       // The row height of a vertex jacobian matrix is Neq*Ns, The
       // column with is 3*Neq*Ns, since the neigbouring vertex has to

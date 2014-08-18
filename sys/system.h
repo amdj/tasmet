@@ -21,28 +21,30 @@
 namespace tasystem{
   SPOILNAMESPACE
 
-  class TAsystem;
+  class taSystem;
   using segment::SegBase;
 
-  class TAsystem{
+  class taSystem{
   private:
-
+    sdmat curjac;		// Current Jacobian matrix
+    
     vector<std::unique_ptr<SegBase> > segs;		// The stl library does not have fixed-size vectors, so we fall back to basic C arrays since we do not want to use boost.
-
     vector<SegConnection> segConnections;
     arma::uvec::fixed<MAXSEGS> segfirstdof; // Vector containing the number of the first column corresponding to the first vertex of segment segfirstcol(i)
     arma::uvec::fixed<MAXSEGS> segndofs;  // Vector containe
     bool hasInit=false;
   public:
+
     Globalconf gc;    
   private:
     us getNDofs();	// Compute DOFS in system, set     
     
   public:
-    TAsystem(const Globalconf& g);
-    ~TAsystem();
-    TAsystem(const TAsystem& o);
-    TAsystem& operator=(const TAsystem& other);
+    taSystem(const Globalconf& g);
+    ~taSystem();
+    taSystem(const taSystem& o);
+    taSystem& operator=(const taSystem& other);
+    virtual taSystem* copy() const {return new taSystem(*this);}
     void show(bool showvertices=false);
     us getNSegs() const {return segs.size();}
     void connectSegs(us seg1,us seg2,SegCoupling);
@@ -66,11 +68,11 @@ namespace tasystem{
     void init();
   private:
     // A vector of boundary conditions is required
-    void copyTAsystem(const TAsystem& other);
+    void copytaSystem(const taSystem& other);
     void checkInit();
     void cleanup();
     // void setnodes(us segnr,us nL,us nR);
-    // friend void copysegs(TAsystem& to,const TAsystem& from);
+    // friend void copysegs(taSystem& to,const taSystem& from);
   };				// class System
   
 } // namespace tasystem

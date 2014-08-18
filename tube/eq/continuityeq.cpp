@@ -1,10 +1,19 @@
 #include "continuityeq.h"
 #include "tubevertex.h"
 
-#define CONT_VISCOSITY
+#include "artvisco.h"
 
 
 namespace tube{
+  void Continuity::show() const {
+    cout << "Continuity equation\n";
+    #ifdef CONT_VISCOSITY
+    cout << "Artificial viscosity turned ON for continuity equation\n";
+    #else
+    cout << "Artificial viscosity turned OFF for continuity equation\n";
+    #endif
+    
+  }
   void Continuity::init(const Tube& t){
     TRACE(8,"Continuity::init(tube)");
   }
@@ -32,19 +41,10 @@ namespace tube{
       error+=v.cWip1*v.gc->fDFT*(rhoip1%Uip1);
     }
     #ifdef CONT_VISCOSITY
-    // This is not correct for non-const cs-area: it will create mass
     if(v.left!=NULL && v.right!=NULL){
       error+=d_l(v)*(v.cWart2*v.rho()+v.cWart1*v.left->rho() );
       error+=d_r(v)*(v.cWart3*v.rho()+v.cWart4*v.right->rho() );
     }
-    // else if(v.left==NULL){		// First v
-    //   // error+=2*d_l(v)*(v.rho()-v.right->right->rho())*v.cWart;
-    //   error+=2*d_r(v)*(v.rho()-v.right->rho())*v.cWart;
-    // }
-    // else if(v.right==NULL) {			// Last v
-    //   error+=2*d_l(v)*(v.rho()-v.left->rho())*v.cWart;
-    //   // error+=d_r(v)*(v.left->rho()-v.left->left->rho())*v.cWart;
-    // }
     #endif
     // (Boundary) source term
     error+=v.csource();
@@ -61,10 +61,6 @@ namespace tube{
     if(v.left!=NULL && v.right!=NULL){
       drhoi+=(d_l(v)*v.cWart2+d_r(v)*v.cWart3);	// Middle vertex
     }
-    // else if(v.left==NULL)
-    //   drhoi+=-d_l(v)*v.cWart;	// First vertex
-    // else if(v.right==NULL)	
-    //   drhoi+=-d_r(v)*v.cWart;	// Last vertex
     #endif
     return drhoi;
   }
@@ -92,7 +88,6 @@ namespace tube{
   dmat Continuity::drhoip1(const TubeVertex& v) const {
     TRACE(0,"Continuity::drhoip1()");
     dmat drhoip1=v.zero;
-
     if(v.right!=NULL)
       drhoip1=v.cWip1*v.gc->fDFT*v.right->U.diagt()*v.gc->iDFT;
     // Artificial viscosity terms
@@ -112,27 +107,20 @@ namespace tube{
     #ifdef CONT_VISCOSITY
     if(v.left!=NULL && v.right!=NULL)
       drhoim1+=d_l(v)*v.cWart1;
-    // if(v.right==NULL)		// Last vertex
-    //   drhoim1+=-(d_l(v))*v.cWart;
-
     #endif
     return drhoim1;
   }
   dmat Continuity::drhoim2(const TubeVertex& v) const {
     dmat drhoim2=v.zero;
     #ifdef CONT_VISCOSITY
-    // if(v.right==NULL){
-      // drhoim2+=-d_r(v)*v.cWart;
-    // }
+
     #endif    
     return drhoim2;
   }
   dmat Continuity::drhoip2(const TubeVertex& v) const {
     dmat drhoip2=v.zero;
     #ifdef CONT_VISCOSITY
-    // if(v.left==NULL){
-      // drhoip2+=-d_l(v)*v.cWart;
-    // }
+
     #endif
     return drhoip2;
   }

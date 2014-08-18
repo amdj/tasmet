@@ -83,8 +83,9 @@ namespace tube{
     vd eps(nu.size());
     for(us i=0;i<eps.size(); i++)
       {
-	eps(i)=0.5;
-	// eps(i)=max(min(0.5,kappa*nu(i)),kappa*1e-2);
+	// eps(i)=0.5;
+	// eps(i)=min(0.5,kappa*nu(i));
+	eps(i)=max(min(0.5,kappa*nu(i)),kappa*1e-2);
       }
     // TRACE(50,"Max eps:"<< max(eps));
     return eps;
@@ -126,7 +127,7 @@ namespace tube{
     vd pip1(Ns);
     vd pim1(Ns);    
 
-    if((v.i>0 && v.i<v.nCells-1) || (v.i==0 && v.left!=NULL) ||(v.i==v.nCells-1 && v.right!=NULL)){
+    if(v.left!=NULL && v.right!=NULL){
       pi=v.p();
       pip1=v.right->p();
       pim1=v.left->p();
@@ -152,12 +153,7 @@ namespace tube{
     vd numerator=abs(pim1-2*pi+pip1);
     vd num_over_denom(Ns);
     for(us k=0;k<Ns;k++){
-      // if(abs(denominator(k))<=1e-10) // Safe from division by zero??
-	// num_over_denom(k)=0.5;
-      // else
-      
       num_over_denom(k)=numerator(k)/denominator;///denominator(k);
-      // num_over_denom(k)=0.5;      
     }
   return num_over_denom;
   }

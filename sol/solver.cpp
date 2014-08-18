@@ -36,13 +36,13 @@ namespace tasystem{
     return x;    
   }
   
-
-  Solver::Solver(const TAsystem& sys1):sys(sys1) {
-    TRACE(15,"Solver(TAsystem&)");
+  // A solver always contains a valid system.
+  Solver::Solver(const taSystem& sys):tasystem(sys.copy()) {
+    TRACE(15,"Solver(taSystem&)");
   }
-  Solver::Solver(const Solver& o): Solver(o.sys){}
+  Solver::Solver(const Solver& o): Solver(o.sys()){}
   Solver& Solver::operator=(const Solver& other){
-    sys=other.sys;
+    tasystem.reset(other.sys().copy());
     return *this;
   }
  
@@ -51,7 +51,7 @@ namespace tasystem{
   void Solver::solve(us maxiter,d funtol,d reltol){
     TRACE(20,"Solver started.");
 
-    vd error=sys.error();
+    vd error=sys().error();
     d funer=arma::norm(error,2);
     d reler=0;
     us nloop=0;
@@ -77,16 +77,16 @@ namespace tasystem{
     assert(dampfac>0 && dampfac<=1.0);
     TRACE(15,"Solver::DoIter()");
     TRACE(10,"Computing error...");
-    vd err=sys.error();
+    vd err=sys().error();
     assert(err.size()>0);
     TRACE(10,"Updating result vector...");
-    vd oldx=sys.getRes();
+    vd oldx=sys().getRes();
     
     d funer=arma::norm(err,2);
     us Ndofs=err.size();
 
     TRACE(15,"Computing Jacobian...");
-    dmat jac(sys.jac());
+    dmat jac(sys().jac());
     assert(jac.n_cols==err.size());
     assert(jac.n_rows==err.size());
     vd dx;
@@ -100,7 +100,7 @@ namespace tasystem{
     }
     d reler=arma::norm(dx,2);
     TRACE(10,"Solving linear system done.");      
-    sys.setRes(oldx+dx);
+    sys().setRes(oldx+dx);
     TRACE(10,"Iteration done...");
     return std::make_tuple(funer,reler);		// Return function error
   } // Solver::DoIter()

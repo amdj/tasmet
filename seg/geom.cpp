@@ -11,6 +11,18 @@ namespace segment{
 	  
       }
   }
+  Geom Geom::VertPlates(us gp,d L,d S,d phi,d y0){
+    assert(gp>3);
+    assert(y0>0);
+    assert(0<phi && phi<=1.0);
+    assert(L>0);
+
+    vd x=linspace(0,L,gp);
+    vd phiv=phi*vd(gp,fillwith::ones);
+    vd Sv=S*vd(gp,fillwith::ones);
+    vd rh=y0*vd(gp,fillwith::ones);
+    return Geom(x,Sv,phiv,rh,"vert");
+  }
   Geom Geom::Cylinder(us gp, d L,d r){
     return Cone(gp,L,r,r);
   }
@@ -110,6 +122,7 @@ namespace segment{
 	cout << "S     : " << S(0) << "\n"	\
 	     << "Sf    : " << Sf(0) << "\n"	\
 	     << "phi   : " << phi(0) << "\n"	\
+	     << "rh    : " << rh(0) << "\n"	\
 	  ;
       }
     cout << "--------------------------\n"	\

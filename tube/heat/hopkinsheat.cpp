@@ -73,14 +73,19 @@ namespace tube{
 	abort();
       }
   }
-  
+  void HopkinsHeatSource::setdTwdx(const Geom& g,d dTwdx){
+    this->dTwdx=dTwdx*vd(g.nCells,fillwith::ones);
+  }
   vd HopkinsHeatSource::heat(const TubeVertex& v) const{
     TRACE(5,"HopkinsHeatSource::heat(v)");
     vd heat(v.gc->Ns,fillwith::zeros);
     variable::var htcoefH(v.gc);
+    variable::var htcoefQ(v.gc);
     htcoefH.set(HeatTransferCoefH(v));
+    htcoefQ.set(HeatTransferCoefQ(v));    
     // TRACE(100,"TminTs:\n"<<v.T()-v.Ts());
     heat+=htcoefH.freqMultiplyMat()*(v.T()-v.Ts());
+    heat+=htcoefQ.freqMultiplyMat()*(v.U()/v.lg.vSf);    
     return heat;    
   }
   dmat HopkinsHeatSource::dTi(const TubeVertex& v) const{
@@ -90,6 +95,40 @@ namespace tube{
     dmat dTi(v.gc->Ns,v.gc->Ns,fillwith::zeros);
     dTi=htcoefH.freqMultiplyMat();
     return dTi;
+  }
+  dmat HopkinsHeatSource::dUi(const TubeVertex& v) const{
+    TRACE(5,"HopkinsHeatSource::dUi(v)");
+    variable::var htcoefQ(v.gc);
+    htcoefQ.set(HeatTransferCoefQ(v));
+    dmat dUi(v.gc->Ns,v.gc->Ns,fillwith::zeros);
+    dUi=htcoefQ.freqMultiplyMat()/v.lg.vSf;
+    return dUi;
+  }  
+  vc HopkinsHeatSource::HeatTransferCoefQ(const TubeVertex& v) const{
+    const us& Nf=v.gc->Nf;
+    vc htcoefQ(Nf+1,fillwith::zeros);
+
+    // Obtain dTwdx
+    d dTwdx=this->dTwdx(v.i);
+    // TRACE(100,"dTwdx:"<<dTwdx);
+    const d& rh=v.lg.vrh;    
+    d T0=v.T(0);
+    d Pr0=v.gc->gas.pr(T0);
+    d cp0=v.gc->gas.cp(T0);    
+    d p0=v.p(0)+v.gc->p0;
+    d rho0=v.gc->gas.rho(T0,p0);
+    d kappa0=v.gc->gas.kappa(T0);
+    d mu0=v.gc->gas.mu(T0);
+    if(Nf>0){
+      vd omgvec=v.gc->omg*linspace(1,Nf,Nf);
+      vd deltak=sqrt(2*kappa0/(rho0*cp0*omgvec));
+      vd deltanu=sqrt(2*mu0/(rho0*omgvec));
+      vc fnu=rf.fx(rh/deltanu); // Viscous rott function
+      vc fk=rf.fx(rh/deltak); // Thermal rott function
+      htcoefQ.subvec(1,Nf)=rho0*cp0*(1/(1-Pr0))*(fnu/(1-fnu)-Pr0*fk/(1-fk))*dTwdx;
+    }
+    // No time-average part here.
+    return htcoefQ;
   }
   vc HopkinsHeatSource::HeatTransferCoefH(const TubeVertex& v) const{
     TRACE(8,"HopkinsHeatSource::HeatTransferCoefH()");

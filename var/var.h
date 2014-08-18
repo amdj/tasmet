@@ -65,7 +65,7 @@ namespace variable {
     var operator/(const var& var2) const; // Time-domain division operator
     var operator-(const var& var2) const; //Not yet implemented
     var operator*(d scalar);			   // post-multiplication
-    var& operator*(const var& variable);		   // Multiply two variables in time domain
+    var operator*(const var& variable);		   // Multiply two variables in time domain
     var operator*(const d& scalar) const;   // Multiply a variable with a scalar. This operation is possible for both
 				      // frequency and time domain data
     var operator+(const var& other);  // add two variables

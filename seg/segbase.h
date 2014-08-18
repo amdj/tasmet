@@ -14,7 +14,7 @@ namespace segment{
 
   class SegBase{
   private:
-    us number=0;		// Required for TAsystem. Not used in
+    us number=0;		// Required for taSystem. Not used in
 				// any segment code
   public:
     Geom geom;			// The geometry    

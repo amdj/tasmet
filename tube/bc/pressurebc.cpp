@@ -104,21 +104,18 @@ namespace tube{
     eWkini=w.wRl/pow(w.vSfR,2)-w.wL0/pow(w.vSfL,2);    
     eWkinip1=w.wRr/pow(w.vSfR,2)-w.wL1/pow(w.vSfL,2);    
 
-    TRACE(100,"Sf:"<<w.vSf);
+    TRACE(8,"Sf:"<<w.vSf);
     d x0=w.xvi;
     d x1=w.xvip1;
-    TRACE(100,"x0:"<<x1);
-    TRACE(100,"x1:"<<x1);
+    TRACE(8,"x0:"<<x1);
+    TRACE(8,"x1:"<<x1);
     d denom=x0*(1-x0/x1);
-    TRACE(100,"denom:"<<denom);
+    TRACE(8,"denom:"<<denom);
     d x0_ov_x1sq=pow(x0/x1,2);
     eWc1=0;
-    // eWc2=lg.SfL/denom;
     eWc2=lg.SfL/x0;
     eWc3=lg.vSf/w.dxp;
     eWc4=-w.vSfR/w.dxp;    
-    // eWc3=-w.vSfL*pow(x0/x1,2)/denom +  lg.vSf/w.dxp;
-    // eWc4=-w.vSfR/w.dxp -lg.SfL*x0_ov_x1sq/denom;
 
   }
   vd LeftPressure::msource() const{
@@ -146,23 +143,15 @@ namespace tube{
 
     vd T0=gc->T0*vd(gc->Ns,fillwith::ones);
     vd kappaL=e.kappaL(*this);
-    // esource+=lg.SfL*num*fDFT*(kappaL%TLt)/denom;
+
     d x0=lg.xvi;
     d x1=lg.xvi+w.dxp;
     d denom=x0*(1.0-x0/x1);
-    // TRACE(100,"Denom:"<<denom);
+
     d x0_ov_x1sq=pow(x0/x1,2);
     TRACE(12,"esource:"<<esource);
-    // esource+=-1.0*(1-x0_ov_x1sq)*lg.SfL*fDFT*(kappaL%TLt)/denom;
     esource+=-1.0*lg.SfL*fDFT*(kappaL%TLt)/x0;
-    // TRACE(100,"esourcefac:"<<-1.0*lg.SfL/x0);
-    // TRACE(100,"esourcefac:"<<-1.0*(1-x0_ov_x1sq)*lg.SfL/denom);
     TRACE(12,"esource:"<<esource);
-    // esource+=fDFT*(U.tdata()%pL.tdata());
-    // TRACE(100,"wL0:"<<wL0);
-    // TRACE(100,"WL1:"<<wL1);
-    // esource+=-gamfac*fDFT*(pL.tdata()%(wL0*U.tdata()+wL1*right->U.tdata()));
-    
     return esource;    
   }
 

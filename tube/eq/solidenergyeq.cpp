@@ -5,32 +5,19 @@ namespace tube{
 
   SolidTPrescribed::SolidTPrescribed(){
     // Tset is false
+
   }
   void SolidTPrescribed::init(const Tube& t) {
     TRACE(6,"SolidTPrescribed::init(t)");
-  }
-  void SolidTPrescribed::setTs(const Geom& g,d Tl,d Tr){
-    Tset=true;
-    this->xv=g.xv;
-    this->L=g.L;
-    this->Tl=Tl;
-    this->Tr=Tr;
-  }
-  void SolidTPrescribed::setTs(const Geom& g,d T){
-    setTs(g,T,T);
+
   }
   vd SolidTPrescribed::error(const TubeVertex& v) const {		// Error in momentum equation
     TRACE(6,"SolidTPrescribed::Error()");
     vd error(v.gc->Ns,fillwith::zeros);
     assert(v.gc!=NULL);
-    if(Tset==false){
-      error=v.Ts();
-      error(0)+=-v.gc->T0;
-    }
-    else{
-      error=v.Ts();
-      error(0)+=-(Tl+(xv(v.i)/L)*(Tr-Tl));
-    }
+    error=v.Ts();
+    if(Tsmirror.size()>0)
+      error(0)-=Tsmirror(v.i);
     return error;
   }
   dmat SolidTPrescribed::dTsi(const TubeVertex& v) const {
@@ -40,3 +27,5 @@ namespace tube{
   }
 
 } // namespace tube
+
+

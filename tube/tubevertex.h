@@ -1,4 +1,4 @@
-// File vertex.h
+// File tubevertex.h
 #pragma once
 #ifndef _TUBEVERTEX_H_
 #define _TUBEVERTEX_H_

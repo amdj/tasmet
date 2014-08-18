@@ -62,14 +62,14 @@ namespace variable {
       idft();
     }
   }
-  var& var::operator*(const var& var2) { // Multiply two
+  var var::operator*(const var& var2) { // Multiply two
     // variables in time domain
     TRACE(0,"var::operator*(const var& var2) const");
     assert(this->Ns==var2.Ns);
-
+    var result(this->gc);
     vd tdata=this->tdata()%var2.tdata();
-    this->settdata(tdata);
-    return *this;
+    result.settdata(tdata);
+    return result;
   }
   var var::operator*(const d& scalar) const {	// Post-multiplication with scalar
     assert(this->gc!=NULL);
@@ -116,7 +116,7 @@ namespace variable {
   // Set methods
   void var::set(us freqnr,d val) { //Set result for specific frequency zero,real one, -imag one, etc
     TRACE(-2,"var::set("<<freqnr<<","<<val<<")");
-    assert(freqnr<Ns && freqnr>=0);
+    assert(freqnr<Ns);
     updateNf();
     amplitudedata[freqnr]=val;
     idft();

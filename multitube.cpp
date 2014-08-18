@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
   t1.setRightbc(bcright1);
   t2.setRightbc(bcright2);
   // coupleSegs(t1,t2,tailhead);
-  tasystem::TAsystem sys(gc);
+  tasystem::taSystem sys(gc);
   sys.addseg(t1);
   // sys.addseg(t2);
   tasystem::Solver sol(sys);

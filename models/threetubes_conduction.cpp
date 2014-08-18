@@ -35,25 +35,21 @@ Solver* ThreeTubesConduction(us gp,us Nf,d freq,d L,d S1,d S2,vd p1,int loglevel
   // Geom geom2=Geom::Cylinder(gp,L,R2);
 
   Geom geom1=Geom::CylinderBlApprox(gp,L,R1);
-  Geom geom2=Geom::CylinderBlApprox(gp,L,R2);  
+  Geom geom2=Geom::Cylinder(gp,L,R2);  
   // TRACE(100,"ThreetubesConduction hacked to contant cs-area case");
-  HopkinsLaminarDuct t1(geom1);
-  HopkinsLaminarDuct t2(geom2);  
-  HopkinsLaminarDuct t3(geom1);
-  // IsentropicTube t1(geom1);
-  // IsentropicTube t2(geom1);  
-  // IsentropicTube t3(geom1);
+  HopkinsLaminarDuct t1(geom1,gc.T0);
+  HopkinsLaminarDuct t2(geom2,gc.T0,Tr);  
+  HopkinsLaminarDuct t3(geom1,Tr);
 
   var pL(gc);
   for(us i=0;i<gc.Ns;i++)
     pL.set(i,p1(i));
 
   LeftPressure pleft(pL);
-  RightIsoTWall bright(Tr);
 
-  TAsystem sys(gc);
+  taSystem sys(gc);
   t1.addBc(pleft);
-  t3.addBc(bright);
+
   sys.addSeg(t1);
   sys.addSeg(t2);
   sys.addSeg(t3);  

@@ -11,10 +11,10 @@ namespace tasystem{
 
   class Solver
   {
-std::unique_ptr<TAsystem*> TheSys;
+    std::unique_ptr<taSystem> tasystem;
   public:
-    TAsystem sys;
-    Solver(const TAsystem& tasys);
+    taSystem& sys() const {return *tasystem.get();}
+    Solver(const taSystem& tasys);
     Solver(const Solver& other);
     Solver& operator=(const Solver& other);
     void solve(us maxiter=0,d funer=1e-8,d reler=1e-6);

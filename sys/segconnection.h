@@ -11,7 +11,7 @@ SPOILNAMESPACE
   enum SegCoupling{
     headhead,tailtail,headtail,tailhead
   };
-  class TAsystem;
+  class taSystem;
   class SegConnection
   {
   public:
@@ -22,7 +22,7 @@ SPOILNAMESPACE
     virtual ~SegConnection() {}
   };  
   
-  void coupleSegs(const SegConnection&,TAsystem& sys); // Couple two segments  
+  void coupleSegs(const SegConnection&,taSystem& sys); // Couple two segments  
 
 
 } // namespace tasystem

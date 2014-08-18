@@ -4,16 +4,16 @@
 namespace tasystem{
   inline us max(us s,us t){  return s? s>=t : t;}
 
-  TAsystem::TAsystem(const Globalconf& gc):gc(gc){
-    TRACE(14,"TAsystem::TAsystem(gc)");
+  taSystem::taSystem(const Globalconf& gc):gc(gc){
+    TRACE(14,"taSystem::taSystem(gc)");
   }
-  TAsystem::TAsystem(const TAsystem& o)
+  taSystem::taSystem(const taSystem& o)
   {
-    TRACE(14,"TAsystem::TAsystem(TAsystem&)");
-    copyTAsystem(o);
+    TRACE(14,"taSystem::taSystem(taSystem&)");
+    copytaSystem(o);
   }
-  void TAsystem::copyTAsystem(const TAsystem& o){
-    TRACE(14,"TAsystem::copyTAsystem()");
+  void taSystem::copytaSystem(const taSystem& o){
+    TRACE(14,"taSystem::copytaSystem()");
     gc=Globalconf(o.gc);
     assert(getNSegs()==0);
     for(us i=0;i<o.getNSegs();i++)
@@ -27,28 +27,28 @@ namespace tasystem{
     hasInit=false;
 
   }
-  TAsystem& TAsystem::operator=(const TAsystem& other){
-    TRACE(14,"TAsystem::operator=()");
+  taSystem& taSystem::operator=(const taSystem& other){
+    TRACE(14,"taSystem::operator=()");
     cleanup();
-    copyTAsystem(other);
+    copytaSystem(other);
     return *this;
   }
-  void TAsystem::cleanup(){
+  void taSystem::cleanup(){
     segs.clear();
     segConnections.clear();
     segfirstdof.zeros();
     segndofs.zeros();
     hasInit=false;
   }
-  void TAsystem::addSeg(const SegBase& seg){
-    TRACE(14,"TAsystem::addseg()");
+  void taSystem::addSeg(const SegBase& seg){
+    TRACE(14,"taSystem::addseg()");
     hasInit=false;
     segs.emplace_back(seg.copy());
     segs[getNSegs()-1]->setNumber(getNSegs()-1);
   }
-  SegBase* TAsystem::getSeg(us i) const { return (*this)[i];}
+  SegBase* taSystem::getSeg(us i) const { return (*this)[i];}
   
-  SegBase* TAsystem::operator[](us i) const {
+  SegBase* taSystem::operator[](us i) const {
     us nSegs=getNSegs();
     if(i<nSegs)
       return segs[i].get();
@@ -56,8 +56,8 @@ namespace tasystem{
       return NULL;
   }
 
-  void TAsystem::init(){
-    TRACE(14,"TAsystem::init()");
+  void taSystem::init(){
+    TRACE(14,"taSystem::init()");
     us Nsegs=getNSegs();
     us Ndofs=0;
 
@@ -90,22 +90,22 @@ namespace tasystem{
       }
     hasInit=true;
   }
-  TAsystem::~TAsystem() {
-    TRACE(-5,"~TAsystem()");
+  taSystem::~taSystem() {
+    TRACE(-5,"~taSystem()");
     cleanup();
   }
 
   
-  us TAsystem::getNDofs()
+  us taSystem::getNDofs()
   {
-    TRACE(14,"TAsystem::getNDofs()");
+    TRACE(14,"taSystem::getNDofs()");
     us Ndofs=0;
     for(us i=0;i<getNSegs();i++)
       Ndofs+=segs.at(i)->getNDofs();
     return Ndofs;
   }
-  void TAsystem::connectSegs(us seg1,us seg2,SegCoupling sc){
-    TRACE(14,"TAsystem::ConnectSegs()");
+  void taSystem::connectSegs(us seg1,us seg2,SegCoupling sc){
+    TRACE(14,"taSystem::ConnectSegs()");
     // Basic check if nothing is wrong
     if(max(seg1,seg2)>=getNSegs())
       {
@@ -116,8 +116,8 @@ namespace tasystem{
     hasInit=false;
   }
 
-  void TAsystem::show(bool showvertices){
-    cout << "########################## Showing TAsystem...\n"		\
+  void taSystem::show(bool showvertices){
+    cout << "########################## Showing taSystem...\n"		\
       ;
     checkInit();
     TRACE(14,"checkInit() done");
@@ -127,20 +127,20 @@ namespace tasystem{
       segs[i]->show(showvertices);
     }
   }
-  void TAsystem::checkInit(){
-    TRACE(14,"TAsystem::CheckInit()");
+  void taSystem::checkInit(){
+    TRACE(14,"taSystem::CheckInit()");
     if(!hasInit){
       init();
       hasInit=true;
     }
   }
-  void TAsystem::setGc(const Globalconf& gc){
-    TRACE(14,"TAsystem::setGc()");
+  void taSystem::setGc(const Globalconf& gc){
+    TRACE(14,"taSystem::setGc()");
     this->gc=gc;
     hasInit=false;
   }
-  // void TAsystem::setnodes(us segnr,us nl,us nr){
-  //   TRACE(14,"TAsystem::setnodes");
+  // void taSystem::setnodes(us segnr,us nl,us nr){
+  //   TRACE(14,"taSystem::setnodes");
   //   assert(segnr>0 && segnr<Nsegs);
   //   segs[segnr]->setnodes(nl,nr);
   // }

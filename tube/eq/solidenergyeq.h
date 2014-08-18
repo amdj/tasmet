@@ -7,15 +7,11 @@ namespace tube{
   class SolidTPrescribed:public TubeEquation
   {
   private:
-    bool Tset=false;
-    d Tl=0,Tr=0;
-    vd xv;
-    d L;
+    vd Tsmirror;
   public:
+    void  setTMirror(vd Ts) {Tsmirror=Ts;}
     SolidTPrescribed();
     void init(const Tube& t);
-    void setTs(const Geom&,d Tl,d Tr);
-    void setTs(const Geom&,d T);
     virtual enum EqType getType() const { return EqType::Sol;}
     vd error(const TubeVertex&) const;			// Error in Solidenergy equation at node i
     dmat dTsi(const TubeVertex&) const;
