@@ -217,7 +217,7 @@ namespace tasystem{
       }	  // curseg.Right()!=NULL
       TRACE(-1,"Creation of Jacobian for segment "<< j << "done."<<endl);
     } // end for loop
-    // TRACE(15,"Jac\n"<<jac);
+    // TRACE(25,"Jac\n"<<jac);
     return jac1.sparseView();
   }
   evd taSystem::error(){

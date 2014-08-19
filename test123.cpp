@@ -66,7 +66,7 @@ int main(int argc,char* argv[]) {
   // tube::RightIsoTWall bcright(0,T0+10);
   // TRACE(100,"Add bc to tube...");
   t1.addBc(bcleft);
-  t1.addBc(bcright);
+  // t1.addBc(bcright);
 
   // TRACE(100,"Creating empty taSystem...");
   taSystem sys(air);
@@ -97,7 +97,7 @@ int main(int argc,char* argv[]) {
   esdmat Jac=sol.sys().jac();
   // sol1.sys->show();
   cout << "Jac:\n"<< Jac;
-
+  sol.solve();
   // cout << "\nDeterminant Jac:" << arma::det(Jac) << "\n";
   // sol.sys.show(true);
   return 0;
