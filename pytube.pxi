@@ -58,6 +58,7 @@ cdef extern from "tube.h" namespace "tube":
         vd getRes()
         void setRes(vd res)    
         vd getResAt(us varnr,us freqnr)
+        vd getErrorAt(us eqnr,us freqnr)            
 cdef extern from "vertex.h":
     cdef cppclass Vertex:
         pass

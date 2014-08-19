@@ -104,6 +104,13 @@ cdef class pytube:
         self.sol[0].doIter(relaxfac)
     cpdef setRes(self,n.ndarray[n.float64_t,ndim=1] res):
         self.sol[0].sys().setRes(dndtovec(res))
+
+    cpdef getErrorEq(self,eqnr,freqnr,i=0):
+        assert(eqnr<5)
+        assert(freqnr<2*self.Nf+1)
+        assert(i<self.ntubes)
+        return dvectond(self.tube[i].getErrorAt(eqnr,freqnr))
+    
     cpdef getResVar(self,_type,freqnr,i=0):
         assert(i<self.ntubes)
         if _type=='pres':

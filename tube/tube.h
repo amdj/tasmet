@@ -41,7 +41,7 @@ namespace tube{
     virtual string getType() const {return string("Tube");}
     virtual void init(const Globalconf& gc);
     vd getResAt(us varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
-
+    vd getErrorAt(us varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
     friend class TubeVertex;    
   protected:
     void cleanup();

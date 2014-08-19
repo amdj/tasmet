@@ -146,6 +146,17 @@ namespace tube {
     }
     return res;
   }
+  vd Tube::getErrorAt(us eqnr,us freqnr) const{
+    const us& nCells=geom.nCells;
+    vd er(nCells);
+    assert(eqnr<Neq);
+    auto eqs=this->getEq();
+    for(us i=0;i<nCells;i++){
+      TubeVertex& cvertex=*static_cast<TubeVertex*>(vvertex[i].get());
+      er(i)=(eqs.at(eqnr)->error(cvertex))(freqnr);
+    }
+    return er;
+  }
   
   Tube::~Tube(){
     TRACE(15,"~Tube()");
