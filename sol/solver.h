@@ -2,7 +2,7 @@
 #ifndef _SOLVER_H_
 #define _SOLVER_H_
 #include "system.h"
-#include <math_common.h>
+#include "vtypes.h"
 #include <memory>
 
 #define SOLVER_MAXITER 100

@@ -16,9 +16,9 @@ cdef extern from "system.h" namespace "tasystem":
     cdef cppclass taSystem:
         taSystem(Globalconf& gc)
         void addSeg(Seg& seg)
-        vd error()
+        evd error()
         void show(bool)
-        vd getRes()
+        evd getRes()
         void setRes(vd)
         Seg* getSeg(us i)
         

@@ -6,8 +6,8 @@
 
 
 #include <memory>
-#include <vtypes.h>
-#include <material.h>
+#include "vtypes.h"
+#include "material.h"
 #include <assert.h>
 #define MAXNF (30)
 #define MINOMG (1e-3)

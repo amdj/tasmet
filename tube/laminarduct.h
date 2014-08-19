@@ -9,8 +9,8 @@
 #ifndef LAMINARDUCT_H_
 #define LAMINARDUCT_H__
 #include "tube.h"
-#include <vtypes.h>
-#include <math_common.h>
+#include "vtypes.h"
+#include "math_common.h"
 #include "continuityeq.h"
 #include "momentumeq.h"
 #include "energyeq.h"

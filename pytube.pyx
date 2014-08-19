@@ -97,9 +97,9 @@ cdef class pytube:
         return dvectond(self.tube[i].geom.vSf)
 
     cpdef error(self):
-        return dvectond(self.sol[0].sys().error())
+        return eigentond(self.sol[0].sys().error())
     cpdef getRes(self):
-        return dvectond(self.sol[0].sys().getRes())
+        return eigentond(self.sol[0].sys().getRes())
     cpdef doIter(self,d relaxfac=1.0):
         self.sol[0].doIter(relaxfac)
     cpdef setRes(self,n.ndarray[n.float64_t,ndim=1] res):

@@ -1,7 +1,7 @@
 #pragma once			// 
 #ifndef _LOCALGEOM_H_
 #define _LOCALGEOM_H_
-#include <vtypes.h>
+#include "vtypes.h"
 
 namespace segment {
   SPOILNAMESPACE

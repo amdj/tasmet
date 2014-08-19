@@ -1,7 +1,7 @@
 #pragma once
 #ifndef _SEGBASE_H_
 #define _SEGBASE_H_
-#include <vtypes.h>
+#include "vtypes.h"
 #include "globalconf.h"
 #include "geom.h"
 #define Neq (5)

@@ -12,15 +12,22 @@
 #define _SYSTEM_H_
 #define MAXNDOFS 20000
 #include <memory>
-#include <vtypes.h>
+#include "vtypes.h"
+
 #include "globalconf.h"
 #include "segconnection.h"
 #include "segbase.h"
 #define MAXSEGS 30
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
+typedef Eigen::VectorXd evd;
 
 namespace tasystem{
   SPOILNAMESPACE
 
+  typedef Eigen::VectorXd evd;
+  typedef Eigen::SparseMatrix<double> esdmat;
+  
   class taSystem;
   using segment::SegBase;
 
@@ -51,8 +58,8 @@ namespace tasystem{
     // System with a
     // vector of segments
     // ############################## ACCESS METHODS
-    vd error();			// Total error vector
-    vd getRes();			// Extract result vector
+    evd error();			// Total error vector
+    evd getRes();			// Extract result vector
     void setRes(vd resvec);	// Set result vector
     void addSeg(const SegBase& s);	// Add a segment to the
 					// system. It creates a copy
@@ -62,7 +69,7 @@ namespace tasystem{
 
     // void delseg(us n); // Not yet implementen. Delete a segment from the system (we have to determine how elaborated the API has to be.)
     void setGc(const Globalconf& gc); // Reset globalconf configuration
-    dmat jac();		// Return Jacobian matrix    
+    esdmat jac();		// Return Jacobian matrix    
     SegBase* operator[](us i) const;    
     SegBase* getSeg(us i) const; // Easier for cython wrapping
     void init();

@@ -1,7 +1,7 @@
 #pragma once
 #ifndef _SEGCONNECTION_H_
 #define _SEGCONNECTION_H_
-#include <vtypes.h>
+#include "vtypes.h"
 
 
 

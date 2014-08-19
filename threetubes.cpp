@@ -6,8 +6,8 @@ int main(int argc,char* argv[]) {
   cout <<  "Running test..." << endl;
   int loglevel=20;
   us Nf=0;
-  us gp=4;
-  d freq=100;
+  us gp=400;
+  d freq=500;
   
   if(argc>1)
     loglevel=atoi(argv[1]);
@@ -33,15 +33,20 @@ int main(int argc,char* argv[]) {
   d S2=S1;
   d kappa=1;
   d L=0.1;
-  Solver* sol=ThreeTubesEngine(gp,Nf,freq,T0,p1,loglevel,kappa);
+  Solver* sol=ThreeTubesEngine(gp,Nf,freq,T0+10,p1,loglevel,kappa);
 
-  sol->sys().show(true);
-
+  // sol->sys().show(true);
+  // sol->doIter();
+  // cout <<sol->sys().jac();
   sol->solve();
   // cout <<"Result:\n"<<  sol->sys.getRes();
   cout <<"Result:\n"<< static_cast<tube::Tube*>(sol->sys().getSeg(0))->getResAt(2,0);
   cout <<"Result:\n"<< static_cast<tube::Tube*>(sol->sys().getSeg(1))->getResAt(2,0);
   cout <<"Result:\n"<< static_cast<tube::Tube*>(sol->sys().getSeg(2))->getResAt(2,0);
+
+  
+  
+  
   delete sol;
   return 0;
 }

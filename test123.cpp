@@ -94,11 +94,11 @@ int main(int argc,char* argv[]) {
   // // cout << "error:\n"<<err;
 
   // cout << "err:\n"<<er;
-  dmat Jac=sol.sys().jac();
+  esdmat Jac=sol.sys().jac();
   // sol1.sys->show();
   cout << "Jac:\n"<< Jac;
 
-  cout << "\nDeterminant Jac:" << arma::det(Jac) << "\n";
+  // cout << "\nDeterminant Jac:" << arma::det(Jac) << "\n";
   // sol.sys.show(true);
   return 0;
 }

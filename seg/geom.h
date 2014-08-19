@@ -1,7 +1,7 @@
 #pragma once			// 
 #ifndef _GEOM_H_
 #define _GEOM_H_
-#include <vtypes.h>
+#include "vtypes.h"
 #include "localgeom.h"
 
 #define MAXGP 500

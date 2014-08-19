@@ -1,44 +1,15 @@
 # CMakeList.txt for nonlinear code
-set(CMAKE_CXX_FLAGS "-march=native -mtune=native ")
-############################## Optimized code flags
-set(CMAKE_CXX_FLAGS " -O3 ")
-add_definitions(-DLOGGER=0 -DTRACER=0 -DNDEBUG)
-add_definitions(-DEIGEN_NO_DEBUG -DARMA_NO_DEBUG)
-############################## End optimized code flags
-
-#PYthon version
-set(PYVER 3.4m)
-
-######################### VERBOSE MAKEFILE
-# set(CMAKE_VERBOSE_MAKEFILE on)
-##########################################
-
+add_definitions(-DLOGLEVEL=nonlinearlogger)
 
 ############################## Not so often changed
-set(PYTHON_LIBRARY libpython${PYVER}.so)
-add_definitions(-DLOGLEVEL=nonlinearlogger)
-cmake_minimum_required (VERSION 2.8.5)
-project(nonlinear_tmtubes)
-# Make the scripts available in the 'cmake' directory available for
-# the 'include()' command, 'find_package()' command.
 
-set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
-${CMAKE_CURRENT_LIST_DIR}/cmake )
-set(CLANG_FLAGS "-Wno-unknown-warning-option")
 
-# set(CMAKE_CXX_COMPILER clang++)
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CLANG_FLAGS} ")
-set(CMAKE_CXX_COMPILER g++)
 
 # -pipe Use pipes rather than temporary files for communication
 #           between the various stages of compilation.  This fails to
 #           work on some systems where the assembler is unable to
 #           read from a pipe; but the GNU assembler has no troubl.
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -pipe -fPIC -Wall \
- -Wno-unused-function -Woverloaded-virtual -Wextra -Wno-unused-parameter \
- -Wno-unused-variable -Wno-unused-but-set-variable \
- -Wno-return-local-addr -Wno-cpp  -Wno-address")
 
 include(UseCython)
 AUX_SOURCE_DIRECTORY(tube tubesources)
@@ -61,16 +32,15 @@ set (nonlinear_SRC ${tubesources} ${varsources} ${segsources}
 
  # ${tubedrag}
 include_directories(
-/usr/include/python${PYVER}
-  /usr/include/eigen3
-  /usr/local/include
-  /usr/local/include/eigen3
   sol
   sys
   seg
   var
   tube
   common
+  common/gas
+  common/bessel
+  common/solid
   models
   tube/drag
   tube/bc
@@ -98,7 +68,6 @@ add_executable(threetubes threetubes.cpp)
 cython_add_module(pytube pytube.pyx)
 # cython_add_module(doubletube doubletube.pyx)
 set_target_properties(pytube PROPERTIES COMPILE_FLAGS "-Wno-cpp  -Wno-strict-aliasing")
-
 
 
 # target_link_libraries(doubletube nonlin math_common armadillo)

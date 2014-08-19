@@ -1,7 +1,7 @@
 #pragma once
 #ifndef _HOPKINSHEAT_H_
 #define _HOPKINSHEAT_H_
-#include <vtypes.h>
+#include "vtypes.h"
 #include "heat.h"
 #include "tube.h"
 #include "rottfuncs.h"

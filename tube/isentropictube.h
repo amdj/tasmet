@@ -9,8 +9,8 @@
 #ifndef ISENTROPICTUBE_H_
 #define ISENTROPICTUBE_H__
 #include "tube.h"
-#include <vtypes.h>
-#include <math_common.h>
+#include "vtypes.h"
+#include "math_common.h"
 #include "continuityeq.h"
 #include "momentumeq.h"
 #include "isentropiceq.h"
