@@ -9,7 +9,7 @@
 #include "tubevertex.h"
 #include "impedancebc.h"
 #include "isotwall.h"
-#include "system.h"
+#include "tasystem.h"
 #include "solver.h"
 using namespace std;
 using namespace segment; 
@@ -88,13 +88,14 @@ int main(int argc,char* argv[]) {
   Solver sol(sys);
   // cout << "Result:\n" << sys.getRes();  
   // cout << "Error:\n" << sys.error();
-  sol.doIter();
+  // sol.doIter();
+  sol.solve();
     // // // vd x=t1.GetRmomes();
   // // vd err=sol.sys->Error();
   // // cout << "error:\n"<<err;
 
   // cout << "err:\n"<<er;
-  esdmat Jac=sol.sys().jac();
+  edmat Jac=sol.sys().jac();
   // sol1.sys->show();
   cout << "Jac:\n"<< Jac;
   sol.solve();

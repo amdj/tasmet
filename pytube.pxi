@@ -12,7 +12,7 @@ cdef extern from "seg.h" namespace "segment":
         Seg(Globalconf& gc)
 
         
-cdef extern from "system.h" namespace "tasystem":
+cdef extern from "tasystem.h" namespace "tasystem":
     cdef cppclass taSystem:
         taSystem(Globalconf& gc)
         void addSeg(Seg& seg)

@@ -18,9 +18,7 @@
 #include "segconnection.h"
 #include "segbase.h"
 #define MAXSEGS 30
-#include <Eigen/Dense>
-#include <Eigen/Sparse>
-typedef Eigen::VectorXd evd;
+#include "arma_eigen.h"
 
 namespace tasystem{
   SPOILNAMESPACE
@@ -33,8 +31,6 @@ namespace tasystem{
 
   class taSystem{
   private:
-    sdmat curjac;		// Current Jacobian matrix
-    
     vector<std::unique_ptr<SegBase> > segs;		// The stl library does not have fixed-size vectors, so we fall back to basic C arrays since we do not want to use boost.
     vector<SegConnection> segConnections;
     arma::uvec::fixed<MAXSEGS> segfirstdof; // Vector containing the number of the first column corresponding to the first vertex of segment segfirstcol(i)
@@ -69,7 +65,7 @@ namespace tasystem{
 
     // void delseg(us n); // Not yet implementen. Delete a segment from the system (we have to determine how elaborated the API has to be.)
     void setGc(const Globalconf& gc); // Reset globalconf configuration
-    esdmat jac();		// Return Jacobian matrix    
+    edmat jac();		// Return Jacobian matrix    
     SegBase* operator[](us i) const;    
     SegBase* getSeg(us i) const; // Easier for cython wrapping
     void init();

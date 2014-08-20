@@ -17,14 +17,15 @@ namespace tasystem{
     // Eigen::SimplicialCholesky<esdmat,3 > solver(jac2); // Werkt niet...    
     // Eigen::SimplicialLDLT<esdmat> solver(jac2);
     // Eigen::SparseQR<esdmat,Eigen::COLAMDOrdering<int> > solver(jac2);      
-    // TRACE(10,"Converting data to Eigen...");
-    // esdmat jac2=sys.Jac();
-    TRACE(10,"Creating solver...");
-    // esdmat eig_K=math_common::ArmaToEigen(sdmat(K)); // Eigen
+    TRACE(19,"Creating solver...");
     // matrix
-
+    // cout << "f:\n"<<f;
     // cout << "Matrix k:"<< K << "\n";
-    
+    // Eigen::FullPivLU<edmat> dec(K);
+    TRACE(19,"Solving linear system...");    
+
+    // evd x=dec.solve(f);
+
     Eigen::SparseLU<esdmat> solver(K);
     switch(solver.info()){
     case ComputationInfo::InvalidInput:
@@ -40,10 +41,8 @@ namespace tasystem{
       
     }
 
-    // evd f=math_common::ArmaToEigen(f);
-
-    TRACE(10,"Solving linear system...");
     evd x=solver.solve(f);
+    TRACE(19,"Solving linear system done.");    
     return x;    
   }
   
@@ -94,11 +93,16 @@ namespace tasystem{
     assert(error.size()>0);
     TRACE(10,"Getting old result vector...");
     evd oldx=sys().getRes();
+    // cout << "oldx:" << oldx <<"\n";
     d funer=error.norm();
     us Ndofs=error.size();
     TRACE(15,"Computing Jacobian...");
-    esdmat jac=sys().jac();
-    jac.makeCompressed();
+    edmat jac1=sys().jac();
+    esdmat jac=jac1.sparseView();
+    // esdmat jac=jac3;
+
+
+    // jac.makeCompressed();
 
     assert(jac.cols()==error.size());
     assert(jac.rows()==error.size());
@@ -110,7 +114,7 @@ namespace tasystem{
     evd newx=oldx+dx;
     vd Newx=armaView(newx);
 
-    cout << "dx:"<<dx<<"\n";
+    // cout << "dx:"<<dx<<"\n";
     sys().setRes(Newx);
     TRACE(10,"Iteration done...");
     return std::make_tuple(funer,reler);		// Return function error

@@ -11,7 +11,6 @@ add_definitions(-DLOGLEVEL=nonlinearlogger)
 #           read from a pipe; but the GNU assembler has no troubl.
 
 
-include(UseCython)
 AUX_SOURCE_DIRECTORY(tube tubesources)
 AUX_SOURCE_DIRECTORY(var varsources)
 AUX_SOURCE_DIRECTORY(seg segsources)
@@ -37,10 +36,11 @@ include_directories(
   seg
   var
   tube
-  common
-  common/gas
-  common/bessel
-  common/solid
+  ../common
+  ../common/gas
+  ../common/bessel
+  ../common/solid
+  ../common/rottfuncs
   models
   tube/drag
   tube/bc

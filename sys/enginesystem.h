@@ -7,7 +7,9 @@
 namespace tasystem{
 
   class EngineSystem:public taSystem{
-
+    virtual esdmat jac();
+    virtual evd getRes();
+    virtual evd setRes(evd res);
   };
 
 } // namespace tasystem

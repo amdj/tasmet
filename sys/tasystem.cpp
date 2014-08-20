@@ -1,4 +1,4 @@
-#include "system.h"
+#include "tasystem.h"
 #include "arma_eigen.h"
 
 namespace tasystem{
@@ -143,7 +143,7 @@ namespace tasystem{
     hasInit=false;
   }
 
-  esdmat taSystem::jac(){
+  edmat taSystem::jac(){
     TRACE(14,"taSystem::Jac()");
     checkInit();
     // Something interesting has to be done here later on to connect
@@ -218,7 +218,7 @@ namespace tasystem{
       TRACE(-1,"Creation of Jacobian for segment "<< j << "done."<<endl);
     } // end for loop
     // TRACE(25,"Jac\n"<<jac);
-    return jac1.sparseView();
+    return jac1;//.sparseView(1e-40,1);
   }
   evd taSystem::error(){
     TRACE(14,"taSystem::Error()");
@@ -226,6 +226,7 @@ namespace tasystem{
     us Ndofs=getNDofs();
     evd error(getNDofs());
     vd Error(error.data(),getNDofs(),false,false);
+    Error.zeros();
     us Nsegs=getNSegs();
     us segdofs;
     us startdof=0;

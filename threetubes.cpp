@@ -6,7 +6,7 @@ int main(int argc,char* argv[]) {
   cout <<  "Running test..." << endl;
   int loglevel=20;
   us Nf=0;
-  us gp=400;
+  us gp=4;
   d freq=500;
   
   if(argc>1)
@@ -36,6 +36,7 @@ int main(int argc,char* argv[]) {
   Solver* sol=ThreeTubesEngine(gp,Nf,freq,T0+10,p1,loglevel,kappa);
 
   // sol->sys().show(true);
+  // sol->doIter();
   // sol->doIter();
   // cout <<sol->sys().jac();
   sol->solve();

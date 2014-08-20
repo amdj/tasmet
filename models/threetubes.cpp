@@ -25,10 +25,12 @@ Solver* ThreeTubes(us gp,us Nf,d freq,d L,d S1,d S2,vd p1,int loglevel,d kappa)
 
   Geom geom1=Geom::CylinderBlApprox(gp,L,R1);
   Geom geom2=Geom::CylinderBlApprox(gp,L,R2);  
-  TRACE(100,"Threetubes hacked to contant cs-area case");
   HopkinsLaminarDuct t1(geom1,gc.T0);
   HopkinsLaminarDuct t2(geom2,gc.T0);  
   HopkinsLaminarDuct t3(geom1,gc.T0);
+  // IsentropicTube t1(geom1);
+  // IsentropicTube t2(geom2);  
+  // IsentropicTube t3(geom1);
 
   var pL(gc);
   for(us i=0;i<gc.Ns;i++)

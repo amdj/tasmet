@@ -1,7 +1,7 @@
 #pragma once
 #ifndef _SOLVER_H_
 #define _SOLVER_H_
-#include "system.h"
+#include "tasystem.h"
 #include "vtypes.h"
 #include <memory>
 
