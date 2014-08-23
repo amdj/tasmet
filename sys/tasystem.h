@@ -26,37 +26,40 @@ namespace tasystem{
   typedef Eigen::VectorXd evd;
   typedef Eigen::SparseMatrix<double> esdmat;
   
-  class taSystem;
+  class TaSystem;
   using segment::SegBase;
 
-  class taSystem{
+  class TaSystem{
   private:
-    vector<std::unique_ptr<SegBase> > segs;		// The stl library does not have fixed-size vectors, so we fall back to basic C arrays since we do not want to use boost.
     vector<SegConnection> segConnections;
     arma::uvec::fixed<MAXSEGS> segfirstdof; // Vector containing the number of the first column corresponding to the first vertex of segment segfirstcol(i)
     arma::uvec::fixed<MAXSEGS> segndofs;  // Vector containe
     bool hasInit=false;
+  protected:
+    vector<std::unique_ptr<SegBase> > segs;		
   public:
-
     Globalconf gc;    
-  private:
+  protected:
     us getNDofs();	// Compute DOFS in system, set     
     
   public:
-    taSystem(const Globalconf& g);
-    ~taSystem();
-    taSystem(const taSystem& o);
-    taSystem& operator=(const taSystem& other);
-    virtual taSystem* copy() const {return new taSystem(*this);}
-    void show(bool showvertices=false);
+    TaSystem(const Globalconf& g);
+    TaSystem(const TaSystem& o);
+    TaSystem& operator=(const TaSystem& other);
+    virtual ~TaSystem();
+    virtual TaSystem* copy() const {return new TaSystem(*this);}
+    virtual void show(bool showvertices);
     us getNSegs() const {return segs.size();}
     void connectSegs(us seg1,us seg2,SegCoupling);
     // System with a
     // vector of segments
     // ############################## ACCESS METHODS
-    evd error();			// Total error vector
-    evd getRes();			// Extract result vector
-    void setRes(vd resvec);	// Set result vector
+    virtual evd error();			// Total error vector
+    virtual evd getRes();			// Extract result vector
+    virtual void setRes(vd resvec);	// Set result vector
+    virtual esdmat jac();		// Return Jacobian matrix    
+
+    
     void addSeg(const SegBase& s);	// Add a segment to the
 					// system. It creates a copy
 					// and ads it to segs by emplace_back.
@@ -65,17 +68,22 @@ namespace tasystem{
 
     // void delseg(us n); // Not yet implementen. Delete a segment from the system (we have to determine how elaborated the API has to be.)
     void setGc(const Globalconf& gc); // Reset globalconf configuration
-    edmat jac();		// Return Jacobian matrix    
+
     SegBase* operator[](us i) const;    
     SegBase* getSeg(us i) const; // Easier for cython wrapping
-    void init();
+    virtual void init();
+
+    
+    d getCurrentMass() const;	// Return current mass in system [kg]
+    
   private:
     // A vector of boundary conditions is required
-    void copytaSystem(const taSystem& other);
-    void checkInit();
+    void copyTaSystem(const TaSystem& other);
     void cleanup();
+  protected:
+    void checkInit();
     // void setnodes(us segnr,us nL,us nR);
-    // friend void copysegs(taSystem& to,const taSystem& from);
+    // friend void copysegs(TaSystem& to,const TaSystem& from);
   };				// class System
   
 } // namespace tasystem

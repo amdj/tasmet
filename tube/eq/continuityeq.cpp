@@ -48,7 +48,6 @@ namespace tube{
     #endif
     // (Boundary) source term
     error+=v.csource();
-    TRACE(10,"SFSG");    
     return error;
   }
   dmat Continuity::drhoi(const TubeVertex& v) const {

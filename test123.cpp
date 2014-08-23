@@ -9,7 +9,7 @@
 #include "tubevertex.h"
 #include "impedancebc.h"
 #include "isotwall.h"
-#include "tasystem.h"
+#include "enginesystem.h"
 #include "solver.h"
 using namespace std;
 using namespace segment; 
@@ -21,7 +21,7 @@ int main(int argc,char* argv[]) {
   cout <<  "Running test..." << endl;
   int loglevel=25;
   us gp=4;
-  us Nf=0;
+  us Nf=1;
   us Ns=2*Nf+1;
   double f=100;
   double omg=2*number_pi*f;
@@ -48,7 +48,7 @@ int main(int argc,char* argv[]) {
 
   d Mach=0.1;
   d kappa=0.1;
-  Globalconf gc(Nf,f,"air",T0,p0,0,kappa);
+  Globalconf gc(Nf,f,"air",T0,p0,kappa);
   Globalconf air=Globalconf::airSTP(Nf,f);
   air=gc;
   Geom geom1=Geom::Cylinder(gp,L,rtube);
@@ -68,37 +68,44 @@ int main(int argc,char* argv[]) {
   t1.addBc(bcleft);
   // t1.addBc(bcright);
 
-  // TRACE(100,"Creating empty taSystem...");
-  taSystem sys(air);
-  // TRACE(100,"Filling taSystem with a segment...");
+  // TRACE(100,"Creating empty TaSystem...");
+  TimingConstraint tc(0,0,3,2);
+  EngineSystem sys(air,tc);
+  // TRACE(100,"Filling TaSystem with a segment...");
   // auto t2(t1);
   sys.addSeg(t1); 
   // TRACE(100,"Filling segment done...");      
-  // // sys.connectSegs(0,1,SegCoupling::tailhead);
+  // // sys.connectSegs(02,1,SegCoupling::tailhead);
   sys.init();
+  
+  TubeVertex& v=static_cast<TubeVertex&>(*(static_cast<Seg*>(sys.getSeg(0))->vvertex.at(0)));
+  v.p.set(2,10);
   sys.show(false);
+
+
+  cout << "error:\n"<<sys.error()<<"\n";
   // // sys.addBc(bcright);
-  // TRACE(100,"Copy taSystem...");    
-  // // taSystem sys2(gc);
+  // TRACE(100,"Copy TaSystem...");    
+  // // TaSystem sys2(gc);
   // // sys2.addSeg(t2);
-  // TRACE(100,"Copy taSystem done...");      
+  // TRACE(100,"Copy TaSystem done...");      
   // TRACE(100,"Running init on first sys:=================================");
   // TRACE(100,"---------------------------------------------------sys init done. now starting sys2 init9");
 
-  Solver sol(sys);
+  // Solver sol(sys);
   // cout << "Result:\n" << sys.getRes();  
   // cout << "Error:\n" << sys.error();
   // sol.doIter();
-  sol.solve();
+  // sol.solve();
     // // // vd x=t1.GetRmomes();
   // // vd err=sol.sys->Error();
   // // cout << "error:\n"<<err;
 
   // cout << "err:\n"<<er;
-  edmat Jac=sol.sys().jac();
+  // edmat Jac=sol.sys().jac();
   // sol1.sys->show();
-  cout << "Jac:\n"<< Jac;
-  sol.solve();
+  // cout << "Jac:\n"<< Jac;
+  // sol.solve();
   // cout << "\nDeterminant Jac:" << arma::det(Jac) << "\n";
   // sol.sys.show(true);
   return 0;

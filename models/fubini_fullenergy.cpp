@@ -25,7 +25,7 @@ Solver* Fubini_fullenergy(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
   d Mass=0;
   us Ns=2*Nf+1;
   cout << "Kappa: " << kappa << "\n";
-  Globalconf gc(Nf,freq,"air",T0,p0,Mass,kappa);
+  Globalconf gc=Globalconf::airSTP(Nf,freq);
   gc.show();
   Geom geom1=Geom::CylinderBlApprox(gp,L,R);
   HopkinsLaminarDuct t1(geom1,gc.T0);
@@ -41,7 +41,7 @@ Solver* Fubini_fullenergy(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
   t1.addBc(bright);
 
   // RightImpedance bright(0,Zv);
-  taSystem sys(gc);
+  TaSystem sys(gc);
 
   sys.addSeg(t1);
   Solver* Sol=new Solver(sys);

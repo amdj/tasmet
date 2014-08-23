@@ -10,8 +10,9 @@ cdef extern from "models.h" namespace "":
     Solver* ConeTube(us gp,us Nf,d freq,d L,d r1,d r2,vd p1,int loglevel,d kappa)
     Solver* ThreeTubesConduction(us gp,us Nf,d freq,d L,d S1,d S2,vd p1,int loglevel,d kappa,d Tr)
 
-    Solver* ThreeTubesEngine(us gp,us Nf,d freq,d Tr,vd p1,int loglevel,d kappa)    
-#Pytube compatible with paper_1 Fubini code
+    Solver* ThreeTubesEngine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa)    
+    Solver* ThreeTubesEngineDriven(us gp,us Nf,d freq,d Tr,vd p1,int loglevel,d kappa)    
+	#Pytube compatible with paper_1 Fubini code
     
 cdef class pytube:
     cdef Solver* sol
@@ -53,10 +54,18 @@ cdef class pytube:
             self.tube[1]=<Tube*> self.sol[0].sys().getSeg(1)
             self.tube[2]=<Tube*> self.sol[0].sys().getSeg(2)
             self.ntubes=3
+        elif case == 'threetubesenginedriven':
+            assert(S2>0)
+            print('Case threetubesenginedriven')            
+            self.sol=ThreeTubesEngineDriven(gp,Nf,freq,Tr,dndtovec(p1),loglevel,kappa)
+            self.tube[0]=<Tube*> self.sol[0].sys().getSeg(0)
+            self.tube[1]=<Tube*> self.sol[0].sys().getSeg(1)
+            self.tube[2]=<Tube*> self.sol[0].sys().getSeg(2)
+            self.ntubes=3
         elif case == 'threetubesengine':
             assert(S2>0)
             print('Case threetubesengine')            
-            self.sol=ThreeTubesEngine(gp,Nf,freq,Tr,dndtovec(p1),loglevel,kappa)
+            self.sol=ThreeTubesEngine(gp,Nf,freq,Tr,loglevel,kappa)
             self.tube[0]=<Tube*> self.sol[0].sys().getSeg(0)
             self.tube[1]=<Tube*> self.sol[0].sys().getSeg(1)
             self.tube[2]=<Tube*> self.sol[0].sys().getSeg(2)

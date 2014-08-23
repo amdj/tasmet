@@ -2,10 +2,10 @@
 
 LOGTHIS
 namespace tasystem{
-  Globalconf Globalconf::airSTP(us Nf,d freq,d Mass,d kappa){
-    return Globalconf(Nf,freq,"air",293.15,101325,Mass,kappa);
+  Globalconf Globalconf::airSTP(us Nf,d freq,d kappa){
+    return Globalconf(Nf,freq,"air",293.15,101325,kappa);
   }
-  Globalconf::Globalconf(us Nf,d freq,string gas,d T0,d p0,d Mass,d kappa):
+  Globalconf::Globalconf(us Nf,d freq,string gas,d T0,d p0,d kappa):
     gas(gas)
   {
     // Sanity checks
@@ -16,20 +16,16 @@ namespace tasystem{
     assert(Mass>=0);
     assert(kappa>0);
     // End sanity checks
+
     this->Gastype=gas;
     this->p0=p0;
     this->T0=T0;
     this->rho0=this->gas.rho(T0,p0);
-    // this->S0=S0;
-    // this->dx=dx;
-    // this->V0=S0*dx;
-    this->Mass=Mass;
+
     this->c0=this->gas.cm(T0);
     this->kappa=kappa;
-    // if(Nf==0 || Mach<1e-10)
-      // M=1.0;
-    // else
-      // this->M=Mach;
+
+    // Initialize FFT matri
     set(Nf,freq);
     TRACE(10,"Globalconf constructor done");
     
@@ -47,7 +43,7 @@ namespace tasystem{
     
 
   }
-    void Globalconf::set(us Nf,d freq){
+  void Globalconf::set(us Nf,d freq){
     TRACE(0,"Globalconf::set(Nf,freq)");
     //ctor
     this->Nf=Nf;

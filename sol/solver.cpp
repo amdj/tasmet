@@ -23,7 +23,6 @@ namespace tasystem{
     // cout << "Matrix k:"<< K << "\n";
     // Eigen::FullPivLU<edmat> dec(K);
     TRACE(19,"Solving linear system...");    
-
     // evd x=dec.solve(f);
 
     Eigen::SparseLU<esdmat> solver(K);
@@ -40,15 +39,14 @@ namespace tasystem{
 
       
     }
-
     evd x=solver.solve(f);
     TRACE(19,"Solving linear system done.");    
     return x;    
   }
   
   // A solver always contains a valid system.
-  Solver::Solver(const taSystem& sys):tasystem(sys.copy()) {
-    TRACE(15,"Solver(taSystem&)");
+  Solver::Solver(const TaSystem& sys):tasystem(sys.copy()) {
+    TRACE(15,"Solver(TaSystem&)");
   }
   Solver::Solver(const Solver& o): Solver(o.sys()){}
   Solver& Solver::operator=(const Solver& other){
@@ -97,11 +95,7 @@ namespace tasystem{
     d funer=error.norm();
     us Ndofs=error.size();
     TRACE(15,"Computing Jacobian...");
-    edmat jac1=sys().jac();
-    esdmat jac=jac1.sparseView();
-    // esdmat jac=jac3;
-
-
+    esdmat jac=sys().jac();
     // jac.makeCompressed();
 
     assert(jac.cols()==error.size());

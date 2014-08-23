@@ -41,7 +41,7 @@ namespace tube {
   }
   void Tube::show(bool showvertices) const {
     TRACE(18,"Tube::show()");
-    cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++";
+    cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
     if(bcLeft){
       cout << "Left side contains internal boundary condition of type " << bcLeft->getType() << ".\n";
     }
@@ -126,17 +126,22 @@ namespace tube {
 	if(i<nVertex-1) cvertex->setRight(*vvertex[i+1].get());
 	if(i>0) cvertex->setLeft(*vvertex[i-1].get());
 	cvertex->initTubeVertex(i,*this);
-      }	// for
-    }	// if
+      }	
+    }	
     else{
       TRACE(13,"Tube already initialized!");
     }
   } // Tube::init(gc)
-  
-    
+  d Tube::getCurrentMass() const{
+    TRACE(8,"Tube::getCurrentMass()");
+    assert(vvertex.size()>0);
+    vd rho0=getResAt(0,0);
+    return arma::dot(rho0,geom.vVf);
+  }
 
   
   vd Tube::getResAt(us varnr,us freqnr) const{
+    TRACE(8,"Tube::getResAt("<<varnr<<","<<freqnr<<")");
     const us& nCells=geom.nCells;
     vd res(nCells);
     assert(varnr<Neq);

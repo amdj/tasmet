@@ -1,21 +1,22 @@
 #include "tasystem.h"
 #include "arma_eigen.h"
 
+
 namespace tasystem{
   using segment::SegBase;
   using math_common::armaView;
   inline us max(us s,us t){  return s? s>=t : t;}
 
-  taSystem::taSystem(const Globalconf& gc):gc(gc){
-    TRACE(14,"taSystem::taSystem(gc)");
+  TaSystem::TaSystem(const Globalconf& gc):gc(gc){
+    TRACE(14,"TaSystem::TaSystem(gc)");
   }
-  taSystem::taSystem(const taSystem& o)
+  TaSystem::TaSystem(const TaSystem& o)
   {
-    TRACE(14,"taSystem::taSystem(taSystem&)");
-    copytaSystem(o);
+    TRACE(14,"TaSystem::TaSystem(TaSystem&)");
+    copyTaSystem(o);
   }
-  void taSystem::copytaSystem(const taSystem& o){
-    TRACE(14,"taSystem::copytaSystem()");
+  void TaSystem::copyTaSystem(const TaSystem& o){
+    TRACE(14,"TaSystem::copyTaSystem()");
     gc=Globalconf(o.gc);
     assert(getNSegs()==0);
     for(us i=0;i<o.getNSegs();i++)
@@ -29,28 +30,28 @@ namespace tasystem{
     hasInit=false;
 
   }
-  taSystem& taSystem::operator=(const taSystem& other){
-    TRACE(14,"taSystem::operator=()");
+  TaSystem& TaSystem::operator=(const TaSystem& other){
+    TRACE(14,"TaSystem::operator=()");
     cleanup();
-    copytaSystem(other);
+    copyTaSystem(other);
     return *this;
   }
-  void taSystem::cleanup(){
+  void TaSystem::cleanup(){
     segs.clear();
     segConnections.clear();
     segfirstdof.zeros();
     segndofs.zeros();
     hasInit=false;
   }
-  void taSystem::addSeg(const SegBase& seg){
-    TRACE(14,"taSystem::addseg()");
+  void TaSystem::addSeg(const SegBase& seg){
+    TRACE(14,"TaSystem::addseg()");
     hasInit=false;
     segs.emplace_back(seg.copy());
     segs[getNSegs()-1]->setNumber(getNSegs()-1);
   }
-  SegBase* taSystem::getSeg(us i) const { return (*this)[i];}
+  SegBase* TaSystem::getSeg(us i) const { return (*this)[i];}
   
-  SegBase* taSystem::operator[](us i) const {
+  SegBase* TaSystem::operator[](us i) const {
     us nSegs=getNSegs();
     if(i<nSegs)
       return segs[i].get();
@@ -58,8 +59,8 @@ namespace tasystem{
       return NULL;
   }
 
-  void taSystem::init(){
-    TRACE(14,"taSystem::init()");
+  void TaSystem::init(){
+    TRACE(14,"TaSystem::init()");
     us Nsegs=getNSegs();
     us Ndofs=0;
 
@@ -90,25 +91,25 @@ namespace tasystem{
     	WARN("Way too many DOFS required: Ndofs=" <<Ndofs << ". Exiting...\n");
     	exit(1);
       }
+    // Last, but not leas: initialize a pointer to this tasystem in
+    // globalconf
+    gc.setSys(this);
+    
     hasInit=true;
   }
   
-  taSystem::~taSystem() {
-    TRACE(-5,"~taSystem()");
-    cleanup();
-  }
 
   
-  us taSystem::getNDofs()
+  us TaSystem::getNDofs()
   {
-    TRACE(14,"taSystem::getNDofs()");
+    TRACE(14,"TaSystem::getNDofs()");
     us Ndofs=0;
     for(us i=0;i<getNSegs();i++)
       Ndofs+=segs.at(i)->getNDofs();
     return Ndofs;
   }
-  void taSystem::connectSegs(us seg1,us seg2,SegCoupling sc){
-    TRACE(14,"taSystem::ConnectSegs()");
+  void TaSystem::connectSegs(us seg1,us seg2,SegCoupling sc){
+    TRACE(14,"TaSystem::ConnectSegs()");
     // Basic check if nothing is wrong
     if(max(seg1,seg2)>=getNSegs())
       {
@@ -119,32 +120,33 @@ namespace tasystem{
     hasInit=false;
   }
 
-  void taSystem::show(bool showvertices){
-    cout << "########################## Showing taSystem...\n"		\
-      ;
+  void TaSystem::show(bool showvertices){
     checkInit();
     TRACE(14,"checkInit() done");
+    cout << "########################## Showing TaSystem...\n";
+    cout << "Showing Global configuration...\n";
     gc.show();
+    cout << "Now showing segments int TaSystem...\n";
     for(us i=0;i<getNSegs();i++){
       TRACE(13,"Showing segment "<<i <<"..");
       segs[i]->show(showvertices);
     }
   }
-  void taSystem::checkInit(){
-    TRACE(14,"taSystem::CheckInit()");
+  void TaSystem::checkInit(){
+    TRACE(14,"TaSystem::CheckInit()");
     if(!hasInit){
       init();
       hasInit=true;
     }
   }
-  void taSystem::setGc(const Globalconf& gc){
-    TRACE(14,"taSystem::setGc()");
+  void TaSystem::setGc(const Globalconf& gc){
+    TRACE(14,"TaSystem::setGc()");
     this->gc=gc;
     hasInit=false;
   }
 
-  edmat taSystem::jac(){
-    TRACE(14,"taSystem::Jac()");
+  esdmat TaSystem::jac(){
+    TRACE(14,"TaSystem::Jac()");
     checkInit();
     // Something interesting has to be done here later on to connect
     // the different segments in the sense that blocks of Jacobian
@@ -153,10 +155,10 @@ namespace tasystem{
     const us& Ns=gc.Ns;
     us Ndofs=getNDofs();
     us Nsegs=getNSegs();
-    Eigen::MatrixXd jac1(Ndofs,Ndofs);
+    Eigen::MatrixXd eigjac(Ndofs,Ndofs);
     
     TRACE(-1,"Ndofs:"<<Ndofs);
-    dmat jac(jac1.data(),Ndofs,Ndofs,false);
+    dmat jac(eigjac.data(),Ndofs,Ndofs,false);
     us cellblock=Neq*Ns;
     for(us j=0;j<getNSegs();j++){
       TRACE(14,"System loop, segment " << j);
@@ -218,10 +220,12 @@ namespace tasystem{
       TRACE(-1,"Creation of Jacobian for segment "<< j << "done."<<endl);
     } // end for loop
     // TRACE(25,"Jac\n"<<jac);
-    return jac1;//.sparseView(1e-40,1);
+    esdmat eigsjac=eigjac.sparseView();
+    eigsjac.makeCompressed();
+    return eigsjac;
   }
-  evd taSystem::error(){
-    TRACE(14,"taSystem::Error()");
+  evd TaSystem::error(){
+    TRACE(14,"TaSystem::Error()");
     checkInit();
     us Ndofs=getNDofs();
     evd error(getNDofs());
@@ -238,11 +242,11 @@ namespace tasystem{
     }
     return error;
   }
-  evd taSystem::getRes(){
-    TRACE(14,"taSystem::getRes()");
+  evd TaSystem::getRes(){
+    TRACE(14,"TaSystem::getRes()");
     checkInit();
     us Ndofs=getNDofs();
-    TRACE(14,"taSystem::GetRes(), Ndofs:"<< Ndofs);
+    TRACE(14,"TaSystem::GetRes(), Ndofs:"<< Ndofs);
     const us& Ns=gc.Ns;
     evd res(Ndofs);
     
@@ -261,9 +265,9 @@ namespace tasystem{
     }
     return res;
   }
-  void taSystem::setRes(vd Res){
+  void TaSystem::setRes(vd Res){
     checkInit();
-    TRACE(14,"taSystem::SetRes(vd res)");
+    TRACE(14,"TaSystem::SetRes(vd res)");
     us Ndofs=getNDofs();
 
     if(Res.size()==Ndofs){
@@ -280,7 +284,21 @@ namespace tasystem{
       {
 	WARN("Amount of DOFS in result vector does not match system size!");
       }
-  } // taSystem::SetRes()
+  } // TaSystem::SetRes()
+  d TaSystem::getCurrentMass() const{
+    TRACE(10,"TaSystem::getCurrentMass()");
+    d mass=0;
+    us nsegs=segs.size();
+    for(us i=0;i<nsegs;i++){
+      mass+=segs[i]->getCurrentMass();
+    } // for loop
+    return mass;
+  }
+  
+  TaSystem::~TaSystem() {
+    TRACE(-5,"~TaSystem()");
+    cleanup();
+  }
 
 } // namespace tasystem
 

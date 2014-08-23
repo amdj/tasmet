@@ -17,7 +17,6 @@
 
 namespace tube{
   SPOILNAMESPACE
-
   using namespace segment;
   typedef vector<const TubeEquation*> EqVec;  
 
@@ -38,8 +37,9 @@ namespace tube{
     virtual EqVec getEq() const=0;    	// Some derived class needs to define the equation array
     virtual const DragResistance& getDragResistance() const=0;
     virtual const HeatSource& getHeatSource() const=0;
-    virtual string getType() const {return string("Tube");}
+    virtual string getType() const final {return string("Tube");}
     virtual void init(const Globalconf& gc);
+    virtual d getCurrentMass() const;	// Obtain current mass in system
     vd getResAt(us varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
     vd getErrorAt(us varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
     friend class TubeVertex;    

@@ -3,7 +3,7 @@
 
 namespace tasystem{
 
-  void coupleSegs(const SegConnection& sc,taSystem& sys){
+  void coupleSegs(const SegConnection& sc,TaSystem& sys){
     TRACE(14,"coupleSegs()");
     SegBase& seg1=*sys.getSeg(sc.firstseg);
     SegBase& seg2=*sys.getSeg(sc.secondseg);

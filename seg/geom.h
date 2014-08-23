@@ -21,7 +21,7 @@ namespace segment {
     static Geom PrisVertStack(us gp,d L,d S,d phi,d rh); // Prismatic vertical plates stack
 
     LocalGeom localGeom(us i) const;	// Get a local geometry for a certain vertex
-    
+    d getFluidVolume() const;
     bool prismatic=false;
     us gp;         // Number of cell walls
     us nCells;	 // Number of cells is gp-1

@@ -14,7 +14,7 @@ namespace segment{
 
   class SegBase{
   private:
-    us number=0;		// Required for taSystem. Not used in
+    us number=0;		// Required for TaSystem. Not used in
 				// any segment code
   public:
     Geom geom;			// The geometry    
@@ -28,6 +28,7 @@ namespace segment{
     virtual us getNDofs() const=0;
     virtual ~SegBase(){}
 
+
     const SegBaseVec& getRight() const {return right;}
     const SegBaseVec& getLeft() const {return left;}
     void setRight(const SegBase&);	   // Couple segment to some segment on left side
@@ -35,6 +36,7 @@ namespace segment{
 						   // to some segment
 						   // on right side
     virtual string getType() const=0;		   // This param is
+    virtual d getCurrentMass() const=0;    
     // important for connecting the segments
     
     virtual string getName() const=0; // This one is jus the name

@@ -29,7 +29,7 @@ Solver* ThreeTubesConduction(us gp,us Nf,d freq,d L,d S1,d S2,vd p1,int loglevel
   cout << "kappa given:" << kappa << "\n"; 
   cout << "p1 given:" << p1 << "\n"; 
   cout << "gp given:" << gp << "\n"; 
-  Globalconf gc=Globalconf::airSTP(Nf,freq,0,kappa);
+  Globalconf gc=Globalconf::airSTP(Nf,freq,kappa);
   gc.show();
   // Geom geom1=Geom::Cylinder(gp,L,R1);
   // Geom geom2=Geom::Cylinder(gp,L,R2);
@@ -47,7 +47,7 @@ Solver* ThreeTubesConduction(us gp,us Nf,d freq,d L,d S1,d S2,vd p1,int loglevel
 
   LeftPressure pleft(pL);
 
-  taSystem sys(gc);
+  TaSystem sys(gc);
   t1.addBc(pleft);
 
   sys.addSeg(t1);

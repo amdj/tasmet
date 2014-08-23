@@ -18,7 +18,7 @@ Solver* ThreeTubes(us gp,us Nf,d freq,d L,d S1,d S2,vd p1,int loglevel,d kappa)
   TRACE(100,"L:"<<L);
   d R1=sqrt(S1/number_pi);
   d R2=sqrt(S2/number_pi);
-  Globalconf gc=Globalconf::airSTP(Nf,freq,0,kappa);
+  Globalconf gc=Globalconf::airSTP(Nf,freq,kappa);
   gc.show();
   // Geom geom1=Geom::Cylinder(gp,L,R1);
   // Geom geom2=Geom::Cylinder(gp,L,R2);
@@ -37,7 +37,7 @@ Solver* ThreeTubes(us gp,us Nf,d freq,d L,d S1,d S2,vd p1,int loglevel,d kappa)
     pL.set(i,p1(i));
 
   LeftPressure pleft(pL);
-  taSystem sys(gc);
+  TaSystem sys(gc);
   t1.addBc(pleft);
   sys.addSeg(t1);
   sys.addSeg(t2);

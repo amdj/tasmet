@@ -2,10 +2,11 @@
 
 #include "solver.h"
 #include "gas.h"
-#include "bc.h"
 #include "isentropictube.h"
 #include "hopkinslaminarduct.h"
-#include "enginesystem.h"
+#include "pressurebc.h"
+#include "isotwall.h"
+
 using namespace segment;
 using namespace tasystem;
 using namespace tube;
@@ -14,7 +15,7 @@ using namespace gases;
 
 inline us max(us x,us y){ return x>y?x:y;}
 
-Solver* ThreeTubesEngine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa)
+Solver* ThreeTubesEngineDriven(us gp,us Nf,d freq,d Tr,vd p1,int loglevel,d kappa)
 {
   TRACE(30,"Entering ThreeTubesEngine");
   initlog(loglevel);
@@ -41,6 +42,7 @@ Solver* ThreeTubesEngine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa)
   d S=number_pi*pow(Rtube,2);
   
   Globalconf gc(Nf,freq,"helium",T0,p0,kappa);
+  gc.show();
 
   d phi_s=0.73;
   d y0=0.77e-3/2;
@@ -49,17 +51,18 @@ Solver* ThreeTubesEngine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa)
   Geom geom2=Geom::VertPlates(gp2,L2,S,phi_s,y0);
   Geom geom3=Geom::CylinderBlApprox(gp3,L3,Rtube);
 
-  LeftIsoTWall l1(gc.T0);
   HopkinsLaminarDuct t1(geom1,gc.T0);
-  t1.addBc(l1);
   HopkinsLaminarDuct t2(geom2,gc.T0,Tr);  
   HopkinsLaminarDuct t3(geom3,Tr);
-  RightIsoTWall r1(Tr);
-  t3.addBc(r1);
-  TimingConstraint tc(0,0,3,2);
-  // EngineSystem sys(gc,tc);
-  TRACE(100,"Creating ordinary TaSystem");
+
+  var pL(gc);
+  for(us i=0;i<gc.Ns;i++)
+    pL.set(i,p1(i));
+
+  LeftPressure pleft(pL);
+
   TaSystem sys(gc);
+  t1.addBc(pleft);
 
   sys.addSeg(t1);
   sys.addSeg(t2);
@@ -68,6 +71,7 @@ Solver* ThreeTubesEngine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa)
   sys.connectSegs(0,1,tasystem::SegCoupling::tailhead);
   sys.connectSegs(1,2,tasystem::SegCoupling::tailhead);  
   Solver* Sol=new Solver(sys);
+  Sol->sys().show(false);
   return Sol;  
 }
 

@@ -8,22 +8,11 @@
 
 
 namespace tube{
-  RightIsoTWall::RightIsoTWall(d Tbc):TubeBcVertex(),Tbc(Tbc){
-    TRACE(8,"RightIsoTWall constructor");
-    cout << "RightIsoTWall created with wall temperature " << Tbc << ".\n";
-    // Change continuity equation for open boundary
+  void IsoTWall::show() const {
+    cout << getType() << " boundary condition. Time-averaged part of prescribed temperature: " << Tbc << "\n";
+    TubeVertex::show();
   }
-  RightIsoTWall::RightIsoTWall(const RightIsoTWall& other):RightIsoTWall(other.Tbc)
-  {
-    TRACE(8,"RightIsoTWall copy cc.");
-  }
-  RightIsoTWall& RightIsoTWall::operator=(const RightIsoTWall& o){
-    TRACE(8,"RightIsoTWall copy assignment operator");
-    Tbc=o.Tbc;
-    return *this;
-  }
-
-  void RightIsoTWall::initTubeVertex(us i,const Tube& thisseg)
+  void IsoTWall::initTubeVertex(us i,const Tube& thisseg)
   {
     TRACE(8,"RightIsoTWall::Init(), vertex "<< i <<".");
     TubeVertex::initTubeVertex(i,thisseg);
@@ -32,13 +21,6 @@ namespace tube{
   
   void RightIsoTWall::updateW(const SegBase& thisseg){
     TRACE(8,"RightIsoTWall::updateW()");
-
-    // xhalf=lg.xR-lg.xvi;
-    // TRACE(30,"xhalf:"<<xhalf);
-
-    // eWjim1=0;
-    // eWji=0;th
-    // eWjip1=0;
     
     eWc1=-w.vSfL/w.dxm;
     eWc2= w.vSf/w.dxm;
@@ -46,15 +28,11 @@ namespace tube{
     eWc4=0;
     
   }
-  void RightIsoTWall::show() const {
-    cout << "RightIsoTWall boundary condition. Time-averaged part of prescribed temperature: " << Tbc << "\n";
-    TubeVertex::show();
-  }
   vd RightIsoTWall::esource() const {
-    // Source term related to temperature boundary condition
     TRACE(6,"RightIsoTWall::esource()");
     const dmat& fDFT=gc->fDFT;
     const dmat& iDFT=gc->iDFT;
+    // Source term related to temperature boundary condition
     vd esource(gc->Ns,fillwith::zeros);
     TRACE(0,"Tbc:"<<Tbc);
     vd TRt=Tbc*vd(gc->Ns,fillwith::ones);
@@ -66,7 +44,30 @@ namespace tube{
     TRACE(3,"esource:"<<esource);
     return esource;  
   }
-
+  void LeftIsoTWall::updateW(const SegBase& thisseg){
+    TRACE(8,"LeftIsoTWall::updateW()");
+    
+    eWc1=0;
+    eWc2= w.vSfL/w.dxp;
+    eWc3= w.vSf/w.dxp;
+    eWc4=-w.vSfR/w.dxp;
+    
+  }
+  vd LeftIsoTWall::esource() const {
+    TRACE(6,"LeftIsoTWall::esource()");
+    const dmat& fDFT=gc->fDFT;
+    const dmat& iDFT=gc->iDFT;
+    // Source term related to temperature boundary condition
+    vd esource(gc->Ns,fillwith::zeros);
+    TRACE(0,"Tbc:"<<Tbc);
+    vd TLt=Tbc*vd(gc->Ns,fillwith::ones);
+    vd T0=gc->T0*vd(gc->Ns,fillwith::ones);
+    vd kappaL=static_cast<const Energy*>(eq[2])->kappaL(*this);    
+    // vd kappaR=gc->gas.kappa(T0);
+    esource+=-1.0*w.vSfL*fDFT*(kappaL%TLt)/lg.xl;
+    TRACE(3,"esource:"<<esource);
+    return esource;  
+  }
 } // namespace tube
 
 

@@ -44,7 +44,7 @@ Solver* Fubini(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
   TwImpedance bright;
   // RightImpedance bright(0,Zv);
   // RightIsoTWall bright(0,T0);
-  taSystem sys(gc);
+  TaSystem sys(gc);
   t1.addBc(bleft);
   t1.addBc(bright);
 

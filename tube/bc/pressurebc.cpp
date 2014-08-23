@@ -6,43 +6,6 @@
 #include "energyeq.h"
 namespace tube{
   
-  // dmat PressureBcEnergyEq::dUi(const TubeVertex& v) const {
-  //   TRACE(40,"PressureBcEnergyEq::dUi()");
-  //   dmat dUi=Energy::dUi(v);
-  //   const Energy& e=static_cast<const Energy&>(*v.eq[2]);
-  //   const dmat& DDTfd=v.gc->DDTfd;
-  //   const dmat& fDFT=v.gc->fDFT;
-  //   const dmat& iDFT=v.gc->iDFT;
-
-  //   d gamma=e.gamma(v);
-  //   d gamfac=gamma/(gamma-1.0);
-
-  //   const variable::var& pL=static_cast<const LeftPressure&>(v).pL;
-  //   // dUi+=fDFT*pL.diagt()*iDFT;
-
-  //   // dUi+=-v.wL0*gamfac*fDFT*pL.diagt()*iDFT;
-    
-  //   return dUi;
-  // }
-  // dmat PressureBcEnergyEq::dUip1(const TubeVertex& v) const {
-  //   TRACE(40,"PressureBcEnergyEq::dUip1()");
-  //   dmat dUip1=Energy::dUip1(v);
-  //   const Energy& e=static_cast<const Energy&>(*v.eq[2]);
-  //   const dmat& DDTfd=v.gc->DDTfd;
-  //   const dmat& fDFT=v.gc->fDFT;
-  //   const dmat& iDFT=v.gc->iDFT;
-
-  //   d gamma=e.gamma(v);
-  //   d gamfac=gamma/(gamma-1.0);
-
-  //   const variable::var& pL=static_cast<const LeftPressure&>(v).pL;
-  //   // dUip1+=-fDFT*pL.diagt()*iDFT;
-
-  //   // dUip1+=-v.wL1*gamfac*fDFT*pL.diagt()*iDFT;
-    
-  //   return dUip1;
-  // }  
-
   LeftPressure::LeftPressure(const var& pres,const var& temp):TubeBcVertex(),pL(pres),TL(temp) {
     TRACE(8,"LeftPressure full constructor");
   }

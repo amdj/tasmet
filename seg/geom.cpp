@@ -66,6 +66,9 @@ namespace segment{
     g1.setPrismatic(true);
     return g1;
   }
+  d Geom::getFluidVolume() const {
+    return arma::sum(vVf);
+  }
   Geom::Geom(vd& x,vd& S,vd& phi,vd& rh,string cshape){
     TRACE(10,"Geom constructor");
     // Sanity checks

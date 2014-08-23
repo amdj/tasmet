@@ -52,6 +52,7 @@ namespace tube{
     vector<const TubeEquation*> eq; // Vector of pointers to the
 				    // equations to solve for.
 
+    virtual ~TubeVertex(){}
     virtual void setLeft(const Vertex&);
     virtual void setRight(const Vertex&);
     virtual void show() const;

@@ -10,5 +10,8 @@ Solver* Fubini(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa);
 Solver* Fubini_fullenergy(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa);
 Solver* ThreeTubesConduction(us gp,us Nf,d freq,d L,d S1,d S2,vd p1,int loglevel,d kappa,d Tr);
 
-Solver* ThreeTubesEngine(us gp,us Nf,d freq,d Tr,vd p1,int loglevel,d kappa);
+Solver* ThreeTubesEngineDriven(us gp,us Nf,d freq,d Tr,vd p1,int loglevel,d kappa);
+Solver* ThreeTubesEngine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa);
+
 #endif /* _MODELS_H_ */
+

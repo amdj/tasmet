@@ -32,7 +32,7 @@ Solver* ConeTube(us gp,us Nf,d freq,d L,d r1,d r2,vd p1,int loglevel,d kappa)
   // TwImpedance rightbc;
   t1.addBc(pleft);
 
-  taSystem sys(gc);
+  TaSystem sys(gc);
   sys.addSeg(t1);
 
 

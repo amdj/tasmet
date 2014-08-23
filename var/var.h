@@ -37,8 +37,7 @@ namespace variable {
     // var operator()(const var&); //Copy constructor
     // Get methods
 
-    const d& operator()(us i) const;				   // Extract amplitude data result at specific frequency
-    d& operator()(us i);				   // Extract amplitude data result at specific frequency    
+    d operator()(us i) const;				   // Extract amplitude data result at specific frequency    
 
     const vd& operator()() const { return amplitudedata;} //Extract result
 						   //vector

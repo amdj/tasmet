@@ -6,7 +6,7 @@ int main(int argc,char* argv[]) {
   cout <<  "Running test..." << endl;
   int loglevel=20;
   us Nf=0;
-  us gp=4;
+  us gp=500;
   d freq=500;
   
   if(argc>1)
@@ -16,12 +16,7 @@ int main(int argc,char* argv[]) {
   if(argc>3)
     gp=atoi(argv[3]);
   cout << "gp:"<< gp<<"\n";
-  // us gp=40;
-  // us Nf=1;
-  // us Ns=2*Nf+1;
-  // double f=100;
-  // double omg=2*number_pi*f;
-  // double T=1/f;
+
   d T0=293.15;
   cout<< "Loglevel:"<<loglevel<<"\n";
   initlog(loglevel);
@@ -33,17 +28,16 @@ int main(int argc,char* argv[]) {
   d S2=S1;
   d kappa=1;
   d L=0.1;
-  Solver* sol=ThreeTubesEngine(gp,Nf,freq,T0+10,p1,loglevel,kappa);
-
-  // sol->sys().show(true);
-  // sol->doIter();
+  // Solver* sol=ThreeTubesEngineDriven(gp,Nf,freq,T0+100,p1,loglevel,kappa);
+  Solver* sol=ThreeTubesEngine(gp,Nf,freq,T0+10,loglevel,kappa);
+  sol->sys().show(false);
   // sol->doIter();
   // cout <<sol->sys().jac();
   sol->solve();
   // cout <<"Result:\n"<<  sol->sys.getRes();
-  cout <<"Result:\n"<< static_cast<tube::Tube*>(sol->sys().getSeg(0))->getResAt(2,0);
-  cout <<"Result:\n"<< static_cast<tube::Tube*>(sol->sys().getSeg(1))->getResAt(2,0);
-  cout <<"Result:\n"<< static_cast<tube::Tube*>(sol->sys().getSeg(2))->getResAt(2,0);
+  // cout <<"Result:\n"<< static_cast<tube::Tube*>(sol->sys().getSeg(0))->getResAt(2,0);
+  // cout <<"Result:\n"<< static_cast<tube::Tube*>(sol->sys().getSeg(1))->getResAt(2,0);
+  // cout <<"Result:\n"<< static_cast<tube::Tube*>(sol->sys().getSeg(2))->getResAt(2,0);
 
   
   

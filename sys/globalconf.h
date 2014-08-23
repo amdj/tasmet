@@ -18,16 +18,18 @@ namespace tasystem{
   SPOILNAMESPACE
   // This class can be copied safely
 
-
+  class TaSystem;
   
   class Globalconf{
+    const TaSystem* thesys=NULL;
+    d Mass=0;			/* Fluid mass in the system (should remain constant) */
   public:
     Globalconf(){}
-    Globalconf(us Nf,d freq,string Gas="air",d T0=293.15,d p0=101325.0,d Mass=0.0,d kappa=1.0);
-    static Globalconf airSTP(us Nf,d freq,d Mass=0.0,d kappa=1.0);
+    Globalconf(us Nf,d freq,string Gas="air",d T0=293.15,d p0=101325.0,d kappa=1.0);
+    static Globalconf airSTP(us Nf,d freq,d kappa=1.0);
     ~Globalconf(){TRACE(-5,"~Globalconf()");}
-    // Globalconf(const Globalconf& o): Globalconf(o.Nf,o.freq,o.Gastype,o.T0,o.p0,o.Mach,o.S0,o.dx,o.Mass,o.kappa){}
-
+    const TaSystem* getSys()const { return thesys;}
+    void setSys(TaSystem* sys) {thesys=sys;}    
     string Gastype;
     us Nf;			// Number of frequencies to solve for
     us Ns;			// Corresponding number of time samples
@@ -42,7 +44,7 @@ namespace tasystem{
 
     
     d T0,p0,rho0;			/* Reference temperature and pressure (used to initialize a lot of variables. */
-    d Mass;			/* Fluid mass in the system (should remain constant) */
+
     vd omgvec;
     gases::Gas gas;
     void set(us Nf,d freq);	// Set data for new frequency and number of samples
@@ -53,8 +55,9 @@ namespace tasystem{
     dmat ddt; //Derivative matrix only nonzero frequency components
     dmat iddt; //Inverse of derivative matrix only nonzero frequency components
     void setfreq(d freq);
-    void setMass(d mass){ Mass=mass;}
     void setp0(d p) { p0=p;}
+    void setMass(d mass){Mass=mass;}
+    d getMass() const {return Mass;}
     void setgas(gases::Gas g){ gas=g;}
     void show() const;
     //    void setgas(string g){ gas(g);}

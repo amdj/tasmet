@@ -13,8 +13,8 @@ cdef extern from "seg.h" namespace "segment":
 
         
 cdef extern from "tasystem.h" namespace "tasystem":
-    cdef cppclass taSystem:
-        taSystem(Globalconf& gc)
+    cdef cppclass TaSystem:
+        TaSystem(Globalconf& gc)
         void addSeg(Seg& seg)
         evd error()
         void show(bool)
@@ -24,9 +24,9 @@ cdef extern from "tasystem.h" namespace "tasystem":
         
 cdef extern from "solver.h" namespace "tasystem":
     cdef cppclass Solver:
-        Solver(taSystem& sys)
+        Solver(TaSystem& sys)
         void doIter(d dampfac)
-        taSystem& sys()
+        TaSystem& sys()
         void init()
         void solve(us maxiter)
         void solve()    
