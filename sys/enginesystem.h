@@ -12,7 +12,8 @@ namespace tasystem{
   
   class EngineSystem:public TaSystem{
     TimingConstraint tc;
-    d getInitialMassFromGc() const; // 
+    d getInitialMassFromGc() const; //
+
   public:    
     EngineSystem(const Globalconf& gc,TimingConstraint tc);
     EngineSystem(const EngineSystem&);
@@ -21,6 +22,7 @@ namespace tasystem{
     virtual esdmat jac();
     virtual evd getRes();
     // virtual void setRes(vd res);
+    evd domg();
     virtual evd error();
     virtual void init();
     virtual void show(bool showvertices);

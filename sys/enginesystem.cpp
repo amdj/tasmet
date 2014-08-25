@@ -1,6 +1,10 @@
 #include "enginesystem.h"
 
 namespace tasystem{
+
+
+
+  
   EngineSystem::EngineSystem(const Globalconf& gc,TimingConstraint tc):
     TaSystem(gc),
     tc(tc)
@@ -45,8 +49,10 @@ namespace tasystem{
     TRACE(15,"Enginesystem::jac()");
     us Ndofs=getNDofs()+1;
     esdmat jac=TaSystem::jac();
+    evd domg=this->domg();
     jac.resize(Ndofs,Ndofs);
-    
+    // Now, add last column of jac with dL/domg
+    cout << jac.block(0,Ndofs-1,Ndofs-2,1);
     return jac;
   }
   evd EngineSystem::error(){
@@ -73,7 +79,24 @@ namespace tasystem{
       return TaSystem::getRes();
     }
   }
-
+  evd EngineSystem::domg(){
+    TRACE(15,"EngineSystem::domg()");
+    assert(segs.size());
+    us ndofs=getNDofs();
+    evd domg(ndofs);
+    vd domga(domg.data(),ndofs,false,false);
+    domga.zeros();
+    us segdofs;
+    us startdof=0;
+    us Nsegs=getNSegs();
+    for(us i=0;i<Nsegs;i++){
+      segdofs=segs[i]->getNDofs();
+      domga.subvec(startdof,startdof+segdofs-1)=segs[i]->domg();
+      startdof=startdof+segdofs;
+    }
+    // Eigen::SparseVector()
+    return domg;
+  }
 
 } // namespace tasystem
 

@@ -84,6 +84,7 @@ int main(int argc,char* argv[]) {
 
 
   cout << "error:\n"<<sys.error()<<"\n";
+  sys.jac();
   // // sys.addBc(bcright);
   // TRACE(100,"Copy TaSystem...");    
   // // TaSystem sys2(gc);
