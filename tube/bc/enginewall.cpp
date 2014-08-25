@@ -43,7 +43,7 @@ namespace tube{
     TRACE(8,"EngineWall::Init(), vertex "<< i <<".");
     TubeVertex::initTubeVertex(i,thisseg);
     ewc.init(thisseg);
-    eq[0]=&ewc;
+    eqs[0]=&ewc;
   }
 
   void EngineWall::show() const {

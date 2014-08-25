@@ -49,11 +49,16 @@ Solver* ThreeTubesEngine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa)
   Geom geom2=Geom::VertPlates(gp2,L2,S,phi_s,y0);
   Geom geom3=Geom::CylinderBlApprox(gp3,L3,Rtube);
 
+  // LeftIsoTWallP l1(gc.T0,10000);
   LeftIsoTWall l1(gc.T0);
+  // LeftEngineWall l1;
   HopkinsLaminarDuct t1(geom1,gc.T0);
+  // IsentropicTube t1(geom1);
   t1.addBc(l1);
-  HopkinsLaminarDuct t2(geom2,gc.T0,Tr);  
+  HopkinsLaminarDuct t2(geom2,gc.T0,Tr);
+  // IsentropicTube t2(geom2);  
   HopkinsLaminarDuct t3(geom3,Tr);
+  // IsentropicTube t3(geom3);    
   RightIsoTWall r1(Tr);
   t3.addBc(r1);
   TimingConstraint tc(0,0,3,2);

@@ -30,7 +30,7 @@ namespace tube{
     pL.gc=thisseg.gc;
     TL.gc=thisseg.gc;
     // TRACE(100,"TL:"<<TL());
-    if(eq.at(2)->getType()!=EqType::Ise){
+    if(eqs.at(2)->getType()!=EqType::Ise){
       TRACE(100,"Changing energy equation...");
       // eq[2]=&peq;
     }
@@ -95,7 +95,7 @@ namespace tube{
     vd TLt=TL.tdata();
     d TL0=TL(0);
     // TRACE(100,"TL(0):"<<TL0);
-    const Energy& e=static_cast<const Energy&>(*eq[2]);
+    const Energy& e=static_cast<const Energy&>(*eqs[2]);
     d gamma=e.gamma(*this);
     d gamfac=gamma/(gamma-1.0);
     

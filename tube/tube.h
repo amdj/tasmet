@@ -34,7 +34,7 @@ namespace tube{
     void show(bool) const;
     void addBc(const TubeBcVertex& vertex);
     virtual us getNDofs() const;
-    virtual EqVec getEq() const=0;    	// Some derived class needs to define the equation array
+    virtual EqVec getEqs() const=0;    	// Some derived class needs to define the equation array
     virtual const DragResistance& getDragResistance() const=0;
     virtual const HeatSource& getHeatSource() const=0;
     virtual string getType() const final {return string("Tube");}

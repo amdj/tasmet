@@ -23,7 +23,7 @@ namespace tube{
   {
     TRACE(8,"RightImpedance::Init(), vertex "<< i <<".");
     TubeVertex::initTubeVertex(i,thisseg);
-    eq.at(1)=&mright;
+    eqs.at(1)=&mright;
     updateW(thisseg);
   }
   

@@ -49,7 +49,7 @@ namespace tube{
     // version of the heat source. This version is more applicable to
     // wide tubes for arbitrary cross-sectional geometries.
     void cleanup();
-    EqVec getEq() const;
+    EqVec getEqs() const;
     virtual ~LaminarDuct();
   };
 

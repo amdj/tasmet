@@ -11,6 +11,7 @@ namespace tube{
     virtual void show() const;
     virtual void init(const Tube& t);    
     virtual vd error(const TubeVertex&) const;			// Error in this equation at this node
+    virtual vd domg(const TubeVertex&) const;
     virtual dmat drhoip1(const TubeVertex&) const; // Derivative of continuity equation to density at node
 		    // i + 1
     virtual dmat drhoi(const TubeVertex&) const;	// Derivative of continuity equation to density at

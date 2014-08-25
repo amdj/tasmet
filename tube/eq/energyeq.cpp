@@ -78,6 +78,19 @@ namespace tube{
     // TRACE(100,"error:"<<error);
     return error;
   }
+  vd Energy::domg(const TubeVertex& v) const {
+    TRACE(0,"Energy::domg()");
+    assert(v.gc!=NULL);
+    const dmat& DDTfd=v.gc->DDTfd;
+    const dmat& fDFT=v.gc->fDFT;
+    d gamma=this->gamma(v);
+    d gamfac=gamma/(gamma-1.0);
+
+    vd domg=v.eWddt*DDTfd*v.p()/(gamma-1.0)/v.gc->omg; // Static enthalpy term
+    domg+=v.eWddtkin*DDTfd*fDFT*(v.rho.tdata()%v.U.tdata()%v.U.tdata())/v.gc->omg;
+    return domg;
+  }
+
   dmat Energy::dpi(const TubeVertex& v) const {
     TRACE(0,"Energy::dpi()");
     d T0=v.T(0);

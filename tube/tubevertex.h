@@ -49,7 +49,7 @@ namespace tube{
     variable::var p;		// Pressure
     variable::var Ts;		// Solid temperature
     variable::var* vars[5]={&rho,&U,&T,&p,&Ts};
-    vector<const TubeEquation*> eq; // Vector of pointers to the
+    vector<const TubeEquation*> eqs; // Vector of pointers to the
 				    // equations to solve for.
 
     virtual ~TubeVertex(){}
@@ -71,7 +71,7 @@ namespace tube{
     void updateWEqs(const SegBase& thisseg);
   public:
     virtual void initTubeVertex(us i,const Tube&);   
-    // These virtual functions are required such that boundary
+    // These virtual functions are reqsuired such that boundary
     // condition sources can be added in a later stage by inheriting
     // from this TubeVertex. By default these sources are not a
     // function of the dependent variables. That is why we do not have

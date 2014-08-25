@@ -50,7 +50,7 @@ namespace tube{
     zero=zeros<dmat>(thisseg.gc->Ns,thisseg.gc->Ns);
     
     // Fill the vector of equation pointers from the Tube instance.
-    eq=thisseg.getEq();
+    eqs=thisseg.getEqs();
 
     // For compatibility, we store these params in the TubeVertex class.
     nCells=thisseg.geom.nCells;
@@ -114,7 +114,7 @@ namespace tube{
     cWddt=lg.vVf;
     mWddt=lg.vVf/w.vSf;
     eWddt=lg.vVf;
-    eWddtkin=0.5*eWddt/pow(lg.vSf,2);
+    eWddtkin=0.5*eWddt/pow(lg.vSf,3);
 
     d vSfsq=pow(w.vSf,2);
     auto& vleft=thisseg.getLeft();
@@ -225,6 +225,16 @@ namespace tube{
       abort();
     }
     // Contribution from changing cross-sectional area
+
+    // TRACE(50,"Test: put all kin terms 0");
+    // eWkinim1=0;
+    // eWkini=0;
+    // eWkinip1=0;
+    // eWddtkin=0;
+    // eWgim1=0;
+    // eWgi=0;
+    // eWgip1=0;
+    // eWddt=0;    
     mWpi+=lg.SfL-lg.SfR;
   }
 
@@ -329,7 +339,7 @@ namespace tube{
     vd error(Neq*Ns);
     for(us k=0;k<Neq;k++)
       {
-	error.subvec(k*Ns,(k+1)*Ns-1)=eq[k]->error(*this);
+	error.subvec(k*Ns,(k+1)*Ns-1)=eqs[k]->error(*this);
       }
     TRACE(4,"TubeVertex::Error() done.");
     return error;
@@ -342,7 +352,7 @@ namespace tube{
     vd domg(Neq*Ns);
     for(us k=0;k<Neq;k++)
       {
-	domg.subvec(k*Ns,(k+1)*Ns-1)=eq[k]->domg(*this);
+	domg.subvec(k*Ns,(k+1)*Ns-1)=eqs[k]->domg(*this);
       }
     return domg;
   }
@@ -376,7 +386,7 @@ namespace tube{
       TRACE(5,"Equation number:"<<k);
       us firstrow=k*Ns;
       us lastrow=firstrow+Ns-1;
-      Jac.submat(firstrow,firstcol,lastrow,lastcol)=eq[k]->jac(*this);
+      Jac.submat(firstrow,firstcol,lastrow,lastcol)=eqs[k]->jac(*this);
       TRACE(5,"Equation "<< k <<"... succesfully obtained Jacobian");
     }
     return Jac;

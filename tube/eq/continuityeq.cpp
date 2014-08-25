@@ -50,6 +50,11 @@ namespace tube{
     error+=v.csource();
     return error;
   }
+  vd Continuity::domg(const TubeVertex& v) const{
+    TRACE(0,"Continuity::domg()");
+    vd domg=v.cWddt*v.gc->DDTfd*v.rho()/v.gc->omg;
+    return domg;
+  }
   dmat Continuity::drhoi(const TubeVertex& v) const {
     TRACE(0,"Continuity::drhoi()");
     dmat drhoi=v.cWddt*v.gc->DDTfd;		// Initialize and add first term

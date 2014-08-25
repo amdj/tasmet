@@ -54,14 +54,14 @@ namespace tube {
     s.init(*this);
     se.init(*this);
   }
-  EqVec LaminarDuct::getEq() const {
-    EqVec eq;
-    eq.push_back(&c);
-    eq.push_back(&m);
-    eq.push_back(&e);
-    eq.push_back(&s);
-    eq.push_back(&se);
-    return eq;
+  EqVec LaminarDuct::getEqs() const {
+    EqVec eqs;
+    eqs.push_back(&c);
+    eqs.push_back(&m);
+    eqs.push_back(&e);
+    eqs.push_back(&s);
+    eqs.push_back(&se);
+    return eqs;
   }
 
   LaminarDuct::~LaminarDuct(){

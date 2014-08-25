@@ -25,7 +25,7 @@ namespace tube{
   {
     TRACE(8,"TwImpedance::initTubeVertex(), vertex "<< i <<".");
     TubeVertex::initTubeVertex(i,thisseg);
-    eq.at(1)=&mright;
+    eqs.at(1)=&mright;
     // eq.at(2)=&is;
     mright.init(thisseg);
     // is.init(thisseg);

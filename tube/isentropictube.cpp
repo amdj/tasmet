@@ -41,7 +41,7 @@ namespace tube {
     s.init(*this);
     se.init(*this);
   }
-  vector<const TubeEquation*> IsentropicTube::getEq() const {
+  vector<const TubeEquation*> IsentropicTube::getEqs() const {
     vector<const TubeEquation*> eq;
     eq.push_back(&c);
     eq.push_back(&m);

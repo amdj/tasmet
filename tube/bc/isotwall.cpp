@@ -37,7 +37,7 @@ namespace tube{
     TRACE(0,"Tbc:"<<Tbc);
     vd TRt=Tbc*vd(gc->Ns,fillwith::ones);
     vd T0=gc->T0*vd(gc->Ns,fillwith::ones);
-    vd kappaR=static_cast<const Energy*>(eq[2])->kappaR(*this);    
+    vd kappaR=static_cast<const Energy*>(eqs[2])->kappaR(*this);    
     // vd kappaR=gc->gas.kappa(T0);
 
     esource+=-1.0*w.vSfR*fDFT*(kappaR%TRt)/lg.xr;
@@ -48,7 +48,7 @@ namespace tube{
     TRACE(8,"LeftIsoTWall::updateW()");
     
     eWc1=0;
-    eWc2= w.vSfL/w.dxp;
+    eWc2= w.vSfL/lg.xl;
     eWc3= w.vSf/w.dxp;
     eWc4=-w.vSfR/w.dxp;
     
@@ -62,7 +62,7 @@ namespace tube{
     TRACE(0,"Tbc:"<<Tbc);
     vd TLt=Tbc*vd(gc->Ns,fillwith::ones);
     vd T0=gc->T0*vd(gc->Ns,fillwith::ones);
-    vd kappaL=static_cast<const Energy*>(eq[2])->kappaL(*this);    
+    vd kappaL=static_cast<const Energy*>(eqs[2])->kappaL(*this);    
     // vd kappaR=gc->gas.kappa(T0);
     esource+=-1.0*w.vSfL*fDFT*(kappaL%TLt)/lg.xl;
     TRACE(3,"esource:"<<esource);

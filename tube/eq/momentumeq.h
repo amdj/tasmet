@@ -16,18 +16,19 @@ namespace tube{
     virtual enum EqType getType() const { return EqType::Mom;}    
     virtual vd error(const TubeVertex&) const;			// Error in momentum equation at node i
     virtual void show() const;
-    dmat drhoi(const TubeVertex& v) const;
-    dmat dUi(const TubeVertex&) const;
-    dmat dpi(const TubeVertex&) const;
-    dmat drhoip1(const TubeVertex&) const;
-    dmat dUip1(const TubeVertex&) const;
-    dmat dpim1(const TubeVertex&) const;
-    dmat drhoim1(const TubeVertex&) const;
-    dmat dUim1(const TubeVertex&) const;
-    dmat dpip1(const TubeVertex&) const;
+    virtual vd domg(const TubeVertex&) const;
+    virtual dmat drhoi(const TubeVertex& v) const;
+    virtual dmat dUi(const TubeVertex&) const;
+    virtual dmat dpi(const TubeVertex&) const;
+    virtual dmat drhoip1(const TubeVertex&) const;
+    virtual dmat dUip1(const TubeVertex&) const;
+    virtual dmat dpim1(const TubeVertex&) const;
+    virtual dmat drhoim1(const TubeVertex&) const;
+    virtual dmat dUim1(const TubeVertex&) const;
+    virtual dmat dpip1(const TubeVertex&) const;
 
-    dmat dUim2(const TubeVertex&) const;
-    dmat dUip2(const TubeVertex&) const;
+    virtual dmat dUim2(const TubeVertex&) const;
+    virtual dmat dUip2(const TubeVertex&) const;
     
     d muR(const TubeVertex&) const;
     d muL(const TubeVertex&) const;

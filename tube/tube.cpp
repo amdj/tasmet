@@ -155,10 +155,10 @@ namespace tube {
     const us& nCells=geom.nCells;
     vd er(nCells);
     assert(eqnr<Neq);
-    auto eqs=this->getEq();
+    auto eqs=this->getEqs();
     for(us i=0;i<nCells;i++){
       TubeVertex& cvertex=*static_cast<TubeVertex*>(vvertex[i].get());
-      er(i)=(eqs.at(eqnr)->error(cvertex))(freqnr);
+      er(i)=(cvertex.eqs.at(eqnr)->error(cvertex))(freqnr);
     }
     return er;
   }
