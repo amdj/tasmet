@@ -1,25 +1,28 @@
 #include "segbase.h"
 
 namespace segment{
-  static us totalnumber=0;
 
-  SegBase::SegBase(Geom geom):geomptr(new Geom(geom)),geom(*geomptr)
+  SegBase::SegBase(const Geom& geom):geom(geom)
   {
-    number=totalnumber;
-    nleft=0;
-    nright=0;
-    totalnumber++;
- 
+    TRACE(10,"SegBase::SegBase(geom)");
   }
-  SegBase::~SegBase(){
-    TRACE(-5,"~SegBase()");
-    delete geomptr;
+  SegBase::SegBase(const SegBase& o): SegBase(o.geom){}
+  SegBase& SegBase::operator=(const SegBase& o){
+    geom=o.geom;
+    return *this;
   }
-  void SegBase::newgeom(const Geom& g){
-    delete geomptr;
-    geomptr=new Geom(g);
+  void SegBase::init(const Globalconf& gc1){this->gc=&gc1;}  
+
+  void SegBase::setLeft(const SegBase& Left){
+    TRACE(13,"SegBase::SetLeft()");
+    left.push_back(&Left);
   }
-  const string& SegBase::gettype() const {return type;}
+  void SegBase::setRight(const SegBase& Right){
+    TRACE(13,"SegBase::SetRight()");
+    right.push_back(&Right);
+  }
+  
+
   bool SegBase::operator==(const SegBase& other) const {return (this->number==other.number);}
 
 

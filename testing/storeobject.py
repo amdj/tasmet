@@ -30,7 +30,7 @@ class storeobj:
 		t1.setnodes(0,1)
 		t1.creategeom(cshape=None,S=1.)
 		t1.Init(294.20731707317077)
-		s1=TAsystem([t1])
+		s1=TaSystem([t1])
 		s1.acousticSystem.addbc(0,'volu',self.Up)
 		s1.acousticSystem.addbc(1,'volu',0)
 		s1.Init('air',freq=self.freq)

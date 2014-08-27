@@ -1,27 +1,24 @@
 #pragma once
 #ifndef _SOLVER_H_
 #define _SOLVER_H_
-#include "system.h"
+#include "tasystem.h"
+#include "vtypes.h"
+#include <memory>
 
+#define SOLVER_MAXITER 100
 namespace tasystem{
+  using std::tuple;
 
   class Solver
   {
+    std::unique_ptr<TaSystem> tasystem;
   public:
-
-  public:
-    TAsystem* sys=NULL;
-    
-    Solver(const TAsystem& tasys);
+    TaSystem& sys() const {return *tasystem.get();}
+    Solver(const TaSystem& tasys);
     Solver(const Solver& other);
     Solver& operator=(const Solver& other);
-
-    void DoIter(d dampfac=1.0);
-    void Init();
-    ~Solver();
-  private:
-    bool hasinit;
-    
+    void solve(us maxiter=0,d funer=1e-8,d reler=1e-6);
+    tuple<d,d> doIter(d dampfac=1.0);
   };
 
 } // namespace tasystem

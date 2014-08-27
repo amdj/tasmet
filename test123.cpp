@@ -1,13 +1,11 @@
 /* test.cpp */
 
-#include "globalconf.h"
 #include "tube.h"
-#include "twimpedance.h"
-#include "pressurebc.h"
-#include "tubevertex.h"
-#include "impedancebc.h"
-#include "system.h"
+#include "isentropictube.h"
+#include "hopkinslaminarduct.h"
+#include "enginesystem.h"
 #include "solver.h"
+#include "bc.h"
 using namespace std;
 using namespace segment; 
 using namespace tasystem;
@@ -16,8 +14,8 @@ using namespace tube;
 
 int main(int argc,char* argv[]) {
   cout <<  "Running test..." << endl;
-  int loglevel=4;
-  us gp=40;
+  int loglevel=25;
+  us gp=4;
   us Nf=1;
   us Ns=2*Nf+1;
   double f=100;
@@ -30,8 +28,11 @@ int main(int argc,char* argv[]) {
   cout<< "Loglevel:"<<loglevel<<"\n";
   initlog(loglevel);
   d L=0.01;
-  d rtube=5e-3;
-  d S=number_pi*pow(rtube,2);
+
+  d S=1;
+  
+  d rtube=sqrt(S/number_pi);
+
   d phi=1.0;
   d PI=2*number_pi*rtube;
   d rh=S/PI;
@@ -42,47 +43,41 @@ int main(int argc,char* argv[]) {
 
   d Mach=0.1;
   d kappa=0.1;
-  Globalconf gc(Nf,f,"air",T0,p0,Mach,S0,griddx,0,kappa);
-  Geom geom1(gp,L,S,phi,rh,"inviscid");
-  Tube t1(geom1);
-
+  Globalconf gc(Nf,f,"air",T0,p0,kappa);
+  Globalconf air=Globalconf::airSTP(Nf,f);
+  air=gc;
+  Geom geom1=Geom::CylinderBlApprox(gp,L,rtube);
+  // IsentropicTube t1(geom1);
+  HopkinsLaminarDuct t1(geom1,gc.T0,gc.T0+10);
   var pL(gc,0);
   if(Nf>0)
     pL.set(1,1);
-  tube::LeftPressure bcleft(0,pL);
-  // tube::RightImpedance bcright(0,415*vd(Ns,fillwith::ones));
-  tube::TwImpedance bcright(0);
-  cout << "left: "<<bcleft.left <<"\n" ;
-  
-  TAsystem sys(gc);
-  sys.addseg(t1);
-  sys.addbc(bcright);
-  sys.addbc(bcleft);
+  tube::LeftPressure bcleft(pL);
+  // tube::RightIsoTWall bcright(0,T0+10);
+  // TRACE(100,"Add bc to tube...");
+  t1.addBc(bcleft);
+  EngineSystem sys(air);
+  sys.setTimingConstraint(0,0,3,2);
+  sys.setAmplitudeDof(0,0,3,1);
+  // TaSystem sys(air);  
+  sys.addSeg(t1); 
+  sys.init();
 
   Solver sol(sys);
 
-  sol.Init();
-
-  Solver sol1(sol);
-  sol1.Init();
-  vd res=sol1.sys->GetRes();
-  // cout << "res:\n"<<res;
-  vd err=sol1.sys->Error();
-  
-  // // // vd x=t1.GetRmomes();
+  // sol.doIter();
+  // sol.solve();
+    // // // vd x=t1.GetRmomes();
   // // vd err=sol.sys->Error();
   // // cout << "error:\n"<<err;
 
-  for(us i=0; i<4;i++)  
-    sol1.DoIter();
-  // res=sol1.sys->GetRes();
-  // vd er=sol1.sys->Error();
-  // cout << "res:\n"<<res;
-
   // cout << "err:\n"<<er;
-  // dmat Jac=sol1.sys->Jac();
+  edmat Jac=sol.sys().jac();
   // sol1.sys->show();
-  // cout << "Jac:\n"<< Jac;
-
+  cout << "Jac:\n"<< Jac<<"\n";
+  // sol.solve();
+  // cout << "\nDeterminant Jac:" << arma::det(Jac) << "\n";
+  // sol.sys.show(true);
   return 0;
 }
+

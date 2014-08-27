@@ -3,69 +3,35 @@
 #ifndef _VERTEX_H_
 #define _VERTEX_H_
 
-#include "segbase.h"
+#include "globalconf.h"
 #include "var.h"
-#include "equation.h"
-
-#define Neq (5)
 
 
 namespace segment{
   SPOILNAMESPACE
-  using tasystem::Globalconf;
-  using segment::Geom;
+  class Seg;
   using variable::var;
-
+  using tasystem::Globalconf;
   
+  class Vertex;
+  
+  typedef std::vector<const Vertex*>  VertexVec;
   class Vertex{
   public:
-    us i=0;			// The node number of this vertex
-    us Ncells=0;
-    const Globalconf *gc=NULL;
-    Equation* eq[Neq];		// Pointer array of all equations
+    const tasystem::Globalconf* gc=NULL;
+    us i;
 
-    const Vertex* left=NULL;
-    const Vertex* right=NULL;
-    variable::var rho;		// Density
-    variable::var U;		// Volume flow
-    variable::var T;		// Temperature
-    variable::var p;		// Pressure
-    variable::var Ts;		// Solid temperature
-    variable::var* vars[Neq]={&rho,&U,&T,&p,&Ts};
-    
-    d vSf;			// Vertex fluid cross-sectional area
-    d vSs;			// Vertex solid cross-sectional area
-    d vVf;			// Vertex cell fluid volume
-    d vVs;			// Vertex cell solid volume
-
-    d SfR;			// Cross-sectional area of right face
-    d SfL;			// Cross-sectional area of left  face
-
-    d xR;			// Position of right cell wall
-    d xL;			// Position of left cell wall
-    d dxp;			// Distance to nearby right node
-    d dxm;			// Distance to nearby left node
-
-    d vxim1,vxi,vxip1;    		// Vertex position of left and right vertex
-    
-    Vertex();
-    virtual void show();
-    virtual ~Vertex();
-    // Standard copy constructor will suffice
-    Vertex(const Vertex&); 
-    Vertex& operator=(const Vertex& v2); // Copy assignment
-    virtual void Init(us i,const Globalconf& gc,const Geom& geom);
-  private:
-    void updateW(const Geom&);	       // Update weight functions of equations
-  public:
-    vd Error();				  // Compute error for this gridpoint
-    dmat Jac();	       // Fill complete Jacobian for this node
-    void SetRes(vd res);			  // Set result vector to res
-    vd GetRes();				  // Extract current result vector
-
-
-
-
+    virtual ~Vertex(){}
+    // const VertexVec& getLeft() const {return vleft;}
+    // const VertexVec& getRight() const {return vright;}
+    virtual vd error() const=0;		       // Compute error for this gridpoint
+    virtual dmat jac() const=0;		       // Fill complete Jacobian for this node
+    virtual void setRes(vd res)=0;			  // Set result vector to res
+    virtual vd getRes() const=0;			  // Extract current result vector
+    virtual void show() const=0;
+    virtual vd domg() const=0;
+    Vertex& operator=(const Vertex& v2){WARN("Operator=() not allowed. Aborting."); abort();} 
+    void init(us i,const Globalconf& gc);
   };
 } // namespace segment
 

@@ -1,244 +1,408 @@
 #include "tubevertex.h"
-
+#include "tubeequation.h"
+#include "tube.h"
+#include "w.h"
 
 namespace tube{
 
-  TubeVertex::TubeVertex():c(*this),m(*this),e(*this),s(*this),se(*this),is(*this) { }
-  TubeVertex::TubeVertex(const TubeVertex& o):TubeVertex(){ }
-  TubeVertex& TubeVertex::operator=(const TubeVertex& o)
-  {
-    return *this;
+  void TubeVertex::show() const{
+    cout << "----------------- TubeVertex " << lg.i << "----\n";
+    cout << "Showing weight functions for TubeVertex "<< i <<"\n";
+    // w.show();
+    cout << "cWddt    :"<<cWddt<<"\n";
+    cout << "cWim1    :"<<cWim1<<"\n";
+    cout << "cWi      :"<<cWi<<"\n";
+    cout << "cWip1    :"<<cWip1<<"\n";
+    // cout << "cWarti    :"<<cWarti<<"\n";
+    cout << "eWddt    :"<<eWddt<<"\n";
+    cout << "eWgim1   :"<<eWgim1<<"\n";
+    cout << "eWgi     :"<<eWgi<<"\n";
+    cout << "eWgip1   :"<<eWgip1<<"\n";
+    cout << "eWkinim1 :"<<eWkinim1<<"\n";
+    cout << "eWkini   :"<<eWkini<<"\n";
+    cout << "eWkinip1 :"<<eWkinip1<<"\n";
+    cout << "eWc1     :"<<eWc1<<"\n";
+    cout << "eWc2     :"<<eWc2<<"\n";
+    cout << "eWc3     :"<<eWc3<<"\n";
+    cout << "eWc4     :"<<eWc4<<"\n";
+    cout << "Tube on left  side:" << left <<"\n";
+    cout << "This tube         :" << this <<"\n";
+    cout << "Tube on right side:" << right <<"\n"   ;
   }
-  void TubeVertex::Init(us i,const Globalconf& gc,const Geom& geom)
+
+  void TubeVertex::setLeft(const Vertex& v){
+    TRACE(8,"TubeVertex::setLeft(vertex)");
+    this->left=&static_cast<const TubeVertex&>(v);
+  }
+  void TubeVertex::setRight(const Vertex& v){
+    TRACE(8,"TubeVertex::setRight(vertex)");
+    this->right=&static_cast<const TubeVertex&>(v);
+  }
+  void TubeVertex::initTubeVertex(us i,const Tube& thisseg)
   {
-    TRACE(8,"TubeVertex::Init(gc,geom), vertex "<< i << ".");
-    Vertex::Init(i,gc,geom);	// Which also calls Vertex::updateW()
-    eq[0]=&c;			// Continuity is first
-    eq[1]=&m;
-    eq[2]=&is; 			// Changed to isentropic
-    // eq[2]=&e; 			// Full energy
-    eq[3]=&s;
-    eq[4]=&se;
+    lg=thisseg.geom.localGeom(i);
+    TRACE(8,"TubeVertex::initTubeVertex(gc,geom), vertex "<< i << ".");
+    // Initialize the Globalconf* ptr and i (the vertex number), 
+    Vertex::init(i,*thisseg.gc);	// Which also calls Vertex::updateW()
+    // assert(gc!=NULL);
+    TRACE(10,"Ns:"<<gc->Ns);
+    // Set the zero matrix    
+    zero=zeros<dmat>(thisseg.gc->Ns,thisseg.gc->Ns);
     
-    for(us i=0;i<Neq;i++)
-      eq[i]->Init(gc);
-    TubeVertex::updateW(geom);
+    // Fill the vector of equation pointers from the Tube instance.
+    eqs=thisseg.getEqs();
+
+    // For compatibility, we store these params in the TubeVertex class.
+    nCells=thisseg.geom.nCells;
+
+    // Intialize the variables for the right number of harmonics.
+    rho=var(*gc);
+    U=var(*gc);
+    T=var(*gc);
+    p=var(*gc);
+    Ts=var(*gc);
+
+    // Initialize density and temperatures
+    T.set(0,gc->T0);
+    Ts.set(0,gc->T0);
+    d T0=gc->T0;
+    d p0=gc->p0;
+    d rho0=gc->gas.rho(T0,p0);
+    rho.set(0,rho0);    
+    // Update weight factors
+    TRACE(10,"Now running updateW()");
+    TubeVertex::updateW(thisseg);
+    // Finally, updating the real weight factors
+    updateWEqs(thisseg);
   }
-  void TubeVertex::show(){
-    cout << "----------------- TubeVertex " << i << "----\n";
-    Vertex::show();
-    cout << "wLl      : "<<wLl<<"\n"			\
-	 << "wLr      : "<<wLr      <<"\n"	\
-	 << "wRl      : "<<wRl      <<"\n"	\
-	 << "wRr      : "<<wRr      <<"\n"	\
-	 << "wL0      : "<<wL0      <<"\n"	\
-	 << "wL1      : "<<wL1      <<"\n"	\
-	 << "wRNm1    : "<<wRNm1      <<"\n"	\
-	 << "wRNm2    : "<<wRNm2      <<"\n"	\
-      ;
-    cout << "---------- Now showing equation-specific weight factors\n";
-    for(us i=0;i<Neq;i++)
-      eq[i]->show();
-  }
-  void TubeVertex::updateW(const Geom& geom,const SegBase* thisseg,const SegBase* left,const SegBase* right){
+  void TubeVertex::updateW(const SegBase& thisseg){
     TRACE(8,"TubeVertex::updateW()");
 
-    // Initialize weight functions to zero
-    wLl=0; wLr=0; wRr=0; wRl=0;
-    wL0=wL1=wRNm1=wRNm2=0;	// Put these weight functions to zero
+    const Geom& geom=thisseg.geom;
+    const LocalGeom lg=geom.localGeom(i);
 
-    if(i>0){
-      // Left weight functions
-      wLl=(vxi-xL)/(vxi-vxim1);
-      wLr=(xL-vxim1)/(vxi-vxim1);
-      // TRACE(20,"wLl:"<<wLl);
-      // TRACE(20,"wLr:"<<wLr);      
-    }
-    // ****************************** Initalization of vxipm and dxpm
-    if(i<Ncells-1){
-      // Right weight functions
-      wRr=(xR-vxi)/(vxip1-vxi);
-      wRl=(vxip1-xR)/(vxip1-vxi);
-      // TRACE(20,"wRl:"<<wRl);
-      // TRACE(20,"wRr:"<<wRr);      
-    }
+    w(*this);			// Weight factors
 
-
-    // ****************************** Initialization special weight functions
-    if(i==Ncells-1){
-      wRNm1=(vxim1-xR)/(vxim1-vxi);
-      wRNm2=(xR-vxi)/(vxim1-vxi);
-    }
-    if(i==0){
-      wL0=vxip1/(vxip1-vxi);
-      wL1=-vxi/(vxip1-vxi);
-    }
-    // ****************************** End Special weight functions
-
-    int UsignL=1;    
-    int UsignR=1;    
-
-    if(i==0 && left!=NULL){
-      TRACE(10,"Jacobian evaluation requires coupling of segments...");
-      if(left->gettype().compare("Tube")==0){ // Its a Tube
-	if(*left->right[0]==*thisseg){
-	  TRACE(5,"Connected current head to left segment's tail");
-	  const us& LeftNcells=left->geom.Ncells;
-	  d L=left->geom.L;
-	  vxim1=left->geom.vx(LeftNcells-1)-L;
-	  TRACE(6,"vxi:"<<vxi);
-	  TRACE(6,"vxim1:"<<vxim1);
-	}
-      	else{
-	  TRACE(5,"Connected current head to left segment's head");
-	  TRACE(6,"vxi:"<<vxi);
-	  TRACE(6,"vxim1:"<<vxim1);
-	  vxim1=-left->geom.vx(0);
-	  wLl=(vxi-xL)/(vxi-vxim1);
-	  UsignL=-1;
-      	}
-	wLl=(vxi-xL)/(vxi-vxim1);	
-	wLr=(xL-vxim1)/(vxi-vxim1);
+    // If we find other segments, we set the left and right pointers
+    // to nonzero
+    if(i==0 && thisseg.getLeft().size()!=0){
+      const SegBase& left=*thisseg.getLeft().at(0);
+      if(left.getType().compare("Tube")==0){ // Its a Tube
+	connectTubeLeft(thisseg);
       }
-      else{			// Its not a Tube
-	TRACE(20,"Error, this kind of coupling not yet implemented. Exiting...");
-	TRACE(20,"Seg on left side: "<< right->gettype());
+      else{
+	WARN("Left segment's type not understood from connection point of view. Exiting.");
 	exit(1);
       }
-    } // i==0 and left!=NULL
-    
-    else if((i==Ncells-1) && right!=NULL) {
-      TRACE(10,"Jacobian evaluation requires coupling of segments...");
-      if(right->gettype().compare("Tube")==0){ // Its a Tube
-	if(*right->left[0]==*thisseg){
-	  TRACE(5,"Connected current tail to right segment's head");
-	  d L=geom.L;
-	  vxip1=right->geom.vx(0)+thisseg->geom.L;
-	  TRACE(6,"vxi:"<<vxi);
-	  TRACE(6,"vxip1:"<<vxip1);
-	}
-      	else{
-	  TRACE(5,"Connected current tail to right segment's tail");
-	  const us& RightNcells=right->geom.Ncells;
-	  const d& RightL=right->geom.L;
-	  vxip1=RightL-right->geom.vx(Ncells)+geom.L;
-	  TRACE(6,"vxi:"<<vxi);
-	  TRACE(6,"vxip1:"<<vxip1);
-	  UsignR=-1;
-      	}
-	wRr=(xR-vxi)/(vxip1-vxi);
-	wRl=(vxip1-xR)/(vxip1-vxi);
+    }
+    if(i==nCells-1 && thisseg.getRight().size()!=0){
+      const SegBase& right=*thisseg.getRight().at(0);
+      if(right.getType().compare("Tube")==0){ // Its a Tube
+	connectTubeRight(thisseg);
       }
-      else{			// Its not a Tube
-	TRACE(20,"Error, this kind of coupling not yet implemented. Exiting...");
-	TRACE(20,"Seg on left side: "<< right->gettype());
+      else{
+	WARN("Right segment's type not understood from connection point of view. Exiting.");
 	exit(1);
       }
-    } // i==Ncells-1 and right!=NULL
+    }
+  }
 
-    c.Wddt=vVf;
-    m.Wddt=vVf/vSf;
-    e.Wddt=vVf;
+  void TubeVertex::updateWEqs(const SegBase& thisseg){
+    TRACE(8,"TubeVertex::updateWEqs()");
+    const Geom& geom=thisseg.geom;
+    const LocalGeom lg=geom.localGeom(i);
+    cWddt=lg.vVf;
+    mWddt=lg.vVf/w.vSf;
+    eWddt=lg.vVf;
+    eWddtkin=0.5*eWddt/pow(lg.vSf,3);
 
-    if( (i>0 && i<Ncells-1) || (i==0 && left!=NULL) || (i==Ncells-1 && right!=NULL) ) {
-      c.Wim1=-UsignL*wLl;
-      c.Wi=UsignR*wRl-UsignL*wLr;
-      c.Wip1=UsignR*wRr;
+    d vSfsq=pow(w.vSf,2);
+    auto& vleft=thisseg.getLeft();
+    auto& vright=thisseg.getRight();    
+    cWart1=cWart2=cWart3=cWart4=0;		           
+    if(left!=NULL && right!=NULL){
+      d vSfLsq=pow(w.vSfL,2);
+      d vSfRsq=pow(w.vSfR,2);
+      cWim1=-w.UsignL*w.wLl;
+      cWi=w.wRl-w.wLr;
+      cWip1=w.UsignR*w.wRr;
 
-      m.Wuim1=-wLl/SfL;
-      m.Wui=wRl/SfR-wLr/SfL;
-      m.Wuip1=wRr/SfR;
+      // cWart1=-0.5*(w.vSf+w.vSfL)/w.dxm;
+      // cWart2= 0.5*(w.vSf+w.vSfL)/w.dxm;
+      // cWart3= 0.5*(w.vSf+w.vSfR)/w.dxp;
+      // cWart4=-0.5*(w.vSf+w.vSfR)/w.dxp;
+      cWart1=-0.5*(w.vSf+w.vSfL);
+      cWart2= 0.5*(w.vSf+w.vSfL);
+      cWart3= 0.5*(w.vSf+w.vSfR);
+      cWart4=-0.5*(w.vSf+w.vSfR);
 
-      m.Wpim1=-SfL*wLl;
-      m.Wpi  = SfR*wRl-SfL*wLr;
-      m.Wpip1= SfR*wRr;
+      mWart1=-1;
+      mWart2= 1;
+      mWart3= 1;
+      mWart4=-1;
 
-      e.Wgim1=-wLl;
-      e.Wgi=wRl-wLr;
-      e.Wgip1=wRr;
+      
+      mWuim1=-w.UsignL*w.wLl/w.vSfL;
+      mWui=(w.wRl-w.wLr)/w.vSf;
+      mWuip1=w.UsignR*w.wRr/w.vSfR;
 
-      e.Wjim1=wLl;
-      e.Wji=wLr-wRl;
-      e.Wjip1=-wRr;
+      mWpim1=-lg.SfL*w.wLl;
+      mWpi  = lg.vSf*(w.wRl-w.wLr);
+      mWpip1= lg.SfR*w.wRr;
+      
+      eWgim1=-w.UsignL*w.wLl;
+      eWgi=w.wRl-w.wLr;
+      eWgip1=w.UsignR*w.wRr;
 
-      e.Wc1=-SfL/dxm;
-      e.Wc2=SfL/dxm;
-      e.Wc3=SfR/dxp;
-      e.Wc4=-SfR/dxp;
+      eWkinim1=-0.5*w.UsignL*w.wLl/vSfLsq;
+      eWkini=0.5*(w.wRl/vSfsq-w.wLr/vSfsq);
+      eWkinip1=0.5*w.UsignR*w.wRr/vSfRsq;
+      TRACE(1,"w.dxm:"<< w.dxm);
+      TRACE(1,"w.dxp:"<< w.dxp);
+      eWc1=-0.5*(w.vSfL+w.vSf)/w.dxm;
+      eWc2= 0.5*(w.vSfL+w.vSf)/w.dxm;
+      eWc3= 0.5*(w.vSf+w.vSfR)/w.dxp;
+      eWc4=-0.5*(w.vSf+w.vSfR)/w.dxp;
     }
     else if(i==0){
-      c.Wim1=0;
-      c.Wi=wRl;
-      c.Wip1=wRr;
+      TRACE(15,"Building for first cell adiabatic wall");
+      d vSfRsq=pow(w.vSfR,2);
+      cWim1=0;
+      cWi=w.wRl;
+      cWip1=w.wRr;
       
-      m.Wuim1=0;
-      m.Wui=wRl/SfR;
-      m.Wuip1=wRr/SfR;
+      mWuim1=0;
+      mWui=w.wRl/w.vSf;
+      mWuip1=w.wRr/w.vSfR;
       
-      m.Wpim1=0;
-      m.Wpi=SfR*wRl-SfL*wL0;
-      m.Wpip1=SfR*wRr-SfL*wL1;
+      mWpim1=0;
+      mWpi=w.vSf*w.wRl-lg.SfL*w.wL0;
+      mWpip1=w.vSfR*w.wRr-lg.SfL*w.wL1;
 
-      e.Wgim1=0;
-      e.Wgi=wRl;
-      e.Wgip1=wRr;
+      eWgim1=0;
+      eWgi=w.wRl;
+      eWgip1=w.wRr;
 
-      e.Wjim1=0;
-      e.Wji=wL0-wRl;
-      e.Wjip1=wL1-wRr;
+      eWkinim1=0;
+      eWkini=0.5*w.wRl/vSfsq;
+      eWkinip1=0.5*w.wRr/vSfRsq;
 
-      e.Wc1=0;
-      e.Wc2=0;
-      e.Wc3=SfR/dxp;
-      e.Wc4=-SfR/dxp;
+      eWc1=0;
+      eWc2=0;
+      eWc3=w.vSfR/w.dxp;
+      eWc4=-w.vSfR/w.dxp;
     }
-    else if(i==Ncells-1){
-      c.Wi=-wLr;
-      c.Wim1=-wLl;
-      c.Wip1=0;
+    else if(i==nCells-1){
+      TRACE(15,"Building for last cell adiabatic wall");
+      d vSfLsq=pow(w.vSfL,2);
+      cWi=-w.wLr;
+      cWim1=-w.wLl;
+      cWip1=0;
 
-      m.Wuim1=-wLl/SfL;
-      m.Wui=-wLr/SfL;
-      m.Wuip1=0;
+      mWuim1= -w.wLl/w.vSfL;
+      mWui=   -w.wLr/w.vSfL;
+      mWuip1= 0;
       
-      m.Wpim1=-SfL*wLl+SfR*wRNm2;
-      m.Wpi=-SfL*wLr+SfR*wRNm1;
-      m.Wpip1=0;
+      mWpim1=-w.vSfL*w.wLl+lg.SfR*w.wRNm2;
+      mWpi=  -w.vSf*w.wLr+lg.SfR*w.wRNm1;
+      mWpip1=0;
 
-      e.Wgim1=-wLl;
-      e.Wgi=-wLr;
-      e.Wgip1=0;
+      eWgim1=-w.wLl;
+      eWgi=-w.wLr;
+      eWgip1=0;
 
-      e.Wjim1=wLl-wRNm2;
-      e.Wji=wLr-wRNm1;
-      e.Wjip1=0;
+      eWkinim1=-0.5*w.wLl/vSfLsq;
+      eWkini=-0.5*w.wLr/vSfsq;
+      eWkinip1=0;
 
-      e.Wc1=-SfL/dxm;
-      e.Wc2=SfL/dxm;
-      e.Wc3=0;
-      e.Wc4=0;
-    } 
-
+      eWc1=-w.vSfL/w.dxm;
+      eWc2=w.vSfL/w.dxm;
+      eWc3=0;
+      eWc4=0;
+    }
+    else{
+      WARN("Something went terribly wrong!");
+      abort();
+    }
     // Contribution from changing cross-sectional area
-    m.Wpi+=SfL-SfR;
 
+    // TRACE(50,"Test: put all kin terms 0");
+    // eWkinim1=0;
+    // eWkini=0;
+    // eWkinip1=0;
+    // eWddtkin=0;
+    // eWgim1=0;
+    // eWgi=0;
+    // eWgip1=0;
+    // eWddt=0;    
+    mWpi+=lg.SfL-lg.SfR;
   }
-  vd  TubeVertex::csource() const {
-    TRACE(0,"TubeVertex::csource()");
-    return zeros(gc->Ns);}
-  vd  TubeVertex::msource() const {
-    TRACE(0,"TubeVertex::msource()");
-    return zeros(gc->Ns);}
-  vd  TubeVertex::esource() const {
-    TRACE(0,"TubeVertex::esource()");
-    return zeros(gc->Ns);}    
+
+  void TubeVertex::connectTubeLeft(const SegBase& thisseg){
+    TRACE(15,"TubeVertex::connectTubeLeft()");
+    auto vleft=thisseg.getLeft();
+    const Tube& thistube=static_cast<const Tube&>(thisseg);
+    const SegBase& left=*thisseg.getLeft().at(0);
+    const Tube& lefttube=static_cast<const Tube&>(left);
+
+    // Check for certainty that no internal boundary condition are
+    // applied here!
+    assert(!thistube.bcLeft);
+
+    if(lefttube.vvertex.size()==0){ // Pre-init the segment
+      // For this one, little situation rebuild everything to
+      // non-const? I do not think so.
+      TRACE(18,"Forward initializing Tube on left side.");      
+      Tube& lefttube_nonconst=const_cast<Tube&>(lefttube);
+      lefttube_nonconst.init(*thisseg.gc);
+    }
+
+    const us& leftnCells=left.geom.nCells;
+    d xvim1;
+    if(left.getRight()[0]->getNumber()==thisseg.getNumber()){
+      TRACE(8,"Segment " << thisseg.getNumber()<< " connected with "	\
+	    << "head to tail of segment"<< left.getNumber() << ".");
+      // WE NEED TO BE SURE THAT ALL VERTICES ALREADY HAVE BEEN
+      // CREATED. So we initialize the segment from here, if it has
+      // not been already.
+      this->left=static_cast<const TubeVertex*>(lefttube.vvertex.at(leftnCells-1).get());
+      const d& Lleft=left.geom.L;
+      xvim1=left.geom.xv(leftnCells-1)-Lleft;
+      w.vSfL=left.geom.vSf(leftnCells-1);
+    }
+    else{
+      TRACE(8,"Segment " << thisseg.getNumber()<< " connected with "	\
+	    << "head to head of segment"<< left.getNumber() << ".");
+      this->left=static_cast<const TubeVertex*>(lefttube.vvertex.at(0).get());
+      xvim1=-left.geom.xv(0);
+      w.UsignL=-1;
+      w.vSfL=left.geom.vSf(0);	
+    }
+    w.dxm=lg.xvi-xvim1;      
+    w.wLl=(lg.xvi)/(lg.xvi-xvim1);	
+    w.wLr=1-w.wLl;
+  } // connectTubeLeft()
     
-  TubeVertex::~TubeVertex(){
-    TRACE(-5,"TubeVertex destructor");
+    
+  void TubeVertex::connectTubeRight(const SegBase& thisseg){
+    TRACE(15,"TubeVertex::connectTubeRight()");
+    auto vright=thisseg.getRight();
+    const Tube& thistube=static_cast<const Tube&>(thisseg);
+    const SegBase& right=*thisseg.getRight().at(0);
+    const Tube& righttube=static_cast<const Tube&>(right);
+
+    assert(!thistube.bcRight);
+    if(righttube.vvertex.size()==0){ // Pre-init the segment
+      // For this one, little situation rebuild everything to
+      // non-const? I do not think so.
+      TRACE(18,"Forward initializing Tube on right side.");
+      Tube& righttube_nonconst=const_cast<Tube&>(righttube);
+      righttube_nonconst.init(*thisseg.gc);
+    }
+    
+    d xvip1;
+    const us& rightnCells=right.geom.nCells;    
+    if(right.getLeft()[0]->getNumber()==thisseg.getNumber()){
+      TRACE(8,"Connected current tail to right segment's head");
+      //   	  d L=geom.L;
+      this->right=static_cast<const TubeVertex*>(righttube.vvertex.at(0).get());
+      xvip1=right.geom.xv(0)+thisseg.geom.L;
+      w.vSfR=right.geom.vSf(0);
+    }
+    else{
+      TRACE(8,"Connected current tail to right segment's tail");
+      this->right=static_cast<const TubeVertex*>(righttube.vvertex.at(rightnCells-1).get());
+      const d& Lright=right.geom.L;
+      xvip1=Lright-right.geom.xv(rightnCells-1)+thisseg.geom.L;
+      w.UsignR=-1;
+      w.vSfR=right.geom.vSf(rightnCells-1);
+    }
+    w.dxp=xvip1-lg.xvi;
+    w.wRr=(lg.xR-lg.xvi)/(xvip1-lg.xvi);
+    w.wRl=(xvip1-lg.xR)/(xvip1-lg.xvi);
+  } // connectTubeRight()
+
+  
+  
+  vd TubeVertex::getp0t() const {
+    TRACE(0,"TubeEquation::getp0t()");
+    return gc->p0*vd(gc->Ns,fillwith::ones);
+  }    
+
+  vd TubeVertex::error() const
+  {
+    TRACE(4,"TubeVertex::error() for TubeVertex "<< i << ".");
+    // TRACE(4,"Check for position i>0 && i<gp-1...");
+    // assert(i>0 && i<seg.geom.gp-1);
+    const us& Ns=gc->Ns;
+    TRACE(4,"Assignment of Ns survived:"<< Ns);
+    vd error(Neq*Ns);
+    for(us k=0;k<Neq;k++)
+      {
+	error.subvec(k*Ns,(k+1)*Ns-1)=eqs[k]->error(*this);
+      }
+    TRACE(4,"TubeVertex::Error() done.");
+    return error;
   }
+  vd TubeVertex::domg() const
+  {
+    TRACE(4,"TubeVertex::domg() for TubeVertex "<< i << ".");
+    const us& Ns=gc->Ns;
+    TRACE(4,"Assignment of Ns survived:"<< Ns);
+    vd domg(Neq*Ns);
+    for(us k=0;k<Neq;k++)
+      {
+	domg.subvec(k*Ns,(k+1)*Ns-1)=eqs[k]->domg(*this);
+      }
+    return domg;
+  }
+  vd TubeVertex::getRes() const {			// Get current result vector
+    TRACE(4,"TubeVertex::GetRes()");
+    const us& Ns=gc->Ns;
+    vd res(Neq*Ns);
+    for(us k=0;k<Neq;k++){
+      res.subvec(k*Ns,k*Ns+Ns-1)=(*vars[k])();
+    }
+    return res;
+  }
+  void TubeVertex::setRes(vd res){
+    TRACE(4,"TubeVertex::Set()");
+    const us& Ns=gc->Ns;
+    for(us k=0;k<Neq;k++){
+      vars[k]->set(res.subvec(k*gc->Ns,k*Ns+Ns-1));
+    }
+  }
+  dmat TubeVertex::jac() const {		// Return Jacobian
+    TRACE(5,"TubeVertex::Jac() for vertex "<< i<< ".");
+    const us& Ns=gc->Ns;
+    TRACE(5,"Ns:"<<Ns);
+    TRACE(5,"Neq:"<<Neq);    
+    dmat Jac(Neq*Ns,3*Neq*Ns,fillwith::zeros);
+    TRACE(5,"Pointer to left TubeVertex:"<<left);
+    TRACE(5,"Pointer to right TubeVertex:"<<right);
+    us firstcol=0;
+    us lastcol=Jac.n_cols-1;
+    for(us k=0;k<Neq;k++){
+      TRACE(5,"Equation number:"<<k);
+      us firstrow=k*Ns;
+      us lastrow=firstrow+Ns-1;
+      Jac.submat(firstrow,firstcol,lastrow,lastcol)=eqs[k]->jac(*this);
+      TRACE(5,"Equation "<< k <<"... succesfully obtained Jacobian");
+    }
+    return Jac;
+  }  
 
- 
-
-
+  
+  vd TubeVertex::csource() const {
+    TRACE(4,"TubeVertex::csource()");
+    return zeros(gc->Ns);}
+  vd TubeVertex::msource() const {
+    TRACE(4,"TubeVertex::msource()");
+    return zeros(gc->Ns);}
+  vd TubeVertex::esource() const {
+    TRACE(4,"TubeVertex::esource()");
+    vd esource=zeros(gc->Ns);
+    return esource;
+  }    
 
 } // namespace tube

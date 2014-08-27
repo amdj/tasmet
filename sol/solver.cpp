@@ -1,95 +1,131 @@
 #include "solver.h"
-#include <vtypes.h>
+#include "vtypes.h"
+#include <Eigen/Sparse>
+#include "arma_eigen.h"
 
 namespace tasystem{
+  using math_common::armaView;
+  using Eigen::ComputationInfo;
+  
+  evd solvesys_eigen(const esdmat& K,const evd& f)  {
+    TRACE(15,"Eigen solver used for large system");
+    // Solve a linear system using Eigen sparse
+    // Form: K*x=f
+    assert(f.size()>0);
 
+    // Eigen::SimplicialCholesky<esdmat,Eigen::COLAMDOrdering<int> > solver(jac); // Werkt niet...
+    // Eigen::SimplicialCholesky<esdmat,3 > solver(jac2); // Werkt niet...    
+    // Eigen::SimplicialLDLT<esdmat> solver(jac2);
+    // Eigen::SparseQR<esdmat,Eigen::COLAMDOrdering<int> > solver(jac2);      
+    TRACE(19,"Creating solver...");
+    // matrix
+    // cout << "f:\n"<<f;
+    // cout << "Matrix k:"<< K << "\n";
+    // Eigen::FullPivLU<edmat> dec(K);
+    TRACE(19,"Initializing solver...");    
 
-  Solver::Solver(const TAsystem& sys1) {
-    TRACE(15,"Solver(TAsystem&)");
-    sys=new TAsystem(sys1);
-  }
-  Solver::Solver(const Solver& other){
-    if(other.sys!=NULL)
-      sys=new TAsystem(*other.sys);
-    else
-      sys=NULL;
-  }
-  Solver& Solver::operator=(const Solver& other){
-    if(sys!=NULL)
-      delete sys;
-    if(other.sys!=NULL)
-      sys=new TAsystem(*other.sys);
-    else
-      sys=NULL;
-    return *this;
+    // Eigen::SparseQR<esdmat,Eigen::COLAMDOrdering<int> > solver(K);
+    Eigen::SparseLU<esdmat,Eigen::COLAMDOrdering<int> > solver(K);
+
+    cout << "Logarithm of absolute value of determinant of matrix: "<<solver.logAbsDeterminant() <<"\n";
+
+    switch(solver.info()){
+    case ComputationInfo::InvalidInput:
+      cout << "Solver initialization failed: invalid input" << "\n";
+      exit(1);
+    case ComputationInfo::NumericalIssue:
+      cout << "Solver initialization failed: numerical issue" << "\n";
+      exit(1);
+    case ComputationInfo::NoConvergence:
+      cout << "Solver initialization failed: no convergence" << "\n";
+      exit(1);
+    } // switch
+    
+      
+    // Eigen::BiCGSTAB<Eigen::SparseMatrix<double> > solver(K);
+    // cout << "Logarithm of absolute value of determinant of matrix: "<<solver.logAbsDeterminant() <<"\n";
+    
+    // solver.setMaxIterations(500);
+    
+    
+    TRACE(19,"Solving linear system...");    
+    evd x=solver.solve(f);
+    // std::cout << "#iterations: " << solver.iterations() << std::endl;
+    // std::cout << "estimated error: " << solver.error() << std::endl;
+
+    TRACE(19,"Solving linear system done.");    
+    return x;    
   }
   
-  Solver::~Solver(){
-      TRACE(-5,"~Solver()");
-      if(sys!=NULL){
-	delete sys;
-	sys=NULL;
-      }
-    }
-  void Solver::Init()
-  {
-    TRACE(15,"Solver::Init()");
-    if(!hasinit)
-      {
-	if (sys!=NULL) {
-	  sys->Init();
-	  hasinit=true;
-	}
-	else  {
-	  TRACE(50,"Error, no system defined!");
-	  return;
-	}
-      }	// already initialized
+  // A solver always contains a valid system.
+  Solver::Solver(const TaSystem& sys):tasystem(sys.copy()) {
+    TRACE(15,"Solver(TaSystem&)");
   }
-  void Solver::DoIter(d dampfac){
-    // Do an iteration
-    TRACE(15,"Solver::DoIter()");
-    Init();
-    using math_common::esdmat;
-    using math_common::evd;
-    TRACE(15,"Computing error...");
-    vd err=sys->Error();
-    TRACE(15,"Computing Jacobian...");
-    sdmat jac(sys->Jac());
-    // *jac=sdmat(sys->Jac());
-    // dmat jac=Jac();    
-    TRACE(10,"Converting data to Eigen...");
-    // esdmat jac2=sys->Jac();
-    esdmat jac2=math_common::ArmaToEigen(jac);
-    // delete jac;
-    evd Eerr=math_common::ArmaToEigen(err);
-    // TRACE(10,"jac2 (eigen):"<<endl<<jac2);
-    TRACE(10,"Computing old x...");
-    vd oldx=sys->GetRes();
-    TRACE(-1,"Old x:\n"<< oldx);
-    try{
-    // Eigen::SimplicialCholesky<esdmat,Eigen::COLAMDOrdering<int> > solver(jac2); // Werkt niet...
-    // Eigen::SimplicialCholesky<esdmat,3 > solver(jac2); // Werkt niet...    
-      TRACE(10,"Creating solver...");
-      Eigen::SparseLU<esdmat> solver(jac2);
-    // Eigen::SimplicialLDLT<esdmat> solver(jac2);
-    
-    // Eigen::SparseQR<esdmat,Eigen::COLAMDOrdering<int> > solver(jac2);      
-      TRACE(10,"Solving linear system...");
-      evd edx=solver.solve(Eerr);
-      vd dx=-dampfac*math_common::EigenToArma(edx);
+  Solver::Solver(const Solver& o): Solver(o.sys()){}
+  Solver& Solver::operator=(const Solver& other){
+    tasystem.reset(other.sys().copy());
+    return *this;
+  }
+ 
 
-      // vd dx=-solve(dmat(jac),err);
-      TRACE(10,"Solving linear done.");
-      
-      TRACE(10,"Updating result vector...");
-      sys->SetRes(oldx+dx);
-      TRACE(10,"Iteration done...");
-    }
-    catch(...)
+  typedef tuple<d,d> dtuple;
+  void Solver::solve(us maxiter,d funtol,d reltol){
+    TRACE(20,"Solver started.");
+
+    evd&& error=sys().error();
+    d funer=error.norm();
+    // For sure, we do at least one iteration
+    d reler=1.0;
+    us nloop=0;
+    if(maxiter==0)
+      maxiter=SOLVER_MAXITER;
+    TRACE(19,"maxiter:"<< maxiter);
+    TRACE(19,"funtol:"<< funtol);
+    TRACE(19,"reltol:"<< reltol);
+    while((funer>funtol || reler>reltol) && nloop<maxiter)
       {
-	
+	dtuple ers=doIter();
+	funer=std::get<0>(ers);
+	reler=std::get<1>(ers);
+	cout << "Iteration: "<<nloop<<" , function error: "<<funer<<" , relative error:" << reler<< ".\n";
+	nloop++;
       }
+    if(nloop==maxiter)
+      WARN("Solver reached maximum number of iterations! Results might not be reliable!");
+    cout << "Solver done.\n";
+  }
+  tuple<d,d> Solver::doIter(d dampfac){
+    // Do an iteration
+
+    
+    assert(dampfac>0 && dampfac<=1.0);
+    TRACE(15,"Solver::DoIter()");
+    TRACE(10,"Computing error...");
+    evd error=sys().error();
+    assert(error.size()>0);
+    TRACE(10,"Getting old result vector...");
+    evd oldx=sys().getRes();
+    // cout << "oldx:" << oldx <<"\n";
+    d funer=error.norm();
+    us Ndofs=error.size();
+    TRACE(15,"Computing Jacobian...");
+    esdmat jac=sys().jac();
+    jac.makeCompressed();
+
+    assert(jac.cols()==error.size());
+    assert(jac.rows()==error.size());
+    TRACE(15,"Solving linear system...");
+    evd dx=-1.0*dampfac*solvesys_eigen(jac,error);
+    d reler=dx.norm();
+    
+    TRACE(10,"Setting new solution vector...");
+    evd newx=oldx+dx;
+    vd Newx=armaView(newx);
+
+    // cout << "dx:"<<dx<<"\n";
+    sys().setRes(Newx);
+    TRACE(10,"Iteration done...");
+    return std::make_tuple(funer,reler);		// Return function error
   } // Solver::DoIter()
 
 } // namespace tasystem

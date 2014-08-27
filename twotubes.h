@@ -52,7 +52,7 @@ Solverptr TwoTubes(int loglevel=10)
   // t1.setRightbc(bcright1);
   t2.setRightbc(bcright2);
   coupleSegs(t1,t2,tailhead);
-  TAsystemptr sys(new tasystem::TAsystem(gc));
+  TaSystemptr sys(new tasystem::TaSystem(gc));
   sys->addseg(t1);
   sys->addseg(t2);
   Solverptr sol(new tasystem::Solver(*sys));

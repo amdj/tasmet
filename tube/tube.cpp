@@ -19,95 +19,164 @@
   // precisely, in the final solution the continuity, momentum, energy
   // and a suitable equation of state should hold.
 namespace tube {
-  Tube::Tube(Geom geom):Seg(geom),drag(*this){
+  Tube::Tube(const Geom& geom):Seg(geom){
     // Fill vector of gridpoints with data:
-    TRACE(13,"Tube constructor started, filling gridpoints vector...");
-
-    // globalconf instance is put in reference variable gc in
-    // inherited class Seg
-    build();
-    TRACE(13,"Tube constructor done");
-  }
-  void Tube::build(){
-    TRACE(13,"Tube::build()");
-    type="Tube";
-    // vvertex=new Vertex*[Ncells];
-    Nvertex=geom.Ncells;
-    for(us i=0; i<Nvertex;i++){
-      TRACE(12,"Creating Tube vvertex "<<i << " ...");
-      vvertex.push_back(vertexptr(new TubeVertex()));
-      // Link the array
-      if(i>0){
-	TRACE(-1,"Tube vvertex i-1:"<<i-1);
-	vvertex[i]->left=vvertex[i-1].get();
-	TRACE(-1,"Add right pointer to this one: " << vvertex[i]);
-	vvertex[i-1]->right=vvertex[i].get();
-      }
-    }
-
+    TRACE(13,"Tube constructor()...");
   }
   void Tube::cleanup(){
     TRACE(13,"Tube::cleanup()");
-    for(us i=0;i<Nvertex;i++)
-      vvertex[i].reset();
-    Nvertex=0;
-    Ndofs=0;
+    bcLeft.reset();
+    bcRight.reset();
+    vvertex.clear();
   }
-  
-  Tube::Tube(const Tube& other):Tube(other.geom){
-    TRACE(13,"Tube copy constructor");
-    this->gc=other.gc;
-    this->Ndofs=other.Ndofs;
-    this->left=other.left;
-    this->right=other.right;
-    this->nleft=other.nleft;
-    this->nright=other.nright;
-    TRACE(13,"Tube copy constructor done.");
-    // First runs the Seg copy constructor. This copies the pointers to left and righ segment of this one. Then the Seg base constructor is called from the Seg Cc. After that the Tube constructor is called to create the vertices.
+  Tube::Tube(const Tube& other):Seg(other){
+    copyTube(other);
   }
   Tube& Tube::operator=(const Tube& other){
-    TRACE(0,"Tube copy assignment");
+    TRACE(13,"Tube copy assignment");
     cleanup();
-    newgeom(other.geom);
-    // drag(geom);
-    build();
+    Seg::operator=(other);
+    copyTube(other);
     return *this;
   }
-  // void Tube::Init(const tasystem::Globalconf& g){
-  //   TRACE(13,"Tube::Init()");
-  //   Seg::Init(g);
-  //   for (us i=0;i<Nvertex;i++){
-  //     // TRACE(-1,"i:"<<i);
-  //     vvertex[i]->T.set(g.T0,0);
-  //     vvertex[i]->rho.set(g.gas.rho(g.T0,g.p0),0);
-  //   }
-  // }
+  void Tube::show(bool showvertices) const {
+    TRACE(18,"Tube::show()");
+    cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+    if(bcLeft){
+      cout << "Left side contains internal boundary condition of type " << bcLeft->getType() << ".\n";
+    }
+    if(bcRight){
+      cout << "Right side contains internal boundary condition of type " << bcRight->getType() << ".\n";
+    }
+    Seg::show(showvertices);
+    cout << "********************************************************************************\n";
+  }
+  void Tube::copyTube(const Tube& other){
+    TRACE(13,"Tube::copyTube()");
+    cleanup();
+    if(other.bcLeft){
+      TRACE(12,"Other has bc connected left side");
+      bcLeft.reset(other.bcLeft->copy());
+    }
+    if(other.bcRight)
+      bcRight.reset(other.bcRight->copy());
+  }
+  
+  void Tube::addBc(const TubeBcVertex& bc){
+    TRACE(14,"Tube::addBc(bc)");
+    if(bc.connectPos()==connectpos::left)
+      {
+	TRACE(12,"Bc connected left side");
+	bcLeft.reset(bc.copy());
+	if(bcLeft)
+	  TRACE(12,"bcLeft is now "<< bool(bcLeft));
+      }
+    else if(bc.connectPos()==connectpos::right)
+      {
+	TRACE(12,"Bc connected right side");
+	bcRight.reset(bc.copy());
+      }
+    else
+      {      
+	cout << "WARNING: bconnectbc(): Bc  not understood!\n";
+      }
+  }
+  us Tube::getNDofs() const {
+    TRACE(14,"Tube::getNDofs()");
+    if(gc!=NULL)
+      return vvertex.size()*gc->Ns*Neq;
+    else
+      return 0;
+  }
+  TubeVertex* Tube::leftTubeVertex() const{
+    TRACE(13,"Tube::leftTubeVertex()");
+    if(bcLeft){
+      TRACE(13,"Tube::leftTubeVertex() returning a boundary vertex");
+      return static_cast<TubeVertex*>(bcLeft->copy());
+    }
+    else{
+      TRACE(13,"Tube::leftTubeVertex() returning an ordinary vertex");
+      return new TubeVertex();
+    }
+  }
+  TubeVertex* Tube::rightTubeVertex() const{
+    if(bcRight)
+      return static_cast<TubeVertex*>(bcRight->copy());
+    else
+      return new TubeVertex();
+  }
 
 
-  vd Tube::GetResAt(us varnr,us freqnr){
-    const us& Ncells=geom.Ncells;
-    vd res(Ncells);
+  void Tube::init(const tasystem::Globalconf& g){
+    TRACE(13,"Tube::Init()");
+    Seg::init(g);
+    if(vvertex.size()==0){
+      TRACE(13,"Filling vertices. Current size:"<<vvertex.size());
+      vvertex.emplace_back(leftTubeVertex());
+      for(us i=1;i<geom.nCells-1;i++)
+    	vvertex.emplace_back(new TubeVertex());
+      vvertex.emplace_back(rightTubeVertex());
+
+      us nVertex=vvertex.size();    
+      assert(nVertex==geom.nCells);
+      // And initialize again.
+      for(us i=0;i<vvertex.size();i++){
+	TubeVertex* cvertex=static_cast<TubeVertex*>(vvertex[i].get());
+	TRACE(13,"Starting intialization of Vertex "<< i);
+	if(i<nVertex-1) cvertex->setRight(*vvertex[i+1].get());
+	if(i>0) cvertex->setLeft(*vvertex[i-1].get());
+	cvertex->initTubeVertex(i,*this);
+      }	
+    }	
+    else{
+      TRACE(13,"Tube already initialized!");
+    }
+  } // Tube::init(gc)
+  d Tube::getCurrentMass() const{
+    TRACE(8,"Tube::getCurrentMass()");
+    assert(vvertex.size()>0);
+    vd rho0=getResAt(0,0);
+    return arma::dot(rho0,geom.vVf);
+  }
+
+  
+  vd Tube::getResAt(us varnr,us freqnr) const{
+    TRACE(8,"Tube::getResAt("<<varnr<<","<<freqnr<<")");
+    const us& nCells=geom.nCells;
+    vd res(nCells);
     assert(varnr<Neq);
-    for(us i=0;i<Ncells;i++){
-      res(i)=vvertex[i]->vars[varnr]->operator()(freqnr);
+    for(us i=0;i<nCells;i++){
+      TubeVertex* cvertex=static_cast<TubeVertex*>(vvertex[i].get());
+      res(i)=cvertex->vars[varnr]->operator()(freqnr);
     }
     return res;
   }
+  vd Tube::getErrorAt(us eqnr,us freqnr) const{
+    const us& nCells=geom.nCells;
+    vd er(nCells);
+    assert(eqnr<Neq);
+    auto eqs=this->getEqs();
+    for(us i=0;i<nCells;i++){
+      TubeVertex& cvertex=*static_cast<TubeVertex*>(vvertex[i].get());
+      er(i)=(cvertex.eqs.at(eqnr)->error(cvertex))(freqnr);
+    }
+    return er;
+  }
+  vd Tube::dmtotdx() const{
+    TRACE(15,"Tube::dmtotdx()");
+    vd dmtotdx(getNDofs(),fillwith::zeros);
+    us nvertex=vvertex.size();
+    for(us i=0;i<nvertex;i++)
+      dmtotdx(i*Neq*gc->Ns)=geom.vVf(i);
+    return dmtotdx;
+  }  
   Tube::~Tube(){
     TRACE(15,"~Tube()");
     cleanup();
-    // if(Ncells>0){
-      // Vertex* v=vvertex[0];
-      // for (us i=0;i<Ncells;i++){
-	// TRACE(-6,"Deleting vertex..");
-	// delete vvertex[i];
-      // }
-	// TRACE(-6,"Deleting vertex array..");
-      // delete vvertex;  
-    // }
-
   }
   
 
+  
 } /* namespace tube */
+
 

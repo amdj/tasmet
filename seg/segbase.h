@@ -1,44 +1,62 @@
 #pragma once
 #ifndef _SEGBASE_H_
 #define _SEGBASE_H_
-#include <vtypes.h>
+#include "vtypes.h"
 #include "globalconf.h"
 #include "geom.h"
+#define Neq (5)
 
 
 namespace segment{
   class SegBase;
   using tasystem::Globalconf;
-  typedef std::vector< const SegBase* > Segvec;
-  
+  typedef vector<const SegBase*> SegBaseVec;
+
   class SegBase{
   private:
-    us number=0;
-    Geom* geomptr;
+    us number=0;		// Required for TaSystem. Not used in
+				// any segment code
   public:
-    Geom& geom;			// The geometry    
-  protected:
-    us nL=0,nR=0;
-    us nleft=0,nright=0;	// Deprecated!
-    string type;
-
-  public:
-    SegBase(Geom geom);
-    virtual ~SegBase();
+    Geom geom;			// The geometry    
     const Globalconf* gc=NULL;	// Global configuration of the system
   protected:
-    void newgeom(const Geom& newgeom);
-    
-  public:    
-    const string& gettype() const;
-    const Segvec& Right() const {return right;}
-    const Segvec& Left() const {return left;}
-    Segvec left,right;
-    const us& getNumber() const {return number;}
-    bool operator==(const SegBase& seg2) const; // Check if two segments are the same
+    SegBaseVec left,right;
+  public:
+    SegBase(const Geom& geom);
+    SegBase(const SegBase& o);
+    SegBase& operator=(const SegBase&);
+    virtual us getNDofs() const=0;
+    virtual us getNVertex() const=0;
+    virtual ~SegBase(){}
 
+
+    const SegBaseVec& getRight() const {return right;}
+    const SegBaseVec& getLeft() const {return left;}
+    void setRight(const SegBase&);	   // Couple segment to some segment on left side
+    void setLeft(const SegBase&);		   // Couple segment
+						   // to some segment
+						   // on right side
+    virtual string getType() const=0;		   // This param is
+    virtual d getCurrentMass() const=0;    
+    // important for connecting the segments
     
+    virtual string getName() const=0; // This one is jus the name
+    // ------------------------------
+    virtual void init(const Globalconf&); // Implementation updates gc
+    // ptr of this instance.
+    virtual vd error() const=0;
+    virtual void show(bool) const=0;
+    virtual dmat jac() const=0;
+    virtual vd domg() const=0;	// Derivative of error w.r.t. base frequency.
+    virtual vd dmtotdx() const=0; // Derivative of current mass in
+				    // system to all dofs.
+    virtual void setRes(vd res)=0;
+    virtual vd getRes() const=0;
+    virtual SegBase* copy() const=0;
     
+    const us& getNumber() const {return number;}
+    void setNumber(us number) {this->number=number;} 
+    bool operator==(const SegBase& seg2) const; // Check if two segments are the same
   };
   
   

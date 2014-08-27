@@ -6,38 +6,41 @@ cdef extern from "logger.h" namespace "":
 cdef extern from "globalconf.h" namespace "tasystem":
     cdef cppclass Globalconf:
         Globalconf(us Nf,d freq,string Gas,d T0,d p0,d Mach,d S,d dx,d Mass,d kappa)
+        d getfreq()
+        d getomg()
 
-# cdef extern from <vector.h> namespace "std":
-    # cdef cppclass vector[T]:
-        # T operator[](int)
-        
 cdef extern from "seg.h" namespace "segment":
     cdef cppclass Seg:
         Seg(Globalconf& gc)
 
         
-cdef extern from "system.h" namespace "tasystem":
-    cdef cppclass TAsystem:
-        TAsystem(Globalconf& gc)
-        void addseg(Seg& seg)
-        vd Error()
-        void show()
-        vd GetRes()
-        void SetRes(vd)
+cdef extern from "tasystem.h" namespace "tasystem":
+    cdef cppclass TaSystem:
+        TaSystem(Globalconf& gc)
+        Globalconf gc
+        void addSeg(Seg& seg)
+        evd error()
+        void show(bool)
+        evd getRes()
+        void setRes(vd)
         Seg* getSeg(us i)
         
 cdef extern from "solver.h" namespace "tasystem":
     cdef cppclass Solver:
-        Solver(TAsystem& sys)
-        void DoIter(d dampfac)
-        TAsystem* sys
-        void Init()
-    
+        Solver(TaSystem& sys)
+        void doIter(d dampfac)
+        TaSystem& sys()
+        void init()
+        void solve(us maxiter)
+        void solve()    
 
 cdef extern from "geom.h" namespace "tube":
     cdef cppclass Geom:
         Geom(us gp,d L,d S,d phi,d rh,string cshape) except +
-        vd vx
+        vd xv
+        vd vSf
+        vd vSs
+        vd x
 
 cdef extern from "var.h" namespace "variable":
     cdef cppclass var:
@@ -51,30 +54,20 @@ cdef extern from "tube.h" namespace "tube":
     cdef cppclass Tube:
         Tube(Geom g)
         Seg(Geom g)    
-        void Init(d T0,d p0)
-        us Ncells
+        void init(d T0,d p0)
         Geom geom
         Globalconf& gc
-        void setLeftbc(Vertex* v)
-        void setRightbc(Vertex* v)                
-        vd Error()
-        vd GetRes()
-        void SetRes(vd res)    
-        vd GetResAt(us varnr,us freqnr)
+        vd error()
+        vd getRes()
+        void setRes(vd res)    
+        vd getResAt(us varnr,us freqnr)
+        vd getErrorAt(us eqnr,us freqnr)            
 cdef extern from "vertex.h":
     cdef cppclass Vertex:
         pass
+cdef extern from "tubevertex.h":
     cdef cppclass TubeVertex(Vertex):
         pass
-cdef extern from "bcvertex.h" namespace "tube":
-    cdef cppclass TubeVertex:
-         TubeVertex(Tube&,us i)
-cdef extern from "pressurebc.h" namespace "tube":
-    cdef cppclass LeftPressure(TubeVertex):
-        LeftPressure(Tube,var pres)
-cdef extern from "impedancebc.h" namespace "tube":
-    cdef cppclass RightImpedance(TubeVertex):        
-        RightImpedance(Tube,vd Z)    
 
 
 

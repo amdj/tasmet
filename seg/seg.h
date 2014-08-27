@@ -2,63 +2,42 @@
 #ifndef _SEG_H_
 #define _SEG_H_
 #include "segbase.h"
-#include "vertex.h"
 #include <memory>
-
-#define MAXCONNECT 3		// Maximum segments that can be connected at left and right connection
+#include "vertex.h"
 
 namespace segment{
-
   SPOILNAMESPACE
-  typedef std::shared_ptr<Vertex> vertexptr;
-
-  enum SegCoupling{
-    headhead,tailtail,headtail,tailhead
-  };
+  typedef std::unique_ptr<Vertex> vertexptr;
 
   
   class Seg:public SegBase{
-    friend void coupleSegs(Seg&,Seg&,SegCoupling);
   public:
-    std::vector<vertexptr> vvertex; // Owned by segment, but controlled by derived classes.
-  private:
-    bool leftbc=false;
-    bool rightbc=false;
-  protected:
-    us Ndofs=0;
-    us Nvertex=0;
+    // This vector is common in each derived segment. It is controlled
+    // by the derived segment as well. The segment itself does do
+    // nothing with it.
+    std::vector<vertexptr> vvertex;
 
   public:    
-    Seg(Geom geom); // nL,nR initiated as 0
+    Seg(const Geom& geom);
     Seg(const Seg&);		       // Copy constructor, really copies everything
     Seg& operator=(const Seg&);
 
     // Coupling of segments
-    // ------------------------------ DEPRECATED!!
-    void setRight(const Seg&);	   // Couple segment to some segment on left side
-    void setLeft(const Seg&);		   // Couple segment to some segment on right side
-    // ------------------------------
-    
     // Initialized method (after adding to a system)
-    void Init(const tasystem::Globalconf&);			   // Initializer method. Different for each segment type
-    void show();
-    void showVertices();
-    const us& getNdofs() const {return Ndofs;}
-    const us& getNcells() const {return geom.Ncells;}
-    const us& getnL() const {return nL;}
-    const us& getnR() const {return nR;}
-
-    void setLeftbc(Vertex* v); // Set left boundary condition vertex
-    void setRightbc(Vertex* v); // Set left boundary condition vertex    
-    
-    vd Error();			// Return error vector for this segment
-    vd GetRes();		// Return result vector for this segment
-    dmat Jac();			// Return Jacobian matrix
-    void SetRes(vd res);
-    void setnodes(us n1,us n2){ nL=n1; nR=n2;}
+    virtual void init(const tasystem::Globalconf&);			   // Initializer method. Different for each segment type
+    void cleanup();
+    void show(bool showVertices=false) const;
+    const us& getNCells() const {return geom.nCells;}
+    virtual us getNVertex() const {return vvertex.size();}    
+    vd domg() const;
+    vd error() const;			// Return error vector for this segment
+    vd getRes() const;		// Return result vector for this segment
+    dmat jac() const;			// Return Jacobian matrix
+    void setRes(vd res);
+    // void setnodes(us n1,us n2){ nL=n1; nR=n2;}
     virtual ~Seg(){TRACE(-5,"~Seg()");}
-
-
+  private:
+    void showVertices() const ;    
   };
   
 
