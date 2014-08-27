@@ -26,6 +26,7 @@ namespace segment{
     SegBase(const SegBase& o);
     SegBase& operator=(const SegBase&);
     virtual us getNDofs() const=0;
+    virtual us getNVertex() const=0;
     virtual ~SegBase(){}
 
 
@@ -47,6 +48,8 @@ namespace segment{
     virtual void show(bool) const=0;
     virtual dmat jac() const=0;
     virtual vd domg() const=0;	// Derivative of error w.r.t. base frequency.
+    virtual vd dmtotdx() const=0; // Derivative of current mass in
+				    // system to all dofs.
     virtual void setRes(vd res)=0;
     virtual vd getRes() const=0;
     virtual SegBase* copy() const=0;

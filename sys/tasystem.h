@@ -40,7 +40,7 @@ namespace tasystem{
   public:
     Globalconf gc;    
   protected:
-    us getNDofs();	// Compute DOFS in system, set     
+    us getNDofs() const;	// Compute DOFS in system, set     
     
   public:
     TaSystem(const Globalconf& g);
@@ -56,7 +56,7 @@ namespace tasystem{
     // ############################## ACCESS METHODS
     virtual evd error();			// Total error vector
     virtual evd getRes();			// Extract result vector
-    virtual void setRes(vd resvec);	// Set result vector
+    virtual void setRes(const vd& resvec);	// Set result vector
     virtual esdmat jac();		// Return Jacobian matrix    
 
     

@@ -40,6 +40,9 @@ namespace tube{
     virtual string getType() const final {return string("Tube");}
     virtual void init(const Globalconf& gc);
     virtual d getCurrentMass() const;	// Obtain current mass in system
+    virtual vd dmtotdx() const; // Derivative of current mass in
+				    // system to all dofs.
+    
     vd getResAt(us varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
     vd getErrorAt(us varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
     friend class TubeVertex;    

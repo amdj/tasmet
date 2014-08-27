@@ -13,7 +13,7 @@ namespace tasystem{
     // Form: K*x=f
     assert(f.size()>0);
 
-    // Eigen::SimplicialCholesky<esdmat,Eigen::COLAMDOrdering<int> > solver(jac2); // Werkt niet...
+    // Eigen::SimplicialCholesky<esdmat,Eigen::COLAMDOrdering<int> > solver(jac); // Werkt niet...
     // Eigen::SimplicialCholesky<esdmat,3 > solver(jac2); // Werkt niet...    
     // Eigen::SimplicialLDLT<esdmat> solver(jac2);
     // Eigen::SparseQR<esdmat,Eigen::COLAMDOrdering<int> > solver(jac2);      
@@ -22,10 +22,13 @@ namespace tasystem{
     // cout << "f:\n"<<f;
     // cout << "Matrix k:"<< K << "\n";
     // Eigen::FullPivLU<edmat> dec(K);
-    TRACE(19,"Solving linear system...");    
-    // evd x=dec.solve(f);
+    TRACE(19,"Initializing solver...");    
 
-    Eigen::SparseLU<esdmat> solver(K);
+    // Eigen::SparseQR<esdmat,Eigen::COLAMDOrdering<int> > solver(K);
+    Eigen::SparseLU<esdmat,Eigen::COLAMDOrdering<int> > solver(K);
+
+    cout << "Logarithm of absolute value of determinant of matrix: "<<solver.logAbsDeterminant() <<"\n";
+
     switch(solver.info()){
     case ComputationInfo::InvalidInput:
       cout << "Solver initialization failed: invalid input" << "\n";
@@ -36,10 +39,20 @@ namespace tasystem{
     case ComputationInfo::NoConvergence:
       cout << "Solver initialization failed: no convergence" << "\n";
       exit(1);
-
+    } // switch
+    
       
-    }
+    // Eigen::BiCGSTAB<Eigen::SparseMatrix<double> > solver(K);
+    // cout << "Logarithm of absolute value of determinant of matrix: "<<solver.logAbsDeterminant() <<"\n";
+    
+    // solver.setMaxIterations(500);
+    
+    
+    TRACE(19,"Solving linear system...");    
     evd x=solver.solve(f);
+    // std::cout << "#iterations: " << solver.iterations() << std::endl;
+    // std::cout << "estimated error: " << solver.error() << std::endl;
+
     TRACE(19,"Solving linear system done.");    
     return x;    
   }
@@ -61,13 +74,14 @@ namespace tasystem{
 
     evd&& error=sys().error();
     d funer=error.norm();
-    d reler=0;
+    // For sure, we do at least one iteration
+    d reler=1.0;
     us nloop=0;
     if(maxiter==0)
       maxiter=SOLVER_MAXITER;
-    TRACE(15,"maxiter:"<< maxiter);
-    TRACE(15,"funtol:"<< funtol);
-    TRACE(15,"reltol:"<< reltol);
+    TRACE(19,"maxiter:"<< maxiter);
+    TRACE(19,"funtol:"<< funtol);
+    TRACE(19,"reltol:"<< reltol);
     while((funer>funtol || reler>reltol) && nloop<maxiter)
       {
 	dtuple ers=doIter();
@@ -96,7 +110,7 @@ namespace tasystem{
     us Ndofs=error.size();
     TRACE(15,"Computing Jacobian...");
     esdmat jac=sys().jac();
-    // jac.makeCompressed();
+    jac.makeCompressed();
 
     assert(jac.cols()==error.size());
     assert(jac.rows()==error.size());

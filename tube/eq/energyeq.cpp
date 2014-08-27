@@ -86,8 +86,8 @@ namespace tube{
     d gamma=this->gamma(v);
     d gamfac=gamma/(gamma-1.0);
 
-    vd domg=v.eWddt*DDTfd*v.p()/(gamma-1.0)/v.gc->omg; // Static enthalpy term
-    domg+=v.eWddtkin*DDTfd*fDFT*(v.rho.tdata()%v.U.tdata()%v.U.tdata())/v.gc->omg;
+    vd domg=v.eWddt*DDTfd*v.p()/(gamma-1.0)/v.gc->getomg(); // Static enthalpy term
+    domg+=v.eWddtkin*DDTfd*fDFT*(v.rho.tdata()%v.U.tdata()%v.U.tdata())/v.gc->getomg();
     return domg;
   }
 

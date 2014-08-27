@@ -102,7 +102,7 @@ namespace variable {
     vc cres=getcRes();
     for(us n=0;n<Nf+1;n++)
       {
-	result+=real(cres(n)*exp(I*double(n)*gc->omg*t));
+	result+=real(cres(n)*exp(I*double(n)*gc->getomg()*t));
       }
     return result;
   }

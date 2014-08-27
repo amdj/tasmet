@@ -9,6 +9,5 @@
 #include "isotwall.h"
 #include "isotwallp.h"
 #include "twimpedance.h"
-#include "enginewall.h"
 #endif /* _BC_H_ */
 

@@ -52,7 +52,7 @@ namespace tube{
   }
   vd Continuity::domg(const TubeVertex& v) const{
     TRACE(0,"Continuity::domg()");
-    vd domg=v.cWddt*v.gc->DDTfd*v.rho()/v.gc->omg;
+    vd domg=v.cWddt*v.gc->DDTfd*v.rho()/v.gc->getomg();
     return domg;
   }
   dmat Continuity::drhoi(const TubeVertex& v) const {

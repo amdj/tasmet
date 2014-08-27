@@ -32,8 +32,8 @@ Solver* ThreeTubesEngineDriven(us gp,us Nf,d freq,d Tr,vd p1,int loglevel,d kapp
   d Ltot=L1+L2+L3;
   
   us gp1=max(round(gp*L1/Ltot),4);  
-  us gp2=max(round(gp*L2/Ltot),4);
-  us gp3=max(round(gp*L3/Ltot),4);
+  us gp2=max(round(gp*L2/Ltot),4)*5;
+  us gp3=max(round(gp*L3/Ltot),4)*2;
   
   cout << "gp1: "<< gp1<< "\n";
   cout << "gp2: "<< gp2<< "\n";

@@ -6,6 +6,8 @@ cdef extern from "logger.h" namespace "":
 cdef extern from "globalconf.h" namespace "tasystem":
     cdef cppclass Globalconf:
         Globalconf(us Nf,d freq,string Gas,d T0,d p0,d Mach,d S,d dx,d Mass,d kappa)
+        d getfreq()
+        d getomg()
 
 cdef extern from "seg.h" namespace "segment":
     cdef cppclass Seg:
@@ -15,6 +17,7 @@ cdef extern from "seg.h" namespace "segment":
 cdef extern from "tasystem.h" namespace "tasystem":
     cdef cppclass TaSystem:
         TaSystem(Globalconf& gc)
+        Globalconf gc
         void addSeg(Seg& seg)
         evd error()
         void show(bool)

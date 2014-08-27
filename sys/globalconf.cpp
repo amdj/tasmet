@@ -33,7 +33,7 @@ namespace tasystem{
   void Globalconf::show() const {
     cout << "------- Globalconf configuration ------ \n"			\
 	 << "------- Nf             : "<< Nf <<"\n"				\
-	 << "------- Base frequency : " << freq << " Hz\n"			\
+	 << "------- Base frequency : " << omg/2/number_pi << " Hz\n"			\
 	 << "------- Gas            : " << Gastype << "\n"			\
 	 << "------- p0             : " << p0 << " [Pa] \n"			\
 	 << "------- T0             : " << T0 << " [K] \n"			\
@@ -56,16 +56,17 @@ namespace tasystem{
     DDTtd=zeros<dmat>(Ns,Ns);
     ddt=zeros<dmat>(Ns-1,Ns-1);
     iddt=zeros<dmat>(Ns-1,Ns-1);
+    updateiDFT();
+    updatefDFT();
+
     setfreq(freq);
 
     TRACE(-1,"fDFT:" << fDFT);
   }
-  void Globalconf::setfreq(d freq)  {
-    this->freq=freq;
+  void Globalconf::setfreq(d freq){setomg(2*number_pi*freq);}
+  void Globalconf::setomg(d omg)  {
+    this->omg=omg;
     oldomg=omg;
-    omg=2.0*number_pi*freq;
-    updateiDFT();
-    updatefDFT();
     updateiomg();
   }
   void Globalconf::updatefDFT(){

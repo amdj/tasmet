@@ -28,6 +28,7 @@ namespace segment{
     void cleanup();
     void show(bool showVertices=false) const;
     const us& getNCells() const {return geom.nCells;}
+    virtual us getNVertex() const {return vvertex.size();}    
     vd domg() const;
     vd error() const;			// Return error vector for this segment
     vd getRes() const;		// Return result vector for this segment

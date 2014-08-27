@@ -31,8 +31,8 @@ Solver* ThreeTubesEngine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa)
   d Ltot=L1+L2+L3;
   
   us gp1=max(round(gp*L1/Ltot),4);  
-  us gp2=max(round(gp*L2/Ltot),4);
-  us gp3=max(round(gp*L3/Ltot),4);
+  us gp2=max(round(gp*L2/Ltot),4)*5;
+  us gp3=max(round(gp*L3/Ltot),4)*2;
   
   cout << "gp1: "<< gp1<< "\n";
   cout << "gp2: "<< gp2<< "\n";
@@ -54,18 +54,17 @@ Solver* ThreeTubesEngine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa)
   // LeftEngineWall l1;
   HopkinsLaminarDuct t1(geom1,gc.T0);
   // IsentropicTube t1(geom1);
-  t1.addBc(l1);
+  // t1.addBc(l1);
   HopkinsLaminarDuct t2(geom2,gc.T0,Tr);
   // IsentropicTube t2(geom2);  
   HopkinsLaminarDuct t3(geom3,Tr);
   // IsentropicTube t3(geom3);    
   RightIsoTWall r1(Tr);
-  t3.addBc(r1);
+  // t3.addBc(r1);
   TimingConstraint tc(0,0,3,2);
   // EngineSystem sys(gc,tc);
   TRACE(100,"Creating ordinary TaSystem");
-  TaSystem sys(gc);
-
+  EngineSystem sys(gc,tc);
   sys.addSeg(t1);
   sys.addSeg(t2);
   sys.addSeg(t3);  

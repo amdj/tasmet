@@ -100,8 +100,7 @@ namespace tasystem{
   
 
   
-  us TaSystem::getNDofs()
-  {
+  us TaSystem::getNDofs() const  {
     TRACE(14,"TaSystem::getNDofs()");
     us Ndofs=0;
     for(us i=0;i<getNSegs();i++)
@@ -265,7 +264,7 @@ namespace tasystem{
     }
     return res;
   }
-  void TaSystem::setRes(vd Res){
+  void TaSystem::setRes(const vd& Res){
     checkInit();
     TRACE(14,"TaSystem::SetRes(vd res)");
     us Ndofs=getNDofs();

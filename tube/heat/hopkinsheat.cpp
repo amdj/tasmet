@@ -120,7 +120,7 @@ namespace tube{
     d kappa0=v.gc->gas.kappa(T0);
     d mu0=v.gc->gas.mu(T0);
     if(Nf>0){
-      vd omgvec=v.gc->omg*linspace(1,Nf,Nf);
+      vd omgvec=v.gc->getomg()*linspace(1,Nf,Nf);
       vd deltak=sqrt(2*kappa0/(rho0*cp0*omgvec));
       vd deltanu=sqrt(2*mu0/(rho0*omgvec));
       vc fnu=rf.fx(rh/deltanu); // Viscous rott function
@@ -140,7 +140,7 @@ namespace tube{
     d cp0=v.gc->gas.cp(T0);
     const d& rh=v.lg.vrh;
 
-    d omg=v.gc->omg;
+    d omg=v.gc->getomg();
     vc htcoefH(Nf+1,fillwith::zeros);
     htcoefH(0)=(*zeroheatH_funptr)(kappa0,rh);
     if(Nf>0){

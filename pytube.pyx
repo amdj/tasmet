@@ -93,8 +93,8 @@ cdef class pytube:
     cpdef getNf(self):
         return self.Nf
     cpdef getFreq(self):
-        return self.freq
-    cpdef solve(self,maxiter=10):
+        return self.sol[0].sys().gc.getfreq()
+    cpdef solve(self,maxiter=100):
         self.sol[0].solve(maxiter)    
     cpdef getgp(self):
         return self.gp

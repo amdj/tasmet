@@ -162,7 +162,14 @@ namespace tube {
     }
     return er;
   }
-  
+  vd Tube::dmtotdx() const{
+    TRACE(15,"Tube::dmtotdx()");
+    vd dmtotdx(getNDofs(),fillwith::zeros);
+    us nvertex=vvertex.size();
+    for(us i=0;i<nvertex;i++)
+      dmtotdx(i*Neq*gc->Ns)=geom.vVf(i);
+    return dmtotdx;
+  }  
   Tube::~Tube(){
     TRACE(15,"~Tube()");
     cleanup();

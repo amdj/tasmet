@@ -1,16 +1,11 @@
 /* test.cpp */
 
-#include "globalconf.h"
 #include "tube.h"
 #include "isentropictube.h"
-#include "twimpedance.h"
-#include "pressurebc.h"
 #include "hopkinslaminarduct.h"
-#include "tubevertex.h"
-#include "impedancebc.h"
-#include "isotwall.h"
 #include "enginesystem.h"
 #include "solver.h"
+#include "bc.h"
 using namespace std;
 using namespace segment; 
 using namespace tasystem;
@@ -51,51 +46,24 @@ int main(int argc,char* argv[]) {
   Globalconf gc(Nf,f,"air",T0,p0,kappa);
   Globalconf air=Globalconf::airSTP(Nf,f);
   air=gc;
-  Geom geom1=Geom::Cylinder(gp,L,rtube);
-  IsentropicTube t1(geom1);
-  // HopkinsLaminarDuct t1(geom1);
-  // TRACE(100,"Thisrho:");  
-  TRACE(100,"Thisrho:"<< gc.gas.rho(T0,p0));
-
+  Geom geom1=Geom::CylinderBlApprox(gp,L,rtube);
+  // IsentropicTube t1(geom1);
+  HopkinsLaminarDuct t1(geom1,gc.T0,gc.T0+10);
   var pL(gc,0);
   if(Nf>0)
     pL.set(1,1);
   tube::LeftPressure bcleft(pL);
-  // tube::RightImpedance bcright(0,415*vd(Ns,fillwith::ones));
-  tube::TwImpedance bcright;
   // tube::RightIsoTWall bcright(0,T0+10);
   // TRACE(100,"Add bc to tube...");
   t1.addBc(bcleft);
-  // t1.addBc(bcright);
-
-  // TRACE(100,"Creating empty TaSystem...");
   TimingConstraint tc(0,0,3,2);
   EngineSystem sys(air,tc);
-  // TRACE(100,"Filling TaSystem with a segment...");
-  // auto t2(t1);
+  // TaSystem sys(air);  
   sys.addSeg(t1); 
-  // TRACE(100,"Filling segment done...");      
-  // // sys.connectSegs(02,1,SegCoupling::tailhead);
   sys.init();
-  
-  TubeVertex& v=static_cast<TubeVertex&>(*(static_cast<Seg*>(sys.getSeg(0))->vvertex.at(0)));
-  v.p.set(2,10);
-  sys.show(false);
 
+  Solver sol(sys);
 
-  cout << "error:\n"<<sys.error()<<"\n";
-  sys.jac();
-  // // sys.addBc(bcright);
-  // TRACE(100,"Copy TaSystem...");    
-  // // TaSystem sys2(gc);
-  // // sys2.addSeg(t2);
-  // TRACE(100,"Copy TaSystem done...");      
-  // TRACE(100,"Running init on first sys:=================================");
-  // TRACE(100,"---------------------------------------------------sys init done. now starting sys2 init9");
-
-  // Solver sol(sys);
-  // cout << "Result:\n" << sys.getRes();  
-  // cout << "Error:\n" << sys.error();
   // sol.doIter();
   // sol.solve();
     // // // vd x=t1.GetRmomes();
@@ -103,9 +71,9 @@ int main(int argc,char* argv[]) {
   // // cout << "error:\n"<<err;
 
   // cout << "err:\n"<<er;
-  // edmat Jac=sol.sys().jac();
+  edmat Jac=sol.sys().jac();
   // sol1.sys->show();
-  // cout << "Jac:\n"<< Jac;
+  cout << "Jac:\n"<< Jac<<"\n";
   // sol.solve();
   // cout << "\nDeterminant Jac:" << arma::det(Jac) << "\n";
   // sol.sys.show(true);

@@ -13,16 +13,17 @@ namespace tasystem{
   class EngineSystem:public TaSystem{
     TimingConstraint tc;
     d getInitialMassFromGc() const; //
-
+    us getNVertex() const;
   public:    
     EngineSystem(const Globalconf& gc,TimingConstraint tc);
     EngineSystem(const EngineSystem&);
     EngineSystem& operator=(const EngineSystem&);
     virtual TaSystem* copy() const {return new EngineSystem(*this);}
     virtual esdmat jac();
+    virtual void setRes(const vd& res);
     virtual evd getRes();
-    // virtual void setRes(vd res);
-    evd domg();
+    vd dmtotdx() const;
+    vd domg();
     virtual evd error();
     virtual void init();
     virtual void show(bool showvertices);

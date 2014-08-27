@@ -36,7 +36,7 @@ namespace tube{
     d rho0=v.gc->gas.rho(T0,p0);
 
     const d& rh=v.lg.vrh;
-    d omg=v.gc->omg;
+    d omg=v.gc->getomg();
     vc rescoef(Nf+1);
     if(Nf>0){
       vd omgvec=omg*linspace(1,Nf,Nf);
