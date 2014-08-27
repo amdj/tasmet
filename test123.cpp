@@ -56,8 +56,9 @@ int main(int argc,char* argv[]) {
   // tube::RightIsoTWall bcright(0,T0+10);
   // TRACE(100,"Add bc to tube...");
   t1.addBc(bcleft);
-  TimingConstraint tc(0,0,3,2);
-  EngineSystem sys(air,tc);
+  EngineSystem sys(air);
+  sys.setTimingConstraint(0,0,3,2);
+  sys.setAmplitudeDof(0,0,3,1);
   // TaSystem sys(air);  
   sys.addSeg(t1); 
   sys.init();

@@ -75,15 +75,14 @@ namespace tasystem{
 
     
     d getCurrentMass() const;	// Return current mass in system [kg]
-    
+    void checkInit(){		// Often called simple method: inline
+      if(!hasInit){ init(); hasInit=true; }
+    }
   private:
     // A vector of boundary conditions is required
     void copyTaSystem(const TaSystem& other);
     void cleanup();
-  protected:
-    void checkInit();
-    // void setnodes(us segnr,us nL,us nR);
-    // friend void copysegs(TaSystem& to,const TaSystem& from);
+
   };				// class System
   
 } // namespace tasystem

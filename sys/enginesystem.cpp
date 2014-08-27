@@ -5,19 +5,18 @@ namespace tasystem{
 
 
   
-  EngineSystem::EngineSystem(const Globalconf& gc,TimingConstraint tc):
-    TaSystem(gc),
-    tc(tc)
+  EngineSystem::EngineSystem(const Globalconf& gc):
+    TaSystem(gc)
   {    TRACE(15,"EngineSystem::EngineSystem(gc,tc)");}
   EngineSystem::EngineSystem(const EngineSystem& sys):
     TaSystem(sys),
-    tc(sys.tc)
+    tc(sys.tc),av(sys.av)
   {    TRACE(15,"EngineSystem::EngineSystem(EngineSystem))");}
   EngineSystem& EngineSystem::operator=(const EngineSystem& sys){
     TRACE(15,"EngineSystem::operator=()");
     TaSystem::operator=(sys);
     tc=sys.tc;
-    
+    av=sys.av;
   }
   void EngineSystem::show(bool showvertices) {
     checkInit();
@@ -66,71 +65,94 @@ namespace tasystem{
     }
     return dmtotdx;
   }
-  esdmat EngineSystem::jac(){
-    TRACE(15,"Enginesystem::jac()");
-    us Ndofs;
+  vtriplet EngineSystem::Ljac(){
+    TRACE(15,"Enginesystem::Ljac()");
+
     esdmat subjac=TaSystem::jac();
     vtriplet jactriplets=math_common::getTripletsBlock(subjac,1,0,subjac.rows()-1,subjac.cols());
 
+    us Ndofs=getNDofs();
     if(gc.Nf>0)
-      Ndofs=getNDofs()+1;
-    else
-      Ndofs=getNDofs();
-    esdmat jac(Ndofs,Ndofs);
+      Ndofs++;
 
-    
     math_common::shiftTriplets(jactriplets,1,0);
     // Reserve some extra space in this tripletlist and add the extra components
     vd dmtotdx=this->dmtotdx();
     // cout << "dmtotdx:" <<dmtotdx;
     us dmtotdxsize=dmtotdx.size();
-    us newspace=jactriplets.size();
-
-    newspace+=getNVertex();
+    us extraspace=getNVertex();
 
     if(gc.Nf>0){
       vd domg=this->domg();
       // TRACE(50,"domg:"<<domg);
 
       us domgsize=domg.size();
-      newspace+=domgsize;	// A little bit too much, but anyway..
-      jactriplets.reserve(newspace);
+      extraspace+=domgsize;	// A little bit too much, but anyway..
+      math_common::reserveExtraDofs(jactriplets,extraspace);
       for(us i=0;i<domgsize;i++){
 	if(domg(i)!=0)
 	  jactriplets.push_back(triplet(i,Ndofs-1,domg(i)));
       }	// for domg
 
       // Now we need to add the timingconstraint as well.
+      // TRACE(50,"Dofnr:"<<tc.dofnr(*this));
       jactriplets.push_back(triplet(Ndofs-1,tc.dofnr(*this),1));
-
       
     } // gc.Nf>0
-    jactriplets.reserve(newspace);
+    else			// Only dofs for dmtotdx
+      math_common::reserveExtraDofs(jactriplets,extraspace);
+
     for(us i=0;i<dmtotdxsize;i++)
       if(dmtotdx(i)!=0)
 	jactriplets.push_back(triplet(0,i,dmtotdx(i)));
+
+    return jactriplets;
+  }
+  esdmat EngineSystem::jac(){
+    TRACE(15,"EngineSystem::jac()");
     
-    jac.setFromTriplets(jactriplets.begin(),jactriplets.end());
-    // cout << "Last column of jac: " << jac.innerVector(jac.cols()-1) <<"\n";
+    vtriplet Mjac=this->Ljac(); // Its called Mjac, but here it is still Ljac
+    d aval=av.value(*this);
+    assert(aval!=0);		// Otherwise, something is wrong.
+    math_common::multiplyTriplets(Mjac,1/aval); // Now its Mjac
+
+
+    evd M=this->error();
+    us valdof=av.dofnr(*this);
+    math_common::reserveExtraDofs(Mjac,M.size());
+    // If we add extra triplets to this vector, summation is done
+    // according to the eigen documentation.
+    // TRACE(50,"SFSG")
+    for(us i=0;i<M.size();i++)
+      if(M(i)!=0)
+    	Mjac.push_back(triplet(i,valdof,-M(i)/aval));
+    us Ndofs=getNDofs();	// This number is without extra omega dof
+    if(gc.Nf>0)
+      Ndofs+=1;
+    esdmat jac(Ndofs,Ndofs);
+    jac.setFromTriplets(Mjac.begin(),Mjac.end());
     return jac;
   }
+
+
+  
   evd EngineSystem::error(){
     TRACE(15,"EngineSystem::error()");
-    us Ndofs;
-    if(gc.Nf>0)
-      Ndofs=getNDofs()+1;
-    else
-      Ndofs=getNDofs();    
-    evd error(Ndofs);		// Add one for the timing constraint
     if(gc.Nf>0)    {
+      us Ndofs=getNDofs()+1;
+      evd error(Ndofs);		// Add one for the timing constraint
       error.head(Ndofs-1)=TaSystem::error();
-      error(Ndofs-1)=tc.error(*this);
+      error(Ndofs-1)=tc.value(*this);
+      // Strip first equation (for now, assuming it is a continuity
+      d aval=av.value(*this);
+      error(0)=getCurrentMass()-gc.getMass();
+      error*=(1/aval);		// Divide L by amplitude value to
+				// avoid zero amplitude as solution
+      return error;
     } else{
-      error=TaSystem::error();
+      return TaSystem::error();
     }
-    // Strip first equation (for now, assuming it is a continuity equation!!)
-    error(0)=getCurrentMass()-gc.getMass();
-    return error;
+
   }
   evd EngineSystem::getRes(){
     TRACE(15,"EngineSystem::getRes()");
@@ -182,6 +204,14 @@ namespace tasystem{
     }
     // Eigen::SparseVector()
     return domg;
+  }
+  void EngineSystem::setTimingConstraint(us segnr,us vertexnr,us varnr,us freqnr){
+    TRACE(18,"EngineSystem::setTimingConstraint()");
+    tc.set(segnr,vertexnr,varnr,freqnr);
+  }
+  void EngineSystem::setAmplitudeDof(us segnr,us vertexnr,us varnr,us freqnr)   {
+    TRACE(18,"EngineSystem::setAmplitudeDof()");
+    av.set(segnr,vertexnr,varnr,freqnr);
   }
 
 } // namespace tasystem

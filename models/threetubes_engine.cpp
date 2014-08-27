@@ -61,10 +61,10 @@ Solver* ThreeTubesEngine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa)
   // IsentropicTube t3(geom3);    
   RightIsoTWall r1(Tr);
   // t3.addBc(r1);
-  TimingConstraint tc(0,0,3,2);
-  // EngineSystem sys(gc,tc);
-  TRACE(100,"Creating ordinary TaSystem");
-  EngineSystem sys(gc,tc);
+  // TRACE(100,"Creating ordinary TaSystem");
+  EngineSystem sys(gc);
+  sys.setTimingConstraint(0,0,3,2);
+  sys.setAmplitudeDof(0,0,3,1);
   sys.addSeg(t1);
   sys.addSeg(t2);
   sys.addSeg(t3);  

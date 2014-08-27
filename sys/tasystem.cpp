@@ -131,13 +131,6 @@ namespace tasystem{
       segs[i]->show(showvertices);
     }
   }
-  void TaSystem::checkInit(){
-    TRACE(14,"TaSystem::CheckInit()");
-    if(!hasInit){
-      init();
-      hasInit=true;
-    }
-  }
   void TaSystem::setGc(const Globalconf& gc){
     TRACE(14,"TaSystem::setGc()");
     this->gc=gc;
