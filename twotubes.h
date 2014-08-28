@@ -22,7 +22,7 @@ Solverptr TwoTubes(int loglevel=10)
   using namespace segment;
   using tube::Tube;
 
-  initlog(loglevel);
+  inittrace(loglevel);
 
   us Ns=2*Nf+1;
   d freq=100;

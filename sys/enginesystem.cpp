@@ -17,6 +17,7 @@ namespace tasystem{
     TaSystem::operator=(sys);
     tc=sys.tc;
     av=sys.av;
+    return *this;
   }
   void EngineSystem::show(bool showvertices) {
     checkInit();

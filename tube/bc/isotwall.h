@@ -13,7 +13,7 @@ namespace tube{
   public:
     IsoTWall(d Tbc): Tbc(Tbc){}
     IsoTWall(const IsoTWall& o):IsoTWall(o.Tbc){}
-    IsoTWall& operator=(const IsoTWall& o){Tbc=o.Tbc;}
+    IsoTWall& operator=(const IsoTWall& o){Tbc=o.Tbc; return *this;}
     virtual ~IsoTWall(){}
     virtual void show() const;
     virtual void initTubeVertex(us i,const Tube& thisseg);
@@ -28,7 +28,7 @@ namespace tube{
   public:
     RightIsoTWall(d Tbc):IsoTWall(Tbc){}
     RightIsoTWall(const RightIsoTWall& o):RightIsoTWall(o.Tbc){}
-    RightIsoTWall& operator=(const RightIsoTWall& o){Tbc=o.Tbc;}
+    RightIsoTWall& operator=(const RightIsoTWall& o){Tbc=o.Tbc; return *this;}
     virtual string getType() const {return string("RightIsoTWall");}
     virtual TubeBcVertex* copy() const {return new RightIsoTWall(*this);}
     virtual enum connectpos connectPos() const {return connectpos::right;}
@@ -42,7 +42,7 @@ namespace tube{
   public:
     LeftIsoTWall(d Tbc):IsoTWall(Tbc){}
     LeftIsoTWall(const LeftIsoTWall& o):LeftIsoTWall(o.Tbc){}
-    LeftIsoTWall& operator=(const LeftIsoTWall& o){Tbc=o.Tbc;}
+    LeftIsoTWall& operator=(const LeftIsoTWall& o){Tbc=o.Tbc; return *this;}
     virtual string getType() const {return string("LeftIsoTWall");}
     virtual TubeBcVertex* copy() const {return new LeftIsoTWall(*this);}
     virtual enum connectpos connectPos() const {return connectpos::left;}

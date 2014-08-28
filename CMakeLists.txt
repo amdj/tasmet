@@ -1,5 +1,5 @@
 # CMakeList.txt for nonlinear code
-add_definitions(-DLOGLEVEL=nonlinearlogger)
+add_definitions(-DTRACERNAME=nonlineartracer)
 
 ############################## Not so often changed
 
@@ -82,9 +82,6 @@ target_link_libraries(pytube nonlin math_common armadillo)
 # add_library(pytube SHARED pytube.cpp)
 # set_target_properties(pytube PROPERTIES PREFIX "")
 
-#target_link_libraries(pytube python2.7)
-# The headers which have to be installed
-#set (math_common_HEADERS math_common.h logger.h vtypes.h material.h bessel.h)
 #enable_testing()
 #add_test(test_cpp test COMMAND test)
 #add_custom_target(testtest COMMAND test)

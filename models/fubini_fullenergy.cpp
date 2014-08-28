@@ -11,7 +11,7 @@ using namespace variable;
 using namespace gases;
 Solver* Fubini_fullenergy(us gp,us Nf,d freq,d L,d S,vd p1,int loglevel,d kappa)
 {
-  initlog(loglevel);
+  inittrace(loglevel);
   d dx=L/gp;
   d T0=293.15;
   d p0=101325;

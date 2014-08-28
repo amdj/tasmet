@@ -19,7 +19,7 @@ int main(int argc,char* argv[]) {
 
   d T0=293.15;
   cout<< "Loglevel:"<<loglevel<<"\n";
-  initlog(loglevel);
+  inittrace(loglevel);
   vd p1(2*Nf+1,arma::fill::zeros);
   if(Nf>0)
     p1(1)=0.5e-2;

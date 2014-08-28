@@ -15,7 +15,7 @@ using namespace gases;
 
 Solver* ThreeTubesConduction(us gp,us Nf,d freq,d L,d S1,d S2,vd p1,int loglevel,d kappa,d Tr)
 {
-  initlog(loglevel);
+  inittrace(loglevel);
   assert(Tr>0);
 
   TRACE(100,"L:"<<L);

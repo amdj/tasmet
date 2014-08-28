@@ -26,7 +26,7 @@ int main(int argc,char* argv[]) {
   if(argc>2)
     Nf=atoi(argv[2]);
   cout<< "Loglevel:"<<loglevel<<"\n";
-  initlog(loglevel);
+  inittrace(loglevel);
   d L=0.01;
 
   d S=1;

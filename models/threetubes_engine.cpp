@@ -17,7 +17,7 @@ inline us max(us x,us y){ return x>y?x:y;}
 Solver* ThreeTubesEngine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa)
 {
   TRACE(30,"Entering ThreeTubesEngine");
-  initlog(loglevel);
+  inittrace(loglevel);
   assert(Tr>0);
 
   d p0=376e3;

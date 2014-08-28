@@ -11,7 +11,7 @@ using namespace variable;
 using namespace gases;
 Solver* ConeTube(us gp,us Nf,d freq,d L,d r1,d r2,vd p1,int loglevel,d kappa)
 {
-  initlog(loglevel);
+  inittrace(loglevel);
   d phi=1.0;
 
   cout << "Kappa: " << kappa << "\n";

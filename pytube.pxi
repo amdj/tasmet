@@ -1,6 +1,6 @@
 include "armapy.pxi"
 
-cdef extern from "logger.h" namespace "":
+cdef extern from "tracer.h" namespace "":
     void initlog(us)
 
 cdef extern from "globalconf.h" namespace "tasystem":

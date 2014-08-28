@@ -14,7 +14,7 @@ using namespace gases;
 
 Solver* ThreeTubes(us gp,us Nf,d freq,d L,d S1,d S2,vd p1,int loglevel,d kappa)
 {
-  initlog(loglevel);
+  inittrace(loglevel);
   TRACE(100,"L:"<<L);
   d R1=sqrt(S1/number_pi);
   d R2=sqrt(S2/number_pi);

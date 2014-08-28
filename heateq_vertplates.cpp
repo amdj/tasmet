@@ -6,8 +6,8 @@ namespace vertplates{
 
 heateq_vertplates::heateq_vertplates(d y0,varoperations& vop):y0(y0),vop(vop),Nf(vop.Nf),Ns(vop.Ns),A(vop),uB(vop),C(vop),rho(vop),mu(vop),Tw_over_T(vop),T(vop),rho0(1),mu0(1)
 {
-	TRACELOG("heateq_vertplates::heateq_vertplates(d y0,varoperations vop)");
-	TRACELOG("Ns:" << A.Ns);
+	TRACE(9,"heateq_vertplates::heateq_vertplates(d y0,varoperations vop)");
+	TRACE(9,"Ns:" << A.Ns);
 	s=vdzeros(Ns+1);
 
 
@@ -19,7 +19,7 @@ vc heateq_vertplates::hnu_n(d y) {
 }
 
 var heateq_vertplates::g_n(d y) {
-	TRACELOG("heateq_vertplates::g_n(d y)");
+	TRACE(9,"heateq_vertplates::g_n(d y)");
 	vc hnu=hnu_n(y);
 	vc gn(hnu.size());
 	vc Cn=C.getcRes();
@@ -35,20 +35,20 @@ var heateq_vertplates::g_n(d y) {
 	return gnvar;
 }
 var heateq_vertplates::Temp(d y) {
-	TRACELOG("heateq_vertplates::Temp(d y)");
+	TRACE(9,"heateq_vertplates::Temp(d y)");
 	var gn=g_n(y);
-//	TRACELOG("gn:" << gn);
-//	TRACELOG("gn timedata:" << gn.tdata());
-//	TRACELOG("T:" << T);
+//	TRACE(9,"gn:" << gn);
+//	TRACE(9,"gn timedata:" << gn.tdata());
+//	TRACE(9,"T:" << T);
 	var Temp=gn;
-	TRACELOG("Temp:" << Temp);
-	TRACELOG("heateq_vertplates::Temp(d y) done.");
+	TRACE(9,"Temp:" << Temp);
+	TRACE(9,"heateq_vertplates::Temp(d y) done.");
 	return Temp;
 }
 
 vd heateq_vertplates::Temp(d t,vd y) // Compute the temperature for a given time
 {
-	TRACELOG("heateq_vertplates::Temp(d t,vd y)");
+	TRACE(9,"heateq_vertplates::Temp(d t,vd y)");
 	us N=y.size();
 	vd temp(N);
 	var Ty(vop);
@@ -59,17 +59,17 @@ vd heateq_vertplates::Temp(d t,vd y) // Compute the temperature for a given time
 		temp(i)=Ty.tdata(t);
 	}
 
-	TRACELOG("heateq_vertplates::Temp(d t,vd y) done.");
+	TRACE(9,"heateq_vertplates::Temp(d t,vd y) done.");
 	return temp;
 
 }
 
 void heateq_vertplates::setdata(const var& Tw,const var& T,const var& p,const var& dTdx,const var& dpdx,gas& g)
 {
-	TRACELOG("heateq_vertplates::setdata()");
-	TRACELOG("T.tdata(): " << T.tdata());
+	TRACE(9,"heateq_vertplates::setdata()");
+	TRACE(9,"T.tdata(): " << T.tdata());
 	this->T=T;
-	TRACELOG("T:" << this->T);
+	TRACE(9,"T:" << this->T);
 	Tw_over_T=Tw/T;
 	var rho=g.rho(T,p);
 	var mu=g.mu(T);
@@ -82,8 +82,8 @@ void heateq_vertplates::setdata(const var& Tw,const var& T,const var& p,const va
 	mu0=mu(0);
 	rho0=rho(0);
 
-	TRACELOG("rho0:"<<rho0);
-	TRACELOG("mu0:" << mu0);
+	TRACE(9,"rho0:"<<rho0);
+	TRACE(9,"mu0:" << mu0);
 
 
 	vd dpdt=p.ddt().tdata();
@@ -93,17 +93,17 @@ void heateq_vertplates::setdata(const var& Tw,const var& T,const var& p,const va
 	vd gammat=gamma.tdata();
 	vd kappat=kappa.tdata();
 
-	TRACELOG("Kappa: " << kappa);
+	TRACE(9,"Kappa: " << kappa);
 	vd t0=(1.0/(kappat%Tt));
 	vd t1=(gammat)/(gammat-1.0)%pt/Tt;
 	vd A_td=t0%(t1%dTdt-dpdt);
 	vd B_td=t0%(t1%dTdx.tdata()-dpdx.tdata());
-	TRACELOG("A_td computed:" << A_td);
-	TRACELOG("B_td computed:" << B_td);
+	TRACE(9,"A_td computed:" << A_td);
+	TRACE(9,"B_td computed:" << B_td);
 
 	A.settdata(A_td);
 	uB.settdata(B_td);
-	TRACELOG("settdata done.");
+	TRACE(9,"settdata done.");
 
 	vd Cguess=ones<vd>(Ns)*0.55*pi/y0;
 	Cguess(0)=1/y0;
@@ -124,12 +124,12 @@ vd heateq_vertplates::Cerr(const vd& C)
 	Cvar.set(C);
 	vc Cn=Cvar.getcRes();
 	vc An=A.getcRes();
-	TRACELOG("Cerr called with argument" << C);
+	TRACE(9,"Cerr called with argument" << C);
 	//Compute the error in C_n for current choice of C
-	TRACELOG("heateq_vertplates::Cerr(const vd& C)");
-	TRACELOG("rho0" << rho0);
-	TRACELOG("mu0" << mu0);
-	TRACELOG("Shear wave number:" << s);
+	TRACE(9,"heateq_vertplates::Cerr(const vd& C)");
+	TRACE(9,"rho0" << rho0);
+	TRACE(9,"mu0" << mu0);
+	TRACE(9,"Shear wave number:" << s);
 
 	vc Tw_over_T_n=(Tw_over_T).getcRes();
 
