@@ -145,6 +145,7 @@ namespace tasystem{
       error(Ndofs-1)=tc.value(*this);
       // Strip first equation (for now, assuming it is a continuity
       d aval=av.value(*this);
+      TRACE(50,"aval:"<<aval);
       error(0)=getCurrentMass()-gc.getMass();
       error*=(1/aval);		// Divide L by amplitude value to
 				// avoid zero amplitude as solution

@@ -75,7 +75,7 @@ namespace tube{
     // Possibly later adding drag->domg();
     const dmat& DDTfd=v.gc->DDTfd;
     const dmat& fDFT=v.gc->fDFT;
-    return v.gc->DDTfd*fDFT*(v.rho.tdata()%v.U.tdata())/v.gc->getomg();
+    return v.gc->DDTfd*v.mWddt*fDFT*(v.rho.tdata()%v.U.tdata())/v.gc->getomg();
   }
   dmat Momentum::dUi(const TubeVertex& v) const {
     TRACE(0,"Momentum::dUi()");
