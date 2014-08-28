@@ -66,3 +66,13 @@ class nonlinpost(nlpost):
     def getU(self,i):
         return self.U[i]
 
+    def pressureprofile(self,i,Nperiods=2,ns=100):
+        p=[]
+        for k in range(self.Nf+1):
+            p.append(self.getp(k)[i])
+        t=n.linspace(0,Nperiods/self.freq,ns)
+        pt=p[0]*n.ones(t.shape)
+        omg=2*n.pi*self.freq
+        for i in range(1,self.Nf+1):
+            pt+=(p[i]*n.exp(1j*i*(omg*t))).real        
+        return pt
