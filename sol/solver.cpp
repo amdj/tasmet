@@ -69,7 +69,7 @@ namespace tasystem{
  
 
   typedef tuple<d,d> dtuple;
-  void Solver::solve(us maxiter,d funtol,d reltol){
+  void Solver::solve(us maxiter,d funtol,d reltol,d dampfac){
     TRACE(20,"Solver started.");
 
     evd&& error=sys().error();
@@ -84,7 +84,7 @@ namespace tasystem{
     TRACE(19,"reltol:"<< reltol);
     while((funer>funtol || reler>reltol) && nloop<maxiter)
       {
-	dtuple ers=doIter();
+	dtuple ers=doIter(dampfac);
 	funer=std::get<0>(ers);
 	reler=std::get<1>(ers);
 	cout << "Iteration: "<<nloop<<" , function error: "<<funer<<" , relative error:" << reler<< ".\n";

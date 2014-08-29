@@ -75,4 +75,4 @@ class nonlinpost(nlpost):
         omg=2*n.pi*self.freq
         for i in range(1,self.Nf+1):
             pt+=(p[i]*n.exp(1j*i*(omg*t))).real        
-        return pt
+        return (t,pt)

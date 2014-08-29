@@ -150,6 +150,7 @@ namespace tasystem{
       error(0)=getCurrentMass()-gc.getMass();
       error*=(1/aval);		// Divide L by amplitude value to
 				// avoid zero amplitude as solution
+      cout << "Amplitude value: " << aval << "\n";
       return error;
     } else{
       return TaSystem::error();
