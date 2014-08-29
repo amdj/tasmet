@@ -27,6 +27,7 @@ namespace tube{
     HopkinsHeatSource& operator=(const HopkinsHeatSource&);
     HopkinsHeatSource(const HopkinsHeatSource& o);
     void setdTwdx(const Geom& g,d dTwdx);
+    void setdTwdx(const Geom& g,const vd& dTwdx);
     virtual vd heat(const TubeVertex& v) const;
     virtual dmat dUi(const TubeVertex& v) const;
     virtual dmat dTi(const TubeVertex& v) const;

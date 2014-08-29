@@ -134,9 +134,6 @@ namespace tasystem{
     jac.setFromTriplets(Mjac.begin(),Mjac.end());
     return jac;
   }
-
-
-  
   evd EngineSystem::error(){
     TRACE(15,"EngineSystem::error()");
     if(gc.Nf>0)    {

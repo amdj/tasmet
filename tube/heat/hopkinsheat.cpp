@@ -76,6 +76,9 @@ namespace tube{
   void HopkinsHeatSource::setdTwdx(const Geom& g,d dTwdx){
     this->dTwdx=dTwdx*vd(g.nCells,fillwith::ones);
   }
+  void HopkinsHeatSource::setdTwdx(const Geom& g,const vd& dTwdx){
+    this->dTwdx=dTwdx;
+  }
   vd HopkinsHeatSource::heat(const TubeVertex& v) const{
     TRACE(5,"HopkinsHeatSource::heat(v)");
     vd heat(v.gc->Ns,fillwith::zeros);

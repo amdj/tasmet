@@ -17,7 +17,6 @@ namespace tasystem{
     // Eigen::SimplicialCholesky<esdmat,3 > solver(jac2); // Werkt niet...    
     // Eigen::SimplicialLDLT<esdmat> solver(jac2);
     // Eigen::SparseQR<esdmat,Eigen::COLAMDOrdering<int> > solver(jac2);      
-    TRACE(19,"Creating solver...");
     // matrix
     // cout << "f:\n"<<f;
     // cout << "Matrix k:"<< K << "\n";

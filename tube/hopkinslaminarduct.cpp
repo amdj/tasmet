@@ -1,6 +1,6 @@
 #include "hopkinslaminarduct.h"
 #include "tube.h"
-
+#include "bessel.h"
 namespace tube{
   HopkinsLaminarDuct::HopkinsLaminarDuct(const Geom& geom,d Tl):HopkinsLaminarDuct(geom,Tl,Tl){}
 
@@ -31,7 +31,8 @@ namespace tube{
 
     vd& xv=geom.xv;
     d& L=geom.L;
-    vd Tmirror=Tl+(Tr-Tl)*xv/L;
+    vd Tmirror=Tl+(Tr-Tl)*math_common::skewsine(xv/L);
+    // vd Tmirror=Tl+(Tr-Tl)*xv/L;
     se.setTMirror(Tmirror);
     d T;
     for(us i=0;i<vvertex.size();i++){
@@ -40,7 +41,8 @@ namespace tube{
 	cvertex.Ts.set(0,T);
 	cvertex.T.set(0,T);
     }
-    hopkinsheat.setdTwdx(geom,(Tr-Tl)/geom.L);
+    vd dTwdx=math_common::ddx_central(Tmirror,geom.xv);
+    hopkinsheat.setdTwdx(geom,dTwdx);
   }
   
   
