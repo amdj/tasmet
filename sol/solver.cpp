@@ -26,8 +26,6 @@ namespace tasystem{
     // Eigen::SparseQR<esdmat,Eigen::COLAMDOrdering<int> > solver(K);
     Eigen::SparseLU<esdmat,Eigen::COLAMDOrdering<int> > solver(K);
 
-    cout << "Logarithm of absolute value of determinant of matrix: "<<solver.logAbsDeterminant() <<"\n";
-
     switch(solver.info()){
     case ComputationInfo::InvalidInput:
       cout << "Solver initialization failed: invalid input" << "\n";
@@ -40,6 +38,8 @@ namespace tasystem{
       exit(1);
     } // switch
     
+    cout << "Logarithm of absolute value of determinant of matrix: "<<solver.logAbsDeterminant() <<"\n";
+
       
     // Eigen::BiCGSTAB<Eigen::SparseMatrix<double> > solver(K);
     // cout << "Logarithm of absolute value of determinant of matrix: "<<solver.logAbsDeterminant() <<"\n";
