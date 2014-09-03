@@ -134,21 +134,25 @@ namespace tube{
       cWi=w.wRl-w.wLr;
       cWip1=w.UsignR*w.wRr;
 
-      // cWart1=-0.5*(w.vSf+w.vSfL)/w.dxm;
-      // cWart2= 0.5*(w.vSf+w.vSfL)/w.dxm;
-      // cWart3= 0.5*(w.vSf+w.vSfR)/w.dxp;
-      // cWart4=-0.5*(w.vSf+w.vSfR)/w.dxp;
-      cWart1=-0.5*(w.vSf+w.vSfL);
-      cWart2= 0.5*(w.vSf+w.vSfL);
-      cWart3= 0.5*(w.vSf+w.vSfR);
-      cWart4=-0.5*(w.vSf+w.vSfR);
+      d vSfLav=0.5*(w.vSf+w.vSfL);
+      d vSfRav=0.5*(w.vSf+w.vSfR);      
+      d vSfLavsq=pow(vSfLav,2);
+      d vSfRavsq=pow(vSfRav,2);
+
+      cWart1=-0.5*vSfLav;
+      cWart2= 0.5*vSfLav;
+      cWart3= 0.5*vSfRav;
+      cWart4=-0.5*vSfRav;
 
       mWart1=-1;
       mWart2= 1;
       mWart3= 1;
       mWart4=-1;
 
-      
+      // mWuim1=-w.UsignL*w.wLl/vSfLav;
+      // mWui=w.wRl/vSfRav-w.wLr/vSfLav;
+      // mWuip1=w.UsignR*w.wRr/vSfRav;
+
       mWuim1=-w.UsignL*w.wLl/w.vSfL;
       mWui=(w.wRl-w.wLr)/w.vSf;
       mWuip1=w.UsignR*w.wRr/w.vSfR;
@@ -156,20 +160,26 @@ namespace tube{
       mWpim1=-w.vSf*w.wLl;
       mWpi  = w.vSf*(w.wRl-w.wLr);
       mWpip1= w.vSf*w.wRr;
-      
+
       eWgim1=-w.UsignL*w.wLl;
       eWgi=w.wRl-w.wLr;
       eWgip1=w.UsignR*w.wRr;
 
-      eWkinim1=-0.5*w.UsignL*w.wLl/vSfLsq;
-      eWkini=0.5*(w.wRl/vSfsq-w.wLr/vSfsq);
-      eWkinip1=0.5*w.UsignR*w.wRr/vSfRsq;
-      TRACE(1,"w.dxm:"<< w.dxm);
-      TRACE(1,"w.dxp:"<< w.dxp);
-      eWc1=-0.5*(w.vSfL+w.vSf)/w.dxm;
-      eWc2= 0.5*(w.vSfL+w.vSf)/w.dxm;
-      eWc3= 0.5*(w.vSf+w.vSfR)/w.dxp;
-      eWc4=-0.5*(w.vSf+w.vSfR)/w.dxp;
+      eWkinim1=-0.5*w.UsignL*w.wLl/vSfLavsq;
+      eWkini=0.5*(w.wRl/vSfRavsq-w.wLr/vSfLavsq);
+      eWkinip1=0.5*w.UsignR*w.wRr/vSfRavsq;
+
+      // eWkinim1=-0.5*w.UsignL*w.wLl/vSfLsq;
+      // eWkini=0.5*(w.wRl/vSfsq-w.wLr/vSfsq);
+      // eWkinip1=0.5*w.UsignR*w.wRr/vSfRsq;
+      
+      // TRACE(1,"w.dxm:"<< w.dxm);
+      // TRACE(1,"w.dxp:"<< w.dxp);
+      eWc1=-vSfLav/w.dxm;
+      eWc2= vSfLav/w.dxm;
+      eWc3= vSfRav/w.dxp;
+      eWc4=-vSfRav/w.dxp;
+
     }
     else if(i==0){
       TRACE(15,"Building for first cell adiabatic wall");
