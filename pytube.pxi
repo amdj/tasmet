@@ -26,6 +26,7 @@ cdef extern from "tasystem.h" namespace "tasystem":
         evd getRes()
         void setRes(vd)
         Seg* getSeg(us i)
+        void showJac()
         
 cdef extern from "solver.h" namespace "tasystem":
     cdef cppclass Solver:

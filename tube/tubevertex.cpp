@@ -14,6 +14,13 @@ namespace tube{
     cout << "cWi      :"<<cWi<<"\n";
     cout << "cWip1    :"<<cWip1<<"\n";
     // cout << "cWarti    :"<<cWarti<<"\n";
+    cout << "mWuim1   :"<<mWuim1<<"\n";
+    cout << "mWui     :"<<mWui<<"\n";
+    cout << "mWuip1   :"<<mWuip1<<"\n";
+    cout << "mWpim1   :"<<mWpim1<<"\n";
+    cout << "mWpi     :"<<mWpi<<"\n";
+    cout << "mWpip1   :"<<mWpip1<<"\n";
+
     cout << "eWddt    :"<<eWddt<<"\n";
     cout << "eWgim1   :"<<eWgim1<<"\n";
     cout << "eWgi     :"<<eWgi<<"\n";

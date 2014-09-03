@@ -61,8 +61,8 @@ cdef class pytubeBase:
             return dvectond(self.tube[i].getResAt(4,freqnr))
         else:
             return None
-
-        
+    cpdef showJac(self):
+        self.sol[0].sys().showJac()
         
         
 cdef extern from "models.h" namespace "":

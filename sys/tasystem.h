@@ -47,6 +47,7 @@ namespace tasystem{
     TaSystem(const TaSystem& o);
     TaSystem& operator=(const TaSystem& other);
     virtual ~TaSystem();
+    void showJac();
     virtual TaSystem* copy() const {return new TaSystem(*this);}
     virtual void show(us showvertices);
     us getNSegs() const {return segs.size();}

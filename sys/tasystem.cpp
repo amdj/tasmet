@@ -151,6 +151,7 @@ namespace tasystem{
     
     TRACE(-1,"Ndofs:"<<Ndofs);
     dmat jac(eigjac.data(),Ndofs,Ndofs,false);
+    jac.zeros();
     us cellblock=Neq*Ns;
     for(us j=0;j<getNSegs();j++){
       TRACE(14,"System loop, segment " << j);
@@ -287,7 +288,10 @@ namespace tasystem{
     } // for loop
     return mass;
   }
-  
+  void TaSystem::showJac(){
+    esdmat jac=this->jac();
+    cout << "Jacobian: \n" << jac << "\n";
+  }
   TaSystem::~TaSystem() {
     TRACE(-5,"~TaSystem()");
     cleanup();
