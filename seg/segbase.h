@@ -45,7 +45,7 @@ namespace segment{
     virtual void init(const Globalconf&); // Implementation updates gc
     // ptr of this instance.
     virtual vd error() const=0;
-    virtual void show(bool) const=0;
+    virtual void show(us) const=0;
     virtual dmat jac() const=0;
     virtual vd domg() const=0;	// Derivative of error w.r.t. base frequency.
     virtual vd dmtotdx() const=0; // Derivative of current mass in

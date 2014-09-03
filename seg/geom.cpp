@@ -31,6 +31,11 @@ namespace segment{
     geom.shape=string("blapprox");
     return geom;
   }
+  Geom Geom::ConeBlApprox(us gp, d L,d r1,d r2){
+    Geom geom=Cone(gp,L,r1,r2);
+    geom.shape=string("blapprox");
+    return geom;
+  }
 
   Geom Geom::Cone(us gp,d L,d r1,d r2){
     TRACE(10,"Geom::Cone()");

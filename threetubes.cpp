@@ -29,11 +29,11 @@ int main(int argc,char* argv[]) {
   d kappa=1;
   d L=0.1;
   // Solver* sol=ThreeTubesEngineDriven(gp,Nf,freq,T0+100,p1,loglevel,kappa);
-  Solver* sol=ThreeTubesEngine(gp,Nf,freq,T0+10,loglevel,kappa);
-  sol->sys().show(false);
+  // Solver* sol=ThreeTubesEngine(gp,Nf,freq,T0+10,loglevel,kappa);
+  // sol->sys().show(false);
   // sol->doIter();
   // cout <<sol->sys().jac();
-  sol->solve();
+  // sol->solve();
   // cout <<"Result:\n"<<  sol->sys.getRes();
   // cout <<"Result:\n"<< static_cast<tube::Tube*>(sol->sys().getSeg(0))->getResAt(2,0);
   // cout <<"Result:\n"<< static_cast<tube::Tube*>(sol->sys().getSeg(1))->getResAt(2,0);
@@ -42,7 +42,7 @@ int main(int argc,char* argv[]) {
   
   
   
-  delete sol;
+  // delete sol;
   return 0;
 }
 

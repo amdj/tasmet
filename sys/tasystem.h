@@ -48,7 +48,7 @@ namespace tasystem{
     TaSystem& operator=(const TaSystem& other);
     virtual ~TaSystem();
     virtual TaSystem* copy() const {return new TaSystem(*this);}
-    virtual void show(bool showvertices);
+    virtual void show(us showvertices);
     us getNSegs() const {return segs.size();}
     void connectSegs(us seg1,us seg2,SegCoupling);
     // System with a
@@ -74,7 +74,7 @@ namespace tasystem{
     virtual void init();
 
     
-    d getCurrentMass() const;	// Return current mass in system [kg]
+    d getCurrentMass();	// Return current mass in system [kg]
     void checkInit(){		// Often called simple method: inline
       if(!hasInit){ init(); hasInit=true; }
     }

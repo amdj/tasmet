@@ -20,6 +20,7 @@ namespace tasystem{
   public:    
     EngineSystem(const Globalconf& gc);
     EngineSystem(const EngineSystem&);
+    EngineSystem(const TaSystem&); // Copy from base class
     EngineSystem& operator=(const EngineSystem&);
     virtual TaSystem* copy() const {return new EngineSystem(*this);}
 

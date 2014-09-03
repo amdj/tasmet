@@ -119,7 +119,7 @@ namespace tasystem{
     hasInit=false;
   }
 
-  void TaSystem::show(bool showvertices){
+  void TaSystem::show(us showvertices){
     checkInit();
     TRACE(14,"checkInit() done");
     cout << "########################## Showing TaSystem...\n";
@@ -277,8 +277,9 @@ namespace tasystem{
 	WARN("Amount of DOFS in result vector does not match system size!");
       }
   } // TaSystem::SetRes()
-  d TaSystem::getCurrentMass() const{
+  d TaSystem::getCurrentMass() {
     TRACE(10,"TaSystem::getCurrentMass()");
+    checkInit();
     d mass=0;
     us nsegs=segs.size();
     for(us i=0;i<nsegs;i++){

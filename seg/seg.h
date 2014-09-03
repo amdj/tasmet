@@ -26,7 +26,7 @@ namespace segment{
     // Initialized method (after adding to a system)
     virtual void init(const tasystem::Globalconf&);			   // Initializer method. Different for each segment type
     void cleanup();
-    void show(bool showVertices=false) const;
+    void show(us showVertices=0) const;
     const us& getNCells() const {return geom.nCells;}
     virtual us getNVertex() const {return vvertex.size();}    
     vd domg() const;

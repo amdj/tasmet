@@ -12,6 +12,7 @@ namespace tasystem{
     TaSystem(sys),
     tc(sys.tc),av(sys.av)
   {    TRACE(15,"EngineSystem::EngineSystem(EngineSystem))");}
+  EngineSystem::EngineSystem(const TaSystem& sys):TaSystem(sys){}
   EngineSystem& EngineSystem::operator=(const EngineSystem& sys){
     TRACE(15,"EngineSystem::operator=()");
     TaSystem::operator=(sys);
@@ -42,7 +43,9 @@ namespace tasystem{
     for(us i=0;i<nsegs;i++){
       mass+=segs[i]->geom.getFluidVolume();
     } // for loop
+    TRACE(20,"Volume of device: "<< mass<<" [m^3].");
     mass*=gc.rho0;
+    TRACE(20,"Initial mass as computed from rho0="<<gc.rho0<<" [kg/m^3],\n and volume of device: "<< mass << " [kg].");
     return mass;
   }
   us EngineSystem::getNVertex() const{
@@ -109,6 +112,7 @@ namespace tasystem{
 
     return jactriplets;
   }
+  // INCLUDING DIVIDE BY AMPLITUDE
   esdmat EngineSystem::jac(){
     TRACE(15,"EngineSystem::jac()");
     
@@ -134,8 +138,27 @@ namespace tasystem{
     jac.setFromTriplets(Mjac.begin(),Mjac.end());
     return jac;
   }
+  // WITHOUT DIVIDE BY AMPLITUDE
+  // esdmat EngineSystem::jac(){
+  //   TRACE(15,"EngineSystem::jac()");
+    
+  //   vtriplet Mjac=this->Ljac(); // Its called Mjac, but here it is still Ljac
+  //   d aval=av.value(*this);
+  //   assert(aval!=0);		// Otherwise, something is wrong.
+
+  //   us Ndofs=getNDofs();	// This number is without extra omega dof
+  //   if(gc.Nf>0)
+  //     Ndofs+=1;
+  //   esdmat jac(Ndofs,Ndofs);
+  //   jac.setFromTriplets(Mjac.begin(),Mjac.end());
+  //   return jac;
+  // }
+  // INCLUDING DIVIDE BY AMPLITUDE
   evd EngineSystem::error(){
     TRACE(15,"EngineSystem::error()");
+    d curmass=getCurrentMass();
+    TRACE(20,"Current iteration mass in system: " << curmass << " [kg]");
+
     if(gc.Nf>0)    {
       us Ndofs=getNDofs()+1;
       evd error(Ndofs);		// Add one for the timing constraint
@@ -143,17 +166,37 @@ namespace tasystem{
       error(Ndofs-1)=tc.value(*this);
       // Strip first equation (for now, assuming it is a continuity
       d aval=av.value(*this);
-      TRACE(50,"aval:"<<aval);
-      error(0)=getCurrentMass()-gc.getMass();
+      cout << "Current amplitude value: " << aval << "\n";
+      error(0)=curmass-gc.getMass();
       error*=(1/aval);		// Divide L by amplitude value to
-				// avoid zero amplitude as solution
-      cout << "Amplitude value: " << aval << "\n";
+      // avoid zero amplitude as solution
+
       return error;
     } else{
-      return TaSystem::error();
-    }
+      evd error=TaSystem::error();
 
+      error(0)=curmass-gc.getMass();
+      return error;      
+    }
   }
+  // WITHOUT DIVIDE BY AMPLITUDE
+  // evd EngineSystem::error(){
+  //   TRACE(15,"EngineSystem::error()");
+  //   if(gc.Nf>0)    {
+  //     us Ndofs=getNDofs()+1;
+  //     evd error(Ndofs);		// Add one for the timing constraint
+  //     error.head(Ndofs-1)=TaSystem::error();
+  //     error(Ndofs-1)=tc.value(*this);
+  //     // Strip first equation (for now, assuming it is a continuity
+  //     error(0)=getCurrentMass()-gc.getMass();
+  //     d aval=av.value(*this);
+  //     cout << "Amplitude value: " << aval << "\n";
+  //     return error;
+  //   } else{
+  //     return TaSystem::error();
+  //   }
+  // }
+
   evd EngineSystem::getRes(){
     TRACE(15,"EngineSystem::getRes()");
     checkInit();
@@ -174,8 +217,8 @@ namespace tasystem{
     // Sanity check
     us ndofs=getNDofs();
     us ressize=res.size();
-    TRACE(50,"ndofs: "<< ndofs);
-    TRACE(50,"res size: "<< ressize);
+    TRACE(15,"ndofs: "<< ndofs);
+    TRACE(15,"res size: "<< ressize);
     assert(ressize==ndofs || ressize==ndofs+1);
 
     

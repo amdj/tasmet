@@ -36,7 +36,7 @@ namespace segment{
     TRACE(13,"Seg::init()");
     SegBase::init(gc);
   } // Seg::Init
-  void Seg::show(bool showVertices) const {
+  void Seg::show(us showVertices) const {
     TRACE(18,"Seg::show()");
     cout << "Showing segment of type " << getType() <<" with number "<<getNumber()<< ".\n";
     cout << "Number: "<< getNumber() << ".\n";
@@ -47,7 +47,7 @@ namespace segment{
 	cout << "Left segment:" << *s << "\n";
     for(auto s=getRight().begin();s!=getRight().end();s++)
 	cout << "Right segment:" << *s << "\n";
-    if(showVertices==true)
+    if(showVertices==1)
       this->showVertices();
   }
   void Seg::showVertices() const {

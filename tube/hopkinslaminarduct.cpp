@@ -31,8 +31,8 @@ namespace tube{
 
     vd& xv=geom.xv;
     d& L=geom.L;
-    vd Tmirror=Tl+(Tr-Tl)*math_common::skewsine(xv/L);
-    // vd Tmirror=Tl+(Tr-Tl)*xv/L;
+    // vd Tmirror=Tl+(Tr-Tl)*math_common::skewsine(xv/L);
+    vd Tmirror=Tl+(Tr-Tl)*xv/L;
     se.setTMirror(Tmirror);
     d T;
     for(us i=0;i<vvertex.size();i++){

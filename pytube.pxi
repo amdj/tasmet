@@ -1,5 +1,6 @@
 include "armapy.pxi"
 
+
 cdef extern from "tracer.h" namespace "":
     void initlog(us)
 
@@ -8,6 +9,7 @@ cdef extern from "globalconf.h" namespace "tasystem":
         Globalconf(us Nf,d freq,string Gas,d T0,d p0,d Mach,d S,d dx,d Mass,d kappa)
         d getfreq()
         d getomg()
+        us Nf
 
 cdef extern from "seg.h" namespace "segment":
     cdef cppclass Seg:
@@ -20,7 +22,7 @@ cdef extern from "tasystem.h" namespace "tasystem":
         Globalconf gc
         void addSeg(Seg& seg)
         evd error()
-        void show(bool)
+        void show(us)
         evd getRes()
         void setRes(vd)
         Seg* getSeg(us i)
@@ -41,6 +43,7 @@ cdef extern from "geom.h" namespace "tube":
         vd vSf
         vd vSs
         vd x
+        d L
 
 cdef extern from "var.h" namespace "variable":
     cdef cppclass var:

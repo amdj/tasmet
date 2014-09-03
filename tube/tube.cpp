@@ -39,7 +39,7 @@ namespace tube {
     copyTube(other);
     return *this;
   }
-  void Tube::show(bool showvertices) const {
+  void Tube::show(us showvertices) const {
     TRACE(18,"Tube::show()");
     cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
     if(bcLeft){

@@ -31,7 +31,7 @@ namespace tube{
     Tube(const Tube& othertube); // Copy constructor copies everything!
     Tube& operator=(const Tube& othertube); // And again, we copy everything.
     ~Tube();
-    void show(bool) const;
+    void show(us showvertices=0) const;
     void addBc(const TubeBcVertex& vertex);
     virtual us getNDofs() const;
     virtual EqVec getEqs() const=0;    	// Some derived class needs to define the equation array
