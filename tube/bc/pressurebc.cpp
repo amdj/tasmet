@@ -56,8 +56,8 @@ namespace tube{
     mWuip1=w.wRr/w.vSfR-w.wL1/w.vSfL;
 
     mWpim1=0;     
-    mWpi=w.wRl*w.vSfR+w.vSfL-w.vSfR;
-    mWpip1=w.vSfR*w.wRr;
+    mWpi=w.vSf*w.wRl;
+    mWpip1=w.vSf*w.wRr;
     // Change energy equation for open boundary and prescribed pressure
     eWgim1= 0;
     eWgi=   w.wRl-w.wL0;

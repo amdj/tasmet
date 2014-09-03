@@ -153,9 +153,9 @@ namespace tube{
       mWui=(w.wRl-w.wLr)/w.vSf;
       mWuip1=w.UsignR*w.wRr/w.vSfR;
 
-      mWpim1=-lg.SfL*w.wLl;
-      mWpi  = lg.vSf*(w.wRl-w.wLr);
-      mWpip1= lg.SfR*w.wRr;
+      mWpim1=-w.vSf*w.wLl;
+      mWpi  = w.vSf*(w.wRl-w.wLr);
+      mWpip1= w.vSf*w.wRr;
       
       eWgim1=-w.UsignL*w.wLl;
       eWgi=w.wRl-w.wLr;
@@ -183,8 +183,8 @@ namespace tube{
       mWuip1=w.wRr/w.vSfR;
       
       mWpim1=0;
-      mWpi=w.vSf*w.wRl-lg.SfL*w.wL0;
-      mWpip1=w.vSfR*w.wRr-lg.SfL*w.wL1;
+      mWpi=w.vSf*(w.wRl-w.wL0);
+      mWpip1=w.vSf*(w.wRr-w.wL1);
 
       eWgim1=0;
       eWgi=w.wRl;
@@ -210,8 +210,8 @@ namespace tube{
       mWui=   -w.wLr/w.vSfL;
       mWuip1= 0;
       
-      mWpim1=-w.vSfL*w.wLl+lg.SfR*w.wRNm2;
-      mWpi=  -w.vSf*w.wLr+lg.SfR*w.wRNm1;
+      mWpim1=w.vSf*(-w.wLl+w.wRNm2);
+      mWpi=  w.vSf*(-w.wLr+w.wRNm1);
       mWpip1=0;
 
       eWgim1=-w.wLl;
@@ -242,7 +242,7 @@ namespace tube{
     // eWgi=0;
     // eWgip1=0;
     // eWddt=0;    
-    mWpi+=lg.SfL-lg.SfR;
+
   }
 
   void TubeVertex::connectTubeLeft(const SegBase& thisseg){
