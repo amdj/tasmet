@@ -33,13 +33,13 @@ namespace tube{
     us nCells;    
 
     // Equation-specific weight factors
-    d cWddt,cWim1,cWi,cWip1;
+    d cWddt=0,cWim1=0,cWi=0,cWip1=0;
     // Continuity artificial viscosity weight factor
-    d cWart1,cWart2,cWart3,cWart4;		       
-    d mWart1,mWart2,mWart3,mWart4;		       
-    d mWddt,mWuim1,mWui,mWuip1,mWpim1,mWpi,mWpip1;
-    d eWddt,eWddtkin,eWgim1,eWgi,eWgip1,eWc1,eWc2,eWc3,eWc4;      
-    d eWkini,eWkinim1,eWkinip1;
+    d cWart1=0,cWart2=0,cWart3=0,cWart4=0;		       
+    d mWart1=0,mWart2=0,mWart3=0,mWart4=0;		       
+    d mWddt=0,mWuim1=0,mWui=0,mWuip1=0,mWpim1=0,mWpi=0,mWpip1=0;
+    d eWddt=0,eWddtkin=0,eWgim1=0,eWgi=0,eWgip1=0,eWc1=0,eWc2=0,eWc3=0,eWc4=0;      
+    d eWkini=0,eWkinim1=0,eWkinip1=0;
 
     // This is also the order in which they appear in the variable ptr
     // vector.
