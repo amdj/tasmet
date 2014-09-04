@@ -42,11 +42,11 @@ cdef class pytubeBase:
         self.sol[0].doIter(relaxfac)
     cpdef setRes(self,n.ndarray[n.float64_t,ndim=1] res):
         self.sol[0].sys().setRes(dndtovec(res))
-    cpdef getErrorEq(self,eqnr,freqnr,i=0):
+    cpdef getErrorEq(self,eqnr,freqnr,tubenr=0):
         assert(eqnr<5)
-        assert(freqnr<2*self.Nf+1)
-        assert(i<self.ntubes)
-        return dvectond(self.tube[i].getErrorAt(eqnr,freqnr))
+        assert(freqnr<2*self.getNf()+1)
+        assert(tubenr<self.ntubes)
+        return dvectond(self.tube[tubenr].getErrorAt(eqnr,freqnr))
     cpdef getResVar(self,_type,freqnr,i=0):
         assert(i<self.ntubes)
         if _type=='pres':
@@ -66,31 +66,31 @@ cdef class pytubeBase:
         
         
 cdef extern from "models.h" namespace "":
-    Solver* Fubini(us gp,us Nf,d freq,d L,vd p1,int loglevel,d kappa,us fullenergy)    
-    Solver* ThreeTubes(us gp,us Nf,d freq,d L,d R1,d R2,vd p1,int loglevel,d kappa,d Tr,us isentropic)
-    Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,us driven,vd p1,d p0) 
-    Solver* SimpleTube(us gp,us Nf,d freq,d L,d r,d Tl,d Tr,vd p1,int loglevel,d kappa,us blapprox,us driven,us rwall)
+    Solver* Fubini(us gp,us Nf,d freq,d L,vd p1,int loglevel,d kappa,int options)    
+    Solver* ThreeTubes(us gp,us Nf,d freq,d L,d R1,d R2,vd p1,int loglevel,d kappa,d Tr,int options)
+    Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,int options) 
+    Solver* SimpleTube(us gp,us Nf,d freq,d L,d r,d Tl,d Tr,vd p1,int loglevel,d kappa,int options)
 
 cdef class simpletube(pytubeBase):        
     def __cinit__(self,us gp,us Nf,d freq,d L,d r,d Tl,d Tr
                   ,n.ndarray[n.float64_t,ndim=1] p1,\
-                  int loglevel,d kappa,us blapprox=1,us driven=1,us rwall=0):
-        self.sol=SimpleTube(gp,Nf,freq,L,r,Tl,Tr,dndtovec(p1),loglevel,kappa,blapprox,driven,rwall)
+                  int loglevel,d kappa,int options):
+        self.sol=SimpleTube(gp,Nf,freq,L,r,Tl,Tr,dndtovec(p1),loglevel,kappa,options)
         self.tube[0]=<Tube*> self.sol[0].sys().getSeg(0)
         self.ntubes=1
 
     
 cdef class fubini(pytubeBase):        
     def __cinit__(self,us gp,us Nf,d freq,d L\
-                  ,n.ndarray[n.float64_t,ndim=1] p1,int loglevel,d kappa,us fullenergy=0):
-        self.sol=Fubini(gp,Nf,freq,L,dndtovec(p1),loglevel,kappa,fullenergy)
+                  ,n.ndarray[n.float64_t,ndim=1] p1,int loglevel,d kappa,int options):
+        self.sol=Fubini(gp,Nf,freq,L,dndtovec(p1),loglevel,kappa,options)
         self.tube[0]=<Tube*> self.sol[0].sys().getSeg(0)
         self.ntubes=1
 
 cdef class threetubes(pytubeBase):        
     def __cinit__(self,us gp,us Nf,d freq,d L,d R1,d R2\
-                  ,n.ndarray[n.float64_t,ndim=1] p1,int loglevel,d kappa,d Tr=293.15,us isentropic=1):
-        self.sol=ThreeTubes(gp,Nf,freq,L,R1,R2,dndtovec(p1),loglevel,kappa,Tr,isentropic)
+                  ,n.ndarray[n.float64_t,ndim=1] p1,int loglevel,d kappa,d Tr,int options):
+        self.sol=ThreeTubes(gp,Nf,freq,L,R1,R2,dndtovec(p1),loglevel,kappa,Tr,options)
         self.tube[0]=<Tube*> self.sol[0].sys().getSeg(0)
         self.tube[1]=<Tube*> self.sol[0].sys().getSeg(1)
         self.tube[2]=<Tube*> self.sol[0].sys().getSeg(2)
@@ -98,9 +98,9 @@ cdef class threetubes(pytubeBase):
 
 cdef class atchley(pytubeBase):
     def __cinit__(self,gp,Nf,freq,p1,Tr\
-                 ,int loglevel,d kappa,us driven,d p0):
+                  ,int loglevel,d kappa,d p0,options):
         self.sol=Atchley_Engine(gp,Nf,freq,Tr,\
-                                loglevel,kappa,driven,dndtovec(p1),p0)
+                                loglevel,kappa,dndtovec(p1),p0,options)
         self.tube[0]=<Tube*> self.sol[0].sys().getSeg(0)
         self.tube[1]=<Tube*> self.sol[0].sys().getSeg(1)
         self.tube[2]=<Tube*> self.sol[0].sys().getSeg(2)

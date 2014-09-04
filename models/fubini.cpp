@@ -11,7 +11,7 @@ using namespace tasystem;
 using namespace tube;
 using namespace variable;
 using namespace gases;
-Solver* Fubini(us gp,us Nf,d freq,d L,vd p1,int loglevel,d kappa,us fullenergy)
+Solver* Fubini(us gp,us Nf,d freq,d L,vd p1,int loglevel,d kappa,int options)
 {
   inittrace(loglevel);
   d dx=L/gp;
@@ -45,7 +45,7 @@ Solver* Fubini(us gp,us Nf,d freq,d L,vd p1,int loglevel,d kappa,us fullenergy)
   // RightIsoTWall bright(0,T0);
   TaSystem sys(gc);
 
-  if(!fullenergy)  {
+  if(options & ISENTROPIC)  {
     IsentropicTube t1(geom1);
     t1.addBc(bleft);
     t1.addBc(bright);

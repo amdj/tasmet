@@ -14,7 +14,7 @@ using namespace gases;
 inline us max(us x,us y){ return x>y?x:y;}
 
 
-Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,us driven,vd p1,d p0)
+Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,int options)
 {
   // #Some global params
   inittrace(loglevel);
@@ -70,7 +70,7 @@ Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,us driven,vd
   sys.connectSegs(2,3,tasystem::SegCoupling::tailhead);
   sys.connectSegs(3,4,tasystem::SegCoupling::tailhead);  
   
-  if(driven==0){
+  if(options & DRIVEN){
     cout << "Not driven system\n";
     EngineSystem ensys(sys);
     // CHANGED to constraint on second harmonic, see what happens

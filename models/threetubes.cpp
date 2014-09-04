@@ -11,7 +11,7 @@ using namespace tube;
 using namespace variable;
 using namespace gases;
 
-Solver* ThreeTubes(us gp,us Nf,d freq,d L,d R1,d R2,vd p1,int loglevel,d kappa,d Tr,us isentropic)
+Solver* ThreeTubes(us gp,us Nf,d freq,d L,d R1,d R2,vd p1,int loglevel,d kappa,d Tr,int options)
 {
   inittrace(loglevel);
   TRACE(100,"L:"<<L);
@@ -40,7 +40,7 @@ Solver* ThreeTubes(us gp,us Nf,d freq,d L,d R1,d R2,vd p1,int loglevel,d kappa,d
   t3.addBc(right);
 
   TaSystem sys(gc);
-  if(isentropic){
+  if(options & ISENTROPIC){
     sys.addSeg(t1is);
     sys.addSeg(t2is);
     sys.addSeg(t3is);  
