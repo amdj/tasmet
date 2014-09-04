@@ -1,7 +1,7 @@
 #include "stateeq.h"
 #include "tubevertex.h"
 
-#define STATE_SCALE (1.0)
+#define STATE_SCALE (1.0/v.gc->p0)
 
 namespace tube{
 
