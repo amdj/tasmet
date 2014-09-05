@@ -50,7 +50,7 @@ include_directories(
 
 
 add_library(nonlin ${nonlinear_SRC})
-
+target_link_libraries(nonlin boost_thread boost_system)
 # add_executable(multitube multitube.cpp)
 # target_link_libraries(multitube nonlin math_common armadillo)
 
@@ -71,7 +71,7 @@ set_target_properties(pytube PROPERTIES COMPILE_FLAGS "-Wno-cpp  -Wno-strict-ali
 
 
 # target_link_libraries(doubletube nonlin math_common armadillo)
-target_link_libraries(test123 nonlin math_common armadillo)
+target_link_libraries(test123 nonlin math_common armadillo pthread)
 target_link_libraries(threetubes nonlin math_common armadillo)
 target_link_libraries(pytube nonlin math_common armadillo)
 

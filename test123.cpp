@@ -14,9 +14,9 @@ using namespace tube;
 
 int main(int argc,char* argv[]) {
   cout <<  "Running test..." << endl;
-  int loglevel=25;
+  int loglevel=20;
   us gp=4;
-  us Nf=1;
+  us Nf=0;
   us Ns=2*Nf+1;
   double f=100;
   double omg=2*number_pi*f;
@@ -48,6 +48,7 @@ int main(int argc,char* argv[]) {
   air=gc;
   Geom geom1=Geom::CylinderBlApprox(gp,L,rtube);
   HopkinsLaminarDuct t1(geom1,gc.T0,gc.T0+10);
+  // IsentropicTube t1(geom1);
   var pL(gc,0);
   if(Nf>0)
     pL.set(1,1);
@@ -55,25 +56,25 @@ int main(int argc,char* argv[]) {
   // tube::RightIsoTWall bcright(0,T0+10);
   // TRACE(100,"Add bc to tube...");
   t1.addBc(bcleft);
-  EngineSystem sys(air);
-  sys.setTimingConstraint(0,0,3,2);
-  sys.setAmplitudeDof(0,0,3,1);
-  // TaSystem sys(air);  
+  // EngineSystem sys(air);
+  // sys.setTimingConstraint(0,0,3,2);
+  // sys.setAmplitudeDof(0,0,3,1);
+  TaSystem sys(air);  
   sys.addSeg(t1); 
-  sys.init();
+  // sys.init();
 
   Solver sol(sys);
-
+  // sol.sys().show(1);
   // sol.doIter();
-  // sol.solve();
+  sol.solve();
     // // // vd x=t1.GetRmomes();
   // // vd err=sol.sys->Error();
   // // cout << "error:\n"<<err;
 
   // cout << "err:\n"<<er;
-  edmat Jac=sol.sys().jac();
-  // sol1.sys->show();
-  cout << "Jac:\n"<< Jac<<"\n";
+  // edmat Jac=sol.sys().jac();
+
+  // cout << "Jac:\n"<< Jac<<"\n";
   // sol.solve();
   // cout << "\nDeterminant Jac:" << arma::det(Jac) << "\n";
   // sol.sys.show(true);
