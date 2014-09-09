@@ -44,6 +44,7 @@ namespace segment{
     // ------------------------------
     virtual void init(const Globalconf&); // Implementation updates gc
     // ptr of this instance.
+    virtual void setDofNrs(us firstdofnr)=0;
     virtual vd error() const=0;
     virtual void show(us) const=0;
     virtual dmat jac() const=0;

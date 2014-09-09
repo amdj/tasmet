@@ -39,6 +39,7 @@ namespace tube{
     virtual const HeatSource& getHeatSource() const=0;
     virtual string getType() const final {return string("Tube");}
     virtual void init(const Globalconf& gc);
+    virtual void setDofNrs(us firstdofnr);
     virtual d getCurrentMass() const;	// Obtain current mass in system
     virtual vd dmtotdx() const; // Derivative of current mass in
 				    // system to all dofs.

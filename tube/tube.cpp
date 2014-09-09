@@ -83,10 +83,13 @@ namespace tube {
   }
   us Tube::getNDofs() const {
     TRACE(14,"Tube::getNDofs()");
-    if(gc!=NULL)
-      return vvertex.size()*gc->Ns*Neq;
-    else
-      return 0;
+    us ndofs=0;
+    for(auto v=vvertex.begin();v!=vvertex.end();v++)
+      ndofs+=(v->get())->getNDofs();
+    return ndofs;
+  }
+  void Tube::setDofNrs(us firstdofnr){
+    TRACE(14,"Tube::setFirstDofNr()");
   }
   TubeVertex* Tube::leftTubeVertex() const{
     TRACE(13,"Tube::leftTubeVertex()");

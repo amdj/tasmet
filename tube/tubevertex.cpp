@@ -36,7 +36,10 @@ namespace tube{
     cout << "This tube         :" << this <<"\n";
     cout << "Tube on right side:" << right <<"\n"   ;
   }
-
+  us TubeVertex::getNDofs() const{
+    TRACE(5,"TubeVertex::getNDofs()");
+    return vars.size()*gc->Ns;
+  }
   void TubeVertex::setLeft(const Vertex& v){
     TRACE(8,"TubeVertex::setLeft(vertex)");
     this->left=&static_cast<const TubeVertex&>(v);
@@ -45,9 +48,25 @@ namespace tube{
     TRACE(8,"TubeVertex::setRight(vertex)");
     this->right=&static_cast<const TubeVertex&>(v);
   }
+  const variable::var& TubeVertex::pL(){
+    TRACE(6,"TubeVertex::pL()");
+    return p;
+  }
+  const variable::var& TubeVertex::pR(){
+    TRACE(6,"TubeVertex::pR()");
+    assert(i<nCells-1);
+    return right->p;
+  }
   void TubeVertex::initTubeVertex(us i,const Tube& thisseg)
   {
     lg=thisseg.geom.localGeom(i);
+    vars.clear();
+    vars.push_back(&rho);
+    vars.push_back(&U);
+    vars.push_back(&T);
+    vars.push_back(&p);
+    vars.push_back(&Ts);    
+    
     TRACE(8,"TubeVertex::initTubeVertex(gc,geom), vertex "<< i << ".");
     // Initialize the Globalconf* ptr and i (the vertex number), 
     Vertex::init(i,*thisseg.gc);	// Which also calls Vertex::updateW()

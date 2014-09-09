@@ -46,12 +46,18 @@ namespace tube{
     variable::var rho;		// Density
     variable::var U;		// Volume flow
     variable::var T;		// Temperature
-    variable::var p;		// Pressure
+    variable::var p;      // Reference to p
     variable::var Ts;		// Solid temperature
-    variable::var* vars[5]={&rho,&U,&T,&p,&Ts};
+    
+    const variable::var& pL();
+    virtual const variable::var& pR();    
+
+    std::vector<variable::var*> vars;
+
+    
     vector<const TubeEquation*> eqs; // Vector of pointers to the
 				    // equations to solve for.
-
+    virtual us getNDofs() const;
     virtual ~TubeVertex(){}
     virtual void setLeft(const Vertex&);
     virtual void setRight(const Vertex&);
