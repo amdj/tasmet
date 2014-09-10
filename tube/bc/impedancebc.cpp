@@ -73,18 +73,18 @@ namespace tube{
   //   dmat dpi=Momentum::dpi();
   //   return dpi;
   // }
-  dmat RightImpedanceMomentumEq::dUi(const TubeVertex& v) const {
+  JacCol RightImpedanceMomentumEq::dUi(const TubeVertex& v) const {
     TRACE(40,"RightImpedanceMomentumEq::dUi()");
-    dmat dUi=Momentum::dUi(v);
+    JacCol dUi=Momentum::dUi(v);
     dUi+=v.w.wRNm1*v.lg.SfR*diagmat(Z);
     // For pressure boundary condition
     // dUi.row(0).zeros();
     return dUi;
   }
 
-  dmat RightImpedanceMomentumEq::dUim1(const TubeVertex& v) const {
+  JacCol RightImpedanceMomentumEq::dUim1(const TubeVertex& v) const {
     TRACE(1,"RightImpedanceMomentumEq::dUim1()");
-    dmat dUim1=Momentum::dUim1(v);    
+    JacCol dUim1=Momentum::dUim1(v);    
     dUim1+=v.w.wRNm2*v.lg.SfR*diagmat(Z);
     return dUim1;
   }

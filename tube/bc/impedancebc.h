@@ -22,8 +22,8 @@ namespace tube{
     RightImpedanceMomentumEq(TubeBcVertex&,vd& Z);
     ~RightImpedanceMomentumEq(){}
     vd error(const TubeVertex&) const;
-    dmat dUi(const TubeVertex&) const;
-    dmat dUim1(const TubeVertex&) const;
+    JacCol dUi(const TubeVertex&) const;
+    JacCol dUim1(const TubeVertex&) const;
     // dmat dpi();
     // dmat dpim1();
     // dmat drhoim1();

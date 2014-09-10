@@ -19,6 +19,28 @@ namespace tube{
     TRACE(8,"Energy::init(tube)");
     heat=&t.getHeatSource();
   }
+  JacRow Energy::jac(const TubeVertex& v) const{
+    TRACE(6,"Energy::jac()");
+    JacRow jac(v.p,12);
+    jac+=drhoi(v);
+    jac+=dTi(v);
+    jac+=dpi(v);
+    jac+=dUi(v);
+
+    if(v.left){
+      jac+=drhoim1(v);
+      jac+=dTim1(v);
+      jac+=dpim1(v);
+      jac+=dUim1(v);
+    }
+    if(v.right){
+      jac+=drhoip1(v);
+      jac+=dTip1(v);
+      jac+=dpip1(v);
+      jac+=dUip1(v);
+    }
+    return jac;    
+  }
   vd Energy::error(const TubeVertex& v) const {		// Error in momentum equation
     TRACE(6,"Energy::Error(), i="<<v.i);
     assert(v.gc!=NULL);
@@ -91,11 +113,11 @@ namespace tube{
     return domg;
   }
 
-  dmat Energy::dpi(const TubeVertex& v) const {
+  JacCol Energy::dpi(const TubeVertex& v) const {
     TRACE(0,"Energy::dpi()");
     d T0=v.T(0);
     d gamma=this->gamma(v);
-    dmat dpi=v.zero;
+    JacCol dpi(v.p);
     const dmat& DDTfd=v.gc->DDTfd;
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      
@@ -112,7 +134,7 @@ namespace tube{
     #endif
     return dpi;
   }
-  dmat Energy::dpim1(const TubeVertex& v) const {
+  JacCol Energy::dpim1(const TubeVertex& v) const {
     TRACE(0,"Energy::dpim1()");
     const dmat& DDTfd=v.gc->DDTfd;
     const dmat& fDFT=v.gc->fDFT;
@@ -120,7 +142,7 @@ namespace tube{
     d gamma=this->gamma(v);
     d gamfac=gamma/(gamma-1.0);    
     // vd Uti=v.U.tdata();
-    dmat dpim1=v.zero;
+    JacCol dpim1(v.left->p);
     if(v.left!=NULL){
       dpim1+=v.eWgim1*gamfac*fDFT*v.left->U.diagt()*iDFT;
     }
@@ -133,18 +155,16 @@ namespace tube{
     #endif
     return dpim1;
   }
-  dmat Energy::dpip1(const TubeVertex& v) const {
+  JacCol Energy::dpip1(const TubeVertex& v) const {
     TRACE(0,"Energy::dpip1()");
     const dmat& DDTfd=v.gc->DDTfd;
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      
     const vd& Uti=v.U.tdata();
-    dmat dpip1=v.zero;
+    JacCol dpip1(v.right->p);
     d gamma=this->gamma(v);
     d gamfac=gamma/(gamma-1.0);
-    if(v.right!=NULL){
-      dpip1+=v.eWgip1*gamfac*fDFT*v.right->U.diagt()*iDFT;
-    }
+    dpip1+=v.eWgip1*gamfac*fDFT*v.right->U.diagt()*iDFT;
 
     // Artificial viscosity terms
     #ifdef EN_VISCOSITY    
@@ -154,12 +174,12 @@ namespace tube{
     #endif
     return dpip1;
   }
-  dmat Energy::dUi(const TubeVertex& v) const {
+  JacCol Energy::dUi(const TubeVertex& v) const {
     TRACE(0,"Energy::dUi()");
     const dmat& DDTfd=v.gc->DDTfd;
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      
-    dmat dUi=v.zero;			    // Initialize with zeros
+    JacCol dUi(v.U);			    // Initialize with zeros
     d gamma=this->gamma(v);
     d gamfac=gamma/(gamma-1.0);
 
@@ -173,12 +193,12 @@ namespace tube{
     dUi+=v.eWddt*heat->dUi(v);
     return dUi;
   }
-  dmat Energy::drhoi(const TubeVertex& v) const {
+  JacCol Energy::drhoi(const TubeVertex& v) const {
     TRACE(0,"Energy::drhoi()");
     const dmat& DDTfd=v.gc->DDTfd;
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      
-    dmat drhoi=v.zero;			    // Initialize with zeros
+    JacCol drhoi(v.rho);			    // Initialize with zeros
     d gamma=this->gamma(v);
     d gamfac=gamma/(gamma-1.0);
 
@@ -188,122 +208,113 @@ namespace tube{
 
     return drhoi;
   }  
-  dmat Energy::dUim1(const TubeVertex& v) const {
+  JacCol Energy::dUim1(const TubeVertex& v) const {
     TRACE(0,"Energy::dUim1()");
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      
     d gamma=this->gamma(v);
     d gamfac=gamma/(gamma-1.0);
-    dmat dUim1=v.zero;
-    if(v.left!=NULL){
-      const vd& Utim1=v.left->U.tdata();
-      vd ptim1=v.left->p.tdata()+v.getp0t();
-      const vd& rhotim1=v.left->rho.tdata(); 
-      dUim1+=fDFT*diagmat(v.eWgim1*gamfac*ptim1)*iDFT;
-      dUim1+=fDFT*diagmat(v.eWkinim1*3*rhotim1%pow(Utim1,2))*iDFT;
+    JacCol dUim1(v.left->U);
+    const vd& Utim1=v.left->U.tdata();
+    vd ptim1=v.left->p.tdata()+v.getp0t();
+    const vd& rhotim1=v.left->rho.tdata(); 
+    dUim1+=fDFT*diagmat(v.eWgim1*gamfac*ptim1)*iDFT;
+    dUim1+=fDFT*diagmat(v.eWkinim1*3*rhotim1%pow(Utim1,2))*iDFT;
 
-    }
     return dUim1;
   }
-  dmat Energy::dUip1(const TubeVertex& v) const {
+  JacCol Energy::dUip1(const TubeVertex& v) const {
     TRACE(0,"Energy::dUip1()");
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      
     d gamma=this->gamma(v);
     d gamfac=gamma/(gamma-1.0);
-    dmat dUip1=v.zero;
-    if(v.right!=NULL){
-      const vd& Utip1=v.right->U.tdata();
-      vd ptip1=v.right->p.tdata()+v.getp0t();
-      const vd& rhotip1=v.right->rho.tdata(); 
-      dUip1+=fDFT*diagmat(v.eWgip1*gamfac*ptip1)*iDFT;
-      dUip1+=fDFT*diagmat(v.eWkinip1*3*rhotip1%pow(Utip1,2))*iDFT;
+    JacCol dUip1(v.right->U);
+    const vd& Utip1=v.right->U.tdata();
+    vd ptip1=v.right->p.tdata()+v.getp0t();
+    const vd& rhotip1=v.right->rho.tdata(); 
+    dUip1+=fDFT*diagmat(v.eWgip1*gamfac*ptip1)*iDFT;
+    dUip1+=fDFT*diagmat(v.eWkinip1*3*rhotip1%pow(Utip1,2))*iDFT;
 
-    }
     return dUip1;
   }
-  dmat Energy::drhoim1(const TubeVertex& v) const {
+  JacCol Energy::drhoim1(const TubeVertex& v) const {
     TRACE(0,"Energy::drhoim1()");
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      
     d gamma=this->gamma(v);
     d gamfac=gamma/(gamma-1.0);
-    dmat drhoim1=v.zero;
-    if(v.left!=NULL){
-      const vd& Utim1=v.left->U.tdata();
-      drhoim1+=fDFT*diagmat(v.eWkinim1*pow(Utim1,3))*iDFT;
-    }
+    JacCol drhoim1(v.left->rho);
+    const vd& Utim1=v.left->U.tdata();
+    drhoim1+=fDFT*diagmat(v.eWkinim1*pow(Utim1,3))*iDFT;
     return drhoim1;
   }
-  dmat Energy::drhoip1(const TubeVertex& v) const {
+  JacCol Energy::drhoip1(const TubeVertex& v) const {
     TRACE(0,"Energy::drhoip1()");
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      
     d gamma=this->gamma(v);
     d gamfac=gamma/(gamma-1.0);
-    dmat drhoip1=v.zero;
-    if(v.right!=NULL){
-      const vd& rhotip1=v.right->rho.tdata();
-      const vd& Utip1=v.right->U.tdata();
-      drhoip1+=fDFT*diagmat(v.eWkinip1*pow(Utip1,3))*iDFT;
-    }
+    JacCol drhoip1(v.right->rho);
+
+    const vd& rhotip1=v.right->rho.tdata();
+    const vd& Utip1=v.right->U.tdata();
+    drhoip1+=fDFT*diagmat(v.eWkinip1*pow(Utip1,3))*iDFT;
+
     return drhoip1;
   }
   
-  dmat Energy::dpip2(const TubeVertex& v) const {
-    dmat dpip2=v.zero;
-    #ifdef EN_VISCOSITY
-    // if(v.i==0 && v.left==NULL){
-    //   const d& vSf=v.lg.vSf;
-    //   dpip2+=-d_r(v)*vSf;
-    // }
-    #endif 
-    return dpip2;
-  }
-  dmat Energy::dpim2(const TubeVertex& v) const {
-    dmat dpim2=v.zero;
-    #ifdef EN_VISCOSITY
-    // if(v.i==v.nCells-1 && v.right==NULL){
-    //   const d& vSf=v.lg.vSf;
-    //   dpim2+=-d_l(v)*v.lg.vSf;
-    // }
-    #endif 
-    return dpim2; 
-  }
+  // JacCol Energy::dpip2(const TubeVertex& v) const {
+  //   dmat dpip2=v.zero;
+  //   #ifdef EN_VISCOSITY
+  //   // if(v.i==0 && v.left==NULL){
+  //   //   const d& vSf=v.lg.vSf;
+  //   //   dpip2+=-d_r(v)*vSf;
+  //   // }
+  //   #endif 
+  //   return dpip2;
+  // }
+  // JacCol Energy::dpim2(const TubeVertex& v) const {
+  //   dmat dpim2=v.zero;
+  //   #ifdef EN_VISCOSITY
+  //   // if(v.i==v.nCells-1 && v.right==NULL){
+  //   //   const d& vSf=v.lg.vSf;
+  //   //   dpim2+=-d_l(v)*v.lg.vSf;
+  //   // }
+  //   #endif 
+  //   return dpim2; 
+  // }
   // ############################## TEMPERATURE AND CONDUCTION TERMS
-  dmat Energy::dTip1(const TubeVertex& v) const {
+  JacCol Energy::dTip1(const TubeVertex& v) const {
     TRACE(0,"Energy::dTip1()");
     const dmat& DDTfd=v.gc->DDTfd;
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      
 
-    dmat dTip1=v.zero;
+    JacCol dTip1(v.right->T);
     // TRACE(100,"dTip1, right is"<<v.right);
-    if(v.right!=NULL) {
-      dTip1+=v.eWc4*fDFT*diagmat(kappaR(v))*iDFT;
-    }
+    dTip1+=v.eWc4*fDFT*diagmat(kappaR(v))*iDFT;
+
     return dTip1;
   }
-  dmat Energy::dTi(const TubeVertex& v) const {
+  JacCol Energy::dTi(const TubeVertex& v) const {
     const dmat& DDTfd=v.gc->DDTfd;
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      
     TRACE(0,"Energy::dTi()");
-    dmat dTi=v.zero;
+    JacCol dTi(v.T);
     dTi+=fDFT*diagmat(v.eWc2*kappaL(v)+v.eWc3*kappaR(v))*iDFT;
     assert(heat!=NULL);
     dTi+=v.eWddt*heat->dTi(v);
     return dTi;
   }
-  dmat Energy::dTim1(const TubeVertex& v) const {
+  JacCol Energy::dTim1(const TubeVertex& v) const {
     TRACE(0,"Energy::dTim1()");
     const dmat& DDTfd=v.gc->DDTfd;
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      
-    dmat dTim1=v.zero;
-    if(v.left!=NULL){
-      dTim1+=v.eWc1*fDFT*diagmat(kappaL(v))*iDFT;
-    }
+    JacCol dTim1(v.left->T);
+    dTim1+=v.eWc1*fDFT*diagmat(kappaL(v))*iDFT;
     return dTim1;
   }
 

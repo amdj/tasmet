@@ -4,12 +4,14 @@
 #include "vtypes.h"
 #include "globalconf.h"
 #include "geom.h"
-#define Neq (5)
+#include "jacobian.h"
 
 
 namespace segment{
   class SegBase;
   using tasystem::Globalconf;
+  using tasystem::Jacobian;
+  
   typedef vector<const SegBase*> SegBaseVec;
 
   class SegBase{
@@ -47,7 +49,7 @@ namespace segment{
     virtual void setDofNrs(us firstdofnr)=0;
     virtual vd error() const=0;
     virtual void show(us) const=0;
-    virtual dmat jac() const=0;
+    virtual void jac(Jacobian&) const=0;
     virtual vd domg() const=0;	// Derivative of error w.r.t. base frequency.
     virtual vd dmtotdx() const=0; // Derivative of current mass in
 				    // system to all dofs.

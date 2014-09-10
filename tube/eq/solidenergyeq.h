@@ -13,8 +13,11 @@ namespace tube{
     SolidTPrescribed();
     void init(const Tube& t);
     virtual enum EqType getType() const { return EqType::Sol;}
+    JacRow jac(const TubeVertex&) const;
+    
     vd error(const TubeVertex&) const;			// Error in Solidenergy equation at node i
-    dmat dTsi(const TubeVertex&) const;
+  private:
+    JacCol dTsi(const TubeVertex&) const;
     
   };
 }

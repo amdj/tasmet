@@ -64,7 +64,7 @@ namespace tube{
     virtual void setRight(const Vertex&);
     virtual void show() const;
     virtual vd error() const;		       // Compute error for this gridpoint
-    virtual dmat jac() const;		       // Fill complete Jacobian for this node
+    virtual void jac(Jacobian& tofill) const;		       // Fill complete Jacobian for this node
     virtual void setRes(vd res);			  // Set result vector to res
     virtual vd domg() const;
     virtual vd getRes() const;			  // Extract current result vector

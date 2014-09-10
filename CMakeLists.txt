@@ -48,7 +48,7 @@ include_directories(
   tube/heat
   )
 
-
+add_library(eq ${tubeeq})
 add_library(nonlin ${nonlinear_SRC})
 
 # add_executable(multitube multitube.cpp)

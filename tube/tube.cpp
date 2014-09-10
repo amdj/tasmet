@@ -153,7 +153,7 @@ namespace tube {
     TRACE(8,"Tube::getResAt("<<varnr<<","<<freqnr<<")");
     const us& nCells=geom.nCells;
     vd res(nCells);
-    assert(varnr<Neq);
+    assert(varnr<getNDofs());
     for(us i=0;i<nCells;i++){
       TubeVertex* cvertex=static_cast<TubeVertex*>(vvertex[i].get());
       res(i)=cvertex->vars[varnr]->operator()(freqnr);
@@ -163,7 +163,7 @@ namespace tube {
   vd Tube::getErrorAt(us eqnr,us freqnr) const{
     const us& nCells=geom.nCells;
     vd er(nCells);
-    assert(eqnr<Neq);
+    assert(eqnr<getNDofs());
     auto eqs=this->getEqs();
     for(us i=0;i<nCells;i++){
       TubeVertex& cvertex=*static_cast<TubeVertex*>(vvertex[i].get());
@@ -174,9 +174,11 @@ namespace tube {
   vd Tube::dmtotdx() const{
     TRACE(15,"Tube::dmtotdx()");
     vd dmtotdx(getNDofs(),fillwith::zeros);
-    us nvertex=vvertex.size();
-    for(us i=0;i<nvertex;i++)
+    us nvertex=vvertex.size(),Neq;
+    for(us i=0;i<nvertex;i++){
+      Neq=vvertex.at(i)->getNDofs();
       dmtotdx(i*Neq*gc->Ns)=geom.vVf(i);
+    }
     return dmtotdx;
   }  
   Tube::~Tube(){

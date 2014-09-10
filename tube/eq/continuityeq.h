@@ -9,23 +9,26 @@ namespace tube{
   public:
     virtual enum EqType getType() const { return EqType::Con;}
     virtual void show() const;
-    virtual void init(const Tube& t);    
+    virtual void init(const Tube& t);
+    virtual JacRow jac(const TubeVertex&) const;
     virtual vd error(const TubeVertex&) const;			// Error in this equation at this node
     virtual vd domg(const TubeVertex&) const;
-    virtual dmat drhoip1(const TubeVertex&) const; // Derivative of continuity equation to density at node
-		    // i + 1
-    virtual dmat drhoi(const TubeVertex&) const;	// Derivative of continuity equation to density at
-			// novirtual de i
-    virtual dmat dUi(const TubeVertex&) const;	// Derivative of continuity equation to Volume flow at i
-		// node (const TubeVertex&only nonzero for nonconstant grids)
-    virtual dmat drhoim1(const TubeVertex&) const;	// Derivative of continuity equation to density at
-			// node i - 1
-    virtual dmat dUip1(const TubeVertex&) const;	// Derivative of continuity equation to Volume flow
-			// at node i + 1
-    virtual dmat dUim1(const TubeVertex&) const;	// Derivative of continuity equation to Volume flow
+
+  private:
+    JacCol drhoip1(const TubeVertex&) const; // Derivative of continuity equation to density at node
+    // i + 1
+    JacCol drhoi(const TubeVertex&) const;	// Derivative of continuity equation to density at
+    // novirtual de i
+    JacCol dUi(const TubeVertex&) const;	// Derivative of continuity equation to Volume flow at i
+    // node (const TubeVertex&only nonzero for nonconstant grids)
+    JacCol drhoim1(const TubeVertex&) const;	// Derivative of continuity equation to density at
+    // node i - 1
+     JacCol dUip1(const TubeVertex&) const;	// Derivative of continuity equation to Volume flow
+    // at node i + 1
+    JacCol dUim1(const TubeVertex&) const;	// Derivative of continuity equation to Volume flow
 			// at node i - 1
-    virtual dmat drhoip2(const TubeVertex&) const;
-    virtual dmat drhoim2(const TubeVertex&) const;
+    // virtual JacCol drhoip2(const TubeVertex&) const;
+    // virtual JacCol drhoim2(const TubeVertex&) const;
 
   };				// Continuity class
 }				// Namespace tube

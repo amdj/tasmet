@@ -16,8 +16,10 @@ namespace tube{
     virtual void init(const Tube& t);    
     virtual enum EqType getType() const { return EqType::Ise;}
     virtual vd error(const TubeVertex&) const;			// Error in Energy equation at node i
-    virtual dmat dpi(const TubeVertex&) const;
-    virtual dmat drhoi(const TubeVertex&) const;
+    virtual JacRow jac(const TubeVertex&) const;
+  private:
+    JacCol dpi(const TubeVertex&) const;
+    JacCol drhoi(const TubeVertex&) const;
   };
 }
 

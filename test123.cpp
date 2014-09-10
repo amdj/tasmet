@@ -46,7 +46,8 @@ int main(int argc,char* argv[]) {
   Globalconf air=Globalconf::airSTP(Nf,f);
   Globalconf gc=air;
   Geom geom1=Geom::CylinderBlApprox(gp,L,rtube);
-  HopkinsLaminarDuct t1(geom1,gc.T0,gc.T0+10);
+  // HopkinsLaminarDuct t1(geom1,gc.T0,gc.T0+10);
+  IsentropicTube t1(geom1);
   var pL(gc,0);
   if(Nf>0)
     pL.set(1,1);
@@ -62,8 +63,13 @@ int main(int argc,char* argv[]) {
   sys.init();
 
   Solver sol(sys);
-  sol.sys().showJac();
   sol.sys().show(1);
+  sol.sys().showJac();
+
+  cout << "Result:\n"<< sol.sys().getRes() << "\n";
+  cout << "Error:\n"<< sol.sys().error() << "\n";
+
+  sol.doIter();
   return 0;
 }
 

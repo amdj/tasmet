@@ -5,10 +5,10 @@
 #include <memory>
 #include "vertex.h"
 
+
 namespace segment{
   SPOILNAMESPACE
   typedef std::unique_ptr<Vertex> vertexptr;
-
   
   class Seg:public SegBase{
   public:
@@ -32,7 +32,7 @@ namespace segment{
     vd domg() const;
     vd error() const;			// Return error vector for this segment
     vd getRes() const;		// Return result vector for this segment
-    dmat jac() const;			// Return Jacobian matrix
+    void jac(Jacobian&) const;			// Return Jacobian matrix
     void setRes(vd res);
     // void setnodes(us n1,us n2){ nL=n1; nR=n2;}
     virtual ~Seg(){TRACE(-5,"~Seg()");}

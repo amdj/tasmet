@@ -19,8 +19,8 @@ namespace tube{
   class TwImpedanceMomentumEq:public Momentum{
   public:
     virtual vd error(const TubeVertex&) const;
-    virtual dmat dUi(const TubeVertex&) const;
-    virtual dmat dUim1(const TubeVertex&) const;
+    virtual JacCol dUi(const TubeVertex&) const;
+    virtual JacCol dUim1(const TubeVertex&) const;
   }; 
   // class TwImpedanceEnergyEq:public Energy{
   // private:

@@ -44,11 +44,14 @@ namespace tube{
   }
   us TubeVertex::getNDofs() const{
     TRACE(5,"TubeVertex::getNDofs()");
-    return vars.size()*gc->Ns;
+    return eqs.size()*gc->Ns;
   }
   void TubeVertex::setDofNrs(us firstdof){
-    for(auto var=vars.begin();var!=vars.end();var++){
-      (*var)->setDofNr(firstdof);
+    TRACE(5,"TubeVertex::setDofNrs()");
+    us nvars=eqs.size();        // This makes it safe to exclude dofs
+                                // in the vars vector
+    for(us i=0;i<nvars;i++){
+      vars.at(i)->setDofNr(firstdof);
       firstdof+=gc->Ns;
     }
   }
@@ -75,8 +78,8 @@ namespace tube{
     vars.clear();
     vars.push_back(&rho);
     vars.push_back(&U);
-    vars.push_back(&T);
     vars.push_back(&p);
+    vars.push_back(&T);
     vars.push_back(&Ts);    
     
     TRACE(8,"TubeVertex::initTubeVertex(gc,geom), vertex "<< i << ".");
@@ -384,6 +387,7 @@ namespace tube{
     // assert(i>0 && i<seg.geom.gp-1);
     const us& Ns=gc->Ns;
     TRACE(4,"Assignment of Ns survived:"<< Ns);
+    us Neq=eqs.size();
     vd error(Neq*Ns);
     for(us k=0;k<Neq;k++)
       {
@@ -397,47 +401,44 @@ namespace tube{
     TRACE(4,"TubeVertex::domg() for TubeVertex "<< i << ".");
     const us& Ns=gc->Ns;
     TRACE(4,"Assignment of Ns survived:"<< Ns);
+    us Neq=getNDofs();
+
     vd domg(Neq*Ns);
-    for(us k=0;k<Neq;k++)
-      {
-	domg.subvec(k*Ns,(k+1)*Ns-1)=eqs[k]->domg(*this);
-      }
+    for(us k=0;k<Neq;k++) {
+      domg.subvec(k*Ns,(k+1)*Ns-1)=eqs[k]->domg(*this);
+    }
     return domg;
   }
   vd TubeVertex::getRes() const {			// Get current result vector
     TRACE(4,"TubeVertex::GetRes()");
     const us& Ns=gc->Ns;
-    vd res(Neq*Ns);
-    for(us k=0;k<Neq;k++){
+    us nvars=eqs.size();        // Only return for number of equations
+    vd res(getNDofs());
+
+    for(us k=0;k<nvars;k++){
       res.subvec(k*Ns,k*Ns+Ns-1)=(*vars[k])();
     }
     return res;
   }
   void TubeVertex::setRes(vd res){
-    TRACE(4,"TubeVertex::Set()");
+    TRACE(10,"TubeVertex::setRes(), i="<< i);
     const us& Ns=gc->Ns;
-    for(us k=0;k<Neq;k++){
+    us nvars=eqs.size();        // Only put in for number of equations
+    assert(res.size()==getNDofs());
+
+    for(us k=0;k<nvars;k++){
       vars[k]->set(res.subvec(k*gc->Ns,k*Ns+Ns-1));
     }
+    TRACE(10,"TubeVertex::setRes() exiting, i="<< i);    
   }
-  dmat TubeVertex::jac() const {		// Return Jacobian
+  void TubeVertex::jac(Jacobian& tofill) const {		// Return Jacobian
     TRACE(5,"TubeVertex::Jac() for vertex "<< i<< ".");
-    const us& Ns=gc->Ns;
-    TRACE(5,"Ns:"<<Ns);
-    TRACE(5,"Neq:"<<Neq);    
-    dmat Jac(Neq*Ns,3*Neq*Ns,fillwith::zeros);
-    TRACE(5,"Pointer to left TubeVertex:"<<left);
-    TRACE(5,"Pointer to right TubeVertex:"<<right);
-    us firstcol=0;
-    us lastcol=Jac.n_cols-1;
-    for(us k=0;k<Neq;k++){
-      TRACE(5,"Equation number:"<<k);
-      us firstrow=k*Ns;
-      us lastrow=firstrow+Ns-1;
-      Jac.submat(firstrow,firstcol,lastrow,lastcol)=eqs[k]->jac(*this);
+    us neqs=eqs.size();    
+    for(us k=0;k<neqs;k++){
+      tofill+=eqs[k]->jac(*this);
       TRACE(5,"Equation "<< k <<"... succesfully obtained Jacobian");
     }
-    return Jac;
+    
   }  
 
   

@@ -1,6 +1,5 @@
 #include "seg.h"
 
-
 namespace segment{
    
 
@@ -54,90 +53,50 @@ namespace segment{
     for(us i=0;i<vvertex.size();i++)
       vvertex[i]->show();
   }
-  dmat Seg::jac() const{			// Return Jacobian matrix of error operator
+  void Seg::jac(Jacobian& tofill) const{			// Return Jacobian matrix of error operator
     // sdmat Seg::Jac(){			// Return Jacobian matrix of error operator    
     TRACE(8," Seg::Jac() for Segment "<< getNumber() << ".");
     const us& Ns=gc->Ns;
     us nVertex=vvertex.size();
-    dmat Jacobian (nVertex*Neq*Ns,(nVertex+2)*Neq*Ns,fillwith::zeros);    
-    // if(Jacobian.size()==0)
-      // Jacobian=dmat(nVertex*Neq*Ns,(nVertex+2)*Neq*Ns);    
 
-    us firstrow,firstcol,lastrow,lastcol;
-    TRACE(8,"Filling Segment Jacobian matrix for segment "<< getNumber() <<"...");
-    // #pragma omp parallel for
     for(us j=0;j<nVertex;j++){			   // Fill the Jacobian
       TRACE(3,"Obtaining vertex Jacobian...");
-      dmat&& vJac=vvertex[j]->jac();
-      assert(vJac.n_cols==3*Neq*Ns);      
-      // The row height of a vertex jacobian matrix is Neq*Ns, The
-      // column with is 3*Neq*Ns, since the neigbouring vertex has to
-      // be found
-      firstrow=j*Neq*Ns;
-      lastrow=(j+1)*Neq*Ns-1;
-      TRACE(3,"j:"<<j);
-      if(j>0 && j<nVertex-1){
-	TRACE(0,"interior vertex jacobian, j="<<j);
-	firstcol=(j)*Neq*Ns;
-	lastcol=(j+3)*Neq*Ns-1;
-      }
-      else if(j==0){
-	if(getLeft().size()==0){	// First node
-	  TRACE(10,"First node not connected to other segments")
-	  firstcol=Neq*Ns;
-	  lastcol=4*Neq*Ns-1;
-	} else{
-	  TRACE(10,"First node IS connected to other segment")
-	  firstcol=0;	  // Fill in
-	  lastcol=3*Neq*Ns-1;	  
-	}
-      }	// j==0
-      else if(j==nVertex-1){	// Last vertex
-	if(getRight().size()==0){
-	  TRACE(10,"Last node not connected to other segments")
-	  firstcol=(nVertex-2)*Neq*Ns;
-	  lastcol=(nVertex+1)*Neq*Ns-1;	  
-	}
-	else{
-	  TRACE(10,"Last node IS connected to other segment")
-	  firstcol=(j)*Neq*Ns;
-	  lastcol=(j+3)*Neq*Ns-1;
-	}
-      }	// j==nVertex-1
-      else
-	{
-	  WARN("Something went terribly wrong.");
-	  exit(1);
-	}
-      
-      TRACE(3,"Filling segment Jacobian with vertex subpart...");
-      Jacobian.submat(firstrow,firstcol,lastrow,lastcol)=vJac;      
+      vvertex.at(j)->jac(tofill);
     }	// end for
     // cout <<"Segment" << getNumber() <<" Jacobian done. Jac is:\n"<< Jacobian;
     // cout << "Number of colums in this jacobian" << Jacobian.n_cols<<"\n";
     TRACE(8,"Segment Jacobian done.");
-    return Jacobian;
   }
   vd Seg::getRes() const {
     TRACE(8,"Seg::GetRes()");
+    assert(vvertex.size()!=0);
+    assert(gc!=NULL);
     vd Result(getNDofs(),fillwith::zeros);
+    us nVertex=vvertex.size();    
     us Ns=gc->Ns;
-    for(us k=0; k<vvertex.size();k++)
-      {
-	Result.subvec(k*Ns*Neq,k*Ns*Neq+Ns*Neq-1)=vvertex[k]->getRes();
-      }
+    us vndofs,curpos=0;
+    for(us k=0; k<nVertex;k++) {
+      vndofs=vvertex.at(k)->getNDofs();
+      Result.subvec(curpos,curpos+vndofs-1)=vvertex[k]->getRes();
+      curpos+=vndofs;
+    }
     return Result;
   }
 
   vd Seg::error() const{
     TRACE(8,"Seg::Error()");
-    const us& Ns=gc->Ns;
-    us nVertex=vvertex.size();    
+    assert(vvertex.size()!=0);
+    assert(gc!=NULL);
     vd error(getNDofs(),fillwith::zeros);
-    for(us k=0; k<nVertex;k++)
-      {
-	error.subvec(k*Ns*Neq,k*Ns*Neq+Ns*Neq-1)=vvertex[k]->error();
-      }
+    us nVertex=vvertex.size();    
+    us Ns=gc->Ns;
+    us vndofs,curpos=0;
+
+    for(us k=0; k<nVertex;k++) {
+      vndofs=vvertex.at(k)->getNDofs();
+      error.subvec(curpos,curpos+vndofs-1)=vvertex[k]->error();
+      curpos+=vndofs;
+    }
     return error;
   }
   vd Seg::domg() const{
@@ -145,22 +104,27 @@ namespace segment{
     const us& Ns=gc->Ns;
     us nVertex=vvertex.size();    
     vd domg(getNDofs(),fillwith::zeros);
-    for(us k=0; k<nVertex;k++)
-      {
-	domg.subvec(k*Ns*Neq,k*Ns*Neq+Ns*Neq-1)=vvertex[k]->domg();
-      }
+    us vndofs,curpos=0;
+    for(us k=0; k<nVertex;k++) {
+      vndofs=vvertex.at(k)->getNDofs();
+      domg.subvec(curpos,curpos+vndofs-1)=vvertex[k]->domg();
+      curpos+=vndofs;
+    }
     return domg;
   }
 
   void Seg::setRes(vd res){
     TRACE(8,"Seg::SetRes()");
+    assert(res.size()==getNDofs());
     // const us& Neq=(vvertex[0]).Neq;
     const us& Ns=gc->Ns;
-    
-    for(us k=0; k<vvertex.size();k++)
-      {
-	vvertex[k]->setRes(res.subvec(k*Ns*Neq,k*Ns*Neq+Ns*Neq-1));
-      }
+    us vertexdofs;
+    us firstdof=0;
+    for(us k=0; k<vvertex.size();k++) {
+      vertexdofs=vvertex.at(k)->getNDofs();
+      vvertex.at(k)->setRes(res.subvec(firstdof,firstdof+vertexdofs-1));
+      firstdof+=vertexdofs;
+    }
   }
   
 }		 // Namespace segment

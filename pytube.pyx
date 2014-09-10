@@ -50,11 +50,11 @@ cdef class pytubeBase:
     cpdef getResVar(self,_type,freqnr,i=0):
         assert(i<self.ntubes)
         if _type=='pres':
-            return dvectond(self.tube[i].getResAt(3,freqnr))
+            return dvectond(self.tube[i].getResAt(2,freqnr))
         elif _type=='rho':
             return dvectond(self.tube[i].getResAt(0,freqnr))
         elif _type=='temp':
-            return dvectond(self.tube[i].getResAt(2,freqnr))
+            return dvectond(self.tube[i].getResAt(3,freqnr))
         elif _type=='volu':
             return dvectond(self.tube[i].getResAt(1,freqnr))
         elif _type=='stemp':

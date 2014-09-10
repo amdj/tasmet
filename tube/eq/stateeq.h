@@ -7,11 +7,12 @@ namespace tube{
   SPOILNAMESPACE
   class State:public TubeEquation
   {
-  public:
+    JacRow jac(const TubeVertex&) const;
     vd error(const TubeVertex&) const;			// Error in momentum equation at node i
-    dmat drhoi(const TubeVertex&) const;
-    dmat dpi(const TubeVertex&) const;
-    dmat dTi(const TubeVertex&) const;
+  private:
+    JacCol drhoi(const TubeVertex&) const;
+    JacCol dpi(const TubeVertex&) const;
+    JacCol dTi(const TubeVertex&) const;
     
     
   };

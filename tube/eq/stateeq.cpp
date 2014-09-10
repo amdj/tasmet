@@ -18,22 +18,34 @@ namespace tube{
     // TRACE(-1,"state error:"<<error);
     return STATE_SCALE*error;
   }
-  dmat State::dpi(const TubeVertex& v)
+  JacRow State::jac(const TubeVertex& v) const{
+    TRACE(6,"State::jac()");
+    JacRow jac(v.T,3);
+    jac+=dpi(v);
+    jac+=dTi(v);
+    jac+=drhoi(v);
+    return jac;
+  }
+  JacCol State::dpi(const TubeVertex& v)
    const {
     TRACE(0,"State::dpi");
-    return STATE_SCALE*eye<dmat>(v.gc->Ns,v.gc->Ns);
+    return JacCol(v.p,STATE_SCALE*eye<dmat>(v.gc->Ns,v.gc->Ns));
   }
-  dmat State::dTi(const TubeVertex& v)
+  JacCol State::dTi(const TubeVertex& v)
    const {
     TRACE(0,"State::dTi()");
     dmat rhotidiag=diagmat(v.rho.tdata());
-    return -1.0*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotidiag*v.gc->iDFT;
+    return JacCol(v.T,-1.0*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotidiag*v.gc->iDFT);
   }
-  dmat State::drhoi(const TubeVertex& v)
+  JacCol State::drhoi(const TubeVertex& v)
    const {
     TRACE(0,"State::drhoi()");
     dmat Ttidiag=diagmat(v.T.tdata());
-    return -1.0*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttidiag*v.gc->iDFT;
+    return JacCol(v.rho,-1.0*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttidiag*v.gc->iDFT);
   }
 
 } // namespace tube
+
+
+
+

@@ -23,8 +23,6 @@ namespace tube{
     virtual string getType() const {return string("RightAdiabaticWall");}
     virtual TubeBcVertex* copy() const {return new RightAdiabaticWall(*this);}
     virtual enum connectpos connectPos() const {return connectpos::right;}
-    virtual vd esource() const final;		// Source term for constant
-					// temperature
     virtual void initTubeVertex(us i,const Tube& thisseg);
   protected:
     void updateW(const SegBase&);    

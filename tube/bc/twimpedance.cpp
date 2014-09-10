@@ -147,9 +147,9 @@ namespace tube{
     error+=errorZ;
     return error;
   }
-  dmat TwImpedanceMomentumEq::dUi(const TubeVertex& v) const{
+  JacCol TwImpedanceMomentumEq::dUi(const TubeVertex& v) const{
     TRACE(10,"TwImpedanceMomentumEq::dUi()");
-    dmat dUi=Momentum::dUi(v);
+    JacCol dUi=Momentum::dUi(v);
     const us& Ns=v.gc->Ns;
     d T0=v.gc->T0;
     d c0=v.gc->gas.cm(T0);
@@ -165,9 +165,9 @@ namespace tube{
     return dUi;
   }
 
-  dmat TwImpedanceMomentumEq::dUim1(const TubeVertex& v) const{
+  JacCol TwImpedanceMomentumEq::dUim1(const TubeVertex& v) const{
     TRACE(10,"TwImpedanceMomentumEq::dUim1()");
-    dmat dUim1=Momentum::dUim1(v);    
+    JacCol dUim1=Momentum::dUim1(v);    
     const us& Ns=v.gc->Ns;
     d T0=v.gc->T0;
     d p0=v.gc->p0;
