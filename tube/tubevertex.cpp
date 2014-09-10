@@ -32,13 +32,25 @@ namespace tube{
     cout << "eWc2     :"<<eWc2<<"\n";
     cout << "eWc3     :"<<eWc3<<"\n";
     cout << "eWc4     :"<<eWc4<<"\n";
-    cout << "Tube on left  side:" << left <<"\n";
-    cout << "This tube         :" << this <<"\n";
-    cout << "Tube on right side:" << right <<"\n"   ;
+
+    cout << "Dofnr rho: " << rho.getDofNr() << "\n";
+    cout << "Dofnr U  : " << U.getDofNr() << "\n";
+    cout << "Dofnr T  : " << T.getDofNr() << "\n";
+    cout << "Dofnr p  : " << p.getDofNr() << "\n";
+    cout << "Dofnr Ts : " << Ts.getDofNr() << "\n";
+    cout << "TubeVertex on left  side:" << left <<"\n";
+    cout << "This TubeVertex         :" << this <<"\n";
+    cout << "TubeVertex on right side:" << right <<"\n"   ;
   }
   us TubeVertex::getNDofs() const{
     TRACE(5,"TubeVertex::getNDofs()");
     return vars.size()*gc->Ns;
+  }
+  void TubeVertex::setDofNrs(us firstdof){
+    for(auto var=vars.begin();var!=vars.end();var++){
+      (*var)->setDofNr(firstdof);
+      firstdof+=gc->Ns;
+    }
   }
   void TubeVertex::setLeft(const Vertex& v){
     TRACE(8,"TubeVertex::setLeft(vertex)");

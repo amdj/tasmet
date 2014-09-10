@@ -58,6 +58,7 @@ namespace tube{
     vector<const TubeEquation*> eqs; // Vector of pointers to the
 				    // equations to solve for.
     virtual us getNDofs() const;
+    void setDofNrs(us firstdofnr);
     virtual ~TubeVertex(){}
     virtual void setLeft(const Vertex&);
     virtual void setRight(const Vertex&);

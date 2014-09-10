@@ -61,7 +61,16 @@ namespace tube {
     if(other.bcRight)
       bcRight.reset(other.bcRight->copy());
   }
-  
+  void Tube::setDofNrs(us firstdof){
+    TRACE(13,"Tube::setDofNrs()");
+    assert(vvertex.size()>0);
+    for(auto vertex=vvertex.begin();vertex!=vvertex.end();vertex++){
+      TubeVertex& v=*static_cast<TubeVertex*>(vertex->get());
+      v.setDofNrs(firstdof);
+      firstdof+=v.getNDofs();
+    }
+    
+  }
   void Tube::addBc(const TubeBcVertex& bc){
     TRACE(14,"Tube::addBc(bc)");
     if(bc.connectPos()==connectpos::left)
@@ -87,9 +96,6 @@ namespace tube {
     for(auto v=vvertex.begin();v!=vvertex.end();v++)
       ndofs+=(v->get())->getNDofs();
     return ndofs;
-  }
-  void Tube::setDofNrs(us firstdofnr){
-    TRACE(14,"Tube::setFirstDofNr()");
   }
   TubeVertex* Tube::leftTubeVertex() const{
     TRACE(13,"Tube::leftTubeVertex()");

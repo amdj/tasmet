@@ -71,27 +71,27 @@ namespace tasystem{
       i++;
     }
     segfirstdof(0)=0;
-    for(us i=0;i<Nsegs;i++)
-      {
-	TRACE(9,"Initializing Segment "<<i<<"...");
-	assert(segs.at(i));
-	segs.at(i)->init(gc);
-	us thisndofs=segs.at(i)->getNDofs();
-	TRACE(12,"Ndofs for segment "<< i << ": "<<thisndofs);
+    for(us i=0;i<Nsegs;i++)      {
+      TRACE(9,"Initializing Segment "<<i<<"...");
+      assert(segs.at(i));
+      segs.at(i)->init(gc);
+      us thisndofs=segs.at(i)->getNDofs();
+      TRACE(12,"Ndofs for segment "<< i << ": "<<thisndofs);
+      
+      segndofs(i)=thisndofs;
+      Ndofs+=thisndofs;
+      if(i>0)
+        segfirstdof(i)=segfirstdof(i-1)+segndofs(i-1);
+      // Set the dofnrs
+      segs.at(i)->setDofNrs(segfirstdof(i));
 
-	segndofs(i)=thisndofs;
-	Ndofs+=thisndofs;
-	if(i>0)
-	  segfirstdof(i)=segfirstdof(i-1)+segndofs(i-1);
-	TRACE(12,"This segment ndofs:"<< thisndofs);
-      }
+    }
     TRACE(10,"Segment initialization done. Total NDofs:"<< Ndofs);
-    if(Ndofs>MAXNDOFS)
-      {
-    	WARN("Way too many DOFS required: Ndofs=" <<Ndofs << ". Exiting...\n");
-    	exit(1);
-      }
-    // Last, but not leas: initialize a pointer to this tasystem in
+    if(Ndofs>MAXNDOFS)      {
+      WARN("Way too many DOFS required: Ndofs=" <<Ndofs << ". Exiting...\n");
+      exit(1);
+    }
+    // Last, but not least: initialize a pointer to this tasystem in
     // globalconf
     gc.setSys(this);
     
