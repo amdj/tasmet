@@ -25,7 +25,6 @@ namespace tube{
   
   class TubeVertex:public segment::Vertex{ //Gridpoint at a position in a Tube
   public:
-    LocalGeom lg;
     W::W w;
     dmat zero;			// Zeros matrix of right size
     const TubeVertex* left=NULL;
@@ -42,6 +41,8 @@ namespace tube{
     d eWddt=0,eWddtkin=0,eWgim1=0,eWgi=0,eWgip1=0,eWc1=0,eWc2=0,eWc3=0,eWc4=0;      
     d eWkini=0,eWkinim1=0,eWkinip1=0;
 
+    d eWispL=0,eWispR=0,eWisrho=0;
+    
     // This is also the order in which they appear in the variable ptr
     // vector.
     variable::var rho;		// Density
@@ -55,8 +56,9 @@ namespace tube{
 
     std::vector<variable::var*> vars;
 
-      vector<std::unique_ptr<TubeEquation> > eqs; // Vector of pointers to the
-				    // equations to solve for.
+    vector<std::unique_ptr<TubeEquation> > eqs; // Vector of pointers to the
+    // equations to solve for.
+
     virtual us getNDofs() const;
     virtual us getNEqs() const;
     void setDofNrs(us firstdofnr);

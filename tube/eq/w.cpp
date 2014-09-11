@@ -14,6 +14,7 @@ namespace W{
     cout << "wRNm1 :"<<wRNm1<<"\n";
     cout << "wRNm2 :"<<wRNm2<<"\n";
     cout << "vSfL  :"<<vSfL<<"\n";
+    cout << "vSf  :"<<vSf<<"\n";
     cout << "vSfR  :"<<vSfR<<"\n";
     cout << "dxm   :"<<dxm<<"\n";
     cout << "dxp   :"<<dxp<<"\n";

@@ -46,8 +46,8 @@ namespace tube {
     eq.push_back(&c);
     eq.push_back(&m);
     eq.push_back(&is);
-    eq.push_back(&s);
-    eq.push_back(&se);
+    // eq.push_back(&s);
+    // eq.push_back(&se);
     return eq;
   }
 

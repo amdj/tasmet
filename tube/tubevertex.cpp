@@ -8,7 +8,7 @@ namespace tube{
   void TubeVertex::show() const{
     cout << "----------------- TubeVertex " << lg.i << "----\n";
     cout << "Showing weight functions for TubeVertex "<< i <<"\n";
-    // w.show();
+    w.show();
     cout << "cWddt    :"<<cWddt<<"\n";
     cout << "cWim1    :"<<cWim1<<"\n";
     cout << "cWi      :"<<cWi<<"\n";
@@ -17,6 +17,7 @@ namespace tube{
     cout << "mWuim1   :"<<mWuim1<<"\n";
     cout << "mWui     :"<<mWui<<"\n";
     cout << "mWuip1   :"<<mWuip1<<"\n";
+
     // cout << "mWpim1   :"<<mWpim1<<"\n";
     // cout << "mWpi     :"<<mWpi<<"\n";
     // cout << "mWpip1   :"<<mWpip1<<"\n";
@@ -87,16 +88,14 @@ namespace tube{
   void TubeVertex::initTubeVertex(us i,const Tube& thisseg)
   {
     TRACE(8,"TubeVertex::initTubeVertex(gc,geom), vertex "<< i << ".");
-    lg=thisseg.geom.localGeom(i);
     vars.clear();
     vars.push_back(&rho);
     vars.push_back(&U);
     vars.push_back(&p);
-    vars.push_back(&T);
-    vars.push_back(&Ts);    
+    // vars.push_back(&T);
+    // vars.push_back(&Ts);    
     
-    // Initialize the Globalconf* ptr and i (the vertex number), 
-    Vertex::init(i,*thisseg.gc);	// Which also calls Vertex::updateW()
+
     // assert(gc!=NULL);
     TRACE(10,"Ns:"<<gc->Ns);
     // Set the zero matrix    
@@ -137,7 +136,6 @@ namespace tube{
     TRACE(8,"TubeVertex::updateW()");
 
     const Geom& geom=thisseg.geom;
-    const LocalGeom lg=geom.localGeom(i);
 
     w(*this);			// Weight factors
 
@@ -146,7 +144,7 @@ namespace tube{
     if(i==0 && thisseg.getLeft().size()!=0){
       const SegBase& left=*thisseg.getLeft().at(0);
       if(left.getType().compare("Tube")==0){ // Its a Tube
-	connectTubeLeft(thisseg);
+        connectTubeLeft(thisseg);
       }
       else{
 	WARN("Left segment's type not understood from connection point of view. Exiting.");
@@ -156,11 +154,11 @@ namespace tube{
     if(i==nCells-1 && thisseg.getRight().size()!=0){
       const SegBase& right=*thisseg.getRight().at(0);
       if(right.getType().compare("Tube")==0){ // Its a Tube
-	connectTubeRight(thisseg);
+        connectTubeRight(thisseg);
       }
       else{
-	WARN("Right segment's type not understood from connection point of view. Exiting.");
-	exit(1);
+        WARN("Right segment's type not understood from connection point of view. Exiting.");
+        exit(1);
       }
     }
   }
@@ -168,12 +166,15 @@ namespace tube{
   void TubeVertex::updateWEqs(const SegBase& thisseg){
     TRACE(8,"TubeVertex::updateWEqs()");
     const Geom& geom=thisseg.geom;
-    const LocalGeom lg=geom.localGeom(i);
     cWddt=lg.vVf;
-    mWddt=lg.vVf/w.vSf;
+    mWddt=lg.vVf/lg.vSf;
     eWddt=lg.vVf;
     eWddtkin=0.5*eWddt/pow(lg.vSf,3);
 
+    d dx=mWddt;
+    eWisrho=lg.vVf;
+    eWispL=dx*(lg.SfL/3+lg.SfR/6);
+    eWispR=dx*(lg.SfR/3+lg.SfL/6);    
     d vSfsq=pow(w.vSf,2);
     auto& vleft=thisseg.getLeft();
     auto& vright=thisseg.getRight();    
@@ -183,35 +184,56 @@ namespace tube{
     mWpL=-w.vSf;
     mWpR= w.vSf;
 
-    if(left!=NULL && right!=NULL){
+    if(left && right){
+      const LocalGeom& llg=left->lg;
+      const LocalGeom& rlg=right->lg;      
       d vSfLsq=pow(w.vSfL,2);
       d vSfRsq=pow(w.vSfR,2);
-      cWim1=-w.UsignL*w.wLl;
+      cWim1=-w.wLl;
       cWi=w.wRl-w.wLr;
-      cWip1=w.UsignR*w.wRr;
+      cWip1=w.wRr;
 
       d vSfLav=0.5*(w.vSf+w.vSfL);
-      d vSfRav=0.5*(w.vSf+w.vSfR);      
+      d vSfRav=0.5*(w.vSf+w.vSfR);
+
+      // This gives numerical issue solver
+      // d vSfLav=0.5*(lg.vSf+llg.vSf);
+      // d vSfRav=0.5*(lg.vSf+rlg.vSf);
+      
       d vSfLavsq=pow(vSfLav,2);
       d vSfRavsq=pow(vSfRav,2);
 
-      cWart1=-0.5*vSfLav;
-      cWart2= 0.5*vSfLav;
-      cWart3= 0.5*vSfRav;
-      cWart4=-0.5*vSfRav;
+      // cWart1=-0.5*vSfLav;
+      // cWart2= 0.5*vSfLav;
+      // cWart3= 0.5*vSfRav;
+      // cWart4=-0.5*vSfRav;
 
-      mWart1=-1;
-      mWart2= 1;
-      mWart3= 1;
-      mWart4=-1;
+      // mWart1=-1;
+      // mWart2= 1;
+      // mWart3= 1;
+      // mWart4=-1;
 
-      // mWuim1=-w.UsignL*w.wLl/vSfLav;
+      // This one should be correct
+      mWuim1=-w.wLl/llg.vSf;
+      mWui=(w.wRl/lg.vSf-w.wLr/lg.vSf);
+      mWuip1=w.wRr/rlg.vSf;
+
+      
+      // This gives wiggles but should be correct
+      // mWuim1=-w.wLl/vSfLav;
       // mWui=w.wRl/vSfRav-w.wLr/vSfLav;
-      // mWuip1=w.UsignR*w.wRr/vSfRav;
+      // mWuip1=w.wRr/vSfRav;
 
-      mWuim1=-w.UsignL*w.wLl/w.vSfL;
-      mWui=(w.wRl-w.wLr)/w.vSf;
-      mWuip1=w.UsignR*w.wRr/w.vSfR;
+      // This is *CLEARLY* wrong, but gives nice results. Why???
+      // mWuim1=-w.wLl/vSfLav;
+      // mWui=w.wRl/vSfLav;
+      // mWui+=-w.wLr/vSfRav;
+      // mWuip1=w.wRr/vSfRav;
+
+      
+      
+      // This does not give wiggles, but is wrong! Why???
+      // WARN("Wrong but non-wiggly");
 
       eWgim1=-w.UsignL*w.wLl;
       eWgi=w.wRl-w.wLr;

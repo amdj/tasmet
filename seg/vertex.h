@@ -5,6 +5,7 @@
 
 #include "globalconf.h"
 #include "var.h"
+#include "localgeom.h"
 #include "jacobian.h"
 
 namespace segment{
@@ -13,14 +14,14 @@ namespace segment{
   using variable::var;
   using tasystem::Globalconf;
   using tasystem::Jacobian;  
-  class Vertex;
-  
-  typedef std::vector<const Vertex*>  VertexVec;
+
   class Vertex{
   public:
     const tasystem::Globalconf* gc=NULL;
     us i;
+    LocalGeom lg;
 
+    void initVertex(us i,const Seg& seg);
     virtual ~Vertex(){}
     // const VertexVec& getLeft() const {return vleft;}
     // const VertexVec& getRight() const {return vright;}
@@ -33,7 +34,6 @@ namespace segment{
     virtual us getNDofs() const=0;
     virtual us getNEqs() const=0;
     Vertex& operator=(const Vertex& v2){WARN("Operator=() not allowed. Aborting."); abort();} 
-    void init(us i,const Globalconf& gc);
   };
 } // namespace segment
 

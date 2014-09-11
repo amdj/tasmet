@@ -146,6 +146,10 @@ namespace tube {
 
       us nVertex=vvertex.size();    
       assert(nVertex==geom.nCells);
+
+      for(us i=0;i<vvertex.size();i++){
+        vvertex.at(i)->initVertex(i,*this);
+      }
       // And initialize again.
       for(us i=0;i<vvertex.size();i++){
         TubeVertex* cvertex=static_cast<TubeVertex*>(vvertex[i].get());
