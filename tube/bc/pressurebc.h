@@ -16,13 +16,25 @@ namespace tube{
   //   virtual dmat dUi(const TubeVertex& v) const;
   //   virtual dmat dUip1(const TubeVertex& v) const;
   // };
+
+  class LeftPressureEq:public TubeEquation{
+    var& pLbc;
+    JacCol dpL(const TubeVertex&) const;
+    
+  public:
+    LeftPressureEq(variable::var& pLbc): pLbc(pLbc){}
+    virtual vd error(const TubeVertex&) const;
+    virtual JacRow jac(const TubeVertex& v) const;
+    virtual TubeEquation* copy() const{return new LeftPressureEq(*this);}
+    
+  };
   
   class LeftPressure:public TubeBcVertex
   {
-  public:
     variable::var pLbc;			// Pressure boundary condition
     variable::var TLbc;			// Temperature boundary conditions
-
+    LeftPressureEq leq;
+  public:
     // PressureBcEnergyEq peq;
     virtual void show() const;
 

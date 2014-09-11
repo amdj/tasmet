@@ -87,15 +87,15 @@ namespace segment{
     TRACE(8,"Seg::Error()");
     assert(vvertex.size()!=0);
     assert(gc!=NULL);
-    vd error(getNDofs(),fillwith::zeros);
+    vd error(getNEqs(),fillwith::zeros);
     us nVertex=vvertex.size();    
     us Ns=gc->Ns;
-    us vndofs,curpos=0;
+    us vneqs,curpos=0;
 
     for(us k=0; k<nVertex;k++) {
-      vndofs=vvertex.at(k)->getNDofs();
-      error.subvec(curpos,curpos+vndofs-1)=vvertex[k]->error();
-      curpos+=vndofs;
+      vneqs=vvertex.at(k)->getNEqs();
+      error.subvec(curpos,curpos+vneqs-1)=vvertex[k]->error();
+      curpos+=vneqs;
     }
     return error;
   }

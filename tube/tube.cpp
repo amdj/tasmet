@@ -137,22 +137,24 @@ namespace tube {
     Seg::init(g);
     if(vvertex.size()==0){
       TRACE(13,"Filling vertices. Current size:"<<vvertex.size());
+      // Left *probable* boundary condition
       vvertex.emplace_back(leftTubeVertex());
       for(us i=1;i<geom.nCells-1;i++)
     	vvertex.emplace_back(new TubeVertex());
+      // Right *probable* boundary condition
       vvertex.emplace_back(rightTubeVertex());
 
       us nVertex=vvertex.size();    
       assert(nVertex==geom.nCells);
       // And initialize again.
       for(us i=0;i<vvertex.size();i++){
-	TubeVertex* cvertex=static_cast<TubeVertex*>(vvertex[i].get());
-	TRACE(13,"Starting intialization of Vertex "<< i);
-	if(i<nVertex-1) cvertex->setRight(*vvertex[i+1].get());
-	if(i>0) cvertex->setLeft(*vvertex[i-1].get());
-	cvertex->initTubeVertex(i,*this);
-      }	
-    }	
+        TubeVertex* cvertex=static_cast<TubeVertex*>(vvertex[i].get());
+        TRACE(13,"Starting intialization of Vertex "<< i);
+        if(i<nVertex-1) cvertex->setRight(*vvertex[i+1].get());
+        if(i>0) cvertex->setLeft(*vvertex[i-1].get());
+        cvertex->initTubeVertex(i,*this);
+      } // for
+    } // vertex.size==0
     else{
       TRACE(13,"Tube already initialized!");
     }

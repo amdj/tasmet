@@ -6,10 +6,34 @@
 #include "energyeq.h"
 namespace tube{
   
-  LeftPressure::LeftPressure(const var& pres,const var& temp):TubeBcVertex(),pLbc(pres),TLbc(temp) {
+  vd LeftPressureEq::error(const TubeVertex& v) const{
+    TRACE(8,"LeftPressureEq::error()");
+    return  v.pL()()-pLbc();
+  }
+  JacRow LeftPressureEq::jac(const TubeVertex& v) const{
+    TRACE(8,"LeftPressureEq::jac()");
+    JacRow jac(dofnr);
+    jac+=dpL(v);
+    return jac;
+  }
+  JacCol LeftPressureEq::dpL(const TubeVertex& v) const {
+    TRACE(6,"LeftPressureEq::dpL()");
+    return JacCol(v.pL(),arma::eye<dmat>(v.gc->Ns,v.gc->Ns));
+  }
+  LeftPressure::LeftPressure(const var& pres,const var& temp):
+    TubeBcVertex(),
+    pLbc(pres),
+    TLbc(temp),
+    leq(pLbc)
+  {
     TRACE(8,"LeftPressure full constructor");
   }
-  LeftPressure::LeftPressure(const var& pres):TubeBcVertex(),pLbc(pres),TLbc(*pres.gc){
+  LeftPressure::LeftPressure(const var& pres):
+    TubeBcVertex(),
+    pLbc(pres),
+    TLbc(*pres.gc),
+    leq(pLbc)
+  {
     TRACE(8,"LeftPressure constructor for given pressure. Temperature computed");    
     const Globalconf* gc=pres.gc;
     d T0=gc->T0;
@@ -19,7 +43,8 @@ namespace tube{
     TLbc.settdata(TLbct);
     // TRACE(100,"TLbc(0):"<<TLbc);
   }
-  LeftPressure::LeftPressure(const LeftPressure& other):LeftPressure(other.pLbc,other.TLbc)
+  LeftPressure::LeftPressure(const LeftPressure& other):
+    LeftPressure(other.pLbc,other.TLbc)
   {
     TRACE(8,"LeftPressure copy constructor");
   }
@@ -29,6 +54,7 @@ namespace tube{
     TubeVertex::initTubeVertex(i,thisseg);
     pLbc.gc=thisseg.gc;
     TLbc.gc=thisseg.gc;
+    eqs.push_back(std::unique_ptr<TubeEquation>(leq.copy()));
     // TRACE(100,"TLbc:"<<TLbc());
     // if(eqs.at(2)->getType()!=EqType::Ise){
     //   TRACE(100,"Changing energy equation...");
@@ -39,6 +65,7 @@ namespace tube{
   }
   void LeftPressure::show() const {
     cout << "LeftPressure boundary condition set at left side of tube.\n";
+    cout << "Number of equations: " << eqs.size() << "\n";
     TubeVertex::show();
   }
   void LeftPressure::updateW(const SegBase& thisseg)
@@ -85,7 +112,7 @@ namespace tube{
   vd LeftPressure::msource() const{
     TRACE(5,"LeftPressure::msource()");
     vd msource(gc->Ns,fillwith::zeros);
-    msource=-1.0*lg.SfL*pLbc();
+    // msource=-1.0*lg.SfL*pLbc();
     return msource;
   }
   vd LeftPressure::esource() const {

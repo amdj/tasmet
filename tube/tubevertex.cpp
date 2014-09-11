@@ -81,11 +81,12 @@ namespace tube{
   }
   const variable::var& TubeVertex::pR() const {
     TRACE(6,"TubeVertex::pR()");
-    assert(i<nCells-1);
+    assert(right);
     return right->p;
   }
   void TubeVertex::initTubeVertex(us i,const Tube& thisseg)
   {
+    TRACE(8,"TubeVertex::initTubeVertex(gc,geom), vertex "<< i << ".");
     lg=thisseg.geom.localGeom(i);
     vars.clear();
     vars.push_back(&rho);
@@ -94,7 +95,6 @@ namespace tube{
     vars.push_back(&T);
     vars.push_back(&Ts);    
     
-    TRACE(8,"TubeVertex::initTubeVertex(gc,geom), vertex "<< i << ".");
     // Initialize the Globalconf* ptr and i (the vertex number), 
     Vertex::init(i,*thisseg.gc);	// Which also calls Vertex::updateW()
     // assert(gc!=NULL);
@@ -125,10 +125,8 @@ namespace tube{
     // Initialize density and temperatures
     T.set(0,gc->T0);
     Ts.set(0,gc->T0);
-    d T0=gc->T0;
-    d p0=gc->p0;
-    d rho0=gc->gas.rho(T0,p0);
-    rho.set(0,rho0);    
+    rho.set(0,gc->rho0);    
+
     // Update weight factors
     TRACE(10,"Now running updateW()");
     TubeVertex::updateW(thisseg);
@@ -400,11 +398,12 @@ namespace tube{
     const us& Ns=gc->Ns;
     TRACE(4,"Assignment of Ns survived:"<< Ns);
     us Neq=eqs.size();
-    vd error(Neq*Ns);
-    for(us k=0;k<Neq;k++)
+    us Neqfull=getNEqs();
+    vd error(Neqfull);
+    for(us k=0;k<Neq;k++){
       error.subvec(k*Ns,(k+1)*Ns-1)=eqs[k]->error(*this);
-    
-    TRACE(4,"TubeVertex::Error() done.");
+    }
+    TRACE(4,"TubeVertex::error() i="<<i<<" done.");
     return error;
   }
   vd TubeVertex::domg() const
@@ -434,9 +433,8 @@ namespace tube{
   void TubeVertex::setRes(vd res){
     TRACE(10,"TubeVertex::setRes(), i="<< i);
     const us& Ns=gc->Ns;
-    us nvars=eqs.size();        // Only put in for number of equations
+    us nvars=vars.size();        // Only put in for number of equations
     assert(res.size()==getNDofs());
-
     for(us k=0;k<nvars;k++){
       vars[k]->set(res.subvec(k*gc->Ns,k*Ns+Ns-1));
     }

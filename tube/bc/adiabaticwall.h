@@ -12,9 +12,6 @@ namespace tube{
   {
   public:
     virtual void show() const;
-    virtual void initTubeVertex(us i,const Tube& thisseg);
-  protected:
-    virtual void updateW(const SegBase&)=0;
   };
 
   class RightAdiabaticWall:public AdiabaticWall // Right adiabatichermal wall boundary
@@ -24,8 +21,9 @@ namespace tube{
     virtual TubeBcVertex* copy() const {return new RightAdiabaticWall(*this);}
     virtual enum connectpos connectPos() const {return connectpos::right;}
     virtual void initTubeVertex(us i,const Tube& thisseg);
+    virtual const variable::var& pR() const {return pr;};
   protected:
-    void updateW(const SegBase&);    
+    variable::var pr;
   };
   class LeftAdiabaticWall:public AdiabaticWall // Left adiabatichermal wall boundary
   {
@@ -33,6 +31,7 @@ namespace tube{
     virtual string getType() const {return string("LeftAdiabaticWall");}
     virtual TubeBcVertex* copy() const {return new LeftAdiabaticWall(*this);}
     virtual enum connectpos connectPos() const {return connectpos::left;}
+    virtual void initTubeVertex(us i,const Tube& thisseg);
   protected:
     void updateW(const SegBase&);    
   };

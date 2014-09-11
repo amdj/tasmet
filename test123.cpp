@@ -49,12 +49,15 @@ int main(int argc,char* argv[]) {
   // HopkinsLaminarDuct t1(geom1,gc.T0,gc.T0+10);
   IsentropicTube t1(geom1);
   var pL(gc,0);
+  pL.set(0,3.14);
   if(Nf>0)
     pL.set(1,1);
   tube::LeftPressure bcleft(pL);
+  tube::RightAdiabaticWall raw;
   // tube::RightIsoTWall bcright(0,T0+10);
   // TRACE(100,"Add bc to tube...");
   t1.addBc(bcleft);
+  t1.addBc(raw);  
   // EngineSystem sys(air);
   // sys.setTimingConstraint(0,0,3,2);
   // sys.setAmplitudeDof(0,0,3,1);

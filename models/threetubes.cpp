@@ -36,9 +36,10 @@ Solver* ThreeTubes(us gp,us Nf,d freq,d L,d R1,d R2,vd p1,int loglevel,d kappa,d
   t1.addBc(pleft);
   t1is.addBc(pleft);
   
-  RightIsoTWall right(Tr);
+  RightAdiabaticWall right;
+  // RightIsoTWall right(Tr);
   t3.addBc(right);
-
+  t3is.addBc(right);
   TaSystem sys(gc);
   if(options & ISENTROPIC){
     sys.addSeg(t1is);
