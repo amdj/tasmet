@@ -33,25 +33,19 @@ namespace tube{
     error+=v.mWui*v.gc->fDFT*(rhoti%Uti%Uti);
     
     // Pressure terms    
-    const vd& pi=v.p();
-    error+=v.mWpi*pi;
+    error+=v.mWpL*v.pL()();
+    error+=v.mWpR*v.pR()();    
 
-    
     if(v.left!=NULL){
       const vd& rhotim1=v.left->rho.tdata();
       const vd& Utim1=v.left->U.tdata();
       error+=v.mWuim1*v.gc->fDFT*(rhotim1%Utim1%Utim1);
       // Pressure term
-      const vd& pim1=v.left->p();
-      error+=v.mWpim1*pim1;
     }
     if(v.right!=NULL){
       const vd& Utip1=v.right->U.tdata();
       const vd& rhotip1=v.right->rho.tdata();
       error+=v.mWuip1*v.gc->fDFT*(rhotip1%Utip1%Utip1);
-      // Pressure term    
-      const vd& pip1=v.right->p();
-      error+=v.mWpip1*pip1;
     }
 
     // Artificial viscosity ter
@@ -72,19 +66,18 @@ namespace tube{
   }
   JacRow Momentum::jac(const TubeVertex& v) const {
     TRACE(6,"Momentum::jac()");
-    JacRow jac(v.U,9);
-    jac.addCol(drhoi(v));
-    jac.addCol(dUi(v));
-    jac.addCol(dpi(v));
+    JacRow jac(dofnr,9);
+    jac+=drhoi(v);
+    jac+=dUi(v);
+    jac+=dpL(v);
+    jac+=dpR(v);
     if(v.left){
-      jac.addCol(drhoim1(v));
-      jac.addCol(dUim1(v));
-      jac.addCol(dpim1(v));            
+      jac+=drhoim1(v);
+      jac+=dUim1(v);
     }
     if(v.right){
-      jac.addCol(drhoip1(v));
-      jac.addCol(dUip1(v));
-      jac.addCol(dpip1(v));      
+      jac+=drhoip1(v);
+      jac+=dUip1(v);
     }
     return jac;
   }
@@ -127,12 +120,6 @@ namespace tube{
 
     return drhoi;
   }
-  JacCol Momentum::dpi(const TubeVertex& v) const {
-    TRACE(0,"Momentum::dpi()");
-    dmat I(v.gc->Ns,v.gc->Ns,fillwith::eye);
-    JacCol dpi(v.p,v.mWpi*I);
-    return dpi;
-  }
   JacCol Momentum::drhoim1(const TubeVertex& v) const {
     TRACE(0,"Momentum::drhoim1()");
     const dmat& fDFT=v.gc->fDFT;
@@ -161,12 +148,6 @@ namespace tube{
     #endif
     
     return dUim1;
-  }
-  JacCol Momentum::dpim1(const TubeVertex& v) const {
-    TRACE(0,"Momentum::dpim1()");
-    dmat I(v.gc->Ns,v.gc->Ns,fillwith::eye);
-    JacCol dpim1(v.left->p,v.mWpim1*I);
-    return dpim1;
   }
   JacCol Momentum::drhoip1(const TubeVertex& v) const {
     TRACE(0,"Momentum::dhoip1()");    // Todo: add this term!;
@@ -198,12 +179,19 @@ namespace tube{
     #endif
     return dUip1;
   }
-  JacCol Momentum::dpip1(const TubeVertex& v) const {
-    TRACE(0,"Momentum::dpip1()");
+  JacCol Momentum::dpR(const TubeVertex& v) const {
+    TRACE(0,"Momentum::dpR()");
 
     dmat I(v.gc->Ns,v.gc->Ns,fillwith::eye);
-    JacCol dpip1(v.right->p,v.mWpip1*I);
-    return dpip1;
+    JacCol dpR(v.pR(),v.mWpR*I);
+    return dpR;
+  }
+  JacCol Momentum::dpL(const TubeVertex& v) const {
+    TRACE(0,"Momentum::dpR()");
+
+    dmat I(v.gc->Ns,v.gc->Ns,fillwith::eye);
+    JacCol dpL(v.pL(),v.mWpL*I);
+    return dpL;
   }
   // JacCol Momentum::dUip2(const TubeVertex& v) const {
   //   TRACE(0,"Momentum:dUip2()");

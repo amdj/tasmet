@@ -31,6 +31,7 @@ namespace segment{
     virtual void show() const=0;
     virtual vd domg() const=0;
     virtual us getNDofs() const=0;
+    virtual us getNEqs() const=0;
     Vertex& operator=(const Vertex& v2){WARN("Operator=() not allowed. Aborting."); abort();} 
     void init(us i,const Globalconf& gc);
   };

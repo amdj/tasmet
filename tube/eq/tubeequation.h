@@ -22,15 +22,19 @@ namespace tube{
   class Tube;
   class TubeVertex;
   class TubeEquation{
+  protected:
+    us dofnr;
   public:
+    void setDofNr(us Dofnr){dofnr=Dofnr;}
+    us getDofNr(){return dofnr;}    
     virtual void init(const Tube&) {}
     virtual enum EqType getType() const { return EqType::Non;}
-    // ****************************** THIS METHOD SHOULD NOT BE OVERRIDDEN!!!
+
     virtual JacRow jac(const TubeVertex& v) const=0;		// Returns the local Jacobian of this equation
-    // ******************************
     virtual vd error(const TubeVertex&) const=0;
     virtual void show() const { cout << "Empty equation description. From equation.h.\n";}
     virtual vd domg(const TubeVertex&) const;
+    virtual TubeEquation* copy() const=0;
     // The definition of these factors is the original definition of d_j+/-1/2 of Wesseling:
     // Wesseling: d_j+/-1/2 = r_j+/-0.5 * epsilon_j+/-0.5
     dmat d_r(const TubeVertex&) const; 		// Artificial viscosity pre-factor right side 

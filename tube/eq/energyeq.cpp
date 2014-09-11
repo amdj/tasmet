@@ -21,7 +21,7 @@ namespace tube{
   }
   JacRow Energy::jac(const TubeVertex& v) const{
     TRACE(6,"Energy::jac()");
-    JacRow jac(v.p,12);
+    JacRow jac(dofnr,12);
     jac+=drhoi(v);
     jac+=dTi(v);
     jac+=dpi(v);

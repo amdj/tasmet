@@ -9,8 +9,9 @@ namespace tube{
   }
   JacRow Isentropic::jac(const TubeVertex& v) const{
     TRACE(6,"Isentropic::jac()");
-    JacRow jac(v.p,2);
-    jac+=dpi(v);
+    JacRow jac(dofnr,2);
+    jac+=dpL(v);
+    jac+=dpR(v);    
     jac+=drhoi(v);
     return jac;
   }
@@ -23,19 +24,25 @@ namespace tube{
     d gamma=v.gc->gas.gamma(T0);
     vd p0vec_freqdomain=vd(v.gc->Ns,fillwith::zeros);
     p0vec_freqdomain(0)=v.gc->p0;
-    err+=(p0vec_freqdomain+v.p())/p0;
+    err+=(p0vec_freqdomain+0.5*(v.pL()()+v.pR()()))/p0;
     err+=-1.0*v.gc->fDFT*pow(v.rho.tdata()/rho0,gamma);
     TRACE(6,"Isentropic::Error() done");
     return err;
   }
-  JacCol Isentropic::dpi(const TubeVertex& v) const {
+  JacCol Isentropic::dpL(const TubeVertex& v) const {
     TRACE(1,"Isentropic::dpi()");
-    JacCol dpi(v.p,arma::eye(v.gc->Ns,v.gc->Ns));
+    JacCol dpL(v.pL(),arma::eye(v.gc->Ns,v.gc->Ns));
     d p0=v.gc->p0;    
-    dpi.data()*=1/p0;
-    return dpi;
+    dpL.data()*=0.5/p0;
+    return dpL;
   }
-  JacCol Isentropic::drhoi(const TubeVertex& v) const {
+  JacCol Isentropic::dpR(const TubeVertex& v) const {
+    TRACE(1,"Isentropic::dpi()");
+    JacCol dpR(v.pR(),arma::eye(v.gc->Ns,v.gc->Ns));
+    d p0=v.gc->p0;    
+    dpR.data()*=0.5/p0;
+    return dpR;
+  }  JacCol Isentropic::drhoi(const TubeVertex& v) const {
     TRACE(1,"Isentropic::drhoi()"); 
     JacCol drhoi(v.rho);
 

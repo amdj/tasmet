@@ -10,6 +10,7 @@ namespace tube{
   {
     const HeatSource* heat;
   public:
+    virtual TubeEquation* copy() const {return new Energy(*this);}    
     virtual void init(const Tube&);
     virtual JacRow jac(const TubeVertex&) const;
     virtual enum EqType getType() const { return EqType::Ene;}

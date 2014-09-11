@@ -33,7 +33,10 @@ namespace tasystem{
   private:
     vector<SegConnection> segConnections;
     arma::uvec::fixed<MAXSEGS> segfirstdof; // Vector containing the number of the first column corresponding to the first vertex of segment segfirstcol(i)
-    arma::uvec::fixed<MAXSEGS> segndofs;  // Vector containe
+    arma::uvec::fixed<MAXSEGS> segndofs;  // Vector container
+    arma::uvec::fixed<MAXSEGS> segfirsteq; // Vector containing the number of the first column corresponding to the first vertex of segment segfirstcol(i)
+    arma::uvec::fixed<MAXSEGS> segneqs;  // Vector container
+
     bool hasInit=false;
   protected:
     vector<std::unique_ptr<SegBase> > segs;		

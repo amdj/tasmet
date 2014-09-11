@@ -71,20 +71,25 @@ namespace tasystem{
       i++;
     }
     segfirstdof(0)=0;
+    segfirsteq(0)=0;
     for(us i=0;i<Nsegs;i++)      {
       TRACE(9,"Initializing Segment "<<i<<"...");
       assert(segs.at(i));
       segs.at(i)->init(gc);
       us thisndofs=segs.at(i)->getNDofs();
+      us thisneqs=segs.at(i)->getNEqs();
       TRACE(12,"Ndofs for segment "<< i << ": "<<thisndofs);
-      
+      TRACE(12,"Neqs for segment "<< i << ": "<<thisneqs);      
       segndofs(i)=thisndofs;
+      segneqs(i)=thisneqs;      
       Ndofs+=thisndofs;
-      if(i>0)
+      if(i>0){
         segfirstdof(i)=segfirstdof(i-1)+segndofs(i-1);
+        segfirsteq(i)=segfirsteq(i-1)+segneqs(i-1);        
+      }
       // Set the dofnrs
       segs.at(i)->setDofNrs(segfirstdof(i));
-
+      segs.at(i)->setEqNrs(segfirsteq(i));
     }
     TRACE(10,"Segment initialization done. Total NDofs:"<< Ndofs);
     if(Ndofs>MAXNDOFS)      {
@@ -170,17 +175,17 @@ namespace tasystem{
     TRACE(14,"TaSystem::Error()");
     checkInit();
     us Ndofs=getNDofs();
-    evd error(getNDofs());
-    vd Error(error.data(),getNDofs(),false,false);
+    evd error(Ndofs);
+    vd Error(error.data(),Ndofs,false,false); // Globally, neqs=ndofs
     Error.zeros();
     us Nsegs=getNSegs();
-    us segdofs;
-    us startdof=0;
+    us segeqs;
+    us starteq=0;
     TRACE(-1,"Nsegs:"<< Nsegs);
     for(us i=0;i<Nsegs;i++){
-      segdofs=segs[i]->getNDofs();
-      Error.subvec(startdof,startdof+segdofs-1)=segs[i]->error();
-      startdof=startdof+segdofs;
+      segeqs=segneqs(i);
+      Error.subvec(starteq,starteq+segeqs-1)=segs[i]->error();
+      starteq+=segeqs;
     }
     return error;
   }
@@ -194,16 +199,14 @@ namespace tasystem{
     
     vd Res(res.data(),Ndofs,false,false);
 
-
     us segdofs;
     us startdof=0;
     us Nsegs=getNSegs();
     for(us i=0;i<Nsegs;i++){
       segdofs=segs[i]->getNDofs();
       Res.subvec(startdof,startdof+segdofs-1)=segs[i]->getRes();
-      startdof=startdof+segdofs;
+      startdof+=segdofs;
       TRACE(4,"Seg:"<<i<<", Ndofs: "<<segdofs);
-
     }
     return res;
   }

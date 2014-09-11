@@ -23,7 +23,8 @@ namespace tube{
   {
     TRACE(8,"RightImpedance::Init(), vertex "<< i <<".");
     TubeVertex::initTubeVertex(i,thisseg);
-    eqs.at(1)=&mright;
+    eqs.at(1).reset(mright.copy());
+    eqs.at(1)->init(thisseg);
     updateW(thisseg);
   }
   
@@ -39,10 +40,10 @@ namespace tube{
     mWuim1=-w.wLl/w.vSfL+w.wRNm2/lg.SfR;
     mWui	=-w.wLr/w.vSfL+w.wRNm1/lg.SfR;
     mWuip1=0;
-
-    mWpim1=-w.vSfL*w.wLl;
-    mWpi	=-w.vSfL*w.wLr+(w.vSfL-lg.SfR);
-    mWpip1=0;
+    WARN("Not yet updated!");
+    // mWpim1=-w.vSfL*w.wLl;
+    // mWpi	=-w.vSfL*w.wLr+(w.vSfL-lg.SfR);
+    // mWpip1=0;
     
     eWgim1=-w.wLl+w.wRNm2;
     eWgi  =-w.wLr+w.wRNm1;

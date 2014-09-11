@@ -20,11 +20,13 @@ namespace tube{
   class LeftPressure:public TubeBcVertex
   {
   public:
-    variable::var pL;			// Pressure boundary condition
-    variable::var TL;			// Temperature boundary conditions
+    variable::var pLbc;			// Pressure boundary condition
+    variable::var TLbc;			// Temperature boundary conditions
 
     // PressureBcEnergyEq peq;
     virtual void show() const;
+
+    
     LeftPressure(const var&);
     LeftPressure(const var&,const var& temp);
     LeftPressure(const LeftPressure& other);

@@ -23,7 +23,7 @@ namespace tube{
 
   JacRow Continuity::jac(const TubeVertex& v) const{
     TRACE(6,"Continuity::jac()");
-    JacRow jac(v.rho,6);
+    JacRow jac(dofnr,6);
     jac.addCol(drhoi(v));
     jac.addCol(dUi(v));
     if(v.left){

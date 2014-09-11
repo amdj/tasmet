@@ -32,17 +32,18 @@ namespace tube{
     vd& xv=geom.xv;
     d& L=geom.L;
     // vd Tmirror=Tl+(Tr-Tl)*math_common::skewsine(xv/L);
-    vd Tmirror=Tl+(Tr-Tl)*xv/L;
-    se.setTMirror(Tmirror);
+    Tmirror=Tl+(Tr-Tl)*xv/L;
+    WARN("ToBECANGED!!")
+    // se.setTMirror(Tmirror);
     d T;
-    for(us i=0;i<vvertex.size();i++){
-	TubeVertex& cvertex=*static_cast<TubeVertex*>(vvertex[i].get());
-	T=Tmirror(i);
-	cvertex.Ts.set(0,T);
-	cvertex.T.set(0,T);
-    }
-    vd dTwdx=math_common::ddx_central(Tmirror,geom.xv);
-    hopkinsheat.setdTwdx(geom,dTwdx);
+    // for(us i=0;i<vvertex.size();i++){
+	// TubeVertex& cvertex=*static_cast<TubeVertex*>(vvertex[i].get());
+	// T=Tmirror(i);
+	// cvertex.Ts.set(0,T);
+	// cvertex.T.set(0,T);
+    // }
+    // vd dTwdx=math_common::ddx_central(Tmirror,geom.xv);
+    // hopkinsheat.setdTwdx(geom,dTwdx);
   }
   
   

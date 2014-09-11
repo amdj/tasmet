@@ -17,9 +17,9 @@ namespace tube{
     cout << "mWuim1   :"<<mWuim1<<"\n";
     cout << "mWui     :"<<mWui<<"\n";
     cout << "mWuip1   :"<<mWuip1<<"\n";
-    cout << "mWpim1   :"<<mWpim1<<"\n";
-    cout << "mWpi     :"<<mWpi<<"\n";
-    cout << "mWpip1   :"<<mWpip1<<"\n";
+    // cout << "mWpim1   :"<<mWpim1<<"\n";
+    // cout << "mWpi     :"<<mWpi<<"\n";
+    // cout << "mWpip1   :"<<mWpip1<<"\n";
 
     cout << "eWddt    :"<<eWddt<<"\n";
     cout << "eWgim1   :"<<eWgim1<<"\n";
@@ -44,17 +44,29 @@ namespace tube{
   }
   us TubeVertex::getNDofs() const{
     TRACE(5,"TubeVertex::getNDofs()");
+    return vars.size()*gc->Ns;
+  }
+  us TubeVertex::getNEqs() const{
     return eqs.size()*gc->Ns;
   }
   void TubeVertex::setDofNrs(us firstdof){
     TRACE(5,"TubeVertex::setDofNrs()");
-    us nvars=eqs.size();        // This makes it safe to exclude dofs
+    us nvars=vars.size();        // This makes it safe to exclude dofs
                                 // in the vars vector
     for(us i=0;i<nvars;i++){
       vars.at(i)->setDofNr(firstdof);
       firstdof+=gc->Ns;
     }
   }
+  void TubeVertex::setEqNrs(us firsteq){
+    TRACE(5,"TubeVertex::setDofNrs()");
+    us neqs=eqs.size();        // This makes it safe to exclude dofs
+                                // in the vars vector
+    for(us i=0;i<neqs;i++){
+      eqs.at(i)->setDofNr(firsteq);
+      firsteq+=gc->Ns;
+    }
+  }  
   void TubeVertex::setLeft(const Vertex& v){
     TRACE(8,"TubeVertex::setLeft(vertex)");
     this->left=&static_cast<const TubeVertex&>(v);
@@ -63,11 +75,11 @@ namespace tube{
     TRACE(8,"TubeVertex::setRight(vertex)");
     this->right=&static_cast<const TubeVertex&>(v);
   }
-  const variable::var& TubeVertex::pL(){
+  const variable::var& TubeVertex::pL() const{
     TRACE(6,"TubeVertex::pL()");
     return p;
   }
-  const variable::var& TubeVertex::pR(){
+  const variable::var& TubeVertex::pR() const {
     TRACE(6,"TubeVertex::pR()");
     assert(i<nCells-1);
     return right->p;
@@ -91,7 +103,14 @@ namespace tube{
     zero=zeros<dmat>(thisseg.gc->Ns,thisseg.gc->Ns);
     
     // Fill the vector of equation pointers from the Tube instance.
-    eqs=thisseg.getEqs();
+    auto tubeeqs=thisseg.getEqs();
+    eqs.clear(); eqs.reserve(5);
+    us eqnr_=0;
+    for(auto eq=tubeeqs.begin();eq!=tubeeqs.end();eq++){
+      eqs.push_back(std::unique_ptr<TubeEquation>((*eq)->copy()));
+      eqs.at(eqnr_)->init(thisseg);
+      eqnr_++;
+    }
 
     // For compatibility, we store these params in the TubeVertex class.
     nCells=thisseg.geom.nCells;
@@ -161,6 +180,11 @@ namespace tube{
     auto& vleft=thisseg.getLeft();
     auto& vright=thisseg.getRight();    
     cWart1=cWart2=cWart3=cWart4=0;		           
+
+    // Always the same
+    mWpL=-w.vSf;
+    mWpR= w.vSf;
+
     if(left!=NULL && right!=NULL){
       d vSfLsq=pow(w.vSfL,2);
       d vSfRsq=pow(w.vSfR,2);
@@ -191,10 +215,6 @@ namespace tube{
       mWui=(w.wRl-w.wLr)/w.vSf;
       mWuip1=w.UsignR*w.wRr/w.vSfR;
 
-      mWpim1=-w.vSf*w.wLl;
-      mWpi  = w.vSf*(w.wRl-w.wLr);
-      mWpip1= w.vSf*w.wRr;
-
       eWgim1=-w.UsignL*w.wLl;
       eWgi=w.wRl-w.wLr;
       eWgip1=w.UsignR*w.wRr;
@@ -216,7 +236,7 @@ namespace tube{
 
     }
     else if(i==0){
-      TRACE(15,"Building for first cell adiabatic wall");
+      // Assuming first cell is adiabatic wall
       d vSfRsq=pow(w.vSfR,2);
       cWim1=0;
       cWi=w.wRl;
@@ -226,10 +246,6 @@ namespace tube{
       mWui=w.wRl/w.vSf;
       mWuip1=w.wRr/w.vSfR;
       
-      mWpim1=0;
-      mWpi=w.vSf*(w.wRl-w.wL0);
-      mWpip1=w.vSf*(w.wRr-w.wL1);
-
       eWgim1=0;
       eWgi=w.wRl;
       eWgip1=w.wRr;
@@ -244,7 +260,7 @@ namespace tube{
       eWc4=-w.vSfR/w.dxp;
     }
     else if(i==nCells-1){
-      TRACE(15,"Building for last cell adiabatic wall");
+      // Assuming last cell is adiabatic wall
       d vSfLsq=pow(w.vSfL,2);
       cWi=-w.wLr;
       cWim1=-w.wLl;
@@ -254,10 +270,6 @@ namespace tube{
       mWui=   -w.wLr/w.vSfL;
       mWuip1= 0;
       
-      mWpim1=w.vSf*(-w.wLl+w.wRNm2);
-      mWpi=  w.vSf*(-w.wLr+w.wRNm1);
-      mWpip1=0;
-
       eWgim1=-w.wLl;
       eWgi=-w.wLr;
       eWgip1=0;
@@ -390,9 +402,8 @@ namespace tube{
     us Neq=eqs.size();
     vd error(Neq*Ns);
     for(us k=0;k<Neq;k++)
-      {
-	error.subvec(k*Ns,(k+1)*Ns-1)=eqs[k]->error(*this);
-      }
+      error.subvec(k*Ns,(k+1)*Ns-1)=eqs[k]->error(*this);
+    
     TRACE(4,"TubeVertex::Error() done.");
     return error;
   }
@@ -401,7 +412,7 @@ namespace tube{
     TRACE(4,"TubeVertex::domg() for TubeVertex "<< i << ".");
     const us& Ns=gc->Ns;
     TRACE(4,"Assignment of Ns survived:"<< Ns);
-    us Neq=getNDofs();
+    us Neq=getNEqs();
 
     vd domg(Neq*Ns);
     for(us k=0;k<Neq;k++) {
@@ -412,7 +423,7 @@ namespace tube{
   vd TubeVertex::getRes() const {			// Get current result vector
     TRACE(4,"TubeVertex::GetRes()");
     const us& Ns=gc->Ns;
-    us nvars=eqs.size();        // Only return for number of equations
+    us nvars=vars.size();        // Only return for number of equations
     vd res(getNDofs());
 
     for(us k=0;k<nvars;k++){

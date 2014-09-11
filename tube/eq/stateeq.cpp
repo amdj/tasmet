@@ -10,7 +10,7 @@ namespace tube{
     TRACE(6,"State::Error()");
     vd error(v.gc->Ns,fillwith::zeros);
     // TRACE(-1,"State p0:"<<p0);
-    error+=v.p();
+    error+=0.5*(v.pL()()+v.pR()());
     error(0)+=v.gc->p0;	       // Add p0 part
     // TRACE(-1,"state error:"<<error);    
     // TRACE(-1,"T0:"<<vertex.gc->gas.Rs()*fDFT()*(vertex.T.tdata()%vertex.rho.tdata()));    
@@ -20,16 +20,22 @@ namespace tube{
   }
   JacRow State::jac(const TubeVertex& v) const{
     TRACE(6,"State::jac()");
-    JacRow jac(v.T,3);
-    jac+=dpi(v);
+    JacRow jac(dofnr,3);
+    jac+=dpL(v);
+    jac+=dpR(v);    
     jac+=dTi(v);
     jac+=drhoi(v);
     return jac;
   }
-  JacCol State::dpi(const TubeVertex& v)
+  JacCol State::dpL(const TubeVertex& v)
    const {
     TRACE(0,"State::dpi");
-    return JacCol(v.p,STATE_SCALE*eye<dmat>(v.gc->Ns,v.gc->Ns));
+    return JacCol(v.pL(),0.5*STATE_SCALE*eye<dmat>(v.gc->Ns,v.gc->Ns));
+  }
+  JacCol State::dpR(const TubeVertex& v)
+   const {
+    TRACE(0,"State::dpi");
+    return JacCol(v.pR(),0.5*STATE_SCALE*eye<dmat>(v.gc->Ns,v.gc->Ns));
   }
   JacCol State::dTi(const TubeVertex& v)
    const {

@@ -28,6 +28,7 @@ namespace segment{
     SegBase(const SegBase& o);
     SegBase& operator=(const SegBase&);
     virtual us getNDofs() const=0;
+    virtual us getNEqs() const=0;    
     virtual us getNVertex() const=0;
     virtual ~SegBase(){}
 
@@ -47,6 +48,7 @@ namespace segment{
     virtual void init(const Globalconf&); // Implementation updates gc
     // ptr of this instance.
     virtual void setDofNrs(us firstdofnr)=0;
+    virtual void setEqNrs(us firstdofnr)=0;    
     virtual vd error() const=0;
     virtual void show(us) const=0;
     virtual void jac(Jacobian&) const=0;

@@ -16,6 +16,7 @@ namespace tube{
     HopkinsHeatSource hopkinsheat;
     HeatSource noheatatall;
     d Tl,Tr;
+    vd Tmirror;
     bool Tset=false;
   public:
     HopkinsLaminarDuct(const Geom& geom,d Tl);

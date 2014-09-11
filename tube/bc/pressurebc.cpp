@@ -6,20 +6,20 @@
 #include "energyeq.h"
 namespace tube{
   
-  LeftPressure::LeftPressure(const var& pres,const var& temp):TubeBcVertex(),pL(pres),TL(temp) {
+  LeftPressure::LeftPressure(const var& pres,const var& temp):TubeBcVertex(),pLbc(pres),TLbc(temp) {
     TRACE(8,"LeftPressure full constructor");
   }
-  LeftPressure::LeftPressure(const var& pres):TubeBcVertex(),pL(pres),TL(*pres.gc){
+  LeftPressure::LeftPressure(const var& pres):TubeBcVertex(),pLbc(pres),TLbc(*pres.gc){
     TRACE(8,"LeftPressure constructor for given pressure. Temperature computed");    
     const Globalconf* gc=pres.gc;
     d T0=gc->T0;
     d gamma=gc->gas.gamma(T0);
     vd p0(gc->Ns,fillwith::ones); p0*=gc->p0;
-    vd TLt=T0*pow((p0+pL.tdata())/p0,(gamma-1.0)/gamma);		// Adiabatic compression/expansion
-    TL.settdata(TLt);
-    // TRACE(100,"TL(0):"<<TL);
+    vd TLbct=T0*pow((p0+pLbc.tdata())/p0,(gamma-1.0)/gamma);		// Adiabatic compression/expansion
+    TLbc.settdata(TLbct);
+    // TRACE(100,"TLbc(0):"<<TLbc);
   }
-  LeftPressure::LeftPressure(const LeftPressure& other):LeftPressure(other.pL,other.TL)
+  LeftPressure::LeftPressure(const LeftPressure& other):LeftPressure(other.pLbc,other.TLbc)
   {
     TRACE(8,"LeftPressure copy constructor");
   }
@@ -27,13 +27,13 @@ namespace tube{
   {
     TRACE(8,"LeftPressure::initTubeVertex()");
     TubeVertex::initTubeVertex(i,thisseg);
-    pL.gc=thisseg.gc;
-    TL.gc=thisseg.gc;
-    // TRACE(100,"TL:"<<TL());
-    if(eqs.at(2)->getType()!=EqType::Ise){
-      TRACE(100,"Changing energy equation...");
-      // eq[2]=&peq;
-    }
+    pLbc.gc=thisseg.gc;
+    TLbc.gc=thisseg.gc;
+    // TRACE(100,"TLbc:"<<TLbc());
+    // if(eqs.at(2)->getType()!=EqType::Ise){
+    //   TRACE(100,"Changing energy equation...");
+    //   // eq[2]=&peq;
+    // }
     LeftPressure::updateW(thisseg);
 
   }
@@ -55,9 +55,10 @@ namespace tube{
     mWui=w.wRl/w.vSfR-w.wL0/w.vSfL;
     mWuip1=w.wRr/w.vSfR-w.wL1/w.vSfL;
 
-    mWpim1=0;     
-    mWpi=w.vSf*w.wRl;
-    mWpip1=w.vSf*w.wRr;
+    WARN("Not yet updated!");
+    // mWpim1=0;     
+    // mWpi=w.vSf*w.wRl;
+    // mWpip1=w.vSf*w.wRr;
     // Change energy equation for open boundary and prescribed pressure
     eWgim1= 0;
     eWgi=   w.wRl-w.wL0;
@@ -84,7 +85,7 @@ namespace tube{
   vd LeftPressure::msource() const{
     TRACE(5,"LeftPressure::msource()");
     vd msource(gc->Ns,fillwith::zeros);
-    msource=-1.0*lg.SfL*pL();
+    msource=-1.0*lg.SfL*pLbc();
     return msource;
   }
   vd LeftPressure::esource() const {
@@ -92,14 +93,14 @@ namespace tube{
     vd esource=TubeVertex::esource();
     const dmat& fDFT=gc->fDFT;
     // TRACE(100,"Stupid hack to test energy source");
-    vd TLt=TL.tdata();
-    d TL0=TL(0);
-    // TRACE(100,"TL(0):"<<TL0);
+    vd TLbct=TLbc.tdata();
+    d TLbc0=TLbc(0);
+    // TRACE(100,"TLbc(0):"<<TLbc0);
     const Energy& e=static_cast<const Energy&>(*eqs[2]);
     d gamma=e.gamma(*this);
     d gamfac=gamma/(gamma-1.0);
     
-    // TRACE(100,"TL:"<<TL());
+    // TRACE(100,"TLbc:"<<TLbc());
     const LocalGeom rlg(lg.geom->localGeom(i+1));
     d xp2=rlg.xvi;
     d xp1=lg.xvi;
@@ -113,7 +114,7 @@ namespace tube{
 
     d x0_ov_x1sq=pow(x0/x1,2);
     TRACE(12,"esource:"<<esource);
-    esource+=-1.0*lg.SfL*fDFT*(kappaL%TLt)/x0;
+    esource+=-1.0*lg.SfL*fDFT*(kappaL%TLbct)/x0;
     TRACE(12,"esource:"<<esource);
     return esource;    
   }

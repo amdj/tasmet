@@ -21,6 +21,7 @@ namespace tube{
   public:
     RightImpedanceMomentumEq(TubeBcVertex&,vd& Z);
     ~RightImpedanceMomentumEq(){}
+    virtual TubeEquation* copy(){ return new RightImpedanceMomentumEq(*this);}
     vd error(const TubeVertex&) const;
     JacCol dUi(const TubeVertex&) const;
     JacCol dUim1(const TubeVertex&) const;

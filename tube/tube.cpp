@@ -69,8 +69,17 @@ namespace tube {
       v.setDofNrs(firstdof);
       firstdof+=v.getNDofs();
     }
-    
   }
+  void Tube::setEqNrs(us firstdof){
+    TRACE(13,"Tube::setDofNrs()");
+    assert(vvertex.size()>0);
+    for(auto vertex=vvertex.begin();vertex!=vvertex.end();vertex++){
+      TubeVertex& v=*static_cast<TubeVertex*>(vertex->get());
+      v.setEqNrs(firstdof);
+      firstdof+=v.getNEqs();
+    }
+  }
+  
   void Tube::addBc(const TubeBcVertex& bc){
     TRACE(14,"Tube::addBc(bc)");
     if(bc.connectPos()==connectpos::left)
@@ -97,6 +106,13 @@ namespace tube {
       ndofs+=(v->get())->getNDofs();
     return ndofs;
   }
+  us Tube::getNEqs() const {
+    TRACE(14,"Tube::getNDofs()");
+    us ndofs=0;
+    for(auto v=vvertex.begin();v!=vvertex.end();v++)
+      ndofs+=(v->get())->getNEqs();
+    return ndofs;
+  }  
   TubeVertex* Tube::leftTubeVertex() const{
     TRACE(13,"Tube::leftTubeVertex()");
     if(bcLeft){
@@ -162,13 +178,14 @@ namespace tube {
   }
   vd Tube::getErrorAt(us eqnr,us freqnr) const{
     const us& nCells=geom.nCells;
-    vd er(nCells);
-    assert(eqnr<getNDofs());
-    auto eqs=this->getEqs();
-    for(us i=0;i<nCells;i++){
-      TubeVertex& cvertex=*static_cast<TubeVertex*>(vvertex[i].get());
-      er(i)=(cvertex.eqs.at(eqnr)->error(cvertex))(freqnr);
-    }
+    vd er(nCells,fillwith::zeros);
+    WARN("Unupdated function!!");
+    // assert(eqnr<getNDofs());
+    // auto eqs=this->getEqs();
+    // for(us i=0;i<nCells;i++){
+    //   TubeVertex& cvertex=*static_cast<TubeVertex*>(vvertex[i].get());
+    //   er(i)=(cvertex.eqs.at(eqnr)->error(cvertex))(freqnr);
+    // }
     return er;
   }
   vd Tube::dmtotdx() const{

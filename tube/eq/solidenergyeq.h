@@ -9,6 +9,7 @@ namespace tube{
   private:
     vd Tsmirror;
   public:
+    virtual TubeEquation* copy() const {return new SolidTPrescribed(*this);}    
     void  setTMirror(vd Ts) {Tsmirror=Ts;}
     SolidTPrescribed();
     void init(const Tube& t);
