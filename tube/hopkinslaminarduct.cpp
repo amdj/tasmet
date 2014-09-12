@@ -34,7 +34,6 @@ namespace tube{
     Tmirror=Tl+(Tr-Tl)*xv/L;
     dTwdx=math_common::ddx_central(Tmirror,geom.xv);
     // WARN("ToBECANGED!!")
-    se.setTMirror(Tmirror);
     d T;
     for(us i=0;i<vvertex.size();i++){
       T=Tmirror(i);

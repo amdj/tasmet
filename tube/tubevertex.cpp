@@ -172,9 +172,6 @@ namespace tube{
     eWddtkin=0.5*eWddt/pow(lg.vSf,3);
 
     d dx=mWddt;
-    eWisrho=lg.vVf;
-    eWispL=dx*(lg.SfL/3+lg.SfR/6);
-    eWispR=dx*(lg.SfR/3+lg.SfL/6);    
     d vSfsq=pow(w.vSf,2);
     auto& vleft=thisseg.getLeft();
     auto& vright=thisseg.getRight();    

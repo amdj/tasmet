@@ -27,12 +27,12 @@ namespace tube{
 
     JacCol drhoip1(const TubeVertex&) const;
     JacCol dUip1(const TubeVertex&) const;
-    JacCol dpip1(const TubeVertex&) const;
+    JacCol dpR(const TubeVertex&) const;
     JacCol dTip1(const TubeVertex&) const;
 
     JacCol drhoim1(const TubeVertex&) const;
     JacCol dUim1(const TubeVertex&) const;
-    JacCol dpim1(const TubeVertex&) const;
+    JacCol dpL(const TubeVertex&) const;
     JacCol dTim1(const TubeVertex&) const;
     
     vd kappaL(const TubeVertex&) const;		// Thermal conducticity at the left

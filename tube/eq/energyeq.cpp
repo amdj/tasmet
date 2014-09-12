@@ -52,17 +52,21 @@ namespace tube{
     d gamfac=gamma/(gamma-1.0);
 
     const vd& Uti=v.U.tdata();
-    vd pti=v.p.tdata()+v.getp0t();
+    vd pti=0.5*(v.pL().tdata()+v.pR().tdata())+v.getp0t();
+    vd pRt=v.getp0t()+v.pR();
+    vd pLt=v.getp0t()+v.pL();
     const vd& Tti=v.T.tdata();
     const vd& rhoti=v.rho.tdata();
 
-    error+=v.eWddt*DDTfd*v.p()/(gamma-1.0); // Static enthalpy term
+    error+=v.eWddt*DDTfd*0.5*(v.pL()()+v.pR()())/(gamma-1.0); // Static
+    // enthalpy term
+    
     error+=v.eWddtkin*DDTfd*fDFT*(rhoti%Uti%Uti); // This term should get a eWddtkin factor later on
     error+=v.eWgi*fDFT*(gamfac*pti%Uti);
     error+=fDFT*(v.eWkini*rhoti%pow(Uti,3));
     error+=fDFT*((v.eWc2*kappaL(v)+v.eWc3*kappaR(v))%Tti);
 
-    if(v.left!=NULL){
+    if(v.left){
       const vd& Utim1=v.left->U.tdata();
       vd ptim1=v.left->p.tdata()+v.getp0t();
       const vd& rhotim1=v.left->rho.tdata();
@@ -75,7 +79,7 @@ namespace tube{
 
     }
     // TRACE(100,"error:"<<error);
-    if(v.right!=NULL){
+    if(v.right){
       const vd& Utip1=v.right->U.tdata();
       vd ptip1=v.right->p.tdata()+v.getp0t();
       const vd& rhotip1=v.right->rho.tdata(); 

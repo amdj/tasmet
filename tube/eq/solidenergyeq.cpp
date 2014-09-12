@@ -1,6 +1,6 @@
 #include "solidenergyeq.h"
 #include "tubevertex.h"
-
+#include "hopkinslaminarduct.h"
 namespace tube{
 
   SolidTPrescribed::SolidTPrescribed(){
@@ -9,7 +9,10 @@ namespace tube{
   }
   void SolidTPrescribed::init(const Tube& t) {
     TRACE(6,"SolidTPrescribed::init(t)");
-
+    if(t.getType().compare("HopkinsLaminarDuct")==0){
+      const HopkinsLaminarDuct& d=dynamic_cast<const HopkinsLaminarDuct&>(t);
+      Tsmirror=&d.Tmirror;
+    }
   }
   JacRow SolidTPrescribed::jac(const TubeVertex& v) const{
     TRACE(6,"SolidTPrescribed::jac()");
@@ -22,8 +25,10 @@ namespace tube{
     vd error(v.gc->Ns,fillwith::zeros);
     assert(v.gc!=NULL);
     error=v.Ts();
-    if(Tsmirror.size()>0)
-      error(0)-=Tsmirror(v.i);
+    if(Tsmirror){
+      if(Tsmirror->size()>0)
+        error(0)-=(*Tsmirror)(v.i);
+    }
     return error;
   }
   JacCol SolidTPrescribed::dTsi(const TubeVertex& v) const {

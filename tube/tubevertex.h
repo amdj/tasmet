@@ -41,9 +41,7 @@ namespace tube{
     d eWddt=0,eWddtkin=0,eWgim1=0,eWgi=0,eWgip1=0,eWc1=0,eWc2=0,eWc3=0,eWc4=0;      
     d eWkini=0,eWkinim1=0,eWkinip1=0;
 
-    d eWispL=0,eWispR=0,eWisrho=0;
-    
-    // This is also the order in which they appear in the variable ptr
+      // This is also the order in which they appear in the variable ptr
     // vector.
     variable::var rho;		// Density
     variable::var U;		// Volume flow
