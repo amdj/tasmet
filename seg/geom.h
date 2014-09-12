@@ -5,8 +5,8 @@
 #include "localgeom.h"
 
 #define MAXGP 500
-#define LAST 1
-#define FIRST 0
+#define LAST 0
+#define FIRST 1
 
 
 namespace segment {

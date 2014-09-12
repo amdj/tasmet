@@ -92,8 +92,8 @@ namespace tube{
     vars.push_back(&rho);
     vars.push_back(&U);
     vars.push_back(&p);
-    // vars.push_back(&T);
-    // vars.push_back(&Ts);    
+    vars.push_back(&T);
+    vars.push_back(&Ts);    
     
 
     // assert(gc!=NULL);

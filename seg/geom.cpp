@@ -43,10 +43,10 @@ namespace segment{
     
     // Now adjusting it
     fS(i)=0.5*(first.S(i)+second.S(j));
-    fS(j)=0.5*(first.S(i)+second.S(j));
+    sS(j)=0.5*(first.S(i)+second.S(j));
               
     fphi(i)=0.5*(first.phi(i)+second.phi(j));
-    sphi(i)=0.5*(first.phi(i)+second.phi(j));
+    sphi(j)=0.5*(first.phi(i)+second.phi(j));
     
     first=Geom(fx,fS,fphi,frh,fcshape);
     second=Geom(sx,sS,sphi,srh,scshape);    

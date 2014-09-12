@@ -18,15 +18,13 @@ namespace tube{
     string cshape;
     d (*zeroheatH_funptr)(d,d);
     rottfuncs::RottFuncs rf;
-    vd dTwdx;			// Size of gp
     // This function computes for all nonzero frequencies the heat
     // transfer coeficient mathcalH.
-
+    const vd* dTwdx;
   public:
     HopkinsHeatSource(const Tube& t);
     HopkinsHeatSource& operator=(const HopkinsHeatSource&);
     HopkinsHeatSource(const HopkinsHeatSource& o);
-    void setdTwdx(const Geom& g,d dTwdx);
     void setdTwdx(const Geom& g,const vd& dTwdx);
     virtual vd heat(const TubeVertex& v) const;
     virtual dmat dUi(const TubeVertex& v) const;

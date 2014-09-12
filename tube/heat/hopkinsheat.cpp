@@ -73,11 +73,8 @@ namespace tube{
 	abort();
       }
   }
-  void HopkinsHeatSource::setdTwdx(const Geom& g,d dTwdx){
-    this->dTwdx=dTwdx*vd(g.nCells,fillwith::ones);
-  }
   void HopkinsHeatSource::setdTwdx(const Geom& g,const vd& dTwdx){
-    this->dTwdx=dTwdx;
+    this->dTwdx=&dTwdx;
   }
   vd HopkinsHeatSource::heat(const TubeVertex& v) const{
     TRACE(5,"HopkinsHeatSource::heat(v)");
@@ -112,7 +109,7 @@ namespace tube{
     vc htcoefQ(Nf+1,fillwith::zeros);
 
     // Obtain dTwdx
-    d dTwdx=this->dTwdx(v.i);
+    d dTwdx=(*(this->dTwdx))(v.i);
     // TRACE(100,"dTwdx:"<<dTwdx);
     const d& rh=v.lg.vrh;    
     d T0=v.T(0);
