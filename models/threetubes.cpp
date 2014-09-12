@@ -18,11 +18,18 @@ Solver* ThreeTubes(us gp,us Nf,d freq,d L,d R1,d R2,vd p1,int loglevel,d kappa,d
   Globalconf gc=Globalconf::airSTP(Nf,freq,kappa);
   gc.show();
 
+  d Sf1=number_pi*pow(R1,2);
+  d Sf2=number_pi*pow(R2,2);
+  
   Geom geom1=Geom::CylinderBlApprox(gp,L,R1);
   Geom geom2=Geom::CylinderBlApprox(gp,L,R2);  
+  Geom geom3=Geom::CylinderBlApprox(gp,L,R1);
+  
+  segment::smoothEnds(geom1,LAST,geom2,FIRST);
+  segment::smoothEnds(geom3,FIRST,geom2,LAST);
   IsentropicTube t1is(geom1);
   IsentropicTube t2is(geom2);  
-  IsentropicTube t3is(geom1);
+  IsentropicTube t3is(geom3);
 
   HopkinsLaminarDuct t1(geom1,gc.T0);
   HopkinsLaminarDuct t2(geom2,gc.T0);  
