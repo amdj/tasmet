@@ -59,6 +59,9 @@ Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,i
   HopkinsLaminarDuct hhx(hhxgeom,Tr);
   HopkinsLaminarDuct hotend(hotendgeom,Tr);  
 
+  RightAdiabaticWall rwall;
+  hotend.addBc(rwall);
+  
   TaSystem sys(gc);
   sys.addSeg(resonator);
   sys.addSeg(chx);

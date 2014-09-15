@@ -39,6 +39,7 @@ Solver* SimpleTube(us gp,us Nf,d freq,d L,d r,d Tl,d Tr,vd p1,int loglevel,d kap
   
   if(options & DRIVEN)
     t1->addBc(bcleft);
+
   if(options & ISOTWALL)
     t1->addBc(bcright);
   else

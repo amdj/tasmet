@@ -38,7 +38,14 @@ namespace tube{
     d mWart1=0,mWart2=0,mWart3=0,mWart4=0;		       
     d mWddt=0,mWuim1=0,mWui=0,mWuip1=0;
     d mWpL=0,mWpR=0;
-    d eWddt=0,eWddtkin=0,eWgim1=0,eWgi=0,eWgip1=0,eWc1=0,eWc2=0,eWc3=0,eWc4=0;      
+    d eWddt=0,eWddtkin=0;
+    d eWgip1=0,eWgip=0,eWgim=0,eWgim1=0;
+
+    // The following are for boundary conditions
+    d eWgUip1pL=0,eWgUim1pR=0;
+    
+    
+    d eWc1=0,eWc2=0,eWc3=0,eWc4=0; // Conduction weight factors
     d eWkini=0,eWkinim1=0,eWkinip1=0;
 
       // This is also the order in which they appear in the variable ptr

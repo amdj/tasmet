@@ -24,8 +24,13 @@ namespace tube{
 
     cout << "eWddt    :"<<eWddt<<"\n";
     cout << "eWgim1   :"<<eWgim1<<"\n";
-    cout << "eWgi     :"<<eWgi<<"\n";
+    cout << "eWgim    :"<<eWgim<<"\n";
+    cout << "eWgip    :"<<eWgip<<"\n";
     cout << "eWgip1   :"<<eWgip1<<"\n";
+    cout << "eWgUip1pL:"<<eWgUip1pL<<"\n";
+    cout << "eWgUim1pR:"<<eWgUim1pR<<"\n";    
+    
+    
     cout << "eWkinim1 :"<<eWkinim1<<"\n";
     cout << "eWkini   :"<<eWkini<<"\n";
     cout << "eWkinip1 :"<<eWkinip1<<"\n";
@@ -232,9 +237,10 @@ namespace tube{
       // This does not give wiggles, but is wrong! Why???
       // WARN("Wrong but non-wiggly");
 
-      eWgim1=-w.UsignL*w.wLl;
-      eWgi=w.wRl-w.wLr;
-      eWgip1=w.UsignR*w.wRr;
+      eWgim1=-w.wLl;
+      eWgim =-w.wLr;
+      eWgip = w.wRl;
+      eWgip1= w.wRr;
 
       eWkinim1=-0.5*w.UsignL*w.wLl/vSfLavsq;
       eWkini=0.5*(w.wRl/vSfRavsq-w.wLr/vSfLavsq);
@@ -264,7 +270,8 @@ namespace tube{
       mWuip1=w.wRr/w.vSfR;
       
       eWgim1=0;
-      eWgi=w.wRl;
+      eWgim=0;
+      eWgip=w.wRl;
       eWgip1=w.wRr;
 
       eWkinim1=0;
@@ -288,7 +295,8 @@ namespace tube{
       mWuip1= 0;
       
       eWgim1=-w.wLl;
-      eWgi=-w.wLr;
+      eWgim=-w.wLr;
+      eWgip=0;
       eWgip1=0;
 
       eWkinim1=-0.5*w.wLl/vSfLsq;
@@ -304,18 +312,6 @@ namespace tube{
       WARN("Something went terribly wrong!");
       abort();
     }
-    // Contribution from changing cross-sectional area
-
-    // TRACE(50,"Test: put all kin terms 0");
-    // eWkinim1=0;
-    // eWkini=0;
-    // eWkinip1=0;
-    // eWddtkin=0;
-    // eWgim1=0;
-    // eWgi=0;
-    // eWgip1=0;
-    // eWddt=0;    
-
   }
 
   void TubeVertex::connectTubeLeft(const SegBase& thisseg){

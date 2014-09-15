@@ -29,6 +29,8 @@ namespace tube{
       if(Tsmirror->size()>0)
         error(0)-=(*Tsmirror)(v.i);
     }
+    else
+      error(0)-=v.gc->T0;
     return error;
   }
   JacCol SolidTPrescribed::dTsi(const TubeVertex& v) const {

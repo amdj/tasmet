@@ -49,8 +49,12 @@ namespace tube{
     // mWpi	=-lg.SfL*w.wLr+(lg.SfL-lg.SfR);
     // mWpip1=0;
     
-    eWgim1=-w.wLl+w.wRNm2;
-    eWgi  =-w.wLr+w.wRNm1;
+    eWgim1=-w.wLl;
+    eWgim =-w.wLr;
+
+    eWgUim1pR=w.wRNm2;
+    eWgip=w.wRNm1;
+
     eWgip1=0;
 
     d SfLsq=pow(w.vSfL,2);
