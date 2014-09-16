@@ -31,7 +31,7 @@ namespace tube{
     Continuity c;		// Continuity equation
     Momentum m;			// Momentum equation
     Energy e;			// Full energy equation
-    StateL s;			// State equation (ideal gas)
+    State s;			// State equation (ideal gas)
     SolidTPrescribed se;		// Solid energy equation
   private:
     LaminarDragResistance laminardrag;

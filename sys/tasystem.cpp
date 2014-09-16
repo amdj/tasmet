@@ -9,6 +9,7 @@ namespace tasystem{
 
   TaSystem::TaSystem(const Globalconf& gc):gc(gc){
     TRACE(14,"TaSystem::TaSystem(gc)");
+    this->gc.setDriven(true);
   }
   TaSystem::TaSystem(const TaSystem& o)
   {

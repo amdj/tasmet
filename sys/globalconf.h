@@ -24,14 +24,16 @@ namespace tasystem{
     const TaSystem* thesys=NULL;
     d Mass=0;			/* Fluid mass in the system (should remain constant) */
     d omg;		// The "base" frequency in rad/s
-
+    bool driven=true;
   public:
     Globalconf(){}
-    Globalconf(us Nf,d freq,string Gas="air",d T0=293.15,d p0=101325.0,d kappa=1.0);
+    Globalconf(us Nf,d freq,string Gas="air",d T0=293.15,d p0=101325.0,d kappa=1.0,bool driven=true);
     static Globalconf airSTP(us Nf,d freq,d kappa=1.0);
     ~Globalconf(){TRACE(-5,"~Globalconf()");}
     const TaSystem* getSys()const { return thesys;}
-    void setSys(TaSystem* sys) {thesys=sys;}    
+    void setSys(TaSystem* sys) {thesys=sys;}
+    bool isDriven() const {return driven;}
+    void setDriven(bool d) { driven=d;}
     string Gastype;
     us Nf;			// Number of frequencies to solve for
     us Ns;			// Corresponding number of time samples

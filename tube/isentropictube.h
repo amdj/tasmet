@@ -42,7 +42,7 @@ namespace tube{
     Continuity c;		// Continuity equation
     Momentum m;			// Momentum equation
     Isentropic is;		// Isentropic energy
-    StateL s;			// State equation for pL (ideal gas)
+    State s;			// State equation for pL (ideal gas)
     SolidTPrescribed se;		// Solid energy equation
     virtual ~IsentropicTube();
   };

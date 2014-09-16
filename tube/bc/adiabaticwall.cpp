@@ -17,7 +17,10 @@ namespace tube{
     TubeVertex::initTubeVertex(i,thisseg);
     pr=var(gc);
     vars.push_back(&pr);
-    eqs.push_back(std::unique_ptr<TubeEquation>(sr.copy()));
+    if(gc->isDriven()==false)   {
+      TRACE(10,"System is not driven, adding extra equation.");
+      eqs.push_back(std::unique_ptr<TubeEquation>(sr.copy()));
+    }
   }
   
  

@@ -7,11 +7,17 @@ namespace tasystem{
   
   EngineSystem::EngineSystem(const Globalconf& gc):
     TaSystem(gc)
-  {    TRACE(15,"EngineSystem::EngineSystem(gc,tc)");}
+  {
+    TRACE(15,"EngineSystem::EngineSystem(gc,tc)");
+    this->gc.setDriven(false);
+  }
   EngineSystem::EngineSystem(const EngineSystem& sys):
     TaSystem(sys),
     tc(sys.tc),av(sys.av)
-  {    TRACE(15,"EngineSystem::EngineSystem(EngineSystem))");}
+  {
+    TRACE(15,"EngineSystem::EngineSystem(EngineSystem))");
+    gc.setDriven(false);
+  }
   EngineSystem::EngineSystem(const TaSystem& sys):TaSystem(sys){}
   EngineSystem& EngineSystem::operator=(const EngineSystem& sys){
     TRACE(15,"EngineSystem::operator=()");

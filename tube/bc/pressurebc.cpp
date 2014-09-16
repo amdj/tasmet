@@ -54,8 +54,10 @@ namespace tube{
     TubeVertex::initTubeVertex(i,thisseg);
     pLbc.gc=thisseg.gc;
     TLbc.gc=thisseg.gc;
-    eqs.at(3).reset(leq.copy()); // Replace equation of state for the
-                                 // boundary condition on pressure
+    // eqs.at(3).reset(leq.copy()); // Replace equation of state for the
+    // boundary condition on pressure
+    eqs.push_back(std::unique_ptr<TubeEquation>(leq.copy()));
+    
     LeftPressure::updateW(thisseg);
   }
   void LeftPressure::show() const {

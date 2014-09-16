@@ -36,9 +36,11 @@ namespace tube{
   class TwImpedance:public TubeBcVertex // Adiabatic impedance boundary condition
   {
   public:
+    variable::var pr;    
     TwImpedanceMomentumEq mright; // Completely adjusted equation
     // TwImpedanceEnergyEq   eright; // Completely adjusted equation
     // Isentropic is;
+    virtual const variable::var& pR() const {return pr;};    
     TwImpedance();
     TwImpedance(const TwImpedance& o);
     TwImpedance& operator=(const TwImpedance&);

@@ -18,18 +18,15 @@ namespace tube{
     TRACE(8,"TwImpedance copy assignment operator");
     return *this;
   }
-  // vd TwImpedanceEnergyEq::error(const TubeVertex& v) const {
-  //   return Energy::error(v);
-  // }
   void TwImpedance::initTubeVertex(us i,const Tube& thisseg)
   {
     TRACE(8,"TwImpedance::initTubeVertex(), vertex "<< i <<".");
+    pr=var(gc);
     TubeVertex::initTubeVertex(i,thisseg);
     eqs.at(1).reset(mright.copy());
     // eq.at(2)=&is;
     eqs.at(1)->init(thisseg);
-    // is.init(thisseg);
-    // eright.Init(*thisseg.gc);
+    vars.push_back(&pr);
     TwImpedance::updateW(thisseg);
   }
   

@@ -5,8 +5,8 @@ namespace tasystem{
   Globalconf Globalconf::airSTP(us Nf,d freq,d kappa){
     return Globalconf(Nf,freq,"air",293.15,101325,kappa);
   }
-  Globalconf::Globalconf(us Nf,d freq,string gas,d T0,d p0,d kappa):
-    gas(gas)
+  Globalconf::Globalconf(us Nf,d freq,string gas,d T0,d p0,d kappa,bool driven):
+    driven(driven),gas(gas)
   {
     // Sanity checks
     assert(2*number_pi*freq>MINOMG && 2*number_pi*freq<MAXOMG);
