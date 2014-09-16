@@ -3,20 +3,15 @@
 #define _ADIABATICWALL_H__
 
 #include "tubebcvertex.h"
-
+#include "stateeq.h"
 
 
 namespace tube{
 
-  class AdiabaticWall:public TubeBcVertex //  adiabatichermal wall boundary condition
+  class RightAdiabaticWall:public TubeBcVertex // Right adiabatichermal wall boundary
   {
   public:
     virtual void show() const;
-  };
-
-  class RightAdiabaticWall:public AdiabaticWall // Right adiabatichermal wall boundary
-  {
-  public:
     virtual string getType() const {return string("RightAdiabaticWall");}
     virtual TubeBcVertex* copy() const {return new RightAdiabaticWall(*this);}
     virtual enum connectpos connectPos() const {return connectpos::right;}
@@ -24,16 +19,8 @@ namespace tube{
     virtual const variable::var& pR() const {return pr;};
   protected:
     variable::var pr;
-  };
-  class LeftAdiabaticWall:public AdiabaticWall // Left adiabatichermal wall boundary
-  {
-  public:
-    virtual string getType() const {return string("LeftAdiabaticWall");}
-    virtual TubeBcVertex* copy() const {return new LeftAdiabaticWall(*this);}
-    virtual enum connectpos connectPos() const {return connectpos::left;}
-    virtual void initTubeVertex(us i,const Tube& thisseg);
-  protected:
-    void updateW(const SegBase&);    
+    StateR sr;
+    
   };
 
 

@@ -30,29 +30,40 @@ Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,i
   d Lres=87.97e-2;
   us gpres=max(round(gp*Lres/Ltot),4);  
   Geom resgeom=Geom::CylinderBlApprox(gpres,Lres,Rtube);
+
   // ############################## Cold HX's
   d Lchx=10.2e-3;
   d y0chx=1.02e-3/2;
   d phichx=0.70;
   d Lchxgap=1.5e-3;
-  us gphx=15;  
+  us gphx=25;  
   Geom chxgeom=Geom::VertPlates(gphx,Lchx,S0,phichx,y0chx);
+
   // ############################## Stack
   d y0stk=0.77e-3/2;
   d Lstk=3.5e-2;
-  us gpstk=20;
+  us gpstk=60;
   d phistk=0.73;
   Geom stkgeom=Geom::VertPlates(gpstk,Lstk,S0,phistk,y0stk);
+
   // ############################## Hot HX
   d y0hhx=y0chx;
   d Lhhx=7.62e-3;
   d phihhx=0.70;
   Geom hhxgeom=Geom::VertPlates(gphx,Lhhx,S0,phihhx,y0hhx);
+
   // ############################## Hot end
   d Lhotend=(5e-2)-Lhhx;
-  us gphotend=15;
+  us gphotend=90;
   Geom hotendgeom=Geom::CylinderBlApprox(gphotend,Lhotend,Rtube);
 
+  
+  // And blend togeter
+  smoothEnds(resgeom,LAST,chxgeom,FIRST);
+  smoothEnds(chxgeom,LAST,stkgeom,FIRST);
+  smoothEnds(stkgeom,LAST,hhxgeom,FIRST);
+  smoothEnds(hhxgeom,LAST,hotendgeom,FIRST);
+  
   HopkinsLaminarDuct resonator(resgeom,gc.T0);
   HopkinsLaminarDuct chx(chxgeom,gc.T0);
   HopkinsLaminarDuct stk(stkgeom,gc.T0,Tr);
@@ -74,18 +85,6 @@ Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,i
   sys.connectSegs(3,4,tasystem::SegCoupling::tailhead);  
   
   if(options & DRIVEN){
-    cout << "Not driven system\n";
-    EngineSystem ensys(sys);
-    // CHANGED to constraint on second harmonic, see what happens
-    // ensys.setTimingConstraint(0,0,3,4);
-    ensys.setTimingConstraint(0,0,3,2);
-    ensys.setAmplitudeDof(0,0,3,1);
-    Solver* Sol=new Solver(ensys);
-    Sol->sys().show(0);
-    return Sol;
-    
-  }
-  else{
     cout << "Driven system\n";
     var pL(gc);
     for(us i=0;i<gc.Ns;i++)
@@ -94,7 +93,18 @@ Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,i
     static_cast<Tube*>(sys.getSeg(0))->addBc(l1);
     
     Solver* Sol=new Solver(sys);
-    Sol->sys().show(0);
+    return Sol;
+
+  }
+  else{
+    cout << "NOT driven system\n";
+
+    EngineSystem ensys(sys);
+    // CHANGED to constraint on second harmonic, see what happens
+    // ensys.setTimingConstraint(0,0,3,4);
+    ensys.setTimingConstraint(0,0,3,2);
+    ensys.setAmplitudeDof(0,0,3,1);
+    Solver* Sol=new Solver(ensys);
     return Sol;
   }
 }

@@ -83,11 +83,11 @@ namespace tasystem{
     TRACE(19,"reltol:"<< reltol);
     while((funer>funtol || reler>reltol) && nloop<maxiter)
       {
-	dtuple ers=doIter(dampfac);
-	funer=std::get<0>(ers);
-	reler=std::get<1>(ers);
-	cout << "Iteration: "<<nloop<<" , function error: "<<funer<<" , relative error:" << reler<< ".\n";
-	nloop++;
+        dtuple ers=doIter(dampfac);
+        funer=std::get<0>(ers);
+        reler=std::get<1>(ers);
+        cout << "Iteration: "<<nloop<<" , function error: "<<funer<<" , relative error:" << reler<< ".\n";
+        nloop++;
       }
     if(nloop==maxiter)
       WARN("Solver reached maximum number of iterations! Results might not be reliable!");
@@ -95,7 +95,6 @@ namespace tasystem{
   }
   tuple<d,d> Solver::doIter(d dampfac){
     // Do an iteration
-
     
     assert(dampfac>0 && dampfac<=1.0);
     TRACE(15,"Solver::DoIter()");

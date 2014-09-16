@@ -54,14 +54,9 @@ namespace tube{
     TubeVertex::initTubeVertex(i,thisseg);
     pLbc.gc=thisseg.gc;
     TLbc.gc=thisseg.gc;
-    eqs.push_back(std::unique_ptr<TubeEquation>(leq.copy()));
-    // TRACE(100,"TLbc:"<<TLbc());
-    // if(eqs.at(2)->getType()!=EqType::Ise){
-    //   TRACE(100,"Changing energy equation...");
-    //   // eq[2]=&peq;
-    // }
+    eqs.at(3).reset(leq.copy()); // Replace equation of state for the
+                                 // boundary condition on pressure
     LeftPressure::updateW(thisseg);
-
   }
   void LeftPressure::show() const {
     cout << "LeftPressure boundary condition set at left side of tube.\n";
@@ -82,13 +77,11 @@ namespace tube{
     mWui=w.wRl/w.vSfR-w.wL0/w.vSfL;
     mWuip1=w.wRr/w.vSfR-w.wL1/w.vSfL;
 
-    WARN("Not yet updated!");
     // mWpim1=0;     
-    // mWpi=w.vSf*w.wRl;
-    // mWpip1=w.vSf*w.wRr;
+    // mWpi=lg.vSf*w.wRl;
+    // mWpip1=lg.vSf*w.wRr;
     // Change energy equation for open boundary and prescribed pressure
     eWgim1= 0;
-
     // Left boundary, velocity 
     eWgim=-w.wL0;
     eWgUip1pL=-w.wL1;
@@ -96,23 +89,17 @@ namespace tube{
     eWgip=w.wRl;
     eWgip1= w.wRr;    
 
-
     eWkinim1=0;
-    eWkini=w.wRl/pow(w.vSfR,2)-w.wL0/pow(w.vSfL,2);    
-    eWkinip1=w.wRr/pow(w.vSfR,2)-w.wL1/pow(w.vSfL,2);    
+    eWkini=w.wRl/pow(lg.vSf,2)-w.wL0/pow(lg.SfL,2);    
+    eWkinip1=w.wRr/pow(w.vSfR,2)-w.wL1/pow(lg.SfL,2);    
 
-    TRACE(8,"Sf:"<<w.vSf);
+
     d x0=w.xvi;
-    d x1=w.xvip1;
-    TRACE(8,"x0:"<<x1);
-    TRACE(8,"x1:"<<x1);
-    d denom=x0*(1-x0/x1);
-    TRACE(8,"denom:"<<denom);
-    d x0_ov_x1sq=pow(x0/x1,2);
+
     eWc1=0;
     eWc2=lg.SfL/x0;
-    eWc3=lg.vSf/w.dxp;
-    eWc4=-w.vSfR/w.dxp;    
+    eWc3=lg.SfR/w.dxp;
+    eWc4=-lg.SfR/w.dxp;    
 
   }
   vd LeftPressure::msource() const{
@@ -127,26 +114,13 @@ namespace tube{
     const dmat& fDFT=gc->fDFT;
     // TRACE(100,"Stupid hack to test energy source");
     vd TLbct=TLbc.tdata();
-    d TLbc0=TLbc(0);
-    // TRACE(100,"TLbc(0):"<<TLbc0);
-    const Energy& e=static_cast<const Energy&>(*eqs[2]);
-    d gamma=e.gamma(*this);
-    d gamfac=gamma/(gamma-1.0);
-    
-    // TRACE(100,"TLbc:"<<TLbc());
-    const LocalGeom rlg(lg.geom->localGeom(i+1));
-    d xp2=rlg.xvi;
-    d xp1=lg.xvi;
 
-    vd T0=gc->T0*vd(gc->Ns,fillwith::ones);
+    const Energy& e=static_cast<const Energy&>(*eqs[2]);
+    
     vd kappaL=e.kappaL(*this);
 
     d x0=lg.xvi;
-    d x1=lg.xvi+w.dxp;
-    d denom=x0*(1.0-x0/x1);
 
-    d x0_ov_x1sq=pow(x0/x1,2);
-    TRACE(12,"esource:"<<esource);
     esource+=-1.0*lg.SfL*fDFT*(kappaL%TLbct)/x0;
     TRACE(12,"esource:"<<esource);
     return esource;    

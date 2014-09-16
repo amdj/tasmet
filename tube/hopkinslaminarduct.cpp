@@ -44,6 +44,5 @@ namespace tube{
     hopkinsheat.setdTwdx(geom,dTwdx);
   }
   
-  
-  
 }
+

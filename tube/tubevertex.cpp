@@ -8,6 +8,7 @@ namespace tube{
   void TubeVertex::show() const{
     cout << "----------------- TubeVertex " << lg.i << "----\n";
     cout << "Showing weight functions for TubeVertex "<< i <<"\n";
+    lg.show();
     w.show();
     cout << "cWddt    :"<<cWddt<<"\n";
     cout << "cWim1    :"<<cWim1<<"\n";
@@ -177,33 +178,48 @@ namespace tube{
     eWddtkin=0.5*eWddt/pow(lg.vSf,3);
 
     d dx=mWddt;
-    d vSfsq=pow(w.vSf,2);
+    d vSfsq=pow(lg.vSf,2);
     auto& vleft=thisseg.getLeft();
     auto& vright=thisseg.getRight();    
     cWart1=cWart2=cWart3=cWart4=0;		           
 
     // Always the same
-    mWpL=-w.vSf;
-    mWpR= w.vSf;
+    mWpL=-lg.vSf;
+    mWpR= lg.vSf;
 
+    if(left){
+      sLWi=-w.wLr;
+      sLWim1=-w.wLl;
+      sLWip1=0;
+    }
+    else{
+      sLWi=-w.wL0;
+      sLWim1=0;
+      sLWip1=-w.wL1;
+    }
+    
     if(left && right){
       const LocalGeom& llg=left->lg;
       const LocalGeom& rlg=right->lg;      
-      d vSfLsq=pow(w.vSfL,2);
-      d vSfRsq=pow(w.vSfR,2);
+
+      d SfL=llg.SfL;
+      d SfR=rlg.SfR;
+      d SfLsq=pow(SfL,2);
+      d SfRsq=pow(SfR,2);
+
       cWim1=-w.wLl;
       cWi=w.wRl-w.wLr;
       cWip1=w.wRr;
 
-      d vSfLav=0.5*(w.vSf+w.vSfL);
-      d vSfRav=0.5*(w.vSf+w.vSfR);
-
       // This gives numerical issue solver
       // d vSfLav=0.5*(lg.vSf+llg.vSf);
       // d vSfRav=0.5*(lg.vSf+rlg.vSf);
+
+      d vSfR=rlg.vSf;
+      d vSfL=llg.vSf;
       
-      d vSfLavsq=pow(vSfLav,2);
-      d vSfRavsq=pow(vSfRav,2);
+      d vSfLsq=pow(vSfL,2);
+      d vSfRsq=pow(vSfR,2);
 
       // cWart1=-0.5*vSfLav;
       // cWart2= 0.5*vSfLav;
@@ -216,46 +232,31 @@ namespace tube{
       // mWart4=-1;
 
       // This one should be correct
-      mWuim1=-w.wLl/llg.vSf;
-      mWui=(w.wRl/lg.vSf-w.wLr/lg.vSf);
-      mWuip1=w.wRr/rlg.vSf;
+      // mWuim1=-w.wLl/vSfL;
+      // mWui=(w.wRl/lg.vSf-w.wLr/lg.vSf);
+      // mWuip1=w.wRr/vSfR;
 
-      
-      // This gives wiggles but should be correct
-      // mWuim1=-w.wLl/vSfLav;
-      // mWui=w.wRl/vSfRav-w.wLr/vSfLav;
-      // mWuip1=w.wRr/vSfRav;
-
-      // This is *CLEARLY* wrong, but gives nice results. Why???
-      // mWuim1=-w.wLl/vSfLav;
-      // mWui=w.wRl/vSfLav;
-      // mWui+=-w.wLr/vSfRav;
-      // mWuip1=w.wRr/vSfRav;
-
+      // But this is also possible
+      mWuim1=-w.wLl/SfL;
+      mWui=(w.wRl/SfR-w.wLr/SfL);
+      mWuip1=w.wRr/SfR;
       
       
-      // This does not give wiggles, but is wrong! Why???
-      // WARN("Wrong but non-wiggly");
-
       eWgim1=-w.wLl;
       eWgim =-w.wLr;
       eWgip = w.wRl;
       eWgip1= w.wRr;
 
-      eWkinim1=-0.5*w.UsignL*w.wLl/vSfLavsq;
-      eWkini=0.5*(w.wRl/vSfRavsq-w.wLr/vSfLavsq);
-      eWkinip1=0.5*w.UsignR*w.wRr/vSfRavsq;
+      eWkinim1=-0.5*w.UsignL*w.wLl/SfLsq;
+      eWkini=0.5*(w.wRl/SfRsq-w.wLr/SfLsq);
+      eWkinip1=0.5*w.UsignR*w.wRr/SfRsq;
 
-      // eWkinim1=-0.5*w.UsignL*w.wLl/vSfLsq;
-      // eWkini=0.5*(w.wRl/vSfsq-w.wLr/vSfsq);
-      // eWkinip1=0.5*w.UsignR*w.wRr/vSfRsq;
-      
       // TRACE(1,"w.dxm:"<< w.dxm);
       // TRACE(1,"w.dxp:"<< w.dxp);
-      eWc1=-vSfLav/w.dxm;
-      eWc2= vSfLav/w.dxm;
-      eWc3= vSfRav/w.dxp;
-      eWc4=-vSfRav/w.dxp;
+      eWc1=-SfL/w.dxm;
+      eWc2= SfL/w.dxm;
+      eWc3= SfR/w.dxp;
+      eWc4=-SfR/w.dxp;
 
     }
     else if(i==0){
@@ -266,7 +267,7 @@ namespace tube{
       cWip1=w.wRr;
       
       mWuim1=0;
-      mWui=w.wRl/w.vSf;
+      mWui=w.wRl/lg.vSf;
       mWuip1=w.wRr/w.vSfR;
       
       eWgim1=0;

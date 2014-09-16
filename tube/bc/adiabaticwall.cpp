@@ -7,28 +7,17 @@
 
 
 namespace tube{
-  void AdiabaticWall::show() const {
+  void RightAdiabaticWall::show() const {
     cout << getType() << " boundary condition.\n";
     TubeVertex::show();
   }
-  void LeftAdiabaticWall::initTubeVertex(us i,const Tube& thisseg)
-  {
-    TRACE(8,"RightAdiabaticWall::Init(), vertex "<< i <<".");
-    TubeVertex::initTubeVertex(i,thisseg);
-    updateW(thisseg);
-  }
-  void LeftAdiabaticWall::updateW(const SegBase& thisseg){
-    TRACE(8,"LeftAdiabaticWall::updateW()");
-  }
-
-
-  // RightAdiabaticWall
   void RightAdiabaticWall::initTubeVertex(us i,const Tube& thisseg)
   {
     TRACE(8,"RightAdiabaticWall::Init(), vertex "<< i <<".");
     TubeVertex::initTubeVertex(i,thisseg);
     pr=var(gc);
     vars.push_back(&pr);
+    eqs.push_back(std::unique_ptr<TubeEquation>(sr.copy()));
   }
   
  

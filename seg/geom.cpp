@@ -17,16 +17,22 @@ namespace segment{
 
     us i,j;
     
-    if(firstpos==FIRST)
-      i=0; 
-    else
+    if(firstpos==FIRST)      {
+        i=0;
+        TRACE(18,"Smoothing beginning of first Geom, i="<< i);
+      }
+    else{
       i=first.nCells;
-
-    if(secondpos==FIRST)
+      TRACE(18,"Smoothing end of first Geom, i="<< i);
+    }
+    if(secondpos==FIRST){
       j=0; 
-    else
-       j=second.nCells;
-
+      TRACE(18,"Smoothing beginning of second Geom, j="<< j);
+    }
+    else{
+      j=second.nCells;
+      TRACE(18,"Smoothing end of second Geom, j=" << j);
+    }
 
     vd fx=first.x;
     vd fS=first.S;
@@ -36,6 +42,7 @@ namespace segment{
 
     vd sx=second.x;
     vd sS=second.S;
+    TRACE(10,"Second S:"<< sS);
     vd sphi=second.phi;
     vd srh=second.rh;
     string scshape=second.shape;
@@ -44,7 +51,9 @@ namespace segment{
     // Now adjusting it
     fS(i)=0.5*(first.S(i)+second.S(j));
     sS(j)=0.5*(first.S(i)+second.S(j));
-              
+
+    TRACE(10,"Second S:"<< sS);
+    
     fphi(i)=0.5*(first.phi(i)+second.phi(j));
     sphi(j)=0.5*(first.phi(i)+second.phi(j));
     

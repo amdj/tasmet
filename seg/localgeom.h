@@ -39,7 +39,7 @@ namespace segment {
     d xvi;
     // right vertex.
 
-    void show();
+    void show() const;
 
     // Geom can call constructor of this class
     friend class Geom;

@@ -41,6 +41,8 @@ namespace tube{
     d eWddt=0,eWddtkin=0;
     d eWgip1=0,eWgip=0,eWgim=0,eWgim1=0;
 
+    d sLWi=0,sLWip1=0,sLWim1=0;
+    
     // The following are for boundary conditions
     d eWgUip1pL=0,eWgUim1pR=0;
     

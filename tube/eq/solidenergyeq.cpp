@@ -9,7 +9,7 @@ namespace tube{
   }
   void SolidTPrescribed::init(const Tube& t) {
     TRACE(6,"SolidTPrescribed::init(t)");
-    if(t.getType().compare("HopkinsLaminarDuct")==0){
+    if(t.getName().compare("HopkinsLaminarDuct")==0){
       const HopkinsLaminarDuct& d=dynamic_cast<const HopkinsLaminarDuct&>(t);
       Tsmirror=&d.Tmirror;
     }
@@ -26,8 +26,7 @@ namespace tube{
     assert(v.gc!=NULL);
     error=v.Ts();
     if(Tsmirror){
-      if(Tsmirror->size()>0)
-        error(0)-=(*Tsmirror)(v.i);
+      error(0)-=(*Tsmirror)(v.i);
     }
     else
       error(0)-=v.gc->T0;

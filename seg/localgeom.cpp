@@ -35,9 +35,14 @@ namespace segment{
     xl=xvi-xL;
     assert(xl>0); assert(xr>0);
   }
-  void LocalGeom::show(){
+  void LocalGeom::show() const {
+    cout <<"Showing LocalGeom data..\n";
+    cout <<"vSf   :" << vSf<<"\n";
+    cout <<"vVf   :" << vVf<<"\n";
+    cout <<"vrh   :" << vrh<<"\n";
+    cout <<"xl    :" << xl<<"\n";            
+    cout <<"xr    :" << xr<<"\n";
 
-    cout<< "LocalGeom show() needs to be created.\n";
   }
 } // namespace segment
 
