@@ -1,6 +1,6 @@
 // file: bcvertex.cpp, created March 20th, 2014.
 // Author: J.A. de Jong
-#define TRACERPLUS 20
+// #define TRACERPLUS 20
 
 #include "tube.h"
 #include "twimpedance.h"
@@ -30,12 +30,12 @@ namespace tube{
     // mright.init(thisseg);
     // eqs.at(1).reset(mright.copy());
     pr=var(gc);
-    sr.init(thisseg);
-    s.init(thisseg);
+    // sr.init(thisseg);
+    // s.init(thisseg);
     righttwimp.init(thisseg);
-    eqs.at(3).reset(s.copy());
-    // eqs.push_back(std::unique_ptr<TubeEquation>(righttwimp.copy()));
-    eqs.push_back(std::unique_ptr<TubeEquation>(sr.copy()));
+    // eqs.at(3).reset(s.copy());
+    eqs.push_back(std::unique_ptr<TubeEquation>(righttwimp.copy()));
+    // eqs.push_back(std::unique_ptr<TubeEquation>(sr.copy()));
     vars.push_back(&pr);
 
     TwImpedance::updateW(thisseg);
@@ -98,68 +98,68 @@ namespace tube{
     return esource;  
   }
 
-  vd TwImpedanceMomentumEq::error(const TubeVertex& v) const {
-    TRACE(10,"TwImpedanceMomentumEq::Error()");
-    vd error(v.gc->Ns,fillwith::zeros);    
-    // Add the normal stuff
-    error+=Momentum::error(v);
-    error-=v.mWpR*v.pR()();
-    d T0=v.gc->T0;
-    d c0=v.gc->gas.cm(T0);
-    d p0=v.gc->p0;
-    d gamma=v.gc->gas.gamma(T0);
-    vd ur=(v.w.wRNm1*v.U()+v.w.wRNm2*v.left->U())/v.lg.SfR;
-    vd urtd=v.gc->iDFT*ur;
-    vd pr=v.gc->fDFT*(p0*pow(1.0+((gamma-1.0)/2.0)*urtd/c0,2.0*gamma/(gamma-1.0))-p0);
-    vd errorZ=v.lg.SfR*pr;
+  // vd TwImpedanceMomentumEq::error(const TubeVertex& v) const {
+  //   TRACE(10,"TwImpedanceMomentumEq::Error()");
+  //   vd error(v.gc->Ns,fillwith::zeros);    
+  //   // Add the normal stuff
+  //   error+=Momentum::error(v);
+  //   error-=v.mWpR*v.pR()();
+  //   d T0=v.gc->T0;
+  //   d c0=v.gc->gas.cm(T0);
+  //   d p0=v.gc->p0;
+  //   d gamma=v.gc->gas.gamma(T0);
+  //   vd ur=(v.w.wRNm1*v.U()+v.w.wRNm2*v.left->U())/v.lg.SfR;
+  //   vd urtd=v.gc->iDFT*ur;
+  //   vd pr=v.gc->fDFT*(p0*pow(1.0+((gamma-1.0)/2.0)*urtd/c0,2.0*gamma/(gamma-1.0))-p0);
+  //   vd errorZ=v.lg.SfR*pr;
 
-    error+=errorZ;
-    return error;
-  }
-  JacCol TwImpedanceMomentumEq::dpR(const TubeVertex& v) const{
-    TRACE(10,"TwImpedanceMomentumEq::dpR() ----- not adding anythin");
-    JacCol dpR(v.pR());
-    dpR.setToAdd(false);
-    return dpR;
-  }
-  JacCol TwImpedanceMomentumEq::dUi(const TubeVertex& v) const{
-    TRACE(10,"TwImpedanceMomentumEq::dUi()");
-    JacCol dUi=Momentum::dUi(v);
-    const us& Ns=v.gc->Ns;
-    d T0=v.gc->T0;
-    d c0=v.gc->gas.cm(T0);
-    d p0=v.gc->p0;
-    d gamma=v.gc->gas.gamma(T0);
-    d z0=p0*gamma/c0;
-    // TRACE(30,"z0:"<<z0);
-    vd ur=(v.w.wRNm1*v.U()+v.w.wRNm2*v.left->U())/v.lg.SfR;
-    vd urtd=v.gc->iDFT*ur;
-    dmat Z=v.gc->fDFT*(z0/v.lg.SfR)*diagmat(pow(1.0+((gamma-1.0)/2.0)*urtd/c0,(gamma+1.0)/(gamma-1.0)))*v.gc->iDFT;
+  //   error+=errorZ;
+  //   return error;
+  // }
+  // JacCol TwImpedanceMomentumEq::dpR(const TubeVertex& v) const{
+  //   TRACE(10,"TwImpedanceMomentumEq::dpR() ----- not adding anythin");
+  //   JacCol dpR(v.pR());
+  //   dpR.setToAdd(false);
+  //   return dpR;
+  // }
+  // JacCol TwImpedanceMomentumEq::dUi(const TubeVertex& v) const{
+  //   TRACE(10,"TwImpedanceMomentumEq::dUi()");
+  //   JacCol dUi=Momentum::dUi(v);
+  //   const us& Ns=v.gc->Ns;
+  //   d T0=v.gc->T0;
+  //   d c0=v.gc->gas.cm(T0);
+  //   d p0=v.gc->p0;
+  //   d gamma=v.gc->gas.gamma(T0);
+  //   d z0=p0*gamma/c0;
+  //   // TRACE(30,"z0:"<<z0);
+  //   vd ur=(v.w.wRNm1*v.U()+v.w.wRNm2*v.left->U())/v.lg.SfR;
+  //   vd urtd=v.gc->iDFT*ur;
+  //   dmat Z=v.gc->fDFT*(z0/v.lg.SfR)*diagmat(pow(1.0+((gamma-1.0)/2.0)*urtd/c0,(gamma+1.0)/(gamma-1.0)))*v.gc->iDFT;
 
-    dUi+=v.w.wRNm1*v.lg.SfR*Z;
-    return dUi;
-  }
+  //   dUi+=v.w.wRNm1*v.lg.SfR*Z;
+  //   return dUi;
+  // }
 
-  JacCol TwImpedanceMomentumEq::dUim1(const TubeVertex& v) const{
-    TRACE(10,"TwImpedanceMomentumEq::dUim1()");
-    JacCol dUim1=Momentum::dUim1(v);    
-    const us& Ns=v.gc->Ns;
-    d T0=v.gc->T0;
-    d p0=v.gc->p0;
-    d c0=v.gc->gas.cm(T0);
-    d gamma=v.gc->gas.gamma(T0);
-    d z0=p0*gamma/c0;
+  // JacCol TwImpedanceMomentumEq::dUim1(const TubeVertex& v) const{
+  //   TRACE(10,"TwImpedanceMomentumEq::dUim1()");
+  //   JacCol dUim1=Momentum::dUim1(v);    
+  //   const us& Ns=v.gc->Ns;
+  //   d T0=v.gc->T0;
+  //   d p0=v.gc->p0;
+  //   d c0=v.gc->gas.cm(T0);
+  //   d gamma=v.gc->gas.gamma(T0);
+  //   d z0=p0*gamma/c0;
 
-    vd ur=(v.w.wRNm1*v.U()+v.w.wRNm2*v.left->U())/v.lg.SfR;
-    vd urtd=v.gc->iDFT*ur;
-    dmat Z=v.gc->fDFT*(z0/v.lg.SfR)*diagmat(pow(1.0+((gamma-1.0)/2.0)*urtd/c0,(gamma+1.0)/(gamma-1.0)))*v.gc->iDFT;
-    TRACE(-2,"Z:"<<Z);
-    dUim1+=v.w.wRNm2*v.lg.SfR*Z;
-    return dUim1;
-  }
+  //   vd ur=(v.w.wRNm1*v.U()+v.w.wRNm2*v.left->U())/v.lg.SfR;
+  //   vd urtd=v.gc->iDFT*ur;
+  //   dmat Z=v.gc->fDFT*(z0/v.lg.SfR)*diagmat(pow(1.0+((gamma-1.0)/2.0)*urtd/c0,(gamma+1.0)/(gamma-1.0)))*v.gc->iDFT;
+  //   TRACE(-2,"Z:"<<Z);
+  //   dUim1+=v.w.wRNm2*v.lg.SfR*Z;
+  //   return dUim1;
+  // }
   vd RightTwImpedanceEq::error(const TubeVertex& v) const {
     TRACE(10,"TwImpedanceMomentumEq::Error()");
-    vd error(v.gc->Ns,fillwith::zeros);    
+    vd error=StateR::error(v);
     // Add the normal stuff
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;    
@@ -181,18 +181,20 @@ namespace tube{
   JacRow RightTwImpedanceEq::jac(const TubeVertex& v) const{
     TRACE(10,"RightTwImpedanceEq::jac()");
     
-    JacRow jac(dofnr,3);
+    JacRow jac(dofnr,8);
     TRACE(15,"Dofnr:"<<dofnr);
     jac+=dUi(v);
     jac+=dUim1(v);
     jac+=dpR(v);
-
+    jac+=drhoi(v);
+    jac+=dTi(v);    
+    jac+=drhoim1(v);
+    jac+=dTim1(v);
     return jac;
   }
   JacCol RightTwImpedanceEq::dUi(const TubeVertex& v) const{
     TRACE(10,"RightTwImpedanceEq::dUi()");
     TRACE(50,"dUi wRNm1:"<< v.w.wRNm1);
-    
 
     return JacCol(v.U,v.w.wRNm1*eye(v.gc->Ns,v.gc->Ns));
   }
@@ -202,7 +204,7 @@ namespace tube{
   }
   JacCol RightTwImpedanceEq::dpR(const TubeVertex& v) const{
     TRACE(10,"RightTwImpedanceEq::dpR()");
-    JacCol dpR(v.pR());
+    JacCol dpR=StateR::dpR(v);
     const us& Ns=v.gc->Ns;
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;    

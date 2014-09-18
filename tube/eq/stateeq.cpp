@@ -160,31 +160,31 @@ namespace tube{
   }
   JacCol StateR::dpR(const TubeVertex& v)
    const {
-    TRACE(0,"StateR::dpi");
+    TRACE(10,"StateR::dpR");
     return JacCol(v.pR(),STATE_SCALE*eye<dmat>(v.gc->Ns,v.gc->Ns));
   }
   JacCol StateR::dTi(const TubeVertex& v)
    const {
-    TRACE(0,"StateR::dTi()");
+    TRACE(10,"StateR::dTi()");
     dmat rhotidiag=diagmat(v.rho.tdata());
     return JacCol(v.T,-v.w.wRNm1*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotidiag*v.gc->iDFT);
   }    
   JacCol StateR::drhoi(const TubeVertex& v)
    const {
-    TRACE(0,"StateR::drhoi()");
+    TRACE(10,"StateR::drhoi()");
     dmat Ttidiag=diagmat(v.T.tdata());
     return JacCol(v.rho,-v.w.wRNm1*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttidiag*v.gc->iDFT);
   }
 
   JacCol StateR::dTim1(const TubeVertex& v)
    const {
-    TRACE(0,"StateR::dTim1()");
+    TRACE(10,"StateR::dTim1()");
     dmat rhotim1diag=diagmat(v.left->rho.tdata());
     return JacCol(v.left->T,-v.w.wRNm2*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotim1diag*v.gc->iDFT);
   }
   JacCol StateR::drhoim1(const TubeVertex& v)
    const {
-    TRACE(0,"StateR::drhoim1()");
+    TRACE(10,"StateR::drhoim1()");
     dmat Ttim1diag=diagmat(v.left->T.tdata());
     return JacCol(v.left->rho,-v.w.wRNm2*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttim1diag*v.gc->iDFT);
   }    

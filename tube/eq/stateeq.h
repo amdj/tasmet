@@ -40,9 +40,9 @@ namespace tube{
     virtual TubeEquation* copy() const {return new StateR(*this);}    
     JacRow jac(const TubeVertex&) const;
     vd error(const TubeVertex&) const;			// Error in momentum equation at node i
-  private:
+  protected:
     JacCol drhoi(const TubeVertex&) const;
-    JacCol dpR(const TubeVertex&) const;    
+    virtual JacCol dpR(const TubeVertex&) const;    
     JacCol dTi(const TubeVertex&) const;
     JacCol drhoim1(const TubeVertex&) const;
     JacCol dTim1(const TubeVertex&) const;

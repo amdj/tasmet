@@ -1,5 +1,4 @@
-#define TRACERPLUS 20
-
+// #define TRACERPLUS 20
 #include "momentumeq.h"
 #include "tube.h"
 #include "tubevertex.h"

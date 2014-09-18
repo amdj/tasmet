@@ -48,8 +48,8 @@ int main(int argc,char* argv[]) {
   Globalconf air=Globalconf::airSTP(Nf,f);
   Globalconf gc=air;
   Geom geom1=Geom::CylinderBlApprox(gp,L,rtube);
-  HopkinsLaminarDuct t1(geom1,gc.T0,gc.T0+10);
-  // IsentropicTube t1(geom1);
+  // HopkinsLaminarDuct t1(geom1,gc.T0,gc.T0+10);
+  IsentropicTube t1(geom1);
   var pL(gc,0);
   // pL.set(0,3.14);
   if(Nf>0)

@@ -35,7 +35,7 @@ namespace tube{
   //   virtual dmat dUi(const TubeVertex&) const;
   //   virtual dmat dUim1(const TubeVertex&) const;
   // }; 
-  class RightTwImpedanceEq: public TubeEquation{
+  class RightTwImpedanceEq: public StateR{
   public:
     virtual TubeEquation* copy() const {return new RightTwImpedanceEq(*this);}
     virtual vd error(const TubeVertex&) const;
@@ -53,8 +53,8 @@ namespace tube{
     RightTwImpedanceEq righttwimp;
     // Isentropic is;
     variable::var pr;
-    State s;
-    StateR sr;
+    // State s;
+    // StateR sr;
     
     const variable::var& pR() const {return pr;}
     TwImpedance();
