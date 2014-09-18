@@ -214,7 +214,7 @@ namespace tube {
     // }
     return er;
   }
-  vd Tube::dmtotdx() const{
+  void Tube::dmtotdx(vd& dmtotdx_) const{
     TRACE(15,"Tube::dmtotdx()");
     vd dmtotdx(getNDofs(),fillwith::zeros);
     us nvertex=vvertex.size(),Neq;
@@ -222,7 +222,8 @@ namespace tube {
       Neq=vvertex.at(i)->getNDofs();
       dmtotdx(i*Neq*gc->Ns)=geom.vVf(i);
     }
-    return dmtotdx;
+    WARN("NOT DONE");
+    // return dmtotdx;
   }  
   Tube::~Tube(){
     TRACE(15,"~Tube()");

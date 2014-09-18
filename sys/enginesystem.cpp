@@ -69,9 +69,8 @@ namespace tasystem{
     us Nsegs=getNSegs();
     TRACE(-1,"Nsegs:"<< Nsegs);
     for(us i=0;i<Nsegs;i++){
-      segdofs=segs[i]->getNDofs();
-      dmtotdx.subvec(startdof,startdof+segdofs-1)=segs[i]->dmtotdx();
-      startdof=startdof+segdofs;
+      segs[i]->dmtotdx(dmtotdx);
+      WARN("dmtotdx: Not done function");
     }
     return dmtotdx;
   }
@@ -241,15 +240,13 @@ namespace tasystem{
   vd EngineSystem::domg(){
     TRACE(15,"EngineSystem::domg()");
     assert(segs.size());
-    us ndofs=getNDofs();
+    us ndofs=getNDofs();        // On system level, this is neqs
     vd domg(ndofs,fillwith::zeros);
     us segdofs;
     us startdof=0;
     us Nsegs=getNSegs();
     for(us i=0;i<Nsegs;i++){
-      segdofs=segs[i]->getNDofs();
-      domg.subvec(startdof,startdof+segdofs-1)=segs[i]->domg();
-      startdof=startdof+segdofs;
+      segs[i]->domg(domg);
     }
     // Eigen::SparseVector()
     return domg;

@@ -22,6 +22,15 @@ namespace tube{
     StateR sr;
     
   };
+  class LeftAdiabaticWall:public TubeBcVertex // Right adiabatichermal wall boundary
+  {
+  public:
+    virtual void show() const;
+    virtual string getType() const {return string("LeftAdiabaticWall");}
+    virtual TubeBcVertex* copy() const {return new LeftAdiabaticWall(*this);}
+    virtual enum connectpos connectPos() const {return connectpos::left;}
+    virtual void initTubeVertex(us i,const Tube& thisseg);
+  };
 
 
 } // namespace tube

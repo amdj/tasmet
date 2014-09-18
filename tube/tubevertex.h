@@ -79,7 +79,7 @@ namespace tube{
     virtual vd error() const;		       // Compute error for this gridpoint
     virtual void jac(Jacobian& tofill) const;		       // Fill complete Jacobian for this node
     virtual void setRes(vd res);			  // Set result vector to res
-    virtual vd domg() const;
+    virtual void domg(vd& ) const;
     virtual vd getRes() const;			  // Extract current result vector
     // Convenience function, we need a lot of static (background
     // pressure) addings in the equations.

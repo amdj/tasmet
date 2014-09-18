@@ -16,10 +16,16 @@ namespace tube{
     TubeVertex::initTubeVertex(i,thisseg);
     pr=var(gc);
     vars.push_back(&pr);
-    // if(gc->isDriven()==false)   {
-      // TRACE(10,"System is not driven, adding extra equation.");
     eqs.push_back(std::unique_ptr<TubeEquation>(sr.copy()));
-    // }
+  }
+  void LeftAdiabaticWall::initTubeVertex(us i,const Tube& thisseg)
+  {
+    TRACE(8,"LeftAdiabaticWall::initTubeVertex(), vertex "<< i <<".");
+    TubeVertex::initTubeVertex(i,thisseg);
+  }
+  void LeftAdiabaticWall::show() const {
+    cout << getType() << " boundary condition.\n";
+    TubeVertex::show();
   }
   
  

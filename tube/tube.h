@@ -43,7 +43,7 @@ namespace tube{
     virtual void setDofNrs(us firstdofnr);
     virtual void setEqNrs(us firstdofnr);    
     virtual d getCurrentMass() const;	// Obtain current mass in system
-    virtual vd dmtotdx() const; // Derivative of current mass in
+    virtual void dmtotdx(vd&) const; // Derivative of current mass in
 				    // system to all dofs.
     
     vd getResAt(us varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.

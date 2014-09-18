@@ -1,4 +1,4 @@
-/* test.cpp */
+/* enginetest.cpp */
 
 #include "tube.h"
 #include "isentropictube.h"
@@ -13,7 +13,7 @@ using namespace tube;
 
 
 int main(int argc,char* argv[]) {
-  cout <<  "Running test..." << endl;
+  cout <<  "Running enginetest..." << endl;
   int loglevel=25;
   us gp=4;
   us Nf=0;

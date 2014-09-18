@@ -29,7 +29,7 @@ namespace segment{
     void show(us showVertices=0) const;
     const us& getNCells() const {return geom.nCells;}
     virtual us getNVertex() const {return vvertex.size();}    
-    vd domg() const;
+    void domg(vd&) const;
     vd error() const;			// Return error vector for this segment
     vd getRes() const;		// Return result vector for this segment
     void jac(Jacobian&) const;			// Return Jacobian matrix

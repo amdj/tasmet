@@ -17,7 +17,7 @@ namespace tube{
     virtual enum EqType getType() const { return EqType::Mom;}    
     virtual vd error(const TubeVertex&) const;			// Error in momentum equation at node i
     virtual void show() const;
-    virtual vd domg(const TubeVertex&) const;
+    virtual void domg(const TubeVertex&,vd& domg) const;
   protected:
     JacCol drhoim1(const TubeVertex& v) const;
     JacCol drhoi(const TubeVertex& v) const;

@@ -87,18 +87,15 @@ namespace segment{
     TRACE(10,"Filling error for seg nr " << getNumber() << " done." );
     return error;
   }
-  vd Seg::domg() const{
+  void Seg::domg(vd& domg_v) const{
     TRACE(8,"Seg::Error()");
     const us& Ns=gc->Ns;
     us nVertex=vvertex.size();    
-    vd domg(getNDofs(),fillwith::zeros);
+    // vd domg(getNDofs(),fillwith::zeros);
     us vndofs,curpos=0;
     for(us k=0; k<nVertex;k++) {
-      vndofs=vvertex.at(k)->getNDofs();
-      domg.subvec(curpos,curpos+vndofs-1)=vvertex[k]->domg();
-      curpos+=vndofs;
+      vvertex[k]->domg(domg_v);
     }
-    return domg;
   }
 
   void Seg::setRes(vd res){

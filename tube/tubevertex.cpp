@@ -423,7 +423,7 @@ namespace tube{
     TRACE(4,"TubeVertex::error() i="<<i<<" done.");
     return error;
   }
-  vd TubeVertex::domg() const
+  void TubeVertex::domg(vd& domg_) const
   {
     TRACE(4,"TubeVertex::domg() for TubeVertex "<< i << ".");
     const us& Ns=gc->Ns;
@@ -432,9 +432,8 @@ namespace tube{
 
     vd domg(Neq*Ns);
     for(us k=0;k<Neq;k++) {
-      domg.subvec(k*Ns,(k+1)*Ns-1)=eqs[k]->domg(*this);
+      eqs[k]->domg(*this,domg_);
     }
-    return domg;
   }
   vd TubeVertex::getRes() const {			// Get current result vector
     TRACE(4,"TubeVertex::GetRes()");

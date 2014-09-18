@@ -14,7 +14,7 @@ namespace tube{
   }
   void RightIsoTWall::initTubeVertex(us i,const Tube& thisseg)
   {
-    TRACE(8,"RightIsoTWall::Init(), vertex "<< i <<".");
+    TRACE(8,"RightIsoTWall::initTubeVertex, vertex "<< i <<".");
     RightAdiabaticWall::initTubeVertex(i,thisseg);
     RightIsoTWall::updateW(thisseg);
    }
@@ -40,6 +40,40 @@ namespace tube{
      vd kappaR=static_cast<const Energy*>(eqs.at(2).get())->kappaR(*this);    
      // vd kappaR=gc->gas.kappa(T0);
      esource+=-1.0*lg.SfR*fDFT*(kappaR%TRt)/lg.xr;
+     TRACE(3,"esource:"<<esource);
+     return esource;  
+   }
+  void LeftIsoTWall::show() const {
+    cout << getType() << " boundary condition. Time-averaged part of prescribed temperature: " << Tbc << "\n";
+    TubeVertex::show();
+  }
+  void LeftIsoTWall::initTubeVertex(us i,const Tube& thisseg)
+  {
+    TRACE(8,"LeftIsoTWall::initTubeVertex, vertex "<< i <<".");
+    LeftAdiabaticWall::initTubeVertex(i,thisseg);
+    LeftIsoTWall::updateW(thisseg);
+   }
+
+   void LeftIsoTWall::updateW(const SegBase& thisseg){
+     TRACE(8,"LeftIsoTWall::updateW()");
+
+     eWc1=0;
+     eWc2= lg.SfL/lg.xl;
+     eWc3= lg.SfR/w.dxp;
+     eWc4=-lg.SfR/w.dxp;
+   }
+   vd LeftIsoTWall::esource() const {
+     TRACE(6,"LeftIsoTWall::esource()");
+     const dmat& fDFT=gc->fDFT;
+     const dmat& iDFT=gc->iDFT;
+     // Source term related to temperature boundary condition
+     vd esource(gc->Ns,fillwith::zeros);
+     TRACE(0,"Tbc:"<<Tbc);
+     vd TLt=Tbc*vd(gc->Ns,fillwith::ones);
+     vd T0=gc->T0*vd(gc->Ns,fillwith::ones);
+     vd kappaL=static_cast<const Energy*>(eqs.at(2).get())->kappaL(*this);    
+     // vd kappaR=gc->gas.kappa(T0);
+     esource+=-1.0*lg.SfL*fDFT*(kappaL%TLt)/lg.xl;
      TRACE(3,"esource:"<<esource);
      return esource;  
    }

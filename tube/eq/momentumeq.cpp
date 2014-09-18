@@ -82,12 +82,13 @@ namespace tube{
     }
     return jac;
   }
-  vd Momentum::domg(const TubeVertex& v) const {
+  void Momentum::domg(const TubeVertex& v,vd & domg_) const {
     TRACE(0,"Momentum::domg()");
     // Possibly later adding drag->domg();
     const dmat& DDTfd=v.gc->DDTfd;
     const dmat& fDFT=v.gc->fDFT;
-    return v.gc->DDTfd*v.mWddt*fDFT*(v.rho.tdata()%v.U.tdata())/v.gc->getomg();
+    const us& Ns=v.gc->Ns;
+    domg_.subvec(dofnr,dofnr+Ns-1)=v.gc->DDTfd*v.mWddt*fDFT*(v.rho.tdata()%v.U.tdata())/v.gc->getomg();
   }
   JacCol Momentum::dUi(const TubeVertex& v) const {
     TRACE(0,"Momentum::dUi()");

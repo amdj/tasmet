@@ -9,9 +9,6 @@ namespace tube{
   inline double max(d x,d y)  {
     return x<=y? y : x;
   }
-  vd TubeEquation::domg(const TubeVertex& v) const{
-    return vd(v.gc->Ns,fillwith::zeros);
-  } 
 
   // Artificial viscosity matrices
   vd eps(const vd& nu,d kappa) {
