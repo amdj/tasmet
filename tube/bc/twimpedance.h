@@ -35,14 +35,15 @@ namespace tube{
   //   virtual dmat dUi(const TubeVertex&) const;
   //   virtual dmat dUim1(const TubeVertex&) const;
   // }; 
-  class RightTwImpedanceEq: public StateR{
+  class RightTwImpedanceEq: public TubeEquation{
   public:
     virtual TubeEquation* copy() const {return new RightTwImpedanceEq(*this);}
     virtual vd error(const TubeVertex&) const;
     virtual JacRow jac(const TubeVertex& v) const;
     virtual JacCol dUi(const TubeVertex&) const;
-    virtual JacCol dUim1(const TubeVertex&) const;
+    // virtual JacCol dUim1(const TubeVertex&) const;
     virtual JacCol dpR(const TubeVertex&) const;
+    virtual JacCol dpL(const TubeVertex&) const;    
   }; 
 
   class TwImpedance:public TubeBcVertex // Adiabatic impedance boundary condition
@@ -54,7 +55,7 @@ namespace tube{
     // Isentropic is;
     variable::var pr;
     // State s;
-    // StateR sr;
+    StateR sr;
     
     const variable::var& pR() const {return pr;}
     TwImpedance();

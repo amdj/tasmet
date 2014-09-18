@@ -30,11 +30,12 @@ namespace tube{
     // mright.init(thisseg);
     // eqs.at(1).reset(mright.copy());
     pr=var(gc);
-    // sr.init(thisseg);
+    sr.init(thisseg);
     // s.init(thisseg);
     righttwimp.init(thisseg);
-    // eqs.at(3).reset(s.copy());
-    eqs.push_back(std::unique_ptr<TubeEquation>(righttwimp.copy()));
+    eqs.at(0).reset(righttwimp.copy());
+    
+    eqs.push_back(std::unique_ptr<TubeEquation>(sr.copy()));
     // eqs.push_back(std::unique_ptr<TubeEquation>(sr.copy()));
     vars.push_back(&pr);
 
@@ -159,7 +160,7 @@ namespace tube{
   // }
   vd RightTwImpedanceEq::error(const TubeVertex& v) const {
     TRACE(10,"TwImpedanceMomentumEq::Error()");
-    vd error=StateR::error(v);
+    vd error(v.gc->Ns,fillwith::zeros);
     // Add the normal stuff
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;    
@@ -171,11 +172,11 @@ namespace tube{
     d gamma=v.gc->gas.gamma(T0);
     d z0=rho0*c0;
 
-    error+=(v.w.wRNm1*v.U()+v.w.wRNm2*v.left->U())/v.lg.SfR; // Adding u
+    error+=v.U()/v.lg.vSf; // Adding u
 
     d powfacp=(gamma-1.0)/(2*gamma);
     d prefac=-2*c0/(gamma-1.0);
-    error+=prefac*fDFT*(pow((v.pR().tdata()+p0)/p0,powfacp)-1.0);
+    error+=prefac*fDFT*(pow((0.5*(v.pR().tdata()+v.pL().tdata())+p0)/p0,powfacp)-1.0);
     return error;
   }
   JacRow RightTwImpedanceEq::jac(const TubeVertex& v) const{
@@ -184,27 +185,28 @@ namespace tube{
     JacRow jac(dofnr,8);
     TRACE(15,"Dofnr:"<<dofnr);
     jac+=dUi(v);
-    jac+=dUim1(v);
+    // jac+=dUim1(v);
     jac+=dpR(v);
-    jac+=drhoi(v);
-    jac+=dTi(v);    
-    jac+=drhoim1(v);
-    jac+=dTim1(v);
+    jac+=dpL(v);    
+    // jac+=drhoi(v);
+    // jac+=dTi(v);    
+    // jac+=drhoim1(v);
+    // jac+=dTim1(v);
     return jac;
   }
   JacCol RightTwImpedanceEq::dUi(const TubeVertex& v) const{
     TRACE(10,"RightTwImpedanceEq::dUi()");
     TRACE(50,"dUi wRNm1:"<< v.w.wRNm1);
 
-    return JacCol(v.U,v.w.wRNm1*eye(v.gc->Ns,v.gc->Ns));
+    return JacCol(v.U,eye(v.gc->Ns,v.gc->Ns));
   }
-  JacCol RightTwImpedanceEq::dUim1(const TubeVertex& v) const{
-    TRACE(10,"RightTwImpedanceEq::dUim1()");
-    return JacCol(v.left->U,v.w.wRNm2*eye(v.gc->Ns,v.gc->Ns));
-  }
-  JacCol RightTwImpedanceEq::dpR(const TubeVertex& v) const{
-    TRACE(10,"RightTwImpedanceEq::dpR()");
-    JacCol dpR=StateR::dpR(v);
+  // JacCol RightTwImpedanceEq::dUim1(const TubeVertex& v) const{
+  //   TRACE(10,"RightTwImpedanceEq::dUim1()");
+  //   return JacCol(v.left->U,v.w.wRNm2*eye(v.gc->Ns,v.gc->Ns));
+  // }
+
+  dmat dp(const TubeVertex& v) {
+    dmat dp(v.gc->Ns,v.gc->Ns,fillwith::zeros);
     const us& Ns=v.gc->Ns;
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;    
@@ -215,8 +217,21 @@ namespace tube{
     d z0=p0*gamma/c0;
     // TRACE(30,"z0:"<<z0);
     d powfac=(gamma-2.0)/(2*gamma);
-    dpR+=(-1/z0)*fDFT*diagmat(pow((v.pR().tdata()+p0)/p0,powfac))*iDFT;
+    dp+=0.5*(-1/z0)*fDFT*diagmat(pow((0.5*(v.pL().tdata()+v.pR().tdata())+p0)/p0,powfac))*iDFT;
+    return dp;
+  }
+  
+  JacCol RightTwImpedanceEq::dpR(const TubeVertex& v) const{
+    TRACE(10,"RightTwImpedanceEq::dpR()");
+    JacCol dpR(v.pR());
+    dpR+=dp(v);
     return dpR;
+  }
+  JacCol RightTwImpedanceEq::dpL(const TubeVertex& v) const{
+    TRACE(10,"RightTwImpedanceEq::dpL()");
+    JacCol dpL(v.pL());
+    dpL+=dp(v);
+    return dpL;
   }
 
 
