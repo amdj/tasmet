@@ -1,7 +1,6 @@
 #include "tube.h"
 #include "adiabaticwall.h"
 
-// file: bcvertex.cpp, created March 20th, 2014.
 // Author: J.A. de Jong
 #include "tubevertex.h"
 
@@ -17,24 +16,14 @@ namespace tube{
     TubeVertex::initTubeVertex(i,thisseg);
     pr=var(gc);
     vars.push_back(&pr);
-    if(gc->isDriven()==false)   {
-      TRACE(10,"System is not driven, adding extra equation.");
-      eqs.push_back(std::unique_ptr<TubeEquation>(sr.copy()));
-    }
+    // if(gc->isDriven()==false)   {
+      // TRACE(10,"System is not driven, adding extra equation.");
+    eqs.push_back(std::unique_ptr<TubeEquation>(sr.copy()));
+    // }
   }
   
  
 
 } // namespace tube
-
-
-
-
-
-
-
-
-
-
 
 

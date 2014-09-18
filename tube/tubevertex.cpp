@@ -94,7 +94,7 @@ namespace tube{
   void TubeVertex::initTubeVertex(us i,const Tube& thisseg)
   {
     TRACE(8,"TubeVertex::initTubeVertex(gc,geom), vertex "<< i << ".");
-    vars.clear();
+    vars.clear();               // Might be unnessesary
     vars.push_back(&rho);
     vars.push_back(&U);
     vars.push_back(&p);
@@ -109,7 +109,8 @@ namespace tube{
     
     // Fill the vector of equation pointers from the Tube instance.
     auto tubeeqs=thisseg.getEqs();
-    eqs.clear(); eqs.reserve(5);
+    eqs.clear(); eqs.reserve(6); // Room for one extra equation (minor
+                                 // overhead)
     us eqnr_=0;
     for(auto eq=tubeeqs.begin();eq!=tubeeqs.end();eq++){
       eqs.push_back(std::unique_ptr<TubeEquation>((*eq)->copy()));

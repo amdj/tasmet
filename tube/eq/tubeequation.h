@@ -39,6 +39,7 @@ namespace tube{
     // Wesseling: d_j+/-1/2 = r_j+/-0.5 * epsilon_j+/-0.5
     dmat d_r(const TubeVertex&) const; 		// Artificial viscosity pre-factor right side 
     dmat d_l(const TubeVertex&) const;			// Artificial viscosity pre-factor left size
+    virtual ~TubeEquation(){}
   private:
     vd nu(const TubeVertex&) const;			// Function of d^2p/dx^2
   };				// class TubeEquation

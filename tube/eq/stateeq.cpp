@@ -26,13 +26,11 @@ namespace tube{
     jac+=drhoi(v);
     return jac;
   }
-  JacCol State::dpL(const TubeVertex& v)
-   const {
+  JacCol State::dpL(const TubeVertex& v) const {
     TRACE(0,"State::dpi");
     return JacCol(v.pL(),0.5*STATE_SCALE*eye<dmat>(v.gc->Ns,v.gc->Ns));
   }
-  JacCol State::dpR(const TubeVertex& v)
-   const {
+  JacCol State::dpR(const TubeVertex& v) const {
     TRACE(0,"State::dpi");
     return JacCol(v.pR(),0.5*STATE_SCALE*eye<dmat>(v.gc->Ns,v.gc->Ns));
   }

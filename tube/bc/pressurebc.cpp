@@ -6,33 +6,36 @@
 #include "energyeq.h"
 namespace tube{
   
-  vd LeftPressureEq::error(const TubeVertex& v) const{
-    TRACE(8,"LeftPressureEq::error()");
-    return  v.pL()()-pLbc();
+  JacCol pl(const TubeVertex& v){
+    JacCol dpL(v.pL());
+    dpL.setToAdd(false);        // We do not want dpL() anymore
+    return dpL;
   }
-  JacRow LeftPressureEq::jac(const TubeVertex& v) const{
-    TRACE(8,"LeftPressureEq::jac()");
-    JacRow jac(dofnr);
-    jac+=dpL(v);
-    return jac;
+  JacCol LeftPressureMomentumEq::dpL(const TubeVertex& v) const {
+    TRACE(6,"LeftPressureMomentumEq::dpL()");
+    return pl(v);
   }
-  JacCol LeftPressureEq::dpL(const TubeVertex& v) const {
-    TRACE(6,"LeftPressureEq::dpL()");
-    return JacCol(v.pL(),arma::eye<dmat>(v.gc->Ns,v.gc->Ns));
+  JacCol LeftPressureEnergyEq::dpL(const TubeVertex& v) const {
+    TRACE(6,"LeftPressureEnergyEq::dpL()");
+    return pl(v);
+  }
+  JacCol LeftPressureIsentropicEq::dpL(const TubeVertex& v) const {
+    TRACE(6,"LeftPressureIsentropicEq::dpL()");
+    return pl(v);
+  }
+  JacCol LeftPressureStateEq::dpL(const TubeVertex& v) const {
+    TRACE(6,"LeftPressureStateEq::dpL()");
+    return pl(v);
   }
   LeftPressure::LeftPressure(const var& pres,const var& temp):
-    TubeBcVertex(),
     pLbc(pres),
-    TLbc(temp),
-    leq(pLbc)
+    TLbc(temp)
   {
     TRACE(8,"LeftPressure full constructor");
   }
   LeftPressure::LeftPressure(const var& pres):
-    TubeBcVertex(),
     pLbc(pres),
-    TLbc(*pres.gc),
-    leq(pLbc)
+    TLbc(*pres.gc)
   {
     TRACE(8,"LeftPressure constructor for given pressure. Temperature computed");    
     const Globalconf* gc=pres.gc;
@@ -56,7 +59,30 @@ namespace tube{
     TLbc.gc=thisseg.gc;
     // eqs.at(3).reset(leq.copy()); // Replace equation of state for the
     // boundary condition on pressure
-    eqs.push_back(std::unique_ptr<TubeEquation>(leq.copy()));
+    lmomeq.init(thisseg);
+    leneq.init(thisseg);
+    lseq.init(thisseg);
+
+    // Set our own momentumeq,energy eq and state eq
+    eqs.at(1).reset(lmomeq.copy());
+    if(thisseg.getName().compare("IsentropicTube")==0){
+      TRACE(15,"Tube is isentropic, adapting isentropic state for leftpressure bc");
+      eqs.at(2).reset(liseq.copy());
+    }
+    else{
+      eqs.at(2).reset(leneq.copy());    // Remove state equation from list
+      TRACE(15,"Tube is not isentropic, full energy eq for leftpressure bc");
+    }
+    eqs.erase(eqs.begin()+3);
+
+    // Refill vars
+    vars.clear();
+    vars.push_back(&rho);
+    vars.push_back(&U);
+    // vars.push_back(&p); // No p here
+    vars.push_back(&T);
+    vars.push_back(&Ts);    
+    assert(vars.size()==4);
     
     LeftPressure::updateW(thisseg);
   }

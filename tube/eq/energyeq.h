@@ -22,8 +22,8 @@ namespace tube{
     JacCol dTi(const TubeVertex&) const;
     JacCol drhoi(const TubeVertex&) const;
 
-    JacCol dpR(const TubeVertex&) const;
-    JacCol dpL(const TubeVertex&) const;
+    virtual JacCol dpR(const TubeVertex&) const;
+    virtual JacCol dpL(const TubeVertex&) const;
     
     JacCol drhoip1(const TubeVertex&) const;
     JacCol dUip1(const TubeVertex&) const;

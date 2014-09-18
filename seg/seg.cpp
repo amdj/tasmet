@@ -4,22 +4,6 @@ namespace segment{
    
 
     
-  // Vertex* vertexfrombc(BcVertex* orig){
-  //   if(orig->gettype().compare("RightImpedance")==0)
-  //     return static_cast<Vertex*>(static_cast<RightImpedance*>(orig));
-  //   else if(orig->gettype().compare("TwImpedance")==0)
-  //     return static_cast<Vertex*>(static_cast<TwImpedance*>(orig));
-  //   else if(orig->gettype().compare("RightIsoTWall")==0)
-  //     return static_cast<Vertex*>(static_cast<RightIsoTWall*>(orig));
-  //   else if(orig->gettype().compare("LeftPressure")==0)
-  //     return static_cast<Vertex*>(static_cast<LeftPressure*>(orig));
-  //   else{
-  //     WARN("Boundary condition type not understood");
-  //     abort();
-  //   }
-  // }
-  
- 
   Seg::Seg(const Geom& geom):SegBase(geom){
     TRACE(13,"Seg::Seg(Geom)");
     // The Jacobian matrix is larger than the number of dofs for the
@@ -94,9 +78,13 @@ namespace segment{
 
     for(us k=0; k<nVertex;k++) {
       vneqs=vvertex.at(k)->getNEqs();
+      vd thiser=vvertex[k]->error();
+      // cout << "This vertex error size: " << thiser.size() << "\n";
+      // cout << "Space to be used: " << vneqs-1 << "\n";
       error.subvec(curpos,curpos+vneqs-1)=vvertex[k]->error();
       curpos+=vneqs;
     }
+    TRACE(10,"Filling error for seg nr " << getNumber() << " done." );
     return error;
   }
   vd Seg::domg() const{

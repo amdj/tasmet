@@ -13,34 +13,34 @@
 #include "momentumeq.h"
 #include "energyeq.h"
 #include "isentropiceq.h"
+#include "stateeq.h"
+
 namespace tube{
 
-
-  class TwImpedanceMomentumEq:public Momentum{
+  // TwImpendance boundary condition can only be used for a right
+  // side.
+  
+  
+  
+  class RightTwImpedanceEq: public TubeEquation{
   public:
+    virtual TubeEquation* copy() const {return new RightTwImpedanceEq(*this);}
     virtual vd error(const TubeVertex&) const;
+    virtual JacRow jac(const TubeVertex& v) const;
     virtual JacCol dUi(const TubeVertex&) const;
     virtual JacCol dUim1(const TubeVertex&) const;
+    virtual JacCol dpR(const TubeVertex&) const;
   }; 
-  // class TwImpedanceEnergyEq:public Energy{
-  // private:
-  //   const TwImpedance& impedancevertex;
-  // public:
-  //   TwImpedanceEnergyEq(TwImpedance&);
-  //   ~TwImpedanceEnergyEq(){}
-  //   virtual vd error(const TubeVertex&) const;
-  //   virtual dmat dUi(const TubeVertex&) const;
-  //   virtual dmat dUim1(const TubeVertex&) const;
-  // }; 
 
   class TwImpedance:public TubeBcVertex // Adiabatic impedance boundary condition
   {
   public:
     variable::var pr;    
-    TwImpedanceMomentumEq mright; // Completely adjusted equation
+    RightTwImpedanceEq twright; // Completely adjusted equation
+    State midstate;
     // TwImpedanceEnergyEq   eright; // Completely adjusted equation
     // Isentropic is;
-    virtual const variable::var& pR() const {return pr;};    
+    virtual const variable::var& pR() const {return pr;}
     TwImpedance();
     TwImpedance(const TwImpedance& o);
     TwImpedance& operator=(const TwImpedance&);
@@ -52,12 +52,7 @@ namespace tube{
     virtual TubeBcVertex* copy() const {return new TwImpedance(*this);}
   private:
     virtual void updateW(const SegBase&);
-    friend class TwImpedanceMomentumEq;
-    // friend class TwImpedanceEnergyEq;
-    
   };
-
-
 
 } // namespace tube
 

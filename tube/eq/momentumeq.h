@@ -27,8 +27,8 @@ namespace tube{
     virtual JacCol dUi(const TubeVertex&) const;
     JacCol dUip1(const TubeVertex&) const;
 
-    JacCol dpL(const TubeVertex&) const;
-    JacCol dpR(const TubeVertex&) const;
+    virtual JacCol dpL(const TubeVertex&) const;
+    virtual JacCol dpR(const TubeVertex&) const;
     
     // These two are virtual for the impedance bc's
 

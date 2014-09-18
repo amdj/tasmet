@@ -85,8 +85,8 @@ namespace tasystem{
       segneqs(i)=thisneqs;      
       Ndofs+=thisndofs;
       if(i>0){
-        segfirstdof(i)=segfirstdof(i-1)+segndofs(i-1);
-        segfirsteq(i)=segfirsteq(i-1)+segneqs(i-1);        
+        segfirstdof(i)=segfirstdof(i-1)+thisndofs;
+        segfirsteq(i)=segfirsteq(i-1)+thisneqs;        
       }
       // Set the dofnrs
       segs.at(i)->setDofNrs(segfirstdof(i));
@@ -97,6 +97,14 @@ namespace tasystem{
       WARN("Way too many DOFS required: Ndofs=" <<Ndofs << ". Exiting...\n");
       exit(1);
     }
+
+    if(getNDofs()!=getNEqs()){
+      WARN("Ndofs on TaSystem level not equal to number of equations!");
+      WARN("Ndofs="<< getNDofs());
+      WARN("Neqs ="<< getNEqs());
+      exit(1);
+    }
+    
     // Last, but not least: initialize a pointer to this tasystem in
     // globalconf
     gc.setSys(this);
@@ -112,6 +120,13 @@ namespace tasystem{
     for(us i=0;i<getNSegs();i++)
       Ndofs+=segs.at(i)->getNDofs();
     return Ndofs;
+  }
+  us TaSystem::getNEqs() const  {
+    TRACE(14,"TaSystem::getNDofs()");
+    us Neqs=0;
+    for(us i=0;i<getNSegs();i++)
+      Neqs+=segs.at(i)->getNEqs();
+    return Neqs;
   }
   void TaSystem::connectSegs(us seg1,us seg2,SegCoupling sc){
     TRACE(14,"TaSystem::ConnectSegs()");
@@ -241,9 +256,16 @@ namespace tasystem{
     } // for loop
     return mass;
   }
-  void TaSystem::showJac(){
+  void TaSystem::showJac(bool force){
     esdmat jac=this->jac();
-    cout << "Jacobian: \n" << jac << "\n";
+    if(force || jac.cols()<50){
+      Eigen::IOFormat CleanFmt(1,0," ","\n","[","]");
+      Eigen::MatrixXd jacd(jac);
+      cout << "Jacobian: \n" << jacd.format(CleanFmt) << "\n";
+      cout << "Determinant of jacobian:" << jacd.determinant() << "\n";
+    }
+    else
+      cout << "Jacobian size is too large to show.\n";
   }
   TaSystem::~TaSystem() {
     TRACE(-5,"~TaSystem()");

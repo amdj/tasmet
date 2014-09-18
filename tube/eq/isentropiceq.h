@@ -19,8 +19,8 @@ namespace tube{
     virtual vd error(const TubeVertex&) const;			// Error in Energy equation at node i
     virtual JacRow jac(const TubeVertex&) const;
   private:
-    JacCol dpL(const TubeVertex&) const;
-    JacCol dpR(const TubeVertex&) const;    
+    virtual JacCol dpL(const TubeVertex&) const;
+    virtual JacCol dpR(const TubeVertex&) const;    
     JacCol drhoi(const TubeVertex&) const;
   };
 }

@@ -20,7 +20,10 @@ namespace tasystem{
   JacRow::JacRow(us rowdofnr,us nrofcols): __rowdof(rowdofnr){
     jaccols.reserve(nrofcols);
   }  
-  
+  void JacRow::addCol(const JacCol& jaccol){
+    if(jaccol.isToAdd())
+      jaccols.push_back(jaccol);
+  }  
 
   void Jacobian::operator+=(const Jacobian& other){
     TRACE(2,"Jacobian::append()");

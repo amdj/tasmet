@@ -41,7 +41,7 @@ namespace tube {
   }
   void Tube::show(us showvertices) const {
     TRACE(18,"Tube::show()");
-    cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+    cout << "++++++++++++Tube name: "<< getName() << " ++++++++++++++++\n";
     if(bcLeft){
       cout << "Left side contains internal boundary condition of type " << bcLeft->getType() << ".\n";
     }
@@ -176,9 +176,29 @@ namespace tube {
     const us& nCells=geom.nCells;
     vd res(nCells);
     assert(varnr<getNDofs());
+    
     for(us i=0;i<nCells;i++){
       TubeVertex* cvertex=static_cast<TubeVertex*>(vvertex[i].get());
-      res(i)=cvertex->vars[varnr]->operator()(freqnr);
+      switch(varnr) {
+        case 0: // Density
+          res(i)=cvertex->rho(freqnr);
+          break;
+        case 1:                 // Volume flown
+          res(i)=cvertex->U(freqnr);
+          break;
+        case 2:                   // Pressure
+          res(i)=cvertex->pL()(freqnr);
+          break;
+        case 3:                 // Temp
+          res(i)=cvertex->T()(freqnr);
+          break;
+        case 4:                 // Temp
+          res(i)=cvertex->Ts()(freqnr);
+          break;
+        default:
+          res(i)=0;
+      }
+
     }
     return res;
   }

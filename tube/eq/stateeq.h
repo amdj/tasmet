@@ -14,8 +14,8 @@ namespace tube{
     vd error(const TubeVertex&) const;			// Error in momentum equation at node i
   private:
     JacCol drhoi(const TubeVertex&) const;
-    JacCol dpL(const TubeVertex&) const;
-    JacCol dpR(const TubeVertex&) const;    
+    virtual JacCol dpL(const TubeVertex&) const;
+    virtual JacCol dpR(const TubeVertex&) const;    
     JacCol dTi(const TubeVertex&) const;
   };
 

@@ -44,13 +44,13 @@ namespace tasystem{
     Globalconf gc;    
   protected:
     us getNDofs() const;	// Compute DOFS in system, set     
-    
+    us getNEqs() const;    
   public:
     TaSystem(const Globalconf& g);
     TaSystem(const TaSystem& o);
     TaSystem& operator=(const TaSystem& other);
     virtual ~TaSystem();
-    void showJac();
+    void showJac(bool force=false);
     virtual TaSystem* copy() const {return new TaSystem(*this);}
     virtual void show(us showvertices);
     us getNSegs() const {return segs.size();}

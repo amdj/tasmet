@@ -25,6 +25,8 @@ int main(int argc,char* argv[]) {
     loglevel=atoi(argv[1]);
   if(argc>2)
     Nf=atoi(argv[2]);
+  if(argc>3)
+    gp=atoi(argv[3]);
   cout<< "Loglevel:"<<loglevel<<"\n";
   inittrace(loglevel);
   d L=0.01;
@@ -49,11 +51,12 @@ int main(int argc,char* argv[]) {
   // HopkinsLaminarDuct t1(geom1,gc.T0,gc.T0+10);
   IsentropicTube t1(geom1);
   var pL(gc,0);
-  pL.set(0,3.14);
+  // pL.set(0,3.14);
   if(Nf>0)
     pL.set(1,1);
   tube::LeftPressure bcleft(pL);
-  tube::RightAdiabaticWall raw;
+  // tube::RightAdiabaticWall raw;
+  tube::TwImpedance raw;  
   // tube::RightIsoTWall bcright(0,T0+10);
   // TRACE(100,"Add bc to tube...");
   t1.addBc(bcleft);
