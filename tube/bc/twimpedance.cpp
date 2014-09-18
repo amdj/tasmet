@@ -1,5 +1,7 @@
 // file: bcvertex.cpp, created March 20th, 2014.
 // Author: J.A. de Jong
+#define TRACERPLUS 20
+
 #include "tube.h"
 #include "twimpedance.h"
 #include "tubevertex.h"
@@ -18,20 +20,29 @@ namespace tube{
     TRACE(8,"TwImpedance copy assignment operator");
     return *this;
   }
+  // vd TwImpedanceEnergyEq::error(const TubeVertex& v) const {
+  //   return Energy::error(v);
+  // }
   void TwImpedance::initTubeVertex(us i,const Tube& thisseg)
   {
-    TRACE(8,"TwImpedance::initTubeVertex(), vertex "<< i <<".");
-    pr=var(gc);
-    // pr.set(0);
+    TRACE(12,"TwImpedance::initTubeVertex(), vertex "<< i <<".");
     TubeVertex::initTubeVertex(i,thisseg);
-    eqs.push_back(std::unique_ptr<TubeEquation>(twright.copy()));
-    eqs.at(3).reset(midstate.copy()); // Replace perfect gas equation
+    // mright.init(thisseg);
+    // eqs.at(1).reset(mright.copy());
+    pr=var(gc);
+    sr.init(thisseg);
+    s.init(thisseg);
+    righttwimp.init(thisseg);
+    eqs.at(3).reset(s.copy());
+    // eqs.push_back(std::unique_ptr<TubeEquation>(righttwimp.copy()));
+    eqs.push_back(std::unique_ptr<TubeEquation>(sr.copy()));
     vars.push_back(&pr);
+
     TwImpedance::updateW(thisseg);
   }
   
   void TwImpedance::updateW(const SegBase& thisseg){
-    TRACE(8,"TwImpedance::updateW()");
+    TRACE(12,"TwImpedance::updateW()");
     cWim1=w.wRNm2-w.wLl;
     cWi  =w.wRNm1-w.wLr;
     cWip1=0;
@@ -41,17 +52,12 @@ namespace tube{
     mWuim1=-w.wLl/lg.SfL+w.wRNm2/lg.SfR;
     mWui	=-w.wLr/lg.SfL+w.wRNm1/lg.SfR;
     mWuip1=0;
-    WARN("Not yet updated!");
-    // mWpim1=-lg.SfL*w.wLl;
-    // mWpi	=-lg.SfL*w.wLr+(lg.SfL-lg.SfR);
-    // mWpip1=0;
+
     
     eWgim1=-w.wLl;
-    eWgim =-w.wLr;
-
     eWgUim1pR=w.wRNm2;
+    eWgim  =-w.wLr;
     eWgip=w.wRNm1;
-
     eWgip1=0;
 
     d SfLsq=pow(w.vSfL,2);
@@ -87,11 +93,70 @@ namespace tube{
     vd kappaR=gc->gas.kappa(T0t);
     // vd kappaR=eright.kappaR();
     // TRACE(100,"kappaR:"<<kappaR);
+
     esource+=-1.0*(lg.SfR/lg.xr)*fDFT*(kappaR%Trt);
     return esource;  
   }
 
+  vd TwImpedanceMomentumEq::error(const TubeVertex& v) const {
+    TRACE(10,"TwImpedanceMomentumEq::Error()");
+    vd error(v.gc->Ns,fillwith::zeros);    
+    // Add the normal stuff
+    error+=Momentum::error(v);
+    error-=v.mWpR*v.pR()();
+    d T0=v.gc->T0;
+    d c0=v.gc->gas.cm(T0);
+    d p0=v.gc->p0;
+    d gamma=v.gc->gas.gamma(T0);
+    vd ur=(v.w.wRNm1*v.U()+v.w.wRNm2*v.left->U())/v.lg.SfR;
+    vd urtd=v.gc->iDFT*ur;
+    vd pr=v.gc->fDFT*(p0*pow(1.0+((gamma-1.0)/2.0)*urtd/c0,2.0*gamma/(gamma-1.0))-p0);
+    vd errorZ=v.lg.SfR*pr;
 
+    error+=errorZ;
+    return error;
+  }
+  JacCol TwImpedanceMomentumEq::dpR(const TubeVertex& v) const{
+    TRACE(10,"TwImpedanceMomentumEq::dpR() ----- not adding anythin");
+    JacCol dpR(v.pR());
+    dpR.setToAdd(false);
+    return dpR;
+  }
+  JacCol TwImpedanceMomentumEq::dUi(const TubeVertex& v) const{
+    TRACE(10,"TwImpedanceMomentumEq::dUi()");
+    JacCol dUi=Momentum::dUi(v);
+    const us& Ns=v.gc->Ns;
+    d T0=v.gc->T0;
+    d c0=v.gc->gas.cm(T0);
+    d p0=v.gc->p0;
+    d gamma=v.gc->gas.gamma(T0);
+    d z0=p0*gamma/c0;
+    // TRACE(30,"z0:"<<z0);
+    vd ur=(v.w.wRNm1*v.U()+v.w.wRNm2*v.left->U())/v.lg.SfR;
+    vd urtd=v.gc->iDFT*ur;
+    dmat Z=v.gc->fDFT*(z0/v.lg.SfR)*diagmat(pow(1.0+((gamma-1.0)/2.0)*urtd/c0,(gamma+1.0)/(gamma-1.0)))*v.gc->iDFT;
+
+    dUi+=v.w.wRNm1*v.lg.SfR*Z;
+    return dUi;
+  }
+
+  JacCol TwImpedanceMomentumEq::dUim1(const TubeVertex& v) const{
+    TRACE(10,"TwImpedanceMomentumEq::dUim1()");
+    JacCol dUim1=Momentum::dUim1(v);    
+    const us& Ns=v.gc->Ns;
+    d T0=v.gc->T0;
+    d p0=v.gc->p0;
+    d c0=v.gc->gas.cm(T0);
+    d gamma=v.gc->gas.gamma(T0);
+    d z0=p0*gamma/c0;
+
+    vd ur=(v.w.wRNm1*v.U()+v.w.wRNm2*v.left->U())/v.lg.SfR;
+    vd urtd=v.gc->iDFT*ur;
+    dmat Z=v.gc->fDFT*(z0/v.lg.SfR)*diagmat(pow(1.0+((gamma-1.0)/2.0)*urtd/c0,(gamma+1.0)/(gamma-1.0)))*v.gc->iDFT;
+    TRACE(-2,"Z:"<<Z);
+    dUim1+=v.w.wRNm2*v.lg.SfR*Z;
+    return dUim1;
+  }
   vd RightTwImpedanceEq::error(const TubeVertex& v) const {
     TRACE(10,"TwImpedanceMomentumEq::Error()");
     vd error(v.gc->Ns,fillwith::zeros);    
@@ -151,6 +216,45 @@ namespace tube{
     dpR+=(-1/z0)*fDFT*diagmat(pow((v.pR().tdata()+p0)/p0,powfac))*iDFT;
     return dpR;
   }
+
+
+  // TwImpedanceEnergyEq::TwImpedanceEnergyEq(TwImpedance& twimp):impedancevertex(twimp){
+  //   TRACE(4,"TwImpedanceEnergyEq::TwImpedanceEnergyEq()");
+  // }
+  // dmat TwImpedanceEnergyEq::dUi(const TubeVertex& v) const{
+  //   TRACE(4,"TwImpedanceEnergyEq::dUi()");
+  //   dmat dUi=Energy::dUi(v);
+  //   assert(v.left!=NULL);
+  //   const dmat& fDFT=v.gc->fDFT;
+  //   const dmat& iDFT=v.gc->iDFT;
+  //   d xhalf=impedancevertex.xhalf;
+  //   d T0=v.gc->T0;
+  //   d p0=v.gc->p0;
+  //   d c0=v.gc->gas.cm(T0);
+  //   d gamma=v.gc->gas.gamma(T0);
+  //   d z0=p0*gamma/c0;		// linearized characteristic impedance
+
+  //   vd urt=(v.wRNm1*v.U.tdata()+v.wRNm2*v.left->U.tdata())/v.lg.SfR;
+  //   // Find adiabatic temperature rize
+  //   vd prt=p0*pow(1.0+((gamma-1.0)/2.0)*urt/c0,2.0*gamma/(gamma-1.0));
+  //   vd Trt=T0*pow(prt/p0,(gamma-1.0)/gamma);
+
+  //   vd kappaR=v.gc->gas.kappa(v.wRNm1*v.T.tdata()+v.wRNm2*v.left->T.tdata());
+  //   vd Ztd=(z0/v.lg.SfR)*(pow(1.0+((gamma-1.0)/2.0)*urt/c0,(gamma+1.0)/(gamma-1.0))); // Impedance dp/dUr in time domain
+
+  //   vd dTdprt=(T0/p0)*((gamma-1.0)/gamma)*pow(prt/p0,-1.0/gamma);
+  //   dUi+=(-1.0*(v.lg.SfR/impedancevertex.xhalf)*v.wRNm1)*fDFT*diagmat(kappaR%dTdprt%Ztd)*iDFT;
+
+  //   // TRACE(100,"dUi returns:"<<dUi);
+  //   return dUi;
+  // }
+  // dmat TwImpedanceEnergyEq::dUim1(const TubeVertex& v) const {
+  //   TRACE(4,"TwImpedanceEnergyEq::dUim1()");
+  //   dmat dUim1=Energy::dUim1(v);
+  //   assert(v.left!=NULL);
+  //   dUim1+=TwImpedanceEnergyEq::dUi(v)*v.wRNm2/v.wRNm1;
+  //   return dUim1;
+  // }
 
 } // namespace tube
 

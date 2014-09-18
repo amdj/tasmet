@@ -14,14 +14,27 @@
 #include "energyeq.h"
 #include "isentropiceq.h"
 #include "stateeq.h"
-
 namespace tube{
 
-  // TwImpendance boundary condition can only be used for a right
-  // side.
-  
-  
-  
+
+  class TwImpedanceMomentumEq:public Momentum{
+  public:
+    virtual vd error(const TubeVertex&) const;
+    virtual JacCol dUi(const TubeVertex&) const;
+    virtual JacCol dUim1(const TubeVertex&) const;
+    virtual JacCol dpR(const TubeVertex& v) const;
+    virtual TubeEquation* copy() const {return new TwImpedanceMomentumEq(*this);}
+  }; 
+  // class TwImpedanceEnergyEq:public Energy{
+  // private:
+  //   const TwImpedance& impedancevertex;
+  // public:
+  //   TwImpedanceEnergyEq(TwImpedance&);
+  //   ~TwImpedanceEnergyEq(){}
+  //   virtual vd error(const TubeVertex&) const;
+  //   virtual dmat dUi(const TubeVertex&) const;
+  //   virtual dmat dUim1(const TubeVertex&) const;
+  // }; 
   class RightTwImpedanceEq: public TubeEquation{
   public:
     virtual TubeEquation* copy() const {return new RightTwImpedanceEq(*this);}
@@ -35,12 +48,15 @@ namespace tube{
   class TwImpedance:public TubeBcVertex // Adiabatic impedance boundary condition
   {
   public:
-    variable::var pr;    
-    RightTwImpedanceEq twright; // Completely adjusted equation
-    State midstate;
+    // TwImpedanceMomentumEq mright; // Completely adjusted equation
     // TwImpedanceEnergyEq   eright; // Completely adjusted equation
+    RightTwImpedanceEq righttwimp;
     // Isentropic is;
-    virtual const variable::var& pR() const {return pr;}
+    variable::var pr;
+    State s;
+    StateR sr;
+    
+    const variable::var& pR() const {return pr;}
     TwImpedance();
     TwImpedance(const TwImpedance& o);
     TwImpedance& operator=(const TwImpedance&);
@@ -52,7 +68,12 @@ namespace tube{
     virtual TubeBcVertex* copy() const {return new TwImpedance(*this);}
   private:
     virtual void updateW(const SegBase&);
+    friend class TwImpedanceMomentumEq;
+    // friend class TwImpedanceEnergyEq;
+    
   };
+
+
 
 } // namespace tube
 
