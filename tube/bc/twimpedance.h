@@ -69,7 +69,7 @@ namespace tube{
     virtual TubeBcVertex* copy() const {return new TwImpedance(*this);}
   private:
     virtual void updateW(const SegBase&);
-    friend class TwImpedanceMomentumEq;
+    // friend class TwImpedanceMomentumEq;
     // friend class TwImpedanceEnergyEq;
     
   };
