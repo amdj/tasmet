@@ -29,6 +29,7 @@ namespace tasystem{
     // Solving methods
     virtual esdmat jac();
     virtual void setRes(const vd& res);
+    virtual void setRes(const evd& res);    
     virtual evd getRes();
     vd dmtotdx() const;
     vd domg();

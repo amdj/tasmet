@@ -236,9 +236,15 @@ namespace tasystem{
       TRACE(18,"New freq:"<< res(ndofs)/2/number_pi);
     }
   }
+  void EngineSystem::setRes(const evd& res){
+    TRACE(15,"EngineSystem::setRes()");
+    vd res2=math_common::armaView(res);
+    setRes(res2);
+  }
   
   vd EngineSystem::domg(){
     TRACE(15,"EngineSystem::domg()");
+    checkInit();
     assert(segs.size());
     us ndofs=getNDofs();        // On system level, this is neqs
     vd domg(ndofs,fillwith::zeros);

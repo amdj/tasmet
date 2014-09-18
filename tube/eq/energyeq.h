@@ -16,7 +16,7 @@ namespace tube{
     virtual enum EqType getType() const { return EqType::Ene;}
     void show() const; 
     vd error(const TubeVertex&) const;			// Error in Energy equation at node i
-    virtual vd domg(const TubeVertex&) const;
+    virtual void domg(const TubeVertex&,vd&) const;
 
     JacCol dUi(const TubeVertex&) const;
     JacCol dTi(const TubeVertex&) const;

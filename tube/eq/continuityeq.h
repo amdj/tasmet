@@ -12,7 +12,7 @@ namespace tube{
     virtual void init(const Tube& t);
     virtual JacRow jac(const TubeVertex&) const;
     virtual vd error(const TubeVertex&) const;			// Error in this equation at this node
-    virtual vd domg(const TubeVertex&) const;
+    virtual void domg(const TubeVertex&,vd&) const;
     virtual TubeEquation* copy() const {return new Continuity(*this);}
   private:
     JacCol drhoip1(const TubeVertex&) const; // Derivative of continuity equation to density at node

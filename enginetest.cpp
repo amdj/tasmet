@@ -11,24 +11,18 @@ using namespace segment;
 using namespace tasystem;
 using namespace tube;
 
+Solver drivenres(int argc,char* argv[]){
 
-int main(int argc,char* argv[]) {
-  cout <<  "Running enginetest..." << endl;
-  int loglevel=25;
   us gp=4;
-  us Nf=0;
+  us Nf=1;
   us Ns=2*Nf+1;
   double f=100;
   double omg=2*number_pi*f;
   double T=1/f;
-  if(argc>1)
-    loglevel=atoi(argv[1]);
   if(argc>2)
     Nf=atoi(argv[2]);
   if(argc>3)
     gp=atoi(argv[3]);
-  cout<< "Loglevel:"<<loglevel<<"\n";
-  inittrace(loglevel);
   d L=0.01;
 
   d S=1;
@@ -42,8 +36,6 @@ int main(int argc,char* argv[]) {
   d T0=293.15;
   d griddx=L/gp;
   d S0=S;
-
-
   d kappa=0.1;
   Globalconf air=Globalconf::airSTP(Nf,f);
   Globalconf gc=air;
@@ -57,28 +49,47 @@ int main(int argc,char* argv[]) {
   tube::LeftPressure bcleft(pL);
   // tube::RightAdiabaticWall raw;
   // tube::TwImpedance raw;  
-  tube::RightIsoTWall bcright(0,T0+10);
+  tube::RightIsoTWall bcright(T0+10);
   // TRACE(100,"Add bc to tube...");
   t1.addBc(bcleft);
   t1.addBc(bcright);  
-  // EngineSystem sys(air);
-  // sys.setTimingConstraint(0,0,3,2);
-  // sys.setAmplitudeDof(0,0,3,1);
   TaSystem sys(air);  
   sys.addSeg(t1); 
   sys.init();
+  return Solver(sys);
 
-  Solver sol(sys);
-  sol.sys().show(1);
-  // sol.sys().showJac();
+}
 
-  vd domg(15,fillwith::zeros);
-  sol.sys().getSeg(0)->domg(domg);
-  cout << "domg: "<< domg << "\n";
-  cout << "Result:\n"<< sol.sys().getRes() << "\n";
-  cout << "Error:\n"<< sol.sys().error() << "\n";
 
-  sol.doIter();
+
+int main(int argc,char* argv[]) {
+  cout <<  "Running enginetest..." << endl;
+
+  Solver drivensol=drivenres(argc,argv);
+  drivensol.solve();
+  evd res=drivensol.sys().getRes();
+  int loglevel=25;
+  if(argc>1)
+    loglevel=atoi(argv[1]);
+  cout<< "Loglevel:"<<loglevel<<"\n";
+  inittrace(loglevel);
+
+  // cout << "Result:\n"<< res << "\n";
+  TaSystem& sys=drivensol.sys();
+  Globalconf gc=sys.gc;
+  gc.setDriven(false);
+
+
+  Geom geom1=drivensol.sys().getSeg(0)->geom;
+  IsentropicTube t1(geom1);
+  t1.addBc(LeftAdiabaticWall());
+  t1.addBc(RightIsoTWall(gc.T0));
+  EngineSystem esys(gc);
+  esys.addSeg(t1);
+  esys.setRes(res);  
+  vd domg=esys.domg();
+  // cout << "domg: "<< domg << "\n";
+  // sys.showJac();
   return 0;
 }
 

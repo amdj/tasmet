@@ -70,10 +70,9 @@ namespace tube{
     error+=v.csource();
     return error;
   }
-  vd Continuity::domg(const TubeVertex& v) const{
+  void Continuity::domg(const TubeVertex& v,vd& domg_) const{
     TRACE(0,"Continuity::domg()");
-    vd domg=v.cWddt*v.gc->DDTfd*v.rho()/v.gc->getomg();
-    return domg;
+    domg_.subvec(dofnr,dofnr+v.gc->Ns-1)=v.cWddt*v.gc->DDTfd*v.rho()/v.gc->getomg();
   }
   JacCol Continuity::drhoi(const TubeVertex& v) const {
     TRACE(0,"Continuity::drhoi()");

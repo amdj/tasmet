@@ -428,10 +428,9 @@ namespace tube{
     TRACE(4,"TubeVertex::domg() for TubeVertex "<< i << ".");
     const us& Ns=gc->Ns;
     TRACE(4,"Assignment of Ns survived:"<< Ns);
-    us Neq=getNEqs();
+    us neqs=eqs.size();
 
-    vd domg(Neq*Ns);
-    for(us k=0;k<Neq;k++) {
+    for(us k=0;k<neqs;k++) {
       eqs[k]->domg(*this,domg_);
     }
   }

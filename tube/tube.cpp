@@ -216,14 +216,13 @@ namespace tube {
   }
   void Tube::dmtotdx(vd& dmtotdx_) const{
     TRACE(15,"Tube::dmtotdx()");
-    vd dmtotdx(getNDofs(),fillwith::zeros);
     us nvertex=vvertex.size(),Neq;
-    for(us i=0;i<nvertex;i++){
-      Neq=vvertex.at(i)->getNDofs();
-      dmtotdx(i*Neq*gc->Ns)=geom.vVf(i);
+    us rhodof;
+    for(auto v=vvertex.begin();v!=vvertex.end();v++){
+      auto &cvertex=*static_cast<TubeVertex*>(v->get());
+      rhodof=cvertex.rho.getDofNr();
+      dmtotdx_(rhodof)=cvertex.lg.vVf;
     }
-    WARN("NOT DONE");
-    // return dmtotdx;
   }  
   Tube::~Tube(){
     TRACE(15,"~Tube()");

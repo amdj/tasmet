@@ -57,7 +57,7 @@ int main(int argc,char* argv[]) {
   tube::LeftPressure bcleft(pL);
   // tube::RightAdiabaticWall raw;
   // tube::TwImpedance raw;  
-  tube::RightIsoTWall bcright(0,T0+10);
+  tube::RightIsoTWall bcright(T0+10);
   // TRACE(100,"Add bc to tube...");
   t1.addBc(bcleft);
   t1.addBc(bcright);  
