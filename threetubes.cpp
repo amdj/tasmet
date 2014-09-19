@@ -6,7 +6,7 @@ int main(int argc,char* argv[]) {
   cout <<  "Running test..." << endl;
   int loglevel=20;
   us Nf=0;
-  us gp=500;
+  us gp=4;
   d freq=500;
   
   if(argc>1)
@@ -18,20 +18,24 @@ int main(int argc,char* argv[]) {
   cout << "gp:"<< gp<<"\n";
 
   d T0=293.15;
+  d Tr=T0;
+  int options=0;
+  options|=DRIVEN|ISENTROPIC;
   cout<< "Loglevel:"<<loglevel<<"\n";
   inittrace(loglevel);
   vd p1(2*Nf+1,arma::fill::zeros);
   if(Nf>0)
     p1(1)=0.5e-2;
   d r=0.5e-2;
+  d R1=r;
+  d R2=r;
   d S1=number_pi*pow(r,2);
   d S2=S1;
   d kappa=1;
   d L=0.1;
-  // Solver* sol=ThreeTubesEngineDriven(gp,Nf,freq,T0+100,p1,loglevel,kappa);
-  // Solver* sol=ThreeTubesEngine(gp,Nf,freq,T0+10,loglevel,kappa);
-  // sol->sys().show(false);
-  // sol->doIter();
+  Solver* sol=ThreeTubes(gp,Nf,freq,L,R1,R2,p1,loglevel,kappa,Tr,options);
+  sol->sys().show(true);
+  sol->doIter();
   // cout <<sol->sys().jac();
   // sol->solve();
   // cout <<"Result:\n"<<  sol->sys.getRes();
@@ -42,7 +46,7 @@ int main(int argc,char* argv[]) {
   
   
   
-  // delete sol;
+  delete sol;
   return 0;
 }
 
