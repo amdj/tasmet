@@ -68,6 +68,7 @@ namespace tube{
   JacRow Momentum::jac(const TubeVertex& v) const {
     TRACE(6,"Momentum::jac()");
     JacRow jac(dofnr,9);
+    TRACE(0,"Momentum, dofnr jac:"<< dofnr);
     jac+=drhoi(v);
     jac+=dUi(v);
     jac+=dpL(v);

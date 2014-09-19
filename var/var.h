@@ -22,12 +22,12 @@ namespace variable {
   // var operator+(const d&,const var&);
 
   class var {
-    us dofnr;
+    long int dofnr=-1;
   protected:
     vd timedata,amplitudedata;
   public:
     void setDofNr(us Dofnr){dofnr=Dofnr;}
-    us getDofNr() const{return dofnr;}
+    long int getDofNr() const{return dofnr;}
     const Globalconf* gc=NULL;
     us Nf=0,Ns=0;
     

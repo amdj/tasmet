@@ -226,6 +226,17 @@ namespace tasystem{
     }
     return res;
   }
+  void TaSystem::setRes(const TaSystem& other){
+    TRACE(25,"TaSystem::setRes(TaSystem)");
+    WARN("This only works for Tube segments so far");
+    checkInit();
+    us nsegs=getNSegs();
+    assert(other.getNSegs()==nsegs);
+    for(us i=0;i<nsegs;i++) {
+      getSeg(i)->setRes(*other.getSeg(i));
+    }
+    
+  }
   void TaSystem::setRes(const vd& Res){
     checkInit();
     TRACE(14,"TaSystem::SetRes(vd res)");

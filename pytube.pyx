@@ -40,8 +40,13 @@ cdef class pytubeBase:
         return eigentond(self.sol[0].sys().getRes())
     cpdef doIter(self,d relaxfac=1.0):
         self.sol[0].doIter(relaxfac)
-    cpdef setRes(self,n.ndarray[n.float64_t,ndim=1] res):
+    cpdef setRes(self,res):
         self.sol[0].sys().setRes(dndtovec(res))
+
+    cpdef setResPt(self, pytubeBase other):
+        self.sol.sys().setRes(other.sol[0].sys())
+
+    
     cpdef getErrorEq(self,eqnr,freqnr,tubenr=0):
         assert(eqnr<5)
         assert(freqnr<2*self.getNf()+1)
@@ -63,7 +68,7 @@ cdef class pytubeBase:
             return None
     cpdef showJac(self):
         self.sol[0].sys().showJac()
-        
+
         
 cdef extern from "models.h" namespace "":
     Solver* Fubini(us gp,us Nf,d freq,d L,vd p1,int loglevel,d kappa,int options)    

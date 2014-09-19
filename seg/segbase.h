@@ -56,6 +56,7 @@ namespace segment{
     virtual void dmtotdx(vd&) const=0; // Derivative of current mass in
 				    // system to all dofs.
     virtual void setRes(vd res)=0;
+    virtual void setRes(const SegBase&)=0;    
     virtual vd getRes() const=0;
     virtual SegBase* copy() const=0;
     

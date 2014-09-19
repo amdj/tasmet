@@ -76,6 +76,7 @@ int main(int argc,char* argv[]) {
 
   // cout << "Result:\n"<< res << "\n";
   TaSystem& sys=drivensol.sys();
+  // Tube& t=asTube(*sys.getSeg(0));
   Globalconf gc=sys.gc;
   gc.setDriven(false);
 
@@ -86,9 +87,13 @@ int main(int argc,char* argv[]) {
   t1.addBc(RightIsoTWall(gc.T0));
   EngineSystem esys(gc);
   esys.addSeg(t1);
-  esys.setRes(res);  
-  vd domg=esys.domg();
-  // cout << "domg: "<< domg << "\n";
+  Solver newsol(esys);
+  newsol.sys().init();
+  newsol.sys().setRes(sys);
+  // asTube(*newsol.sys().getSeg(0)).setRes(t);
+  // esys.setRes(res);  
+  vd domg=dynamic_cast<EngineSystem&>(newsol.sys()).domg();
+  cout << "domg: "<< domg << "\n";
   // sys.showJac();
   return 0;
 }

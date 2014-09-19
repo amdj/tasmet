@@ -17,6 +17,7 @@ namespace tube{
   JacRow SolidTPrescribed::jac(const TubeVertex& v) const{
     TRACE(6,"SolidTPrescribed::jac()");
     JacRow jac(dofnr,1);
+    TRACE(0,"Dofnr jac:"<< dofnr);
     jac+=dTsi(v);
     return jac;
   }

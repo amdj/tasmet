@@ -19,6 +19,9 @@
   // precisely, in the final solution the continuity, momentum, energy
   // and a suitable equation of state should hold.
 namespace tube {
+
+  
+  
   Tube::Tube(const Geom& geom):Seg(geom){
     // Fill vector of gridpoints with data:
     TRACE(13,"Tube constructor()...");
@@ -28,6 +31,34 @@ namespace tube {
     bcLeft.reset();
     bcRight.reset();
     vvertex.clear();
+  }
+  void Tube::setRes(const SegBase& otherseg){
+    TRACE(20,"Tube::setRes()");
+    const Tube& other=asTube_const(otherseg);
+    // Sanity checks
+    assert(vvertex.size()!=0);
+    // Necessary to let it work
+    assert(vvertex.size()==other.vvertex.size());
+    assert(gc->Ns==other.gc->Ns);
+    auto otherv=other.vvertex.begin();
+    for(auto v=vvertex.begin();v!=vvertex.end();v++){
+      TubeVertex& thisvertex=*static_cast<TubeVertex*>(v->get());
+      TubeVertex& othervertex=*static_cast<TubeVertex*>(otherv->get());
+
+      thisvertex.rho=othervertex.rho;
+      thisvertex.U=othervertex.U;
+      thisvertex.T=othervertex.T;      
+      thisvertex.Ts=othervertex.Ts;
+      if(thisvertex.p.getDofNr()!=-1) // Then its invalid
+        thisvertex.p=othervertex.pL();
+      if(v==(vvertex.end()-1)){
+        if(bcRight)
+          thisvertex.setpR(othervertex.pR());
+      }
+        
+      otherv++;
+    } // for
+    
   }
   Tube::Tube(const Tube& other):Seg(other){
     copyTube(other);

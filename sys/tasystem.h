@@ -76,7 +76,7 @@ namespace tasystem{
     SegBase* operator[](us i) const;    
     SegBase* getSeg(us i) const; // Easier for cython wrapping
     virtual void init();
-
+    void setRes(const TaSystem& o);
     
     d getCurrentMass();	// Return current mass in system [kg]
     void checkInit(){		// Often called simple method: inline

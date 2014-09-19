@@ -17,6 +17,7 @@ namespace tube{
     virtual enum connectpos connectPos() const {return connectpos::right;}
     virtual void initTubeVertex(us i,const Tube& thisseg);
     virtual const variable::var& pR() const {return pr;};
+    virtual void setpR(const variable::var& o){pr=o;}
   protected:
     variable::var pr;
     StateR sr;

@@ -10,6 +10,7 @@ namespace tube{
   JacRow Isentropic::jac(const TubeVertex& v) const{
     TRACE(6,"Isentropic::jac()");
     JacRow jac(dofnr,2);
+    TRACE(0,"Isentropic, dofnr jac:"<< dofnr);
     jac+=dpL(v);
     jac+=dpR(v);    
     jac+=drhoi(v);

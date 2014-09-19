@@ -20,6 +20,7 @@ namespace tube{
   JacRow State::jac(const TubeVertex& v) const{
     TRACE(6,"State::jac()");
     JacRow jac(dofnr,3);
+    TRACE(0,"State, dofnr jac:"<< dofnr);    
     jac+=dpL(v);
     jac+=dpR(v);    
     jac+=dTi(v);
@@ -65,6 +66,7 @@ namespace tube{
   JacRow StateL::jac(const TubeVertex& v) const{
     TRACE(6,"StateL::jac()");
     JacRow jac(dofnr,5);
+    TRACE(0,"StateL, dofnr jac:"<< dofnr);
     jac+=dpL(v);
     jac+=dTi(v);
     jac+=drhoi(v);
@@ -145,6 +147,7 @@ namespace tube{
   JacRow StateR::jac(const TubeVertex& v) const{
     TRACE(6,"StateR::jac()");
     JacRow jac(dofnr,5);
+    TRACE(0,"StateR, dofnr jac:"<< dofnr);
     jac+=dpR(v);
     jac+=dTi(v);
     jac+=drhoi(v);

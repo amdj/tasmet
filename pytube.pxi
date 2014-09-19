@@ -24,6 +24,7 @@ cdef extern from "tasystem.h" namespace "tasystem":
         evd error()
         void show(us)
         evd getRes()
+        void setRes(TaSystem&)
         void setRes(vd)
         Seg* getSeg(us i)
         void showJac()
