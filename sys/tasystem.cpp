@@ -40,8 +40,6 @@ namespace tasystem{
   void TaSystem::cleanup(){
     segs.clear();
     segConnections.clear();
-    segfirstdof.zeros();
-    segndofs.zeros();
     hasInit=false;
   }
   void TaSystem::addSeg(const SegBase& seg){
@@ -71,33 +69,34 @@ namespace tasystem{
       coupleSegs(*v,*this);
       i++;
     }
-    segfirstdof(0)=0;
-    segfirsteq(0)=0;
+    us firstdof=0;
+    us firsteq=0;
+
     for(us i=0;i<Nsegs;i++)      {
       TRACE(9,"Initializing Segment "<<i<<"...");
       assert(segs.at(i));
       segs.at(i)->init(gc);
+
+      // Set the dofnrs
+      segs.at(i)->setDofNrs(firstdof);
+      segs.at(i)->setEqNrs(firsteq);
       us thisndofs=segs.at(i)->getNDofs();
-      us thisneqs=segs.at(i)->getNEqs();
+      us thisneqs=segs.at(i)->getNEqs();      
+      Ndofs+=thisndofs;
       TRACE(12,"Ndofs for segment "<< i << ": "<<thisndofs);
       TRACE(12,"Neqs for segment "<< i << ": "<<thisneqs);      
-      segndofs(i)=thisndofs;
-      segneqs(i)=thisneqs;      
-      Ndofs+=thisndofs;
-      if(i>0){
-        segfirstdof(i)=segfirstdof(i-1)+thisndofs;
-        segfirsteq(i)=segfirsteq(i-1)+thisneqs;        
-      }
-      // Set the dofnrs
-      segs.at(i)->setDofNrs(segfirstdof(i));
-      segs.at(i)->setEqNrs(segfirsteq(i));
+      firstdof+=thisndofs;
+      firsteq+=segs.at(i)->getNEqs();
+
     }
+
+    // Do some post-sanity checks
+    
     TRACE(10,"Segment initialization done. Total NDofs:"<< Ndofs);
     if(Ndofs>MAXNDOFS)      {
       WARN("Way too many DOFS required: Ndofs=" <<Ndofs << ". Exiting...\n");
       exit(1);
     }
-
     if(getNDofs()!=getNEqs()){
       WARN("Ndofs on TaSystem level not equal to number of equations!");
       WARN("Ndofs="<< getNDofs());
@@ -199,7 +198,7 @@ namespace tasystem{
     us starteq=0;
     TRACE(-1,"Nsegs:"<< Nsegs);
     for(us i=0;i<Nsegs;i++){
-      segeqs=segneqs(i);
+      segeqs=segs[i]->getNEqs();
       Error.subvec(starteq,starteq+segeqs-1)=segs[i]->error();
       starteq+=segeqs;
     }

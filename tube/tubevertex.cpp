@@ -8,42 +8,43 @@ namespace tube{
   void TubeVertex::show() const{
     cout << "----------------- TubeVertex " << lg.i << "----\n";
     cout << "Showing weight functions for TubeVertex "<< i <<"\n";
-    lg.show();
-    w.show();
-    cout << "cWddt    :"<<cWddt<<"\n";
-    cout << "cWim1    :"<<cWim1<<"\n";
-    cout << "cWi      :"<<cWi<<"\n";
-    cout << "cWip1    :"<<cWip1<<"\n";
-    // cout << "cWarti    :"<<cWarti<<"\n";
-    cout << "mWuim1   :"<<mWuim1<<"\n";
-    cout << "mWui     :"<<mWui<<"\n";
-    cout << "mWuip1   :"<<mWuip1<<"\n";
+    // lg.show();
+    // w.show();
+    // cout << "cWddt    :"<<cWddt<<"\n";
+    // cout << "cWim1    :"<<cWim1<<"\n";
+    // cout << "cWi      :"<<cWi<<"\n";
+    // cout << "cWip1    :"<<cWip1<<"\n";
+    // // cout << "cWarti    :"<<cWarti<<"\n";
+    // cout << "mWuim1   :"<<mWuim1<<"\n";
+    // cout << "mWui     :"<<mWui<<"\n";
+    // cout << "mWuip1   :"<<mWuip1<<"\n";
 
     // cout << "mWpim1   :"<<mWpim1<<"\n";
     // cout << "mWpi     :"<<mWpi<<"\n";
     // cout << "mWpip1   :"<<mWpip1<<"\n";
 
-    cout << "eWddt    :"<<eWddt<<"\n";
-    cout << "eWgim1   :"<<eWgim1<<"\n";
-    cout << "eWgim    :"<<eWgim<<"\n";
-    cout << "eWgip    :"<<eWgip<<"\n";
-    cout << "eWgip1   :"<<eWgip1<<"\n";
-    cout << "eWgUip1pL:"<<eWgUip1pL<<"\n";
-    cout << "eWgUim1pR:"<<eWgUim1pR<<"\n";    
+    // cout << "eWddt    :"<<eWddt<<"\n";
+    // cout << "eWgim1   :"<<eWgim1<<"\n";
+    // cout << "eWgim    :"<<eWgim<<"\n";
+    // cout << "eWgip    :"<<eWgip<<"\n";
+    // cout << "eWgip1   :"<<eWgip1<<"\n";
+    // cout << "eWgUip1pL:"<<eWgUip1pL<<"\n";
+    // cout << "eWgUim1pR:"<<eWgUim1pR<<"\n";    
     
     
-    cout << "eWkinim1 :"<<eWkinim1<<"\n";
-    cout << "eWkini   :"<<eWkini<<"\n";
-    cout << "eWkinip1 :"<<eWkinip1<<"\n";
-    cout << "eWc1     :"<<eWc1<<"\n";
-    cout << "eWc2     :"<<eWc2<<"\n";
-    cout << "eWc3     :"<<eWc3<<"\n";
-    cout << "eWc4     :"<<eWc4<<"\n";
-
+    // cout << "eWkinim1 :"<<eWkinim1<<"\n";
+    // cout << "eWkini   :"<<eWkini<<"\n";
+    // cout << "eWkinip1 :"<<eWkinip1<<"\n";
+    // cout << "eWc1     :"<<eWc1<<"\n";
+    // cout << "eWc2     :"<<eWc2<<"\n";
+    // cout << "eWc3     :"<<eWc3<<"\n";
+    // cout << "eWc4     :"<<eWc4<<"\n";
+    cout << "Number of eqs :" << getNEqs() << "\n";
+    cout << "Number of dofs:" << getNDofs() << "\n";    
     cout << "Dofnr rho: " << rho.getDofNr() << "\n";
     cout << "Dofnr U  : " << U.getDofNr() << "\n";
-    cout << "Dofnr T  : " << T.getDofNr() << "\n";
     cout << "Dofnr p  : " << p.getDofNr() << "\n";
+    cout << "Dofnr T  : " << T.getDofNr() << "\n";
     cout << "Dofnr Ts : " << Ts.getDofNr() << "\n";
     cout << "TubeVertex on left  side:" << left <<"\n";
     cout << "This TubeVertex         :" << this <<"\n";

@@ -55,12 +55,13 @@ int main(int argc,char* argv[]) {
   if(Nf>0)
     pL.set(1,1);
   tube::LeftPressure bcleft(pL);
-  // tube::RightAdiabaticWall raw;
+  tube::RightAdiabaticWall raw;
   // tube::TwImpedance raw;  
   tube::RightIsoTWall bcright(T0+10);
   // TRACE(100,"Add bc to tube...");
   t1.addBc(bcleft);
-  t1.addBc(bcright);  
+  t1.addBc(raw);
+  // t1.addBc(bcright);  
   // EngineSystem sys(air);
   // sys.setTimingConstraint(0,0,3,2);
   // sys.setAmplitudeDof(0,0,3,1);
@@ -69,12 +70,12 @@ int main(int argc,char* argv[]) {
   sys.init();
 
   Solver sol(sys);
-  sol.sys().show(1);
+  sol.sys().show(true);
   // sol.sys().showJac();
 
-  vd domg(15,fillwith::zeros);
-  sol.sys().getSeg(0)->domg(domg);
-  cout << "domg: "<< domg << "\n";
+  // vd domg(15,fillwith::zeros);
+  // sol.sys().getSeg(0)->domg(domg);
+  // cout << "domg: "<< domg << "\n";
   cout << "Result:\n"<< sol.sys().getRes() << "\n";
   cout << "Error:\n"<< sol.sys().error() << "\n";
 

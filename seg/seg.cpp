@@ -78,9 +78,6 @@ namespace segment{
 
     for(us k=0; k<nVertex;k++) {
       vneqs=vvertex.at(k)->getNEqs();
-      vd thiser=vvertex[k]->error();
-      // cout << "This vertex error size: " << thiser.size() << "\n";
-      // cout << "Space to be used: " << vneqs-1 << "\n";
       error.subvec(curpos,curpos+vneqs-1)=vvertex[k]->error();
       curpos+=vneqs;
     }
