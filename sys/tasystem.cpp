@@ -156,7 +156,21 @@ namespace tasystem{
     this->gc=gc;
     hasInit=false;
   }
+  void TaSystem::jacTriplets(vtriplet& trips){
+    TRACE(14,"TaSystem::jacTriplets()");
+    
 
+    Jacobian jnew;
+    us Nsegs=getNSegs();
+    for(us j=0;j<getNSegs();j++){
+      TRACE(14,"System loop, segment " << j);
+      segment::SegBase& curseg=*segs[j].get();
+      curseg.jac(jnew);
+      TRACE(-1,"Creation of Jacobian for segment "<< j << "done."<<endl);
+    } // end for loop
+    // TRACE(25,"Jac\n"<<jac);
+    trips=jnew.getTriplets();
+  }
   esdmat TaSystem::jac(){
     TRACE(14,"TaSystem::Jac()");
     checkInit();
@@ -166,21 +180,9 @@ namespace tasystem{
     // continued...
     const us& Ns=gc.Ns;
     us Ndofs=getNDofs();
-    us Nsegs=getNSegs();
-    
-    TRACE(-1,"Ndofs:"<<Ndofs);
-    Jacobian jnew;
-
-    for(us j=0;j<getNSegs();j++){
-      TRACE(14,"System loop, segment " << j);
-      segment::SegBase& curseg=*segs[j].get();
-      curseg.jac(jnew);
-
-      TRACE(-1,"Creation of Jacobian for segment "<< j << "done."<<endl);
-    } // end for loop
-    // TRACE(25,"Jac\n"<<jac);
-
-    vtriplet trips=jnew.getTriplets();
+    TRACE(-1,"Ndofs:"<<Ndofs);    
+    vtriplet trips;
+    jacTriplets(trips);
     esdmat eigsjac(Ndofs,Ndofs);
     eigsjac.setFromTriplets(trips.begin(),trips.end());
 
@@ -267,6 +269,7 @@ namespace tasystem{
     return mass;
   }
   void TaSystem::showJac(bool force){
+    TRACE(15,"TaSystem::showJac()");
     esdmat jac=this->jac();
     if(force || jac.cols()<50){
       Eigen::IOFormat CleanFmt(1,0," ","\n","[","]");

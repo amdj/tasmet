@@ -58,8 +58,9 @@ namespace tasystem{
     virtual evd getRes();			// Extract result vector
     virtual void setRes(const vd& resvec);	// Set result vector
     virtual esdmat jac();		// Return Jacobian matrix    
-
-    
+  protected:
+    void jacTriplets(vtriplet&);
+  public:
     void addSeg(const SegBase& s);	// Add a segment to the
 					// system. It creates a copy
 					// and ads it to segs by emplace_back.

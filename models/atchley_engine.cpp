@@ -70,41 +70,55 @@ Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,i
   HopkinsLaminarDuct hhx(hhxgeom,Tr);
   HopkinsLaminarDuct hotend(hotendgeom,Tr);  
 
-  RightAdiabaticWall rwall;
+
+  RightIsoTWall rwall(Tr);
   hotend.addBc(rwall);
-  
-  TaSystem sys(gc);
-  sys.addSeg(resonator);
-  sys.addSeg(chx);
-  sys.addSeg(stk);
-  sys.addSeg(hhx);  
-  sys.addSeg(hotend);  
-  sys.connectSegs(0,1,tasystem::SegCoupling::tailhead);
-  sys.connectSegs(1,2,tasystem::SegCoupling::tailhead);
-  sys.connectSegs(2,3,tasystem::SegCoupling::tailhead);
-  sys.connectSegs(3,4,tasystem::SegCoupling::tailhead);  
   
   if(options & DRIVEN){
     cout << "Driven system\n";
+    TaSystem sys(gc);
     var pL(gc);
     for(us i=0;i<gc.Ns;i++)
       pL.set(i,p1(i));
     LeftPressure l1(pL);
-    static_cast<Tube*>(sys.getSeg(0))->addBc(l1);
+
+    resonator.addBc(l1);
     
+    sys.addSeg(resonator);
+    sys.addSeg(chx);
+    sys.addSeg(stk);
+    sys.addSeg(hhx);  
+    sys.addSeg(hotend);  
+    sys.connectSegs(0,1,tasystem::SegCoupling::tailhead);
+    sys.connectSegs(1,2,tasystem::SegCoupling::tailhead);
+    sys.connectSegs(2,3,tasystem::SegCoupling::tailhead);
+    sys.connectSegs(3,4,tasystem::SegCoupling::tailhead);  
+  
     Solver* Sol=new Solver(sys);
     return Sol;
-
   }
   else{
-    cout << "NOT driven system\n";
 
-    EngineSystem ensys(sys);
+    EngineSystem sys(gc);
+    cout << "NOT driven system\n";
+    LeftIsoTWall lwall(T0);
+    resonator.addBc(lwall);
+
+    sys.addSeg(resonator);
+    sys.addSeg(chx);
+    sys.addSeg(stk);
+    sys.addSeg(hhx);  
+    sys.addSeg(hotend);  
+    sys.connectSegs(0,1,tasystem::SegCoupling::tailhead);
+    sys.connectSegs(1,2,tasystem::SegCoupling::tailhead);
+    sys.connectSegs(2,3,tasystem::SegCoupling::tailhead);
+    sys.connectSegs(3,4,tasystem::SegCoupling::tailhead);  
+    
     // CHANGED to constraint on second harmonic, see what happens
     // ensys.setTimingConstraint(0,0,3,4);
-    ensys.setTimingConstraint(0,0,3,2);
-    ensys.setAmplitudeDof(0,0,3,1);
-    Solver* Sol=new Solver(ensys);
+    sys.setTimingConstraint(0,0,2,2);
+    sys.setAmplitudeDof(0,0,2,1);
+    Solver* Sol=new Solver(sys);
     return Sol;
   }
 }

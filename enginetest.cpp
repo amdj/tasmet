@@ -86,15 +86,20 @@ int main(int argc,char* argv[]) {
   t1.addBc(LeftAdiabaticWall());
   t1.addBc(RightIsoTWall(gc.T0));
   EngineSystem esys(gc);
+  esys.setTimingConstraint(0,0,2,2);
+  // esys.setAmplitudeDof(0,0,2,1);
+  
   esys.addSeg(t1);
   Solver newsol(esys);
   newsol.sys().init();
   newsol.sys().setRes(sys);
   // asTube(*newsol.sys().getSeg(0)).setRes(t);
-  // esys.setRes(res);  
-  vd domg=dynamic_cast<EngineSystem&>(newsol.sys()).domg();
-  cout << "domg: "<< domg << "\n";
-  // sys.showJac();
+  // esys.setRes(res);
+  
+  // vd domg=dynamic_cast<EngineSystem&>(newsol.sys()).domg();
+  // cout << "domg: "<< domg << "\n";
+  newsol.sys().showJac();
+  newsol.doIter();
   return 0;
 }
 
