@@ -6,6 +6,8 @@
 
 namespace tasystem{
 
+  class TripletList;
+  
   class JacCol{                // Column block of Jacobian
     bool tobeadded=true;
     us __coldof;                  // First dof of column
@@ -39,7 +41,7 @@ namespace tasystem{
     vector<JacRow> jacrows;
     void operator+=(const Jacobian&);
     void operator+=(const JacRow&);
-    vtriplet getTriplets() const;
+    TripletList getTriplets() const;
     
   };
 

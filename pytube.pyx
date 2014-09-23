@@ -44,7 +44,7 @@ cdef class pytubeBase:
         self.sol[0].sys().setRes(dndtovec(res))
 
     cpdef setResPt(self, pytubeBase other):
-        self.sol.sys().setRes(other.sol[0].sys())
+        self.sol[0].sys().setRes(other.sol[0].sys())
 
     
     cpdef getErrorEq(self,eqnr,freqnr,tubenr=0):

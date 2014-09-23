@@ -1,4 +1,9 @@
+#define TRACERPLUS (10)
 #include "enginesystem.h"
+#include "triplets.h"
+
+#define MASSEQ (0)
+// #define MASSEQ (0)
 
 namespace tasystem{
 
@@ -64,29 +69,48 @@ namespace tasystem{
     TRACE(15,"EngineSystem::dmtotdx()");
     // Should become a row vector, but anyway.
     vd dmtotdx(getNDofs(),fillwith::zeros);
-    us segdofs;
-    us startdof=0;
     us Nsegs=getNSegs();
-    TRACE(-1,"Nsegs:"<< Nsegs);
     for(us i=0;i<Nsegs;i++){
       segs[i]->dmtotdx(dmtotdx);
       // WARN("dmtotdx: Not done function");
     }
     return dmtotdx;
   }
-  vtriplet EngineSystem::Ljac(){
-    TRACE(15,"Enginesystem::Ljac()");
+  evd EngineSystem::error(){
+    checkInit();
+    TRACE(15,"EngineSystem::error()");
+    
+    return errorM();
+  }
+  esdmat EngineSystem::jac(){
+    TRACE(25,"EngineSystem::jac()");
+    
+    TripletList jactr=this->Mjac();
 
-    vtriplet jactriplets;
+    us Ndofs=getNDofs();	// This number is without extra omega dof
+    if(gc.Nf>0)
+      Ndofs++;
+    esdmat jac(Ndofs,Ndofs);
+
+    jactr.setValid();
+    jac.setFromTriplets(jactr.begin(),jactr.end());
+    return jac;
+  }
+  // INCLUDING DIVIDE BY AMPLITUDE
+
+
+  TripletList EngineSystem::Ljac(){
+    TRACE(25,"Enginesystem::Ljac()");
+
+    TripletList jactriplets;
     jacTriplets(jactriplets);
 
     us Ndofs=getNDofs();
     if(gc.Nf>0)
       Ndofs++;
 
-    // Push all rows one down
-    WARN("This is NOT GOOD! FIRST Row needs to be replaced!!");
-    math_common::shiftTriplets(jactriplets,1,0); 
+    jactriplets.zeroOutRow(MASSEQ);  // Replace this equation with global
+                                // mass conservation
     // Reserve some extra space in this tripletlist and add the extra components
     vd dmtotdx=this->dmtotdx();
     // cout << "dmtotdx:" <<dmtotdx;
@@ -96,114 +120,88 @@ namespace tasystem{
     if(gc.Nf>0){
       vd domg=this->domg();
       // TRACE(50,"domg:"<<domg);
-
       us domgsize=domg.size();
       extraspace+=domgsize;	// A little bit too much, but anyway..
-      math_common::reserveExtraDofs(jactriplets,extraspace);
+      jactriplets.reserveExtraDofs(extraspace);
       for(us i=0;i<domgsize;i++){
         if(domg(i)!=0)
-          jactriplets.push_back(triplet(i,Ndofs-1,domg(i)));
+          jactriplets.push_back(Triplet(i,Ndofs-1,domg(i)));
       }	// for domg
 
       // Now we need to add the timingconstraint as well.
       TRACE(50,"Dofnr timingconstraint:"<<tc.dofnr(*this));
-      jactriplets.push_back(triplet(Ndofs-1,tc.dofnr(*this),1));
+      jactriplets.push_back(Triplet(Ndofs-1,tc.dofnr(*this),1));
       
     } // gc.Nf>0
     else			// Only dofs for dmtotdx
-      math_common::reserveExtraDofs(jactriplets,extraspace);
+      jactriplets.reserveExtraDofs(extraspace);
 
-    for(us i=0;i<dmtotdxsize;i++)
-      if(dmtotdx(i)!=0)
-	jactriplets.push_back(triplet(0,i,dmtotdx(i)));
-
+    for(us k=0;k<dmtotdxsize;k++)
+      if(dmtotdx(k)!=0){
+        // TRACE(20,"k: " << k);
+        // TRACE(20,"dmtotdx:"<< dmtotdx(k));
+        jactriplets.push_back(Triplet(MASSEQ,k,dmtotdx(k)));
+      }
     return jactriplets;
   }
-  // INCLUDING DIVIDE BY AMPLITUDE
-  // esdmat EngineSystem::jac(){
-  //   TRACE(15,"EngineSystem::jac()");
+  TripletList EngineSystem::Mjac(){
+    TRACE(15,"EngineSystem::Mjac()");
     
-  //   vtriplet Mjac=this->Ljac(); // Its called Mjac, but here it is still Ljac
-  //   d aval=av.value(*this);
-  //   assert(aval!=0);		// Otherwise, something is wrong.
-  //   math_common::multiplyTriplets(Mjac,1/aval); // Now its Mjac
-
-
-  //   evd M=this->error();
-  //   us valdof=av.dofnr(*this);
-  //   math_common::reserveExtraDofs(Mjac,M.size());
-  //   // If we add extra triplets to this vector, summation is done
-  //   // according to the eigen documentation.
-  //   // TRACE(50,"SFSG")
-  //   for(us i=0;i<M.size();i++)
-  //     if(M(i)!=0)
-  //   	Mjac.push_back(triplet(i,valdof,-M(i)/aval));
-  //   us Ndofs=getNDofs();	// This number is without extra omega dof
-  //   if(gc.Nf>0)
-  //     Ndofs+=1;
-  //   esdmat jac(Ndofs,Ndofs);
-  //   jac.setFromTriplets(Mjac.begin(),Mjac.end());
-  //   return jac;
-  // }
-  // WITHOUT DIVIDE BY AMPLITUDE
-  esdmat EngineSystem::jac(){
-    TRACE(15,"EngineSystem::jac()");
-    
-    vtriplet Mjac=this->Ljac(); // Its called Mjac, but here it is still Ljac
+    TripletList Mjac=this->Ljac(); // Its called Mjac, but here it is still Ljac
     d aval=av.value(*this);
     assert(aval!=0);		// Otherwise, something is wrong.
+    Mjac.multiplyTriplets(1/aval); // Now its nearly Mjac
 
-    us Ndofs=getNDofs();	// This number is without extra omega dof
-    if(gc.Nf>0)
-      Ndofs++;
-    esdmat jac(Ndofs,Ndofs);
-    jac.setFromTriplets(Mjac.begin(),Mjac.end());
-    return jac;
+    evd M=this->errorM();
+    us valdof=av.dofnr(*this);
+    Mjac.reserveExtraDofs(M.size());
+    // If we add extra triplets to this vector, summation is done
+    // according to the eigen documentation.
+
+    for(us i=0;i<M.size();i++)
+      if(M(i)!=0)
+    	Mjac.push_back(Triplet(i,valdof,-M(i)/aval));
+    // Now it is officially Mjac
+    return Mjac;
   }
-  // INCLUDING DIVIDE BY AMPLITUDE
-  // evd EngineSystem::error(){
-  //   TRACE(15,"EngineSystem::error()");
-  //   d curmass=getCurrentMass();
-  //   TRACE(20,"Current iteration mass in system: " << curmass << " [kg]");
-
-  //   if(gc.Nf>0)    {
-  //     us Ndofs=getNDofs()+1;
-  //     evd error(Ndofs);		// Add one for the timing constraint
-  //     error.head(Ndofs-1)=TaSystem::error();
-  //     error(Ndofs-1)=tc.value(*this);
-  //     // Strip first equation (for now, assuming it is a continuity
-  //     d aval=av.value(*this);
-  //     cout << "Current amplitude value: " << aval << "\n";
-  //     error(0)=curmass-gc.getMass();
-  //     error*=(1/aval);		// Divide L by amplitude value to
-  //     // avoid zero amplitude as solution
-
-  //     return error;
-  //   } else{
-  //     evd error=TaSystem::error();
-
-  //     error(0)=curmass-gc.getMass();
-  //     return error;      
-  //   }
-  // }
-  // WITHOUT DIVIDE BY AMPLITUDE
-  evd EngineSystem::error(){
+  evd EngineSystem::errorM(){
     TRACE(15,"EngineSystem::error()");
     if(gc.Nf>0)    {
-      us Ndofs=getNDofs()+1;
-      evd error(Ndofs);		// Add one for the timing constraint
-      error.head(Ndofs-1)=TaSystem::error();
-      error(Ndofs-1)=tc.value(*this);
-      // Strip first equation (for now, assuming it is a continuity
-      error(0)=getCurrentMass()-gc.getMass();
       d aval=av.value(*this);
-      cout << "Amplitude value: " << aval << "\n";
-      return error;
+      cout << "Current amplitude value: " << aval << "\n";
+      assert(aval!=0);
+      // Divide L by amplitude value to
+      // avoid zero amplitude as solution
+      return errorL()*(1.0/aval);		// Add one for the timing constraint
     } else{
-      return TaSystem::error();
+      return errorL();      
     }
   }
+  // WITHOUT DIVIDE BY AMPLITUDE
+  evd EngineSystem::errorL(){
+    TRACE(15,"EngineSystem::errorL()");
+    
+    us Ndofs=getNDofs();
+    if(gc.Nf>0)
+      Ndofs++;
+    evd error(Ndofs);		// Add one for the timing constraint  
 
+    if(gc.Nf>0)    {
+      error.head(Ndofs-1)=TaSystem::error();
+      error(Ndofs-1)=tc.value(*this);
+      d aval=av.value(*this);
+      cout << "Amplitude value: " << aval << "\n";
+    }
+    else {
+      error=TaSystem::error();
+    }      
+
+    // Strip first equation (for now, assuming it is a continuity
+    d curmass=getCurrentMass();
+    TRACE(25,"Current mass in system: "<< curmass << " [kg]\n");
+    error(MASSEQ)=curmass-gc.getMass();
+    return error;
+  }
   evd EngineSystem::getRes(){
     TRACE(15,"EngineSystem::getRes()");
     checkInit();
@@ -236,11 +234,6 @@ namespace tasystem{
       gc.setomg(res(ndofs));
       TRACE(18,"New freq:"<< res(ndofs)/2/number_pi);
     }
-  }
-  void EngineSystem::setRes(const evd& res){
-    TRACE(15,"EngineSystem::setRes()");
-    vd res2=math_common::armaView(res);
-    setRes(res2);
   }
   
   vd EngineSystem::domg(){

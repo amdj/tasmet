@@ -27,6 +27,7 @@ namespace tasystem{
   typedef Eigen::SparseMatrix<double> esdmat;
   
   class TaSystem;
+  class TripletList;
   using segment::SegBase;
 
   class TaSystem{
@@ -57,9 +58,10 @@ namespace tasystem{
     virtual evd error();			// Total error vector
     virtual evd getRes();			// Extract result vector
     virtual void setRes(const vd& resvec);	// Set result vector
+    void setRes(const evd& res);
     virtual esdmat jac();		// Return Jacobian matrix    
   protected:
-    void jacTriplets(vtriplet&);
+    void jacTriplets(TripletList&);
   public:
     void addSeg(const SegBase& s);	// Add a segment to the
 					// system. It creates a copy

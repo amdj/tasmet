@@ -46,6 +46,7 @@ namespace tube {
       TubeVertex& thisvertex=*static_cast<TubeVertex*>(v->get());
       TubeVertex& othervertex=*static_cast<TubeVertex*>(otherv->get());
       thisvertex.rho=othervertex.rho;
+      // TRACE(15,"Other rho:"<< othervertex.rho(0));
       thisvertex.U=othervertex.U;
       thisvertex.T=othervertex.T;      
       thisvertex.Ts=othervertex.Ts;
@@ -57,7 +58,6 @@ namespace tube {
           TRACE(25,"Copying pR");          
         }
       }
-        
       otherv++;
     } // for
     
@@ -199,8 +199,12 @@ namespace tube {
   d Tube::getCurrentMass() const{
     TRACE(8,"Tube::getCurrentMass()");
     assert(vvertex.size()>0);
-    vd rho0=getResAt(0,0);
-    return arma::dot(rho0,geom.vVf);
+    d mass=0;
+    for(auto vertex=vvertex.begin();vertex!=vvertex.end();vertex++){
+      TubeVertex& cvertex=*static_cast<TubeVertex*>(vertex->get());
+      mass+=cvertex.rho(0)*cvertex.lg.vVf;
+    }
+    return mass;
   }
 
   
@@ -251,6 +255,7 @@ namespace tube {
     TRACE(15,"Tube::dmtotdx()");
     us nvertex=vvertex.size(),Neq;
     us rhodof;
+    WARN("Test here>> checkc code!");
     for(auto v=vvertex.begin();v!=vvertex.end();v++){
       auto &cvertex=*static_cast<TubeVertex*>(v->get());
       rhodof=cvertex.rho.getDofNr();

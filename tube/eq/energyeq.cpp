@@ -337,7 +337,7 @@ namespace tube{
 
   // From here on, auxiliary functions
   vd Energy::kappaL(const TubeVertex& v)  const {
-    TRACE(0,"Energy::kappaL(v)");
+    TRACE(5,"Energy::kappaL(v)");
     // const dmat& DDTfd=v.gc->DDTfd;
     // const dmat& fDFT=v.gc->fDFT;
     // const dmat& iDFT=v.gc->iDFT;      
@@ -363,7 +363,7 @@ namespace tube{
     return kappaL;
   }
   vd Energy::kappaR(const TubeVertex& v)  const {		// Returns thermal conductivity time domain data
-    TRACE(0,"Energy::kappaR(v)");
+    TRACE(5,"Energy::kappaR(v)");
     const dmat& DDTfd=v.gc->DDTfd;
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      

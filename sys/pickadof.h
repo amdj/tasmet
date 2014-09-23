@@ -29,8 +29,7 @@ namespace tasystem{
         dofnr+=sys.getSeg(i)->getNDofs();
       for(us i=0;i<vertexnr;i++)
         dofnr+=static_cast<segment::Seg*>(sys.getSeg(segnr))->vvertex.at(i)->getNDofs();
-      if(varnr>0)
-        dofnr+=(varnr-1)*sys.gc.Ns;
+      dofnr+=varnr*sys.gc.Ns;
       dofnr+=freqnr;
       return dofnr;
     }

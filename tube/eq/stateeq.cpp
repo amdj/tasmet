@@ -37,14 +37,16 @@ namespace tube{
   }
   JacCol State::dTi(const TubeVertex& v)
    const {
-    TRACE(0,"State::dTi()");
+    TRACE(10,"State::dTi()");
     dmat rhotidiag=diagmat(v.rho.tdata());
+    // TRACE(15,"dTi value:"<< -1.0*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotidiag*v.gc->iDFT);
     return JacCol(v.T,-1.0*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotidiag*v.gc->iDFT);
   }
   JacCol State::drhoi(const TubeVertex& v)
    const {
-    TRACE(0,"State::drhoi()");
+    TRACE(10,"State::drhoi()");
     dmat Ttidiag=diagmat(v.T.tdata());
+    // TRACE(15,"dTi value:"<< -1.0*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttidiag*v.gc->iDFT);
     return JacCol(v.rho,-1.0*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttidiag*v.gc->iDFT);
   }
 

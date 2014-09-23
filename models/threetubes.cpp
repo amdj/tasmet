@@ -44,11 +44,19 @@ Solver* ThreeTubes(us gp,us Nf,d freq,d L,d R1,d R2,vd p1,int loglevel,d kappa,d
   var pL(gc);
   for(us i=0;i<gc.Ns;i++)
     pL.set(i,p1(i));
-
-  LeftPressure pleft(pL);
-  t1.addBc(pleft);
-  t1is.addBc(pleft);
-  
+  if(options&DRIVEN){
+    cout << "Driven system\n";
+    LeftPressure pleft(pL);
+    t1.addBc(pleft);
+    t1is.addBc(pleft);
+  }
+  else{
+    cout << "Non-driven system\n";
+    LeftIsoTWall pleft(gc.T0);
+    t1.addBc(pleft);
+    t1is.addBc(pleft);
+  }
+    
   // RightAdiabaticWall right;
   cout << "Tr:" << Tr<<"\n";
   TubeBcVertex* b;

@@ -14,7 +14,7 @@ using namespace tube;
 Solver drivenres(int argc,char* argv[]){
 
   us gp=4;
-  us Nf=1;
+  us Nf=0;
   us Ns=2*Nf+1;
   double f=100;
   double omg=2*number_pi*f;
@@ -40,8 +40,8 @@ Solver drivenres(int argc,char* argv[]){
   Globalconf air=Globalconf::airSTP(Nf,f);
   Globalconf gc=air;
   Geom geom1=Geom::CylinderBlApprox(gp,L,rtube);
-  // HopkinsLaminarDuct t1(geom1,gc.T0,gc.T0+10);
-  IsentropicTube t1(geom1);
+  HopkinsLaminarDuct t1(geom1,gc.T0,gc.T0+10);
+  // IsentropicTube t1(geom1);
   var pL(gc,0);
   // pL.set(0,3.14);
   if(Nf>0)
@@ -82,9 +82,10 @@ int main(int argc,char* argv[]) {
 
 
   Geom geom1=drivensol.sys().getSeg(0)->geom;
-  IsentropicTube t1(geom1);
+  // IsentropicTube t1(geom1);
+  HopkinsLaminarDuct t1(geom1,gc.T0);
   t1.addBc(LeftAdiabaticWall());
-  t1.addBc(RightIsoTWall(gc.T0));
+  t1.addBc(RightIsoTWall(gc.T0+10));
   EngineSystem esys(gc);
   esys.setTimingConstraint(0,0,2,2);
   // esys.setAmplitudeDof(0,0,2,1);
@@ -95,11 +96,15 @@ int main(int argc,char* argv[]) {
   newsol.sys().setRes(sys);
   // asTube(*newsol.sys().getSeg(0)).setRes(t);
   // esys.setRes(res);
-  
+  cout << "error:\n" << newsol.sys().error() << "\n";
   // vd domg=dynamic_cast<EngineSystem&>(newsol.sys()).domg();
   // cout << "domg: "<< domg << "\n";
+  vd dmtotdx=dynamic_cast<EngineSystem&>(newsol.sys()).dmtotdx();
+  cout << "dmtotdx:" << dmtotdx << "\n";
+  // drivensol.sys().showJac();
   newsol.sys().showJac();
-  newsol.doIter();
+  // newsol.doIter();
+  // newsol.solve();
   return 0;
 }
 

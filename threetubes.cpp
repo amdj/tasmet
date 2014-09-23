@@ -20,7 +20,7 @@ int main(int argc,char* argv[]) {
   d T0=293.15;
   d Tr=T0;
   int options=0;
-  options|=DRIVEN|ISENTROPIC;
+  // options|=DRIVEN|ISENTROPIC;
   cout<< "Loglevel:"<<loglevel<<"\n";
   inittrace(loglevel);
   vd p1(2*Nf+1,arma::fill::zeros);
@@ -35,8 +35,9 @@ int main(int argc,char* argv[]) {
   d L=0.1;
   Solver* sol=ThreeTubes(gp,Nf,freq,L,R1,R2,p1,loglevel,kappa,Tr,options);
   sol->sys().show(false);
-  sol->doIter();
+  // sol->doIter();
   // cout <<sol->sys().jac();
+  sol->sys().showJac();
   sol->solve();
   // cout <<"Result:\n"<<  sol->sys.getRes();
   // cout <<"Result:\n"<< static_cast<tube::Tube*>(sol->sys().getSeg(0))->getResAt(2,0);

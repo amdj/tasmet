@@ -6,6 +6,7 @@
 #include "enginesystem.h"
 #include "solver.h"
 #include "bc.h"
+#include <limits>
 using namespace std;
 using namespace segment; 
 using namespace tasystem;
@@ -18,6 +19,8 @@ int main(int argc,char* argv[]) {
   us gp=4;
   us Nf=0;
   us Ns=2*Nf+1;
+
+  cout << "Max value of int: " << std::numeric_limits<int>::max() << "\n";
   double f=100;
   double omg=2*number_pi*f;
   double T=1/f;
@@ -48,30 +51,33 @@ int main(int argc,char* argv[]) {
   Globalconf air=Globalconf::airSTP(Nf,f);
   Globalconf gc=air;
   Geom geom1=Geom::CylinderBlApprox(gp,L,rtube);
-  // HopkinsLaminarDuct t1(geom1,gc.T0,gc.T0+10);
-  IsentropicTube t1(geom1);
+  HopkinsLaminarDuct t1(geom1,gc.T0,gc.T0);
+  // IsentropicTube t1(geom1);
   var pL(gc,0);
   // pL.set(0,3.14);
   if(Nf>0)
-    pL.set(1,1);
-  tube::LeftPressure bcleft(pL);
-  tube::RightAdiabaticWall raw;
+    pL.set(1,1.0);
+  // tube::LeftPressure bcleft(pL);
+  tube::LeftAdiabaticWall bcleft;
+  // tube::RightAdiabaticWall bcright;
   // tube::TwImpedance raw;  
   tube::RightIsoTWall bcright(T0+10);
   // TRACE(100,"Add bc to tube...");
   t1.addBc(bcleft);
-  t1.addBc(raw);
-  // t1.addBc(bcright);  
+  t1.addBc(bcright);
+
+
   // EngineSystem sys(air);
   // sys.setTimingConstraint(0,0,3,2);
   // sys.setAmplitudeDof(0,0,3,1);
-  TaSystem sys(air);  
+  EngineSystem sys(air);
+  // TaSystem sys(air);
   sys.addSeg(t1); 
   sys.init();
 
   Solver sol(sys);
   sol.sys().show(true);
-  // sol.sys().showJac();
+  sol.sys().showJac();
 
   // vd domg(15,fillwith::zeros);
   // sol.sys().getSeg(0)->domg(domg);

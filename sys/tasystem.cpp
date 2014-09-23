@@ -1,6 +1,5 @@
 #include "tasystem.h"
-#include "arma_eigen.h"
-
+#include "triplets.h"
 
 namespace tasystem{
   using segment::SegBase;
@@ -156,20 +155,20 @@ namespace tasystem{
     this->gc=gc;
     hasInit=false;
   }
-  void TaSystem::jacTriplets(vtriplet& trips){
+  void TaSystem::jacTriplets(TripletList& trips){
     TRACE(14,"TaSystem::jacTriplets()");
     
-
     Jacobian jnew;
     us Nsegs=getNSegs();
     for(us j=0;j<getNSegs();j++){
       TRACE(14,"System loop, segment " << j);
       segment::SegBase& curseg=*segs[j].get();
       curseg.jac(jnew);
-      TRACE(-1,"Creation of Jacobian for segment "<< j << "done."<<endl);
+      TRACE(10,"Creation of Jacobian for segment "<< j << "done."<<endl);
     } // end for loop
     // TRACE(25,"Jac\n"<<jac);
     trips=jnew.getTriplets();
+
   }
   esdmat TaSystem::jac(){
     TRACE(14,"TaSystem::Jac()");
@@ -181,11 +180,12 @@ namespace tasystem{
     const us& Ns=gc.Ns;
     us Ndofs=getNDofs();
     TRACE(-1,"Ndofs:"<<Ndofs);    
-    vtriplet trips;
-    jacTriplets(trips);
-    esdmat eigsjac(Ndofs,Ndofs);
-    eigsjac.setFromTriplets(trips.begin(),trips.end());
+    TripletList triplets;
+    jacTriplets(triplets);
 
+    triplets.setValid();
+    esdmat eigsjac(Ndofs,Ndofs);
+    eigsjac.setFromTriplets(triplets.begin(),triplets.end());
     return eigsjac;
   }
   evd TaSystem::error(){
@@ -238,6 +238,12 @@ namespace tasystem{
     }
     
   }
+  void TaSystem::setRes(const evd& res){
+    TRACE(15,"EngineSystem::setRes()");
+    vd res2=math_common::armaView(res);
+    setRes(res2);
+  }
+  
   void TaSystem::setRes(const vd& Res){
     checkInit();
     TRACE(14,"TaSystem::SetRes(vd res)");
@@ -270,14 +276,19 @@ namespace tasystem{
   }
   void TaSystem::showJac(bool force){
     TRACE(15,"TaSystem::showJac()");
+    checkInit();
     esdmat jac=this->jac();
     if(force || jac.cols()<50){
-      Eigen::IOFormat CleanFmt(1,0," ","\n","[","]");
+      Eigen::IOFormat CleanFmt(1,0," ",";\n","","","[","]");
       Eigen::MatrixXd jacd(jac);
       cout << "Jacobian: \n" << jacd.format(CleanFmt) << "\n";
       cout << "Determinant of jacobian:" << jacd.determinant() << "\n";
     }
-    else
+    else if(jac.cols()<1000){
+      Eigen::MatrixXd jacd(jac);
+      cout << "Jacobian too large to show, but determinant of jacobian is:" << jacd.determinant() << "\n";      
+    }
+    else 
       cout << "Jacobian size is too large to show.\n";
   }
   TaSystem::~TaSystem() {
