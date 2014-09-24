@@ -74,7 +74,11 @@ namespace tube{
       eqs.at(i)->setDofNr(firsteq);
       firsteq+=gc->Ns;
     }
-  }  
+  }
+  void TubeVertex::resetHarmonics(){
+    for(auto var=vars.begin();var!=vars.end();var++)
+      (*var)->resetHarmonics();
+  }
   void TubeVertex::setLeft(const Vertex& v){
     TRACE(8,"TubeVertex::setLeft(vertex)");
     this->left=&static_cast<const TubeVertex&>(v);

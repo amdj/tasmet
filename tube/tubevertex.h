@@ -67,7 +67,7 @@ namespace tube{
 
     vector<std::unique_ptr<TubeEquation> > eqs; // Vector of pointers to the
     // equations to solve for.
-
+    void resetHarmonics();
     virtual us getNDofs() const;
     virtual us getNEqs() const;
     void setDofNrs(us firstdofnr);

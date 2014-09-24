@@ -44,7 +44,7 @@ namespace variable {
 
     const vd& operator()() const { return amplitudedata;} //Extract result
 						   //vector
-
+    void resetHarmonics();
     vd getResfluc() const { return amplitudedata.subvec(1,Ns-1);}
     vc getcRes() const; //Implementation for complex amplitude vector
     const vd& tdata() const  {return timedata; } //Get time data vector

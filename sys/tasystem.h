@@ -66,7 +66,7 @@ namespace tasystem{
     void addSeg(const SegBase& s);	// Add a segment to the
 					// system. It creates a copy
 					// and ads it to segs by emplace_back.
-
+    void resetHarmonics();
     // ############################## ACCESS METHODS
 
     // void delseg(us n); // Not yet implementen. Delete a segment from the system (we have to determine how elaborated the API has to be.)

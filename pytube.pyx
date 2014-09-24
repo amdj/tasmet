@@ -45,7 +45,8 @@ cdef class pytubeBase:
 
     cpdef setResPt(self, pytubeBase other):
         self.sol[0].sys().setRes(other.sol[0].sys())
-
+    cpdef resetHarmonics(self):
+        self.sol[0].sys().resetHarmonics()
     
     cpdef getErrorEq(self,eqnr,freqnr,tubenr=0):
         assert(eqnr<5)

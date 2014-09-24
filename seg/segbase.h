@@ -59,7 +59,7 @@ namespace segment{
     virtual void setRes(const SegBase&)=0;    
     virtual vd getRes() const=0;
     virtual SegBase* copy() const=0;
-    
+    virtual void resetHarmonics()=0;
     const us& getNumber() const {return number;}
     void setNumber(us number) {this->number=number;} 
     bool operator==(const SegBase& seg2) const; // Check if two segments are the same

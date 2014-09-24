@@ -45,6 +45,7 @@ namespace tube{
     virtual d getCurrentMass() const;	// Obtain current mass in system
     virtual void dmtotdx(vd&) const; // Derivative of current mass in
 				    // system to all dofs.
+    virtual void resetHarmonics();
     virtual void setRes(const SegBase& other); // To copy from a
     // *similar* segment
     vd getResAt(us varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.

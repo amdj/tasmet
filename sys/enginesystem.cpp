@@ -148,20 +148,22 @@ namespace tasystem{
     TRACE(15,"EngineSystem::Mjac()");
     
     TripletList Mjac=this->Ljac(); // Its called Mjac, but here it is still Ljac
-    d aval=av.value(*this);
-    assert(aval!=0);		// Otherwise, something is wrong.
-    Mjac.multiplyTriplets(1/aval); // Now its nearly Mjac
+    if(gc.Nf>0){
+      d aval=av.value(*this);
+      assert(aval!=0);		// Otherwise, something is wrong.
+      Mjac.multiplyTriplets(1/aval); // Now its nearly Mjac
 
-    evd M=this->errorM();
-    us valdof=av.dofnr(*this);
-    Mjac.reserveExtraDofs(M.size());
-    // If we add extra triplets to this vector, summation is done
-    // according to the eigen documentation.
+      evd M=this->errorM();
+      us valdof=av.dofnr(*this);
+      Mjac.reserveExtraDofs(M.size());
+      // If we add extra triplets to this vector, summation is done
+      // according to the eigen documentation.
 
-    for(us i=0;i<M.size();i++)
-      if(M(i)!=0)
-    	Mjac.push_back(Triplet(i,valdof,-M(i)/aval));
-    // Now it is officially Mjac
+      for(us i=0;i<M.size();i++)
+        if(M(i)!=0)
+          Mjac.push_back(Triplet(i,valdof,-M(i)/aval));
+      // Now it is officially Mjac
+    }
     return Mjac;
   }
   evd EngineSystem::errorM(){

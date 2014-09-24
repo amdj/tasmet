@@ -238,6 +238,11 @@ namespace tasystem{
     }
     
   }
+  void TaSystem::resetHarmonics(){
+    assert(!segs.empty());
+    for(auto seg=segs.begin();seg!=segs.end();seg++)
+      seg->get()->resetHarmonics();
+  }
   void TaSystem::setRes(const evd& res){
     TRACE(15,"EngineSystem::setRes()");
     vd res2=math_common::armaView(res);

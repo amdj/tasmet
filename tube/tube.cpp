@@ -251,6 +251,12 @@ namespace tube {
     // }
     return er;
   }
+  void Tube::resetHarmonics(){
+    for(auto v=vvertex.begin();v!=vvertex.end();v++){
+      auto &cvertex=*static_cast<TubeVertex*>(v->get());
+      cvertex.resetHarmonics();
+    }
+  }
   void Tube::dmtotdx(vd& dmtotdx_) const{
     TRACE(15,"Tube::dmtotdx()");
     us nvertex=vvertex.size(),Neq;
