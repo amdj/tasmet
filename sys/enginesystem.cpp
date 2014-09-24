@@ -2,6 +2,11 @@
 #include "enginesystem.h"
 #include "triplets.h"
 
+
+// To set divide by amplitude on
+#define DIVAMPL
+
+
 #define MASSEQ (0)
 // #define MASSEQ (0)
 
@@ -79,13 +84,26 @@ namespace tasystem{
   evd EngineSystem::error(){
     checkInit();
     TRACE(15,"EngineSystem::error()");
-    
+    if(gc.Nf>0){
+      d aval=av.value(*this);
+      cout << "Current amplitude value: " << aval << "\n";
+      cout << "Current frequency      : " << gc.getfreq() << "\n";
+    }
+
+    #ifdef DIVAMPL
     return errorM();
+    #else
+    return errorL();
+    #endif
   }
   esdmat EngineSystem::jac(){
     TRACE(15,"EngineSystem::jac()");
     
+    #ifdef DIVAMPL
     TripletList jactr=this->Mjac();
+    #else
+    TripletList jactr=this->Ljac();
+    #endif
 
     us Ndofs=getNDofs();	// This number is without extra omega dof
     if(gc.Nf>0)
@@ -170,7 +188,6 @@ namespace tasystem{
     TRACE(15,"EngineSystem::errorM()");
     if(gc.Nf>0)    {
       d aval=av.value(*this);
-      cout << "Current amplitude value: " << aval << "\n";
       assert(aval!=0);
       // Divide L by amplitude value to
       // avoid zero amplitude as solution

@@ -27,9 +27,11 @@ namespace H{
   d zeroheat_circ(d kappa,d rh){
     return 2*kappa/pow(rh,2);
   }
-  d zeroheat_blapprox(d dummy,d dummy2){
+  d zeroheat_blapprox(d kappa,d rh){
     TRACE(2,"zeroheat_blapprox");
-    return 0; }
+    return 2*kappa/pow(rh,2);
+    // return 0;
+  }
   d zeroheat_inviscid(d dummy,d dummy2){
     TRACE(2,"zeroheat_inviscid");
     return 0;
@@ -69,8 +71,8 @@ namespace tube{
       zeroheatH_funptr=&H::zeroheat_inviscid;
     else
       {
-	WARN("Warning: tube.geom.shape unknown for ZeroHeatH. Aborting...");
-	abort();
+        WARN("Warning: tube.geom.shape unknown for ZeroHeatH. Aborting...");
+        abort();
       }
   }
   void HopkinsHeatSource::setdTwdx(const Geom& g,const vd& dTwdx){
