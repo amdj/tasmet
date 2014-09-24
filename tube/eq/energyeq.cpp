@@ -1,5 +1,6 @@
-#define ENERGY_SCALE (1)
-
+// #define ENERGY_SCALE (1/v.gc->rho0/v.gc->c0)
+// #define ENERGY_SCALE (1.0/v.gc->p0)
+#define ENERGY_SCALE (1.0/100)
 #include "energyeq.h"
 #include "tubevertex.h"
 #include "tube.h"
@@ -360,9 +361,11 @@ namespace tube{
     //   kappaL=v.w.wLr*kappait+v.w.wLl*kappaitm1;
     // }
     // TRACE(100,"kappaL(0):"<<kappaL(0));
-    // kappaL.zeros();		// WARNING
+
     vd kappaL(v.gc->Ns,fillwith::ones);
     kappaL*=v.gc->gas.kappa(v.gc->T0);
+    
+    // kappaL.zeros();		// WARNING
     return kappaL;
   }
   vd Energy::kappaR(const TubeVertex& v)  const {		// Returns thermal conductivity time domain data
@@ -385,10 +388,11 @@ namespace tube{
     //   vd kappaitp1=v.gc->gas.kappa(Ttip1);
     //   kappaR=v.w.wRl*kappait+v.w.wRr*kappaitp1;
     // }
-    // kappaR.zeros();		// WARNING!!
     // TRACE(100,"kappaR(0):"<<kappaR(0));
     vd kappaR(v.gc->Ns,fillwith::ones);
     kappaR*=v.gc->gas.kappa(v.gc->T0);
+
+    // kappaR.zeros();		// WARNING!!
     return kappaR;
   }
   d Energy::gamma(const TubeVertex& v) const {

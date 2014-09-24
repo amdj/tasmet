@@ -144,6 +144,7 @@ namespace tube{
 
     d omg=v.gc->getomg();
     vc htcoefH(Nf+1,fillwith::zeros);
+    // Checked, this is correct
     htcoefH(0)=(*zeroheatH_funptr)(kappa0,rh);
     if(Nf>0){
       vd omgvec=omg*linspace(1,Nf,Nf);

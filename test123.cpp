@@ -17,7 +17,7 @@ int main(int argc,char* argv[]) {
   cout <<  "Running test..." << endl;
   int loglevel=25;
   us gp=4;
-  us Nf=0;
+  us Nf=1;
   us Ns=2*Nf+1;
 
   cout << "Max value of int: " << std::numeric_limits<int>::max() << "\n";
@@ -57,11 +57,11 @@ int main(int argc,char* argv[]) {
   // pL.set(0,3.14);
   if(Nf>0)
     pL.set(1,1.0);
-  // tube::LeftPressure bcleft(pL);
-  tube::LeftAdiabaticWall bcleft;
+  tube::LeftPressure bcleft(pL);
+  // tube::LeftAdiabaticWall bcleft;
   // tube::RightAdiabaticWall bcright;
-  // tube::TwImpedance raw;  
-  tube::RightIsoTWall bcright(T0+10);
+  tube::TwImpedance bcright;  
+  // tube::RightIsoTWall bcright(T0);
   // TRACE(100,"Add bc to tube...");
   t1.addBc(bcleft);
   t1.addBc(bcright);
@@ -70,8 +70,8 @@ int main(int argc,char* argv[]) {
   // EngineSystem sys(air);
   // sys.setTimingConstraint(0,0,3,2);
   // sys.setAmplitudeDof(0,0,3,1);
-  EngineSystem sys(air);
-  // TaSystem sys(air);
+  // EngineSystem sys(air);
+  TaSystem sys(air);
   sys.addSeg(t1); 
   sys.init();
 
