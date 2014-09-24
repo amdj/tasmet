@@ -16,8 +16,10 @@ inline us max(us x,us y){ return x>y?x:y;}
 
 Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,int options)
 {
+  clearConsole();
   // #Some global params
   inittrace(loglevel);
+
   // d p0=376e3;
   d T0=293.15;  
   Globalconf gc(Nf,freq,"helium",T0,p0,kappa);
@@ -28,15 +30,17 @@ Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,i
   d Ltot=1.0;
   // ############################## Resonator
   d Lres=87.97e-2;
+  // WARN("Wrong length of resonator");
+  // d Lres=87.97e-2*1.5;
   us gpres=max(round(gp*Lres/Ltot),4);  
   Geom resgeom=Geom::CylinderBlApprox(gpres,Lres,Rtube);
 
   // ############################## Cold HX's
-  d Lchx=10.2e-3;
+  d Lchx=10.2e-3*2;
   d y0chx=1.02e-3/2;
   d phichx=0.70;
   d Lchxgap=1.5e-3;
-  us gphx=25;  
+  us gphx=35;  
   Geom chxgeom=Geom::VertPlates(gphx,Lchx,S0,phichx,y0chx);
 
   // ############################## Stack
@@ -116,7 +120,7 @@ Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,i
     
     // CHANGED to constraint on second harmonic, see what happens
     // ensys.setTimingConstraint(0,0,3,4);
-    sys.setTimingConstraint(0,0,2,2);
+    sys.setTimingConstraint(0,0,2,4);
     sys.setAmplitudeDof(0,0,2,1);
     Solver* Sol=new Solver(sys);
     return Sol;

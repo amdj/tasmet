@@ -44,7 +44,7 @@ namespace tasystem{
 
   }
   void Globalconf::set(us Nf,d freq){
-    TRACE(0,"Globalconf::set(Nf,freq)");
+    TRACE(15,"Globalconf::set(Nf,freq)");
     //ctor
     this->Nf=Nf;
     Ns=2*Nf+1;
@@ -65,6 +65,8 @@ namespace tasystem{
   }
   void Globalconf::setfreq(d freq){setomg(2*number_pi*freq);}
   void Globalconf::setomg(d omg)  {
+    TRACE(15,"Globalconf::setomg()");
+    
     this->omg=omg;
     oldomg=omg;
     updateiomg();
@@ -74,28 +76,30 @@ namespace tasystem{
 
     for(us i=1;i<=Nf;i++){
       for(us j=0; j<Ns;j++){
-	//Row i+1 (cosine components)
-	fDFT(2*i-1,j)=2.0*cos(2.0*number_pi*double(i)*double(j)/double(Ns))/double(Ns);
-	//Row i (sine components)
-	fDFT(2*i,j)=-2.0*sin(2.0*number_pi*double(i)*double(j)/double(Ns))/double(Ns);
+        //Row i+1 (cosine components)
+        fDFT(2*i-1,j)=2.0*cos(2.0*number_pi*double(i)*double(j)/double(Ns))/double(Ns);
+        //Row i (sine components)
+        fDFT(2*i,j)=-2.0*sin(2.0*number_pi*double(i)*double(j)/double(Ns))/double(Ns);
       }
     }
   }
   void Globalconf::updateiDFT(){
+    TRACE(10,"Globalconf::updateiDFT()");
+    
     iDFT.col(0).fill(1.0);	// Steady part
     for(us k=0;k<Ns;k++){
       for (us n=1;n<=Nf;n++){
-	iDFT(k,2*n-1)=cos(2.0*number_pi*double(n)*double(k)/Ns);
-	iDFT(k,2*n)=-sin(2.0*number_pi*double(n)*double(k)/Ns);
+        iDFT(k,2*n-1)=cos(2.0*number_pi*double(n)*double(k)/Ns);
+        iDFT(k,2*n)=-sin(2.0*number_pi*double(n)*double(k)/Ns);
       }
     }
   }
   void Globalconf::updateiomg(){
-    TRACE(0,"Globalconf::updateiomg()");
+    TRACE(15,"Globalconf::updateiomg()");
     if(Nf!=0){
       for(us i=1;i<=Nf;i++){
-	DDTfd(2*i-1,2*i  )=-double(i)*omg;
-	DDTfd(2*i  ,2*i-1)=double(i)*omg;
+        DDTfd(2*i-1,2*i  )=-double(i)*omg;
+        DDTfd(2*i  ,2*i-1)=double(i)*omg;
       }
       DDTtd=iDFT*DDTfd*fDFT;
       ddt=DDTfd.submat(1,1,Ns-1,Ns-1);

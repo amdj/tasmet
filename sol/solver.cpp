@@ -86,7 +86,7 @@ namespace tasystem{
         dtuple ers=doIter(dampfac);
         funer=std::get<0>(ers);
         reler=std::get<1>(ers);
-        cout << "Iteration: "<<nloop<<" , function error: "<<funer<<" , relative error:" << reler<< ".\n";
+        cout << green <<  "Iteration: "<<nloop<<" , function error: "<<funer<<" , relative error:" << reler<< ".\n" << def;
         nloop++;
       }
     if(nloop==maxiter)

@@ -25,7 +25,15 @@ namespace tasystem{
     if(jaccol.isToAdd())
       jaccols.push_back(jaccol);
   }  
+  JacRow& JacRow::operator*=(const d& val){
+    TRACE(2,"Jacobian::operator*=()");
+    for(auto col=jaccols.begin();col!=jaccols.end();col++)
+      col->data()*=val;
+    return *this;
+  }
 
+  
+  
   void Jacobian::operator+=(const Jacobian& other){
     TRACE(2,"Jacobian::append()");
     jacrows.insert(jacrows.end(),other.jacrows.begin(),other.jacrows.end());

@@ -17,7 +17,7 @@ Solver* SimpleTube(us gp,us Nf,d freq,d L,d r,d Tl,d Tr,vd p1,int loglevel,d kap
     cout << "BLAPPROX\n";
   if(options & DRIVEN)
     cout << "DRIVEN\n";
-  system(" echo -ne \"\033c\"");
+
   inittrace(loglevel);
   Globalconf air=Globalconf::airSTP(Nf,freq);
   Geom geom1;

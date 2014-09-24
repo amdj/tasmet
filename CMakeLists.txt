@@ -1,5 +1,5 @@
 # CMakeList.txt for nonlinear code
-add_definitions(-DTRACERNAME=nonlineartracer)
+add_definitions(-DTRACERNAME=nltracer)
 
 ############################## Not so often changed
 

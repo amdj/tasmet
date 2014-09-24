@@ -30,7 +30,7 @@ namespace tube{
     assert(vvertex.size()>0);
     vd& xv=geom.xv;
     d& L=geom.L;
-    // vd Tmirror=Tl+(Tr-Tl)*math_common::skewsine(xv/L);
+    // Tmirror=Tl+(Tr-Tl)*math_common::skewsine(xv/L);
     Tmirror=Tl+(Tr-Tl)*xv/L;
     dTwdx=math_common::ddx_central(Tmirror,geom.xv);
     // WARN("ToBECANGED!!")

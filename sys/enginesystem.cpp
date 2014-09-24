@@ -1,4 +1,4 @@
-#define TRACERPLUS (10)
+// #define TRACERPLUS (10)
 #include "enginesystem.h"
 #include "triplets.h"
 
@@ -83,7 +83,7 @@ namespace tasystem{
     return errorM();
   }
   esdmat EngineSystem::jac(){
-    TRACE(25,"EngineSystem::jac()");
+    TRACE(15,"EngineSystem::jac()");
     
     TripletList jactr=this->Mjac();
 
@@ -100,7 +100,7 @@ namespace tasystem{
 
 
   TripletList EngineSystem::Ljac(){
-    TRACE(25,"Enginesystem::Ljac()");
+    TRACE(15,"Enginesystem::Ljac()");
 
     TripletList jactriplets;
     jacTriplets(jactriplets);
@@ -129,7 +129,7 @@ namespace tasystem{
       }	// for domg
 
       // Now we need to add the timingconstraint as well.
-      TRACE(50,"Dofnr timingconstraint:"<<tc.dofnr(*this));
+      TRACE(14,"Dofnr timingconstraint:"<<tc.dofnr(*this));
       jactriplets.push_back(Triplet(Ndofs-1,tc.dofnr(*this),1));
       
     } // gc.Nf>0
@@ -165,7 +165,7 @@ namespace tasystem{
     return Mjac;
   }
   evd EngineSystem::errorM(){
-    TRACE(15,"EngineSystem::error()");
+    TRACE(15,"EngineSystem::errorM()");
     if(gc.Nf>0)    {
       d aval=av.value(*this);
       cout << "Current amplitude value: " << aval << "\n";
@@ -189,8 +189,6 @@ namespace tasystem{
     if(gc.Nf>0)    {
       error.head(Ndofs-1)=TaSystem::error();
       error(Ndofs-1)=tc.value(*this);
-      d aval=av.value(*this);
-      cout << "Amplitude value: " << aval << "\n";
     }
     else {
       error=TaSystem::error();

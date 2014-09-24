@@ -32,6 +32,8 @@ namespace tasystem{
     JacRow(const variable::var&,us cols=6); // Pick rowdofnr from a variable
     void addCol(const JacCol& jaccol);
     JacRow& operator+=(const JacCol& jaccol){addCol(jaccol); return *this;}
+    JacRow& operator*=(const d& val); // Multiply all terms with constant value
+
     us rowDof() const {return __rowdof;}
   };
 

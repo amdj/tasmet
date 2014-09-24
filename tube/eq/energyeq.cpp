@@ -1,3 +1,5 @@
+#define ENERGY_SCALE (1)
+
 #include "energyeq.h"
 #include "tubevertex.h"
 #include "tube.h"
@@ -39,6 +41,7 @@ namespace tube{
       jac+=dTip1(v);
       jac+=dUip1(v);
     }
+    jac*=ENERGY_SCALE;
     return jac;    
   }
   vd Energy::error(const TubeVertex& v) const {		// Error in momentum equation
@@ -126,7 +129,7 @@ namespace tube{
     // (Boundary source term)
     error+=v.esource();
     // TRACE(100,"error:"<<error);
-    return error;
+    return ENERGY_SCALE*error;
   }
   void Energy::domg(const TubeVertex& v,vd& domg_) const {
     TRACE(0,"Energy::domg()");

@@ -255,7 +255,6 @@ namespace tube {
     TRACE(15,"Tube::dmtotdx()");
     us nvertex=vvertex.size(),Neq;
     us rhodof;
-    WARN("Test here>> checkc code!");
     for(auto v=vvertex.begin();v!=vvertex.end();v++){
       auto &cvertex=*static_cast<TubeVertex*>(v->get());
       rhodof=cvertex.rho.getDofNr();
