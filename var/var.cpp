@@ -31,6 +31,14 @@ namespace variable {
     this->timedata=timedata;
     dft();
   }
+  void var::resetHarmonics(){
+    TRACE(10,"var::resetHarmonics()");
+    if(gc->Nf>1){
+      for(us i=3;i<gc->Ns;i++)
+        amplitudedata(i)=0;
+    }
+    idft();
+  }
   var& var::operator=(const var& other){
     this->gc=other.gc;
     this->Nf=other.Nf;

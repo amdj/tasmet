@@ -16,6 +16,5 @@ namespace tasystem{
 
 
 
-
 } // namespace tasystem
 #endif /* _SOLVERINSTANCE_H_ */

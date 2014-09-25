@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _TIMINGCONSTRAINT_H_
-#define _TIMINGCONSTRAINT_H_
+#ifndef _PICKADOF_H_
+#define _PICKADOF_H_
 #include "vtypes.h"
 #include "tasystem.h"
 #include "seg.h"
@@ -26,11 +26,14 @@ namespace tasystem{
       TRACE(15,"PickADof::dofnr()");
       us dofnr=0;
       for(us i=0;i<segnr;i++)
-	dofnr+=sys.getSeg(i)->getNDofs();
-      dofnr+=vertexnr*Neq*sys.gc.Ns+varnr*sys.gc.Ns+freqnr;
+        dofnr+=sys.getSeg(i)->getNDofs();
+      for(us i=0;i<vertexnr;i++)
+        dofnr+=static_cast<segment::Seg*>(sys.getSeg(segnr))->vvertex.at(i)->getNDofs();
+      dofnr+=varnr*sys.gc.Ns;
+      dofnr+=freqnr;
       return dofnr;
     }
   };
 
 }		// namespace tasystem
-#endif /* _TIMINGCONSTRAINT_H_ */
+#endif /* _PICKADOF_H_ */

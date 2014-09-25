@@ -6,7 +6,7 @@
 
 namespace tasystem{
   typedef tuple<d,d> dtuple;
-  void* StartSolving(void *);
+
 
   SolverInstance::SolverInstance(Solver& sol,SolverConfiguration& sc):
     sol(&sol),sc(&sc)
@@ -18,40 +18,18 @@ namespace tasystem{
     TRACE(18,"SolverInstance::Kill()");
     
   }
-  // void SolverInstance::operator()(){
-  //   TRACE(18,"SolverInstance::Start()");
-  //   if(!running)    {
-  //     int res;
-  //     pthread_attr_t attributes;
-  //     res=pthread_attr_setdetachstate(&attributes,PTHREAD_CREATE_DETACHED);
-  //     if(res!=0){
-  //       perror("Thread attribute creation failed");
-  //       exit(1);
-  //     }
-      
-  //     res=pthread_create(&solver_thread,&attributes,StartSolving,this);
-  //     if(res!=0){
-  //       perror("Thread creation failed");
-  //       exit(1);
-  //     }
-  //   }
-  //   else{
-  //     cout << "Solver already started!\n";
-  //   }
-  // }
-  
+
   void SolverInstance::operator()(){
     TRACE(15,"SolverInstance::operator()");
     assert(sol!=NULL);
 
     TaSystem& sys=sol->sys();
     evd oldres=sys.getRes();
-
-    evd error=sys.error();
-    d funer=error.norm();
+    d funer=1.0;
     // For sure, we do at least one iteration
     d reler=1.0;
     us nloop=0;
+
     if(sc->maxiter==0)
       sc->maxiter=SOLVER_MAXITER;
 
@@ -60,8 +38,13 @@ namespace tasystem{
         try{
           dtuple ers=sol->doIter(sc->dampfac);
           funer=std::get<0>(ers);
+          if(!(funer>0)){
+            WARN("Function error: "<< funer << " . Quiting solving procedure.");
+            break;
+          }
+
           reler=std::get<1>(ers);
-          cout << "Iteration: "<<nloop<<" , function error: "<<funer<<" , relative error:" << reler<< ".\n";
+          cout << green <<  "Iteration: "<<nloop<<" , function error: "<<funer<<" , relative error:" << reler<< ".\n" << def;
           nloop++;
         }
         catch(int Error){

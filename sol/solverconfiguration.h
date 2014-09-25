@@ -3,6 +3,7 @@
 #include "vtypes.h"
 
 namespace tasystem{
+  SPOILNAMESPACE
   typedef unsigned int us;
   typedef double d;
   

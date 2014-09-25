@@ -48,11 +48,6 @@ namespace tube {
   }  
   void LaminarDuct::init(const Globalconf& gc){
     Tube::init(gc);
-    c.init(*this);
-    m.init(*this);
-    e.init(*this);
-    s.init(*this);
-    se.init(*this);
   }
   EqVec LaminarDuct::getEqs() const {
     EqVec eqs;

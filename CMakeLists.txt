@@ -1,5 +1,5 @@
 # CMakeList.txt for nonlinear code
-add_definitions(-DTRACERNAME=nonlineartracer)
+add_definitions(-DTRACERNAME=nltracer)
 
 ############################## Not so often changed
 
@@ -48,7 +48,7 @@ include_directories(
   tube/heat
   )
 
-
+add_library(eq ${tubeeq})
 add_library(nonlin ${nonlinear_SRC})
 target_link_libraries(nonlin boost_thread boost_system)
 # add_executable(multitube multitube.cpp)
@@ -64,6 +64,7 @@ set_source_files_properties(
 set(CYTHON_CXX_EXTENSION cpp)
 set(CYTHON_FLAGS -I/usr/local/include --timestamps)
 add_executable(test123 test123.cpp)
+add_executable(enginetest enginetest.cpp)
 add_executable(threetubes threetubes.cpp)
 cython_add_module(pytube pytube.pyx)
 # cython_add_module(doubletube doubletube.pyx)
@@ -71,7 +72,8 @@ set_target_properties(pytube PROPERTIES COMPILE_FLAGS "-Wno-cpp  -Wno-strict-ali
 
 
 # target_link_libraries(doubletube nonlin math_common armadillo)
-target_link_libraries(test123 nonlin math_common armadillo pthread)
+target_link_libraries(test123 nonlin math_common armadillo)
+target_link_libraries(enginetest nonlin math_common armadillo)
 target_link_libraries(threetubes nonlin math_common armadillo)
 target_link_libraries(pytube nonlin math_common armadillo)
 

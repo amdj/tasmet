@@ -34,7 +34,7 @@ namespace tube{
     IsentropicTube& operator=(const IsentropicTube&);
     virtual const DragResistance& getDragResistance() const {return nodrag;}
     virtual const HeatSource& getHeatSource() const {return noheat;}
-    virtual string getName() const {return string("Isentropic tube");}
+    virtual string getName() const {return string("IsentropicTube");}
     virtual SegBase* copy() const {TRACE(10,"IsentropicTube copy()");return new IsentropicTube(*this);}
     virtual void init(const Globalconf&);
     void cleanup();
@@ -42,7 +42,7 @@ namespace tube{
     Continuity c;		// Continuity equation
     Momentum m;			// Momentum equation
     Isentropic is;		// Isentropic energy
-    State s;			// State equation (ideal gas)
+    StateL s;			// State equation for pL (ideal gas)
     SolidTPrescribed se;		// Solid energy equation
     virtual ~IsentropicTube();
   };

@@ -10,7 +10,7 @@
 #pragma once
 #ifndef _SYSTEM_H_
 #define _SYSTEM_H_
-#define MAXNDOFS 20000
+#define MAXNDOFS 600000
 #include <memory>
 #include "vtypes.h"
 
@@ -27,13 +27,13 @@ namespace tasystem{
   typedef Eigen::SparseMatrix<double> esdmat;
   
   class TaSystem;
+  class TripletList;
   using segment::SegBase;
 
   class TaSystem{
   private:
     vector<SegConnection> segConnections;
-    arma::uvec::fixed<MAXSEGS> segfirstdof; // Vector containing the number of the first column corresponding to the first vertex of segment segfirstcol(i)
-    arma::uvec::fixed<MAXSEGS> segndofs;  // Vector containe
+
     bool hasInit=false;
   protected:
     vector<std::unique_ptr<SegBase> > segs;		
@@ -41,13 +41,13 @@ namespace tasystem{
     Globalconf gc;    
   protected:
     us getNDofs() const;	// Compute DOFS in system, set     
-    
+    us getNEqs() const;    
   public:
     TaSystem(const Globalconf& g);
     TaSystem(const TaSystem& o);
     TaSystem& operator=(const TaSystem& other);
     virtual ~TaSystem();
-    void showJac();
+    void showJac(bool force=false);
     virtual TaSystem* copy() const {return new TaSystem(*this);}
     virtual void show(us showvertices);
     us getNSegs() const {return segs.size();}
@@ -58,13 +58,15 @@ namespace tasystem{
     virtual evd error();			// Total error vector
     virtual evd getRes();			// Extract result vector
     virtual void setRes(const vd& resvec);	// Set result vector
+    void setRes(const evd& res);
     virtual esdmat jac();		// Return Jacobian matrix    
-
-    
+  protected:
+    void jacTriplets(TripletList&);
+  public:
     void addSeg(const SegBase& s);	// Add a segment to the
 					// system. It creates a copy
 					// and ads it to segs by emplace_back.
-
+    void resetHarmonics();
     // ############################## ACCESS METHODS
 
     // void delseg(us n); // Not yet implementen. Delete a segment from the system (we have to determine how elaborated the API has to be.)
@@ -73,7 +75,7 @@ namespace tasystem{
     SegBase* operator[](us i) const;    
     SegBase* getSeg(us i) const; // Easier for cython wrapping
     virtual void init();
-
+    void setRes(const TaSystem& o);
     
     d getCurrentMass();	// Return current mass in system [kg]
     void checkInit(){		// Often called simple method: inline

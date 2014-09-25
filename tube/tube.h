@@ -34,15 +34,20 @@ namespace tube{
     void show(us showvertices=0) const;
     void addBc(const TubeBcVertex& vertex);
     virtual us getNDofs() const;
+    virtual us getNEqs() const;    
     virtual EqVec getEqs() const=0;    	// Some derived class needs to define the equation array
     virtual const DragResistance& getDragResistance() const=0;
     virtual const HeatSource& getHeatSource() const=0;
     virtual string getType() const final {return string("Tube");}
     virtual void init(const Globalconf& gc);
+    virtual void setDofNrs(us firstdofnr);
+    virtual void setEqNrs(us firstdofnr);    
     virtual d getCurrentMass() const;	// Obtain current mass in system
-    virtual vd dmtotdx() const; // Derivative of current mass in
+    virtual void dmtotdx(vd&) const; // Derivative of current mass in
 				    // system to all dofs.
-    
+    virtual void resetHarmonics();
+    virtual void setRes(const SegBase& other); // To copy from a
+    // *similar* segment
     vd getResAt(us varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
     vd getErrorAt(us varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
     friend class TubeVertex;    
@@ -55,6 +60,9 @@ namespace tube{
   };				// Tube class
 
   
+  
+  inline Tube& asTube(SegBase& s){return dynamic_cast<Tube&>(s);}
+  inline const Tube& asTube_const(const SegBase& s){return dynamic_cast<const Tube&>(s);}  
 } /* namespace tube */
 
 #endif /* TUBE_H_ */

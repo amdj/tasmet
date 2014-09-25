@@ -19,6 +19,9 @@
   // precisely, in the final solution the continuity, momentum, energy
   // and a suitable equation of state should hold.
 namespace tube {
+
+  
+  
   Tube::Tube(const Geom& geom):Seg(geom){
     // Fill vector of gridpoints with data:
     TRACE(13,"Tube constructor()...");
@@ -28,6 +31,36 @@ namespace tube {
     bcLeft.reset();
     bcRight.reset();
     vvertex.clear();
+  }
+  void Tube::setRes(const SegBase& otherseg){
+    TRACE(20,"Tube::setRes(othertube)");
+    const Tube& other=asTube_const(otherseg);
+    // Sanity checks
+    assert(vvertex.size()!=0);
+    // Necessary to let it work
+    assert(vvertex.size()==other.vvertex.size());
+    assert(gc->Ns==other.gc->Ns);
+    auto otherv=other.vvertex.begin();
+
+    for(auto v=vvertex.begin();v!=vvertex.end();v++){
+      TubeVertex& thisvertex=*static_cast<TubeVertex*>(v->get());
+      TubeVertex& othervertex=*static_cast<TubeVertex*>(otherv->get());
+      thisvertex.rho=othervertex.rho;
+      // TRACE(15,"Other rho:"<< othervertex.rho(0));
+      thisvertex.U=othervertex.U;
+      thisvertex.T=othervertex.T;      
+      thisvertex.Ts=othervertex.Ts;
+      if(thisvertex.p.getDofNr()!=-1) // Then its invalid
+        thisvertex.p=othervertex.pL();
+      if(v==(vvertex.end()-1)){
+        if(bcRight){
+          thisvertex.setpR(othervertex.pR());
+          TRACE(25,"Copying pR");          
+        }
+      }
+      otherv++;
+    } // for
+    
   }
   Tube::Tube(const Tube& other):Seg(other){
     copyTube(other);
@@ -41,7 +74,7 @@ namespace tube {
   }
   void Tube::show(us showvertices) const {
     TRACE(18,"Tube::show()");
-    cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+    cout << "++++++++++++Tube name: "<< getName() << " ++++++++++++++++\n";
     if(bcLeft){
       cout << "Left side contains internal boundary condition of type " << bcLeft->getType() << ".\n";
     }
@@ -60,6 +93,24 @@ namespace tube {
     }
     if(other.bcRight)
       bcRight.reset(other.bcRight->copy());
+  }
+  void Tube::setDofNrs(us firstdof){
+    TRACE(13,"Tube::setDofNrs()");
+    assert(vvertex.size()>0);
+    for(auto vertex=vvertex.begin();vertex!=vvertex.end();vertex++){
+      TubeVertex& v=*static_cast<TubeVertex*>(vertex->get());
+      v.setDofNrs(firstdof);
+      firstdof+=v.getNDofs();
+    }
+  }
+  void Tube::setEqNrs(us firstdof){
+    TRACE(13,"Tube::setDofNrs()");
+    assert(vvertex.size()>0);
+    for(auto vertex=vvertex.begin();vertex!=vvertex.end();vertex++){
+      TubeVertex& v=*static_cast<TubeVertex*>(vertex->get());
+      v.setEqNrs(firstdof);
+      firstdof+=v.getNEqs();
+    }
   }
   
   void Tube::addBc(const TubeBcVertex& bc){
@@ -83,11 +134,18 @@ namespace tube {
   }
   us Tube::getNDofs() const {
     TRACE(14,"Tube::getNDofs()");
-    if(gc!=NULL)
-      return vvertex.size()*gc->Ns*Neq;
-    else
-      return 0;
+    us ndofs=0;
+    for(auto v=vvertex.begin();v!=vvertex.end();v++)
+      ndofs+=(v->get())->getNDofs();
+    return ndofs;
   }
+  us Tube::getNEqs() const {
+    TRACE(14,"Tube::getNDofs()");
+    us ndofs=0;
+    for(auto v=vvertex.begin();v!=vvertex.end();v++)
+      ndofs+=(v->get())->getNEqs();
+    return ndofs;
+  }  
   TubeVertex* Tube::leftTubeVertex() const{
     TRACE(13,"Tube::leftTubeVertex()");
     if(bcLeft){
@@ -112,22 +170,28 @@ namespace tube {
     Seg::init(g);
     if(vvertex.size()==0){
       TRACE(13,"Filling vertices. Current size:"<<vvertex.size());
+      // Left *probable* boundary condition
       vvertex.emplace_back(leftTubeVertex());
       for(us i=1;i<geom.nCells-1;i++)
     	vvertex.emplace_back(new TubeVertex());
+      // Right *probable* boundary condition
       vvertex.emplace_back(rightTubeVertex());
 
       us nVertex=vvertex.size();    
       assert(nVertex==geom.nCells);
+
+      for(us i=0;i<vvertex.size();i++){
+        vvertex.at(i)->initVertex(i,*this);
+      }
       // And initialize again.
       for(us i=0;i<vvertex.size();i++){
-	TubeVertex* cvertex=static_cast<TubeVertex*>(vvertex[i].get());
-	TRACE(13,"Starting intialization of Vertex "<< i);
-	if(i<nVertex-1) cvertex->setRight(*vvertex[i+1].get());
-	if(i>0) cvertex->setLeft(*vvertex[i-1].get());
-	cvertex->initTubeVertex(i,*this);
-      }	
-    }	
+        TubeVertex* cvertex=static_cast<TubeVertex*>(vvertex[i].get());
+        TRACE(13,"Starting intialization of Vertex "<< i);
+        if(i<nVertex-1) cvertex->setRight(*vvertex[i+1].get());
+        if(i>0) cvertex->setLeft(*vvertex[i-1].get());
+        cvertex->initTubeVertex(i,*this);
+      } // for
+    } // vertex.size==0
     else{
       TRACE(13,"Tube already initialized!");
     }
@@ -135,8 +199,12 @@ namespace tube {
   d Tube::getCurrentMass() const{
     TRACE(8,"Tube::getCurrentMass()");
     assert(vvertex.size()>0);
-    vd rho0=getResAt(0,0);
-    return arma::dot(rho0,geom.vVf);
+    d mass=0;
+    for(auto vertex=vvertex.begin();vertex!=vvertex.end();vertex++){
+      TubeVertex& cvertex=*static_cast<TubeVertex*>(vertex->get());
+      mass+=cvertex.rho(0)*cvertex.lg.vVf;
+    }
+    return mass;
   }
 
   
@@ -144,31 +212,60 @@ namespace tube {
     TRACE(8,"Tube::getResAt("<<varnr<<","<<freqnr<<")");
     const us& nCells=geom.nCells;
     vd res(nCells);
-    assert(varnr<Neq);
+    assert(varnr<getNDofs());
+    
     for(us i=0;i<nCells;i++){
       TubeVertex* cvertex=static_cast<TubeVertex*>(vvertex[i].get());
-      res(i)=cvertex->vars[varnr]->operator()(freqnr);
+      switch(varnr) {
+        case 0: // Density
+          res(i)=cvertex->rho(freqnr);
+          break;
+        case 1:                 // Volume flown
+          res(i)=cvertex->U(freqnr);
+          break;
+        case 2:                   // Pressure
+          res(i)=cvertex->pL()(freqnr);
+          break;
+        case 3:                 // Temp
+          res(i)=cvertex->T()(freqnr);
+          break;
+        case 4:                 // Temp
+          res(i)=cvertex->Ts()(freqnr);
+          break;
+        default:
+          res(i)=0;
+      }
+
     }
     return res;
   }
   vd Tube::getErrorAt(us eqnr,us freqnr) const{
     const us& nCells=geom.nCells;
-    vd er(nCells);
-    assert(eqnr<Neq);
-    auto eqs=this->getEqs();
-    for(us i=0;i<nCells;i++){
-      TubeVertex& cvertex=*static_cast<TubeVertex*>(vvertex[i].get());
-      er(i)=(cvertex.eqs.at(eqnr)->error(cvertex))(freqnr);
-    }
+    vd er(nCells,fillwith::zeros);
+    WARN("Unupdated function!!");
+    // assert(eqnr<getNDofs());
+    // auto eqs=this->getEqs();
+    // for(us i=0;i<nCells;i++){
+    //   TubeVertex& cvertex=*static_cast<TubeVertex*>(vvertex[i].get());
+    //   er(i)=(cvertex.eqs.at(eqnr)->error(cvertex))(freqnr);
+    // }
     return er;
   }
-  vd Tube::dmtotdx() const{
+  void Tube::resetHarmonics(){
+    for(auto v=vvertex.begin();v!=vvertex.end();v++){
+      auto &cvertex=*static_cast<TubeVertex*>(v->get());
+      cvertex.resetHarmonics();
+    }
+  }
+  void Tube::dmtotdx(vd& dmtotdx_) const{
     TRACE(15,"Tube::dmtotdx()");
-    vd dmtotdx(getNDofs(),fillwith::zeros);
-    us nvertex=vvertex.size();
-    for(us i=0;i<nvertex;i++)
-      dmtotdx(i*Neq*gc->Ns)=geom.vVf(i);
-    return dmtotdx;
+    us nvertex=vvertex.size(),Neq;
+    us rhodof;
+    for(auto v=vvertex.begin();v!=vvertex.end();v++){
+      auto &cvertex=*static_cast<TubeVertex*>(v->get());
+      rhodof=cvertex.rho.getDofNr();
+      dmtotdx_(rhodof)=cvertex.lg.vVf;
+    }
   }  
   Tube::~Tube(){
     TRACE(15,"~Tube()");

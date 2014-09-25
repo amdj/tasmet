@@ -1,27 +1,30 @@
 #pragma once
 #ifndef _SOLVER_H_
 #define _SOLVER_H_
-#include "tasystem.h"
+#include "solverconfiguration.h"
 #include "vtypes.h"
 #include <memory>
-
+#include <boost/thread.hpp>
 #define SOLVER_MAXITER 100
 namespace tasystem{
   using std::tuple;
-  namespace boost{
-    class thread;
-  }
+  class TaSystem;
   class Solver
   {
     std::unique_ptr<TaSystem> tasystem;
-    boost::thread *SolverThread;
+    std::unique_ptr<boost::thread> solverThread;
+    std::unique_ptr<SolverConfiguration> sc;
+    d dampfac;
+
   public:
     TaSystem& sys() const {return *tasystem.get();}
     Solver(const TaSystem& tasys);
     Solver(const Solver& other);
     Solver& operator=(const Solver& other);
-    void solve(us maxiter=100,d funer=1e-8,d reler=1e-6,d dampfac=1.0);
-    tuple<d,d> doIter(d dampfac=1.0);
+
+    void solve(us maxiter=0,d funer=1e-8,d reler=1e-6,d dampfac=1.0,bool wait=true);
+    tuple<d,d> doIter(d dampfac=-1.0);
+
   };
 
 } // namespace tasystem

@@ -1,6 +1,7 @@
 #pragma once
 #ifndef _ENGINESYSTEM_H_
 #define _ENGINESYSTEM_H_
+
 #include "pickadof.h"
 #include "tasystem.h"
 
@@ -9,6 +10,7 @@ namespace tasystem{
   // The EngineSystem uses the given Globalconf omg as its guess
   // value. It will iteratively change the base frequency to solve the
   // system.
+  class TripletList;
   
   class EngineSystem:public TaSystem{
     PickADof tc;		    // Timing constraint
@@ -16,7 +18,10 @@ namespace tasystem{
     d getInitialMassFromGc() const; //
     us getNVertex() const;
   private:
-    vtriplet Ljac();
+    TripletList Ljac();
+    TripletList Mjac();    
+    evd errorL();
+    evd errorM();    
   public:    
     EngineSystem(const Globalconf& gc);
     EngineSystem(const EngineSystem&);
@@ -28,11 +33,14 @@ namespace tasystem{
     void setAmplitudeDof(us segnr,us vertexnr,us varnr,us freqnr);    
     // Solving methods
     virtual esdmat jac();
+    virtual evd error();
     virtual void setRes(const vd& res);
     virtual evd getRes();
+
+    // Later on, these two should be moved to private
     vd dmtotdx() const;
     vd domg();
-    virtual evd error();
+    
     virtual void init();
     virtual void show(bool showvertices);
     // If user decides to set a "custom mass" in the system, which does

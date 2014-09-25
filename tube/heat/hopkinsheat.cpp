@@ -27,9 +27,11 @@ namespace H{
   d zeroheat_circ(d kappa,d rh){
     return 2*kappa/pow(rh,2);
   }
-  d zeroheat_blapprox(d dummy,d dummy2){
+  d zeroheat_blapprox(d kappa,d rh){
     TRACE(2,"zeroheat_blapprox");
-    return 0; }
+    return 2*kappa/pow(rh,2);
+    // return 0;
+  }
   d zeroheat_inviscid(d dummy,d dummy2){
     TRACE(2,"zeroheat_inviscid");
     return 0;
@@ -69,15 +71,12 @@ namespace tube{
       zeroheatH_funptr=&H::zeroheat_inviscid;
     else
       {
-	WARN("Warning: tube.geom.shape unknown for ZeroHeatH. Aborting...");
-	abort();
+        WARN("Warning: tube.geom.shape unknown for ZeroHeatH. Aborting...");
+        abort();
       }
   }
-  void HopkinsHeatSource::setdTwdx(const Geom& g,d dTwdx){
-    this->dTwdx=dTwdx*vd(g.nCells,fillwith::ones);
-  }
   void HopkinsHeatSource::setdTwdx(const Geom& g,const vd& dTwdx){
-    this->dTwdx=dTwdx;
+    this->dTwdx=&dTwdx;
   }
   vd HopkinsHeatSource::heat(const TubeVertex& v) const{
     TRACE(5,"HopkinsHeatSource::heat(v)");
@@ -112,7 +111,7 @@ namespace tube{
     vc htcoefQ(Nf+1,fillwith::zeros);
 
     // Obtain dTwdx
-    d dTwdx=this->dTwdx(v.i);
+    d dTwdx=(*(this->dTwdx))(v.i);
     // TRACE(100,"dTwdx:"<<dTwdx);
     const d& rh=v.lg.vrh;    
     d T0=v.T(0);
@@ -145,6 +144,7 @@ namespace tube{
 
     d omg=v.gc->getomg();
     vc htcoefH(Nf+1,fillwith::zeros);
+    // Checked, this is correct
     htcoefH(0)=(*zeroheatH_funptr)(kappa0,rh);
     if(Nf>0){
       vd omgvec=omg*linspace(1,Nf,Nf);

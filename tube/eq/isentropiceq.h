@@ -13,11 +13,15 @@ namespace tube{
 
   class Isentropic:public TubeEquation{
   public:
+    virtual TubeEquation* copy() const {return new Isentropic(*this);}    
     virtual void init(const Tube& t);    
     virtual enum EqType getType() const { return EqType::Ise;}
     virtual vd error(const TubeVertex&) const;			// Error in Energy equation at node i
-    virtual dmat dpi(const TubeVertex&) const;
-    virtual dmat drhoi(const TubeVertex&) const;
+    virtual JacRow jac(const TubeVertex&) const;
+  private:
+    virtual JacCol dpL(const TubeVertex&) const;
+    virtual JacCol dpR(const TubeVertex&) const;    
+    JacCol drhoi(const TubeVertex&) const;
   };
 }
 

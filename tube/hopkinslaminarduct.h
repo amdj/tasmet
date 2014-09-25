@@ -16,8 +16,10 @@ namespace tube{
     HopkinsHeatSource hopkinsheat;
     HeatSource noheatatall;
     d Tl,Tr;
+    vd dTwdx;
     bool Tset=false;
   public:
+    vd Tmirror;
     HopkinsLaminarDuct(const Geom& geom,d Tl);
     HopkinsLaminarDuct(const Geom& geom,d Tl,d Tr);
     HopkinsLaminarDuct(const HopkinsLaminarDuct& o);
@@ -25,7 +27,7 @@ namespace tube{
     virtual void init(const Globalconf& gc);
     virtual const HeatSource& getHeatSource() const { return hopkinsheat;}
     virtual SegBase* copy() const{return new HopkinsLaminarDuct(*this);}
-    virtual string getName() const {return string("Hopkins laminar duct");}
+    virtual string getName() const {return string("HopkinsLaminarDuct");}
   };
 
 

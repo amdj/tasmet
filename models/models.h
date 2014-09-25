@@ -2,6 +2,7 @@
 #define _MODELS_H_
 
 #include "solver.h"
+#include "tasystem.h"
 using tasystem::Solver;
 SPOILNAMESPACE
 // Solver* ConeTube(us gp,us Nf,d freq,d L,d r1,d r2,vd p1,int loglevel,d kappa,us isentropic,us blapprox);

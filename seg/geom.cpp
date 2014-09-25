@@ -11,33 +11,83 @@ namespace segment{
 	  
       }
   }
-  Geom Geom::VertPlates(us gp,d L,d S,d phi,d y0){
+
+  void smoothEnds(Geom& first,int firstpos,Geom& second,int secondpos){
+    TRACE(3,"SmoothEnd()");
+
+    us i,j;
+    
+    if(firstpos==FIRST)      {
+        i=0;
+        TRACE(18,"Smoothing beginning of first Geom, i="<< i);
+      }
+    else{
+      i=first.nCells;
+      TRACE(18,"Smoothing end of first Geom, i="<< i);
+    }
+    if(secondpos==FIRST){
+      j=0; 
+      TRACE(18,"Smoothing beginning of second Geom, j="<< j);
+    }
+    else{
+      j=second.nCells;
+      TRACE(18,"Smoothing end of second Geom, j=" << j);
+    }
+
+    vd fx=first.x;
+    vd fS=first.S;
+    vd fphi=first.phi;
+    vd frh=first.rh;
+    string fcshape=first.shape;
+
+    vd sx=second.x;
+    vd sS=second.S;
+    TRACE(10,"Second S:"<< sS);
+    vd sphi=second.phi;
+    vd srh=second.rh;
+    string scshape=second.shape;
+
+    
+    // Now adjusting it
+    fS(i)=0.5*(first.S(i)+second.S(j));
+    sS(j)=0.5*(first.S(i)+second.S(j));
+
+    TRACE(10,"Second S:"<< sS);
+    
+    fphi(i)=0.5*(first.phi(i)+second.phi(j));
+    sphi(j)=0.5*(first.phi(i)+second.phi(j));
+    
+    first=Geom(fx,fS,fphi,frh,fcshape);
+    second=Geom(sx,sS,sphi,srh,scshape);    
+  }
+
+  
+  Geom Geom::VertPlates(us gp,d L,d S,d phi,d y0,Geom* left,Geom* right){
     assert(gp>3);
     assert(y0>0);
     assert(0<phi && phi<=1.0);
     assert(L>0);
 
-    vd x=linspace(0,L,gp);
+    vd x=linspace(0,L,gp);      // Grid of the cell walls
     vd phiv=phi*vd(gp,fillwith::ones);
     vd Sv=S*vd(gp,fillwith::ones);
     vd rh=y0*vd(gp,fillwith::ones);
     return Geom(x,Sv,phiv,rh,"vert");
   }
-  Geom Geom::Cylinder(us gp, d L,d r){
-    return Cone(gp,L,r,r);
+  Geom Geom::Cylinder(us gp, d L,d r,Geom* left,Geom* right){
+    return Cone(gp,L,r,r,left,right);
   }
-  Geom Geom::CylinderBlApprox(us gp, d L,d r){
-    Geom geom=Cone(gp,L,r,r);
+  Geom Geom::CylinderBlApprox(us gp, d L,d r,Geom* left,Geom* right){
+    Geom geom=Cone(gp,L,r,r,left,right);
     geom.shape=string("blapprox");
     return geom;
   }
-  Geom Geom::ConeBlApprox(us gp, d L,d r1,d r2){
-    Geom geom=Cone(gp,L,r1,r2);
+  Geom Geom::ConeBlApprox(us gp, d L,d r1,d r2,Geom* left,Geom* right){
+    Geom geom=Cone(gp,L,r1,r2,left,right);
     geom.shape=string("blapprox");
     return geom;
   }
-
-  Geom Geom::Cone(us gp,d L,d r1,d r2){
+  Geom Geom::Cone(us gp,d L,d r1,d r2,Geom* left,Geom* right){
     TRACE(10,"Geom::Cone()");
     assert(gp>3);
     assert(r1>0);
@@ -56,7 +106,7 @@ namespace segment{
       geom.setPrismatic(true);
     return geom;
   }
-  Geom Geom::PrisVertStack(us gp,d L,d S,d phi,d rh){ // Prismatic vertical plates stack
+  Geom Geom::PrisVertStack(us gp,d L,d S,d phi,d rh,Geom* left,Geom* right){ // Prismatic vertical plates stack
     assert(gp>3);
     assert(L>0);
     assert(S>0);

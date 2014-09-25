@@ -6,20 +6,48 @@
 #include "energyeq.h"
 namespace tube{
   
-  LeftPressure::LeftPressure(const var& pres,const var& temp):TubeBcVertex(),pL(pres),TL(temp) {
+  JacCol pl(const TubeVertex& v){
+    JacCol dpL(v.pL());
+    dpL.setToAdd(false);        // We do not want dpL() anymore
+    return dpL;
+  }
+  JacCol LeftPressureMomentumEq::dpL(const TubeVertex& v) const {
+    TRACE(6,"LeftPressureMomentumEq::dpL()");
+    return pl(v);
+  }
+  JacCol LeftPressureEnergyEq::dpL(const TubeVertex& v) const {
+    TRACE(6,"LeftPressureEnergyEq::dpL()");
+    return pl(v);
+  }
+  JacCol LeftPressureIsentropicEq::dpL(const TubeVertex& v) const {
+    TRACE(6,"LeftPressureIsentropicEq::dpL()");
+    return pl(v);
+  }
+  JacCol LeftPressureStateEq::dpL(const TubeVertex& v) const {
+    TRACE(6,"LeftPressureStateEq::dpL()");
+    return pl(v);
+  }
+  LeftPressure::LeftPressure(const var& pres,const var& temp):
+    pLbc(pres),
+    TLbc(temp)
+  {
     TRACE(8,"LeftPressure full constructor");
   }
-  LeftPressure::LeftPressure(const var& pres):TubeBcVertex(),pL(pres),TL(*pres.gc){
+  LeftPressure::LeftPressure(const var& pres):
+    pLbc(pres),
+    TLbc(*pres.gc)
+  {
     TRACE(8,"LeftPressure constructor for given pressure. Temperature computed");    
     const Globalconf* gc=pres.gc;
     d T0=gc->T0;
     d gamma=gc->gas.gamma(T0);
     vd p0(gc->Ns,fillwith::ones); p0*=gc->p0;
-    vd TLt=T0*pow((p0+pL.tdata())/p0,(gamma-1.0)/gamma);		// Adiabatic compression/expansion
-    TL.settdata(TLt);
-    // TRACE(100,"TL(0):"<<TL);
+    vd TLbct=T0*pow((p0+pLbc.tdata())/p0,(gamma-1.0)/gamma);		// Adiabatic compression/expansion
+    TLbc.settdata(TLbct);
+    // TRACE(100,"TLbc(0):"<<TLbc);
   }
-  LeftPressure::LeftPressure(const LeftPressure& other):LeftPressure(other.pL,other.TL)
+  LeftPressure::LeftPressure(const LeftPressure& other):
+    LeftPressure(other.pLbc,other.TLbc)
   {
     TRACE(8,"LeftPressure copy constructor");
   }
@@ -27,18 +55,40 @@ namespace tube{
   {
     TRACE(8,"LeftPressure::initTubeVertex()");
     TubeVertex::initTubeVertex(i,thisseg);
-    pL.gc=thisseg.gc;
-    TL.gc=thisseg.gc;
-    // TRACE(100,"TL:"<<TL());
-    if(eqs.at(2)->getType()!=EqType::Ise){
-      TRACE(100,"Changing energy equation...");
-      // eq[2]=&peq;
-    }
-    LeftPressure::updateW(thisseg);
+    pLbc.gc=thisseg.gc;
+    TLbc.gc=thisseg.gc;
+    // eqs.at(3).reset(leq.copy()); // Replace equation of state for the
+    // boundary condition on pressure
+    lmomeq.init(thisseg);
+    leneq.init(thisseg);
+    lseq.init(thisseg);
 
+    // Set our own momentumeq,energy eq and state eq
+    eqs.at(1).reset(lmomeq.copy());
+    if(thisseg.getName().compare("IsentropicTube")==0){
+      TRACE(15,"Tube is isentropic, adapting isentropic state for leftpressure bc");
+      eqs.at(2).reset(liseq.copy());
+    }
+    else{
+      eqs.at(2).reset(leneq.copy());    // Remove state equation from list
+      TRACE(15,"Tube is not isentropic, full energy eq for leftpressure bc");
+    }
+    eqs.erase(eqs.begin()+3);
+
+    // Refill vars
+    vars.clear();
+    vars.push_back(&rho);
+    vars.push_back(&U);
+    // vars.push_back(&p); // No p here
+    vars.push_back(&T);
+    vars.push_back(&Ts);    
+    assert(vars.size()==4);
+    
+    LeftPressure::updateW(thisseg);
   }
   void LeftPressure::show() const {
     cout << "LeftPressure boundary condition set at left side of tube.\n";
+    cout << "Number of equations: " << eqs.size() << "\n";
     TubeVertex::show();
   }
   void LeftPressure::updateW(const SegBase& thisseg)
@@ -55,36 +105,35 @@ namespace tube{
     mWui=w.wRl/w.vSfR-w.wL0/w.vSfL;
     mWuip1=w.wRr/w.vSfR-w.wL1/w.vSfL;
 
-    mWpim1=0;     
-    mWpi=w.vSf*w.wRl;
-    mWpip1=w.vSf*w.wRr;
+    // mWpim1=0;     
+    // mWpi=lg.vSf*w.wRl;
+    // mWpip1=lg.vSf*w.wRr;
     // Change energy equation for open boundary and prescribed pressure
     eWgim1= 0;
-    eWgi=   w.wRl-w.wL0;
-    eWgip1= w.wRr-w.wL1;
+    // Left boundary, velocity 
+    eWgim=-w.wL0;
+    eWgUip1pL=-w.wL1;
+    
+    eWgip=w.wRl;
+    eWgip1= w.wRr;    
 
     eWkinim1=0;
-    eWkini=w.wRl/pow(w.vSfR,2)-w.wL0/pow(w.vSfL,2);    
-    eWkinip1=w.wRr/pow(w.vSfR,2)-w.wL1/pow(w.vSfL,2);    
+    eWkini=w.wRl/pow(lg.vSf,2)-w.wL0/pow(lg.SfL,2);    
+    eWkinip1=w.wRr/pow(w.vSfR,2)-w.wL1/pow(lg.SfL,2);    
 
-    TRACE(8,"Sf:"<<w.vSf);
+
     d x0=w.xvi;
-    d x1=w.xvip1;
-    TRACE(8,"x0:"<<x1);
-    TRACE(8,"x1:"<<x1);
-    d denom=x0*(1-x0/x1);
-    TRACE(8,"denom:"<<denom);
-    d x0_ov_x1sq=pow(x0/x1,2);
+
     eWc1=0;
     eWc2=lg.SfL/x0;
-    eWc3=lg.vSf/w.dxp;
-    eWc4=-w.vSfR/w.dxp;    
+    eWc3=lg.SfR/w.dxp;
+    eWc4=-lg.SfR/w.dxp;    
 
   }
   vd LeftPressure::msource() const{
     TRACE(5,"LeftPressure::msource()");
     vd msource(gc->Ns,fillwith::zeros);
-    msource=-1.0*lg.SfL*pL();
+    // msource=-1.0*lg.SfL*pLbc();
     return msource;
   }
   vd LeftPressure::esource() const {
@@ -92,28 +141,15 @@ namespace tube{
     vd esource=TubeVertex::esource();
     const dmat& fDFT=gc->fDFT;
     // TRACE(100,"Stupid hack to test energy source");
-    vd TLt=TL.tdata();
-    d TL0=TL(0);
-    // TRACE(100,"TL(0):"<<TL0);
-    const Energy& e=static_cast<const Energy&>(*eqs[2]);
-    d gamma=e.gamma(*this);
-    d gamfac=gamma/(gamma-1.0);
-    
-    // TRACE(100,"TL:"<<TL());
-    const LocalGeom rlg(lg.geom->localGeom(i+1));
-    d xp2=rlg.xvi;
-    d xp1=lg.xvi;
+    vd TLbct=TLbc.tdata();
 
-    vd T0=gc->T0*vd(gc->Ns,fillwith::ones);
+    const Energy& e=static_cast<const Energy&>(*eqs[2]);
+    
     vd kappaL=e.kappaL(*this);
 
     d x0=lg.xvi;
-    d x1=lg.xvi+w.dxp;
-    d denom=x0*(1.0-x0/x1);
 
-    d x0_ov_x1sq=pow(x0/x1,2);
-    TRACE(12,"esource:"<<esource);
-    esource+=-1.0*lg.SfL*fDFT*(kappaL%TLt)/x0;
+    esource+=-1.0*lg.SfL*fDFT*(kappaL%TLbct)/x0;
     TRACE(12,"esource:"<<esource);
     return esource;    
   }

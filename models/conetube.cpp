@@ -1,4 +1,5 @@
 #include "solver.h"
+#include "tasystem.h"
 #include "gas.h"
 #include "hopkinslaminarduct.h"
 #include "isentropictube.h"

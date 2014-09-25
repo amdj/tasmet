@@ -1,6 +1,5 @@
 #include "tasystem.h"
-#include "arma_eigen.h"
-
+#include "triplets.h"
 
 namespace tasystem{
   using segment::SegBase;
@@ -9,6 +8,7 @@ namespace tasystem{
 
   TaSystem::TaSystem(const Globalconf& gc):gc(gc){
     TRACE(14,"TaSystem::TaSystem(gc)");
+    this->gc.setDriven(true);
   }
   TaSystem::TaSystem(const TaSystem& o)
   {
@@ -39,8 +39,6 @@ namespace tasystem{
   void TaSystem::cleanup(){
     segs.clear();
     segConnections.clear();
-    segfirstdof.zeros();
-    segndofs.zeros();
     hasInit=false;
   }
   void TaSystem::addSeg(const SegBase& seg){
@@ -70,28 +68,42 @@ namespace tasystem{
       coupleSegs(*v,*this);
       i++;
     }
-    segfirstdof(0)=0;
-    for(us i=0;i<Nsegs;i++)
-      {
-	TRACE(9,"Initializing Segment "<<i<<"...");
-	assert(segs.at(i));
-	segs.at(i)->init(gc);
-	us thisndofs=segs.at(i)->getNDofs();
-	TRACE(12,"Ndofs for segment "<< i << ": "<<thisndofs);
+    us firstdof=0;
+    us firsteq=0;
 
-	segndofs(i)=thisndofs;
-	Ndofs+=thisndofs;
-	if(i>0)
-	  segfirstdof(i)=segfirstdof(i-1)+segndofs(i-1);
-	TRACE(12,"This segment ndofs:"<< thisndofs);
-      }
+    for(us i=0;i<Nsegs;i++)      {
+      TRACE(9,"Initializing Segment "<<i<<"...");
+      assert(segs.at(i));
+      segs.at(i)->init(gc);
+
+      // Set the dofnrs
+      segs.at(i)->setDofNrs(firstdof);
+      segs.at(i)->setEqNrs(firsteq);
+      us thisndofs=segs.at(i)->getNDofs();
+      us thisneqs=segs.at(i)->getNEqs();      
+      Ndofs+=thisndofs;
+      TRACE(12,"Ndofs for segment "<< i << ": "<<thisndofs);
+      TRACE(12,"Neqs for segment "<< i << ": "<<thisneqs);      
+      firstdof+=thisndofs;
+      firsteq+=segs.at(i)->getNEqs();
+
+    }
+
+    // Do some post-sanity checks
+    
     TRACE(10,"Segment initialization done. Total NDofs:"<< Ndofs);
-    if(Ndofs>MAXNDOFS)
-      {
-    	WARN("Way too many DOFS required: Ndofs=" <<Ndofs << ". Exiting...\n");
-    	exit(1);
-      }
-    // Last, but not leas: initialize a pointer to this tasystem in
+    if(Ndofs>MAXNDOFS)      {
+      WARN("Way too many DOFS required: Ndofs=" <<Ndofs << ". Exiting...\n");
+      exit(1);
+    }
+    if(getNDofs()!=getNEqs()){
+      WARN("Ndofs on TaSystem level not equal to number of equations!");
+      WARN("Ndofs="<< getNDofs());
+      WARN("Neqs ="<< getNEqs());
+      exit(1);
+    }
+    
+    // Last, but not least: initialize a pointer to this tasystem in
     // globalconf
     gc.setSys(this);
     
@@ -106,6 +118,13 @@ namespace tasystem{
     for(us i=0;i<getNSegs();i++)
       Ndofs+=segs.at(i)->getNDofs();
     return Ndofs;
+  }
+  us TaSystem::getNEqs() const  {
+    TRACE(14,"TaSystem::getNDofs()");
+    us Neqs=0;
+    for(us i=0;i<getNSegs();i++)
+      Neqs+=segs.at(i)->getNEqs();
+    return Neqs;
   }
   void TaSystem::connectSegs(us seg1,us seg2,SegCoupling sc){
     TRACE(14,"TaSystem::ConnectSegs()");
@@ -136,7 +155,21 @@ namespace tasystem{
     this->gc=gc;
     hasInit=false;
   }
+  void TaSystem::jacTriplets(TripletList& trips){
+    TRACE(14,"TaSystem::jacTriplets()");
+    
+    Jacobian jnew;
+    us Nsegs=getNSegs();
+    for(us j=0;j<getNSegs();j++){
+      TRACE(14,"System loop, segment " << j);
+      segment::SegBase& curseg=*segs[j].get();
+      curseg.jac(jnew);
+      TRACE(10,"Creation of Jacobian for segment "<< j << "done."<<endl);
+    } // end for loop
+    // TRACE(25,"Jac\n"<<jac);
+    trips=jnew.getTriplets();
 
+  }
   esdmat TaSystem::jac(){
     TRACE(14,"TaSystem::Jac()");
     checkInit();
@@ -146,92 +179,30 @@ namespace tasystem{
     // continued...
     const us& Ns=gc.Ns;
     us Ndofs=getNDofs();
-    us Nsegs=getNSegs();
-    Eigen::MatrixXd eigjac(Ndofs,Ndofs);
-    
-    TRACE(-1,"Ndofs:"<<Ndofs);
-    dmat jac(eigjac.data(),Ndofs,Ndofs,false);
-    jac.zeros();
-    us cellblock=Neq*Ns;
-    for(us j=0;j<getNSegs();j++){
-      TRACE(14,"System loop, segment " << j);
-      segment::SegBase& curseg=*segs[j].get();
-      dmat&& segjac=curseg.jac();
-      TRACE(14,"Obtaining sub-Jacobian for segment "<< j << "...");
-      us thisndofs=curseg.getNDofs();
-      us frow=segfirstdof(j);
-      us fcol=segfirstdof(j);	 // First col
-      TRACE(14,"First dof:"<< frow);
-      us lrow=frow+thisndofs-1; // last row
-      us lcol=fcol+thisndofs-1;
+    TRACE(-1,"Ndofs:"<<Ndofs);    
+    TripletList triplets;
+    jacTriplets(triplets);
 
-      // cout << "Segjac:\n"<<segjac;
-      jac.submat(frow,fcol,lrow,lcol)=			\
-	segjac.cols(Neq*gc.Ns,segjac.n_cols-1-Neq*Ns);
-
-      TRACE(14,"Jacobian submat succesfully filled.");
-      us thisnr=curseg.getNumber();
-      if(curseg.getLeft().size()>0){
-	const SegBase& left=*(curseg.getLeft()[0]);
-      	// Couple Jacobian terms
-      	us othernr=left.getNumber();
-      	us firstcolother=segfirstdof(othernr);
-	// TRACE(100,"Firstcol other segment:"<< firstcolother);	
-      	us otherndofs=segndofs(othernr);
-      	// Find out if other segment is coupled to the left, or to the right
-      	if(left.getRight()[0]->getNumber()==thisnr){
-      	  TRACE(14,"Tail of left segment "<< othernr << " coupled to head of segment " << thisnr<<".");
-      	  jac.submat(frow,firstcolother+otherndofs-cellblock,lrow,firstcolother+otherndofs-1)= \
-      	    segjac.cols(0,cellblock-1);
-      	}    
-      	else{			// headhead coupling
-	  WARN("Head-head coupling not yet implemented! Exiting.");
-	  exit(1);
-      	} // 
-      }	  // curseg.Left()!=NULL
-
-      
-      if(curseg.getRight().size()>0){
-      	// Couple Jacobian terms
-	const SegBase& right=*curseg.getRight()[0];
-      	TRACE(14,"Coupling to right segment..");
-      	us othernr=right.getNumber();
-      	us firstcolother=segfirstdof(othernr);
-	// TRACE(100,"Firstcol other segment:"<< firstcolother);
-      	us otherndofs=segndofs(othernr);
-      	// Find out if other segment is coupled to the left, or to the right
-      	if(curseg.getRight()[0]->getLeft()[0]->getNumber()==thisnr){
-	  TRACE(14,"Tail of segment "<< thisnr << " connected to head of seg " << right.getNumber() << ".");
-      	  jac.submat(frow,firstcolother,lrow,firstcolother+cellblock-1)=	\
-      	    segjac.cols(segjac.n_cols-cellblock,segjac.n_cols-1);
-      	}    
-      	else{			// headhead coupling
-	  WARN("Head-head coupling not yet implemented! Exiting.");
-	  exit(1);
-      	} // 
-      }	  // curseg.Right()!=NULL
-      TRACE(-1,"Creation of Jacobian for segment "<< j << "done."<<endl);
-    } // end for loop
-    // TRACE(25,"Jac\n"<<jac);
-    esdmat eigsjac=eigjac.sparseView();
-    eigsjac.makeCompressed();
+    triplets.setValid();
+    esdmat eigsjac(Ndofs,Ndofs);
+    eigsjac.setFromTriplets(triplets.begin(),triplets.end());
     return eigsjac;
   }
   evd TaSystem::error(){
     TRACE(14,"TaSystem::Error()");
     checkInit();
     us Ndofs=getNDofs();
-    evd error(getNDofs());
-    vd Error(error.data(),getNDofs(),false,false);
+    evd error(Ndofs);
+    vd Error(error.data(),Ndofs,false,false); // Globally, neqs=ndofs
     Error.zeros();
     us Nsegs=getNSegs();
-    us segdofs;
-    us startdof=0;
+    us segeqs;
+    us starteq=0;
     TRACE(-1,"Nsegs:"<< Nsegs);
     for(us i=0;i<Nsegs;i++){
-      segdofs=segs[i]->getNDofs();
-      Error.subvec(startdof,startdof+segdofs-1)=segs[i]->error();
-      startdof=startdof+segdofs;
+      segeqs=segs[i]->getNEqs();
+      Error.subvec(starteq,starteq+segeqs-1)=segs[i]->error();
+      starteq+=segeqs;
     }
     return error;
   }
@@ -245,19 +216,39 @@ namespace tasystem{
     
     vd Res(res.data(),Ndofs,false,false);
 
-
     us segdofs;
     us startdof=0;
     us Nsegs=getNSegs();
     for(us i=0;i<Nsegs;i++){
       segdofs=segs[i]->getNDofs();
       Res.subvec(startdof,startdof+segdofs-1)=segs[i]->getRes();
-      startdof=startdof+segdofs;
+      startdof+=segdofs;
       TRACE(4,"Seg:"<<i<<", Ndofs: "<<segdofs);
-
     }
     return res;
   }
+  void TaSystem::setRes(const TaSystem& other){
+    TRACE(25,"TaSystem::setRes(TaSystem)");
+    WARN("This only works for Tube segments so far");
+    checkInit();
+    us nsegs=getNSegs();
+    assert(other.getNSegs()==nsegs);
+    for(us i=0;i<nsegs;i++) {
+      getSeg(i)->setRes(*other.getSeg(i));
+    }
+    
+  }
+  void TaSystem::resetHarmonics(){
+    assert(!segs.empty());
+    for(auto seg=segs.begin();seg!=segs.end();seg++)
+      seg->get()->resetHarmonics();
+  }
+  void TaSystem::setRes(const evd& res){
+    TRACE(15,"EngineSystem::setRes()");
+    vd res2=math_common::armaView(res);
+    setRes(res2);
+  }
+  
   void TaSystem::setRes(const vd& Res){
     checkInit();
     TRACE(14,"TaSystem::SetRes(vd res)");
@@ -268,14 +259,14 @@ namespace tasystem{
       us startdof=0;
       us Nsegs=getNSegs();
       for(us i=0;i<Nsegs;i++){
-	segdofs=segs[i]->getNDofs();
-	segs[i]->setRes(Res.subvec(startdof,startdof+segdofs-1));
-	startdof=startdof+segdofs;
+        segdofs=segs[i]->getNDofs();
+        segs[i]->setRes(Res.subvec(startdof,startdof+segdofs-1));
+        startdof=startdof+segdofs;
       }
     }
     else
       {
-	WARN("Amount of DOFS in result vector does not match system size!");
+        WARN("Amount of DOFS in result vector does not match system size!\nNothing done.");
       }
   } // TaSystem::SetRes()
   d TaSystem::getCurrentMass() {
@@ -288,9 +279,22 @@ namespace tasystem{
     } // for loop
     return mass;
   }
-  void TaSystem::showJac(){
+  void TaSystem::showJac(bool force){
+    TRACE(15,"TaSystem::showJac()");
+    checkInit();
     esdmat jac=this->jac();
-    cout << "Jacobian: \n" << jac << "\n";
+    if(force || jac.cols()<50){
+      Eigen::IOFormat CleanFmt(1,0," ",";\n","","","[","]");
+      Eigen::MatrixXd jacd(jac);
+      cout << "Jacobian: \n" << jacd.format(CleanFmt) << "\n";
+      cout << "Determinant of jacobian:" << jacd.determinant() << "\n";
+    }
+    else if(jac.cols()<1000){
+      Eigen::MatrixXd jacd(jac);
+      cout << "Jacobian too large to show, but determinant of jacobian is:" << jacd.determinant() << "\n";      
+    }
+    else 
+      cout << "Jacobian size is too large to show.\n";
   }
   TaSystem::~TaSystem() {
     TRACE(-5,"~TaSystem()");

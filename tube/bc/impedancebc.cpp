@@ -23,7 +23,8 @@ namespace tube{
   {
     TRACE(8,"RightImpedance::Init(), vertex "<< i <<".");
     TubeVertex::initTubeVertex(i,thisseg);
-    eqs.at(1)=&mright;
+    eqs.at(1).reset(mright.copy());
+    eqs.at(1)->init(thisseg);
     updateW(thisseg);
   }
   
@@ -39,14 +40,19 @@ namespace tube{
     mWuim1=-w.wLl/w.vSfL+w.wRNm2/lg.SfR;
     mWui	=-w.wLr/w.vSfL+w.wRNm1/lg.SfR;
     mWuip1=0;
-
-    mWpim1=-w.vSfL*w.wLl;
-    mWpi	=-w.vSfL*w.wLr+(w.vSfL-lg.SfR);
-    mWpip1=0;
+    WARN("Not yet updated!");
+    // mWpim1=-w.vSfL*w.wLl;
+    // mWpi	=-w.vSfL*w.wLr+(w.vSfL-lg.SfR);
+    // mWpip1=0;
     
-    eWgim1=-w.wLl+w.wRNm2;
-    eWgi  =-w.wLr+w.wRNm1;
+    eWgim1=-w.wLl;
+    eWgim =-w.wLr;
+
+    eWgUim1pR=w.wRNm2;
+    eWgip=w.wRNm1;
+
     eWgip1=0;
+    
     WARN("Not updated for kinetic energy terms!");
     eWc1=-w.vSfL/lg.dxm;
     eWc2= w.vSfL/lg.dxm;
@@ -73,18 +79,18 @@ namespace tube{
   //   dmat dpi=Momentum::dpi();
   //   return dpi;
   // }
-  dmat RightImpedanceMomentumEq::dUi(const TubeVertex& v) const {
+  JacCol RightImpedanceMomentumEq::dUi(const TubeVertex& v) const {
     TRACE(40,"RightImpedanceMomentumEq::dUi()");
-    dmat dUi=Momentum::dUi(v);
+    JacCol dUi=Momentum::dUi(v);
     dUi+=v.w.wRNm1*v.lg.SfR*diagmat(Z);
     // For pressure boundary condition
     // dUi.row(0).zeros();
     return dUi;
   }
 
-  dmat RightImpedanceMomentumEq::dUim1(const TubeVertex& v) const {
+  JacCol RightImpedanceMomentumEq::dUim1(const TubeVertex& v) const {
     TRACE(1,"RightImpedanceMomentumEq::dUim1()");
-    dmat dUim1=Momentum::dUim1(v);    
+    JacCol dUim1=Momentum::dUim1(v);    
     dUim1+=v.w.wRNm2*v.lg.SfR*diagmat(Z);
     return dUim1;
   }

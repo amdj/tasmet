@@ -1,5 +1,5 @@
 #include "models.h"
-
+#include "tasystem.h"
 
 #include "gas.h"
 #include "isentropictube.h"
@@ -62,6 +62,8 @@ Solver* Fubini(us gp,us Nf,d freq,d L,vd p1,int loglevel,d kappa,int options)
   Sol->sys().show(false);
   return Sol;  
 }
+
+
 
 
 

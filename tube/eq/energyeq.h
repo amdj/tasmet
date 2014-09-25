@@ -10,28 +10,28 @@ namespace tube{
   {
     const HeatSource* heat;
   public:
+    virtual TubeEquation* copy() const {return new Energy(*this);}    
     virtual void init(const Tube&);
+    virtual JacRow jac(const TubeVertex&) const;
     virtual enum EqType getType() const { return EqType::Ene;}
     void show() const; 
     vd error(const TubeVertex&) const;			// Error in Energy equation at node i
-    virtual vd domg(const TubeVertex&) const;
-    virtual dmat dpi(const TubeVertex&) const;
-    virtual dmat dUi(const TubeVertex&) const;
-    virtual dmat dTi(const TubeVertex&) const;
-    virtual dmat drhoi(const TubeVertex&) const;
-    
-    virtual dmat dpip2(const TubeVertex&) const;
-    virtual dmat dpim2(const TubeVertex&) const;
+    virtual void domg(const TubeVertex&,vd&) const;
 
-    virtual dmat drhoip1(const TubeVertex&) const;
-    virtual dmat dUip1(const TubeVertex&) const;
-    virtual dmat dpip1(const TubeVertex&) const;
-    virtual dmat dTip1(const TubeVertex&) const;
+    JacCol dUi(const TubeVertex&) const;
+    JacCol dTi(const TubeVertex&) const;
+    JacCol drhoi(const TubeVertex&) const;
+
+    virtual JacCol dpR(const TubeVertex&) const;
+    virtual JacCol dpL(const TubeVertex&) const;
     
-    virtual dmat drhoim1(const TubeVertex&) const;
-    virtual dmat dUim1(const TubeVertex&) const;
-    virtual dmat dpim1(const TubeVertex&) const;
-    virtual dmat dTim1(const TubeVertex&) const;
+    JacCol drhoip1(const TubeVertex&) const;
+    JacCol dUip1(const TubeVertex&) const;
+    JacCol dTip1(const TubeVertex&) const;
+
+    JacCol drhoim1(const TubeVertex&) const;
+    JacCol dUim1(const TubeVertex&) const;
+    JacCol dTim1(const TubeVertex&) const;
     
     vd kappaL(const TubeVertex&) const;		// Thermal conducticity at the left
 				// boundary of the vertex

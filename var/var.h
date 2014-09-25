@@ -22,9 +22,12 @@ namespace variable {
   // var operator+(const d&,const var&);
 
   class var {
+    int dofnr=-1;
   protected:
     vd timedata,amplitudedata;
   public:
+    void setDofNr(us Dofnr){dofnr=Dofnr;}
+    int getDofNr() const{return dofnr;}
     const Globalconf* gc=NULL;
     us Nf=0,Ns=0;
     
@@ -41,7 +44,7 @@ namespace variable {
 
     const vd& operator()() const { return amplitudedata;} //Extract result
 						   //vector
-
+    void resetHarmonics();
     vd getResfluc() const { return amplitudedata.subvec(1,Ns-1);}
     vc getcRes() const; //Implementation for complex amplitude vector
     const vd& tdata() const  {return timedata; } //Get time data vector

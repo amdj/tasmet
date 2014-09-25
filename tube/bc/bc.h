@@ -8,5 +8,6 @@
 #include "impedancebc.h"
 #include "isotwall.h"
 #include "twimpedance.h"
+#include "adiabaticwall.h"
 #endif /* _BC_H_ */
 

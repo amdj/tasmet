@@ -24,9 +24,11 @@ cdef extern from "tasystem.h" namespace "tasystem":
         evd error()
         void show(us)
         evd getRes()
+        void setRes(const TaSystem&)
         void setRes(vd)
         Seg* getSeg(us i)
         void showJac()
+        void resetHarmonics()
         
 cdef extern from "solver.h" namespace "tasystem":
     cdef cppclass Solver:
