@@ -75,7 +75,7 @@ namespace tube{
 
   vd TwImpedance::esource() const {
     // Source term related to temperature boundary condition
-    TRACE(100,"TwImpedance::esource()");
+    TRACE(15,"TwImpedance::esource()");
     const dmat& fDFT=gc->fDFT;
     const dmat& iDFT=gc->iDFT;
     vd esource(gc->Ns,fillwith::zeros);
@@ -196,7 +196,7 @@ namespace tube{
   }
   JacCol RightTwImpedanceEq::dUi(const TubeVertex& v) const{
     TRACE(10,"RightTwImpedanceEq::dUi()");
-    TRACE(50,"dUi wRNm1:"<< v.w.wRNm1);
+    TRACE(5,"dUi wRNm1:"<< v.w.wRNm1);
 
     return JacCol(v.U,eye(v.gc->Ns,v.gc->Ns));
   }
