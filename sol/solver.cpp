@@ -2,7 +2,7 @@
 #include "vtypes.h"
 #include <Eigen/Sparse>
 #include "arma_eigen.h"
-#define MINDAMPFAC (1e-12)
+#define MINDAMPFAC (1e-4)
 
 namespace tasystem{
   using math_common::armaView;
@@ -86,6 +86,10 @@ namespace tasystem{
       {
         dtuple ers=doIter();
         funer=std::get<0>(ers);
+        if(!(funer>0)){
+          WARN("Function error: "<< funer << " . Quiting solving procedure.");
+          break;
+        }
         reler=std::get<1>(ers);
         cout << green <<  "Iteration: "<<nloop<<" , function error: "<<funer<<" , relative error:" << reler<< ".\n" << def;
         nloop++;

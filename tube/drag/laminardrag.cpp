@@ -58,7 +58,7 @@ namespace tube{
     d zerodrag_circ(d mu,d rh){
       return 2*mu/pow(rh,2);
     }
-    d zerodrag_blapprox(d mu,d rh){ return 0; }
+    d zerodrag_blapprox(d mu,d rh){ return zerodrag_circ(mu,rh); }
     d zerodrag_inviscid(d mu,d rh){ return 0; }
     
     ZeroFreqDrag::ZeroFreqDrag(const Tube& t){
