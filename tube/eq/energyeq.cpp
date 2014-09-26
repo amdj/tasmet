@@ -140,8 +140,10 @@ namespace tube{
     d gamma=this->gamma(v);
     d gamfac=gamma/(gamma-1.0);
 
-    domg_.subvec(dofnr,dofnr+v.gc->Ns-1)=v.eWddt*DDTfd*v.p()/(gamma-1.0)/v.gc->getomg(); // Static enthalpy term
-    domg_.subvec(dofnr,dofnr+v.gc->Ns-1)+=v.eWddtkin*DDTfd*fDFT*(v.rho.tdata()%v.U.tdata()%v.U.tdata())/v.gc->getomg();
+    domg_.subvec(dofnr,dofnr+v.gc->Ns-1)=                               \
+      v.eWddt*DDTfd*v.p()/(gamma-1.0)/v.gc->getomg(); // Static enthalpy term
+    domg_.subvec(dofnr,dofnr+v.gc->Ns-1)+=                                      \
+      v.eWddtkin*DDTfd*(fDFT*(v.rho.tdata()%v.U.tdata()%v.U.tdata()))/v.gc->getomg();
   }
 
   JacCol Energy::dpL(const TubeVertex& v) const {

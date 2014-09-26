@@ -11,10 +11,6 @@
 // #define MASSEQ (0)
 
 namespace tasystem{
-
-
-
-  
   EngineSystem::EngineSystem(const Globalconf& gc):
     TaSystem(gc)
   {

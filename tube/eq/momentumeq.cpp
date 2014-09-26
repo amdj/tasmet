@@ -89,7 +89,8 @@ namespace tube{
     const dmat& DDTfd=v.gc->DDTfd;
     const dmat& fDFT=v.gc->fDFT;
     const us& Ns=v.gc->Ns;
-    domg_.subvec(dofnr,dofnr+Ns-1)=v.gc->DDTfd*v.mWddt*fDFT*(v.rho.tdata()%v.U.tdata())/v.gc->getomg();
+    domg_.subvec(dofnr,dofnr+Ns-1)=                                     \
+      v.gc->DDTfd*v.mWddt*fDFT*(v.rho.tdata()%v.U.tdata())/v.gc->getomg();
     TRACE(0,"Momentum::domg() done");
   }
   JacCol Momentum::dUi(const TubeVertex& v) const {

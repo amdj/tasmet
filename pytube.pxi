@@ -1,5 +1,5 @@
 include "armapy.pxi"
-
+from libcpp cimport bool
 
 cdef extern from "tracer.h" namespace "":
     void initlog(us)
@@ -36,8 +36,9 @@ cdef extern from "solver.h" namespace "tasystem":
         void doIter(d dampfac)
         TaSystem& sys()
         void init()
-        void solve(us maxiter,d funtol,d reltol,d dampfac)
-        void solve()    
+        void solve(us maxiter,d funtol,d reltol,d dampfac,bool wait)
+        void stop()
+
 
 cdef extern from "geom.h" namespace "tube":
     cdef cppclass Geom:

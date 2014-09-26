@@ -5,6 +5,7 @@
 #include "vtypes.h"
 #include <memory>
 #include <boost/thread.hpp>
+#include <boost/atomic.hpp>
 #define SOLVER_MAXITER 100
 namespace tasystem{
   using std::tuple;
@@ -14,17 +15,17 @@ namespace tasystem{
     std::unique_ptr<TaSystem> tasystem;
     std::unique_ptr<boost::thread> solverThread;
     std::unique_ptr<SolverConfiguration> sc;
-    d dampfac;
+    boost::atomic<d> dampfac;
 
   public:
-    TaSystem& sys() const {return *tasystem.get();}
     Solver(const TaSystem& tasys);
+    TaSystem& sys() { return *tasystem.get();}
     Solver(const Solver& other);
     Solver& operator=(const Solver& other);
-
+    void stop();
     void solve(us maxiter=0,d funer=1e-8,d reler=1e-6,d dampfac=1.0,bool wait=true);
     tuple<d,d> doIter(d dampfac=-1.0);
-
+    ~Solver();
   };
 
 } // namespace tasystem

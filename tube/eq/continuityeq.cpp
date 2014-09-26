@@ -73,7 +73,8 @@ namespace tube{
   }
   void Continuity::domg(const TubeVertex& v,vd& domg_) const{
     TRACE(0,"Continuity::domg()");
-    domg_.subvec(dofnr,dofnr+v.gc->Ns-1)=v.cWddt*v.gc->DDTfd*v.rho()/v.gc->getomg();
+    domg_.subvec(dofnr,dofnr+v.gc->Ns-1)=       \
+      v.cWddt*v.gc->DDTfd*v.rho()/v.gc->getomg();
   }
   JacCol Continuity::drhoi(const TubeVertex& v) const {
     TRACE(0,"Continuity::drhoi()");
@@ -140,4 +141,20 @@ namespace tube{
   //   return drhoip2;
   // }
 } // Namespace tube
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

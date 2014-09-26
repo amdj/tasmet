@@ -65,12 +65,20 @@ namespace tasystem{
   Solver::Solver(const TaSystem& sys):tasystem(sys.copy()) {
     TRACE(15,"Solver(TaSystem&)");
   }
-  Solver::Solver(const Solver& o): Solver(o.sys()){}
+  Solver::Solver(const Solver& o): Solver(*o.tasystem.get()){}
   Solver& Solver::operator=(const Solver& other){
-    tasystem.reset(other.sys().copy());
+    tasystem.reset(other.tasystem->copy());
     return *this;
   }
- 
+  void Solver::stop() {
+    TRACE(15,"Solver::stop()");
+    if(solverThread){
+      cout << "Waiting for solver to finish...\n";
+      sc->maxiter=0;
+      solverThread->join();
+      solverThread.reset();
+    }
+  }
 
   typedef tuple<d,d> dtuple;
   void Solver::solve(us maxiter,d funtol,d reltol,d dampfac,bool wait){
@@ -78,29 +86,31 @@ namespace tasystem{
     this->dampfac=dampfac;
     if(maxiter==0)
       maxiter=SOLVER_MAXITER;
+    if(!solverThread){
+      sc.reset(new SolverConfiguration(maxiter,funtol,reltol,dampfac));
+      // SolverInstance si(*this,*sc);
+      solverThread.reset(new boost::thread(SolverInstance(*this,*sc)));
+      // si();
+      // This results in segfault
+      // solverThread.detach();
+      // si.Start();
 
-    sc.reset(new SolverConfiguration(maxiter,funtol,reltol,dampfac));
-    // SolverInstance si(*this,*sc);
-    solverThread.reset(new boost::thread(SolverInstance(*this,*sc)));
-    // si();
-    // This results in segfault
-    // solverThread.detach();
-    // si.Start();
-
-    if(wait){
-      cout << "Waiting for solver...\n";
-      solverThread->join();
-      solverThread.reset();
-      cout << "Solver done.\n";
+      if(wait){
+        cout << "Waiting for solver...\n";
+        solverThread->join();
+        solverThread.reset();
+        cout << "Solver done.\n";
+      }
+      // si.Join();
+      // solverThread.join();
+    } else{
+      WARN("Solver already running!");
     }
-    // si.Join();
-    // solverThread.join();
-
 
   }
   tuple<d,d> Solver::doIter(d dampfac1){
     TRACE(15,"Solver::doIter()");
-    
+
     // Do an iteration
     if(dampfac1>0)
       this->dampfac=dampfac1;
@@ -140,10 +150,10 @@ namespace tasystem{
       sys().setRes(Newx);
       newfuner=sys().error().norm();
       reler=dampfac*fulldx.norm();
-      dampfac*=0.5;
+      dampfac=dampfac*0.5;
     } while((dampfac> MINDAMPFAC) && (newfuner>oldfuner || !(newfuner>0)));
     if(dampfac<=0.25)
-      dampfac*=4;
+      dampfac=4*dampfac;
     else
       dampfac=1;
     
@@ -152,4 +162,7 @@ namespace tasystem{
 
   } // Solver::DoIter()
 
+  Solver::~Solver()  {
+    stop();
+  }
 } // namespace tasystem

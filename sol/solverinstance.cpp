@@ -36,14 +36,13 @@ namespace tasystem{
     while((funer>sc->funtol || reler>sc->reltol) && nloop<sc->maxiter)
       {
         try{
-          dtuple ers=sol->doIter(sc->dampfac);
+          dtuple ers=sol->doIter();
           funer=std::get<0>(ers);
+          reler=std::get<1>(ers);
           if(!(funer>0)){
             WARN("Function error: "<< funer << " . Quiting solving procedure.");
-            break;
+            throw 0;
           }
-
-          reler=std::get<1>(ers);
           cout << green <<  "Iteration: "<<nloop<<" , function error: "<<funer<<" , relative error:" << reler<< ".\n" << def;
           nloop++;
         }
@@ -56,6 +55,8 @@ namespace tasystem{
       }
     if(nloop==sc->maxiter)
       WARN("Solver reached maximum number of iterations! Results might not be reliable!");
+    if(sc->maxiter==0)
+      WARN("Solver stopped externally");
   }
   
   
