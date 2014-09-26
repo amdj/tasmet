@@ -5,7 +5,7 @@
 
 // To set divide by amplitude on
 #define DIVAMPL
-
+#define DOMGFAC (1e-2)
 
 #define MASSEQ (0)
 // #define MASSEQ (0)
@@ -92,13 +92,12 @@ namespace tasystem{
     return errorL();
     #endif
   }
-  esdmat EngineSystem::jac(){
-    TRACE(15,"EngineSystem::jac()");
-    
+  esdmat EngineSystem::jac(d dampfac){
+    TRACE(15,"EngineSystem::jac("<< dampfac<<")");
     #ifdef DIVAMPL
-    TripletList jactr=this->Mjac();
+    TripletList jactr=this->Mjac(dampfac);
     #else
-    TripletList jactr=this->Ljac();
+    TripletList jactr=this->Ljac(dampfac);
     #endif
 
     us Ndofs=getNDofs();	// This number is without extra omega dof
@@ -113,8 +112,8 @@ namespace tasystem{
   // INCLUDING DIVIDE BY AMPLITUDE
 
 
-  TripletList EngineSystem::Ljac(){
-    TRACE(15,"Enginesystem::Ljac()");
+  TripletList EngineSystem::Ljac(d dampfac){
+    TRACE(25,"Enginesystem::Ljac("<<dampfac<<")");
 
     TripletList jactriplets;
     jacTriplets(jactriplets);
@@ -133,6 +132,10 @@ namespace tasystem{
 
     if(gc.Nf>0){
       vd domg=this->domg();
+      if(dampfac>0){
+        TRACE(25,"Dampfac set:"<< dampfac << "Norm of domg:"<< arma::norm(domg));
+        domg*=DOMGFAC*dampfac;
+      }
       // TRACE(50,"domg:"<<domg);
       us domgsize=domg.size();
       extraspace+=domgsize;	// A little bit too much, but anyway..
@@ -158,10 +161,10 @@ namespace tasystem{
       }
     return jactriplets;
   }
-  TripletList EngineSystem::Mjac(){
-    TRACE(15,"EngineSystem::Mjac()");
+  TripletList EngineSystem::Mjac(d dampfac){
+    TRACE(15,"EngineSystem::Mjac("<<dampfac<<")");
     
-    TripletList Mjac=this->Ljac(); // Its called Mjac, but here it is still Ljac
+    TripletList Mjac=this->Ljac(dampfac); // Its called Mjac, but here it is still Ljac
     if(gc.Nf>0){
       d aval=av.value(*this);
       assert(aval!=0);		// Otherwise, something is wrong.

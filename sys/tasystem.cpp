@@ -170,7 +170,7 @@ namespace tasystem{
     trips=jnew.getTriplets();
 
   }
-  esdmat TaSystem::jac(){
+  esdmat TaSystem::jac(d dummy){
     TRACE(14,"TaSystem::Jac()");
     checkInit();
     // Something interesting has to be done here later on to connect

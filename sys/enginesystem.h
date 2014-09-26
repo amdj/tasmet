@@ -18,8 +18,8 @@ namespace tasystem{
     d getInitialMassFromGc() const; //
     us getNVertex() const;
   private:
-    TripletList Ljac();
-    TripletList Mjac();    
+    TripletList Ljac(d dampfac);
+    TripletList Mjac(d dampfac);    
     evd errorL();
     evd errorM();    
   public:    
@@ -32,7 +32,7 @@ namespace tasystem{
     void setTimingConstraint(us segnr,us vertexnr,us varnr,us freqnr);
     void setAmplitudeDof(us segnr,us vertexnr,us varnr,us freqnr);    
     // Solving methods
-    virtual esdmat jac();
+    virtual esdmat jac(d dampfac=-1);
     virtual evd error();
     virtual void setRes(const vd& res);
     virtual evd getRes();

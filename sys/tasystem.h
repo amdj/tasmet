@@ -59,7 +59,7 @@ namespace tasystem{
     virtual evd getRes();			// Extract result vector
     virtual void setRes(const vd& resvec);	// Set result vector
     void setRes(const evd& res);
-    virtual esdmat jac();		// Return Jacobian matrix    
+    virtual esdmat jac(d dummy=-1);		// Return Jacobian matrix    
   protected:
     void jacTriplets(TripletList&);
   public:

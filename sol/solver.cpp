@@ -109,7 +109,7 @@ namespace tasystem{
 
   }
   tuple<d,d> Solver::doIter(d dampfac1){
-    TRACE(15,"Solver::doIter()");
+    TRACE(15,"Solver::doIter("<<dampfac1<<")");
 
     // Do an iteration
     if(dampfac1>0)
@@ -124,7 +124,7 @@ namespace tasystem{
 
     us Ndofs=error.size();
     TRACE(15,"Computing Jacobian...");
-    esdmat jac=sys().jac();
+    esdmat jac=sys().jac(dampfac);
     jac.makeCompressed();
 
     assert(jac.cols()==error.size());

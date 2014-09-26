@@ -133,14 +133,14 @@ namespace tube {
       }
   }
   us Tube::getNDofs() const {
-    TRACE(14,"Tube::getNDofs()");
+    TRACE(10,"Tube::getNDofs()");
     us ndofs=0;
     for(auto v=vvertex.begin();v!=vvertex.end();v++)
       ndofs+=(v->get())->getNDofs();
     return ndofs;
   }
   us Tube::getNEqs() const {
-    TRACE(14,"Tube::getNDofs()");
+    TRACE(10,"Tube::getNEqs()");
     us ndofs=0;
     for(auto v=vvertex.begin();v!=vvertex.end();v++)
       ndofs+=(v->get())->getNEqs();
