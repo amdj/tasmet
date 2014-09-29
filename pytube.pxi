@@ -1,6 +1,8 @@
 include "armapy.pxi"
 from libcpp cimport bool
 
+cdef extern from "consolecolors.h" namespace "":
+    void clearConsole()
 cdef extern from "tracer.h" namespace "":
     void initlog(us)
 

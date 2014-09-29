@@ -8,7 +8,7 @@ int main(int argc,char* argv[]) {
   us Nf=0;
   us gp=4;
   d freq=500;
-  
+  d p0=101325;
   if(argc>1)
     loglevel=atoi(argv[1]);
   if(argc>2)
@@ -33,7 +33,7 @@ int main(int argc,char* argv[]) {
   d S2=S1;
   d kappa=1;
   d L=0.1;
-  Solver* sol=ThreeTubes(gp,Nf,freq,L,R1,R2,p1,loglevel,kappa,Tr,options);
+  Solver* sol=ThreeTubes(gp,Nf,freq,p0,L,R1,R2,p1,loglevel,kappa,Tr,options);
   sol->sys().show(false);
   // sol->doIter();
   // cout <<sol->sys().jac();

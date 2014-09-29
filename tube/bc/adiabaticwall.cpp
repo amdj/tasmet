@@ -16,7 +16,7 @@ namespace tube{
     TubeVertex::initTubeVertex(i,thisseg);
     pr=var(gc);
     vars.push_back(&pr);
-    eqs.push_back(std::unique_ptr<TubeEquation>(sr.copy()));
+    eqs.push_back(&sr);
   }
   void LeftAdiabaticWall::initTubeVertex(us i,const Tube& thisseg)
   {
@@ -27,8 +27,6 @@ namespace tube{
     cout << getType() << " boundary condition.\n";
     TubeVertex::show();
   }
-  
- 
 
 } // namespace tube
 

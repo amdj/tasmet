@@ -9,8 +9,8 @@
 #ifndef TUBE_H_
 #define TUBE_H_
 #include "seg.h"
-#include "tubeequation.h"
-#include "tubebcvertex.h"
+
+
 #include "drag.h"
 #include "heat.h"
 
@@ -18,8 +18,10 @@
 namespace tube{
   SPOILNAMESPACE
   using namespace segment;
-  typedef vector<const TubeEquation*> EqVec;  
-
+  class TubeBcVertex;
+  class DragResistance;
+  class HeatSource;
+  
   class Tube:public Seg {
 
     // unique_ptrs can be checked if they have content by if(uniq_ptr).
@@ -35,7 +37,6 @@ namespace tube{
     void addBc(const TubeBcVertex& vertex);
     virtual us getNDofs() const;
     virtual us getNEqs() const;    
-    virtual EqVec getEqs() const=0;    	// Some derived class needs to define the equation array
     virtual const DragResistance& getDragResistance() const=0;
     virtual const HeatSource& getHeatSource() const=0;
     virtual string getType() const final {return string("Tube");}

@@ -7,7 +7,7 @@
  */
 
 #include "tube.h"
-#include "tubevertex.h"
+#include "tubebcvertex.h"
 
 // Tried to keep the method definition a bit in order in which a
   // tube is created, including all its components. First a tube is

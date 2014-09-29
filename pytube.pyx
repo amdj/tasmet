@@ -30,7 +30,8 @@ cdef class pytubeBase:
         self.sol[0].solve(maxiter,funtol,reltol,dampfac,wait)
     cpdef stop(self):
         self.sol[0].stop()    
-
+    cpdef cls(self):
+        clearConsole()
     cpdef getgp(self):
         return self.gp
     cpdef getx(self,i=0):
@@ -58,7 +59,8 @@ cdef class pytubeBase:
         assert(freqnr<2*self.getNf()+1)
         assert(tubenr<self.ntubes)
         return dvectond(self.tube[tubenr].getErrorAt(eqnr,freqnr))
-    cpdef getResVar(self,_type,freqnr,i=0):
+    cpdef getResVar(self,_type,freqnr,tubenr=0):
+        i=tubenr
         assert(i<self.ntubes)
         if _type=='pres':
             return dvectond(self.tube[i].getResAt(2,freqnr))
@@ -78,7 +80,7 @@ cdef class pytubeBase:
         
 cdef extern from "models.h" namespace "":
     Solver* Fubini(us gp,us Nf,d freq,d L,vd p1,int loglevel,d kappa,int options)    
-    Solver* ThreeTubes(us gp,us Nf,d freq,d L,d R1,d R2,vd p1,int loglevel,d kappa,d Tr,int options)
+    Solver* ThreeTubes(us gp,us Nf,d freq,d p0,d L,d R1,d R2,vd p1,int loglevel,d kappa,d Tr,int options)
     Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,int options) 
     Solver* SimpleTube(us gp,us Nf,d freq,d L,d r,d Tl,d Tr,vd p1,int loglevel,d kappa,int options)
 
@@ -99,9 +101,9 @@ cdef class fubini(pytubeBase):
         self.ntubes=1
 
 cdef class threetubes(pytubeBase):        
-    def __cinit__(self,us gp,us Nf,d freq,d L,d R1,d R2\
+    def __cinit__(self,us gp,us Nf,d freq,d p0,d L,d R1,d R2\
                   ,n.ndarray[n.float64_t,ndim=1] p1,int loglevel,d kappa,d Tr,int options):
-        self.sol=ThreeTubes(gp,Nf,freq,L,R1,R2,dndtovec(p1),loglevel,kappa,Tr,options)
+        self.sol=ThreeTubes(gp,Nf,freq,p0,L,R1,R2,dndtovec(p1),loglevel,kappa,Tr,options)
         self.tube[0]=<Tube*> self.sol[0].sys().getSeg(0)
         self.tube[1]=<Tube*> self.sol[0].sys().getSeg(1)
         self.tube[2]=<Tube*> self.sol[0].sys().getSeg(2)

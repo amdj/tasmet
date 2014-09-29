@@ -9,11 +9,14 @@ namespace tube{
   class Tube;
   class Momentum:public TubeEquation
   {
-  public:
     const DragResistance* drag=NULL;
+  public:
+    d Wart1=0,Wart2=0,Wart3=0,Wart4=0;		       
+    d Wddt=0,Wuim1=0,Wui=0,Wuip1=0;
+    d WpL=0,WpR=0;
+    
     virtual void init(const Tube& t);
     virtual JacRow jac(const TubeVertex& v) const;
-    virtual TubeEquation* copy() const {return new Momentum(*this);}    
     virtual enum EqType getType() const { return EqType::Mom;}    
     virtual vd error(const TubeVertex&) const;			// Error in momentum equation at node i
     virtual void show() const;

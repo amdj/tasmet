@@ -62,7 +62,7 @@ namespace tasystem{
 
 
   // A solver always contains a valid system.
-  Solver::Solver(const TaSystem& sys):tasystem(sys.copy()) {
+  Solver::Solver(const TaSystem& sys):tasystem(sys.copy()),dampfac(1.0) {
     TRACE(15,"Solver(TaSystem&)");
   }
   Solver::Solver(const Solver& o): Solver(*o.tasystem.get()){}
@@ -114,7 +114,8 @@ namespace tasystem{
     // Do an iteration
     if(dampfac1>0)
       this->dampfac=dampfac1;
-    
+
+
     assert(dampfac>0 && dampfac<=1.0);
 
     evd error=sys().error();

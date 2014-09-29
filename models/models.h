@@ -16,7 +16,7 @@ SPOILNAMESPACE
 
 Solver* SimpleTube(us gp,us Nf,d freq,d L,d r,d Tl,d Tr,vd p1,int loglevel,d kappa,int options);
 Solver* Fubini(us gp,us Nf,d freq,d L,vd p1,int loglevel,d kappa,int options);
-Solver* ThreeTubes(us gp,us Nf,d freq,d L,d R1,d R2,vd p1,int loglevel,d kappa,d Tr,int options);
+Solver* ThreeTubes(us gp,us Nf,d freq,d p0,d L,d R1,d R2,vd p1,int loglevel,d kappa,d Tr,int options);
 Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,int options);
 
 #endif /* _MODELS_H_ */

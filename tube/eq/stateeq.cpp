@@ -58,11 +58,11 @@ namespace tube{
     error+=v.pL()();
     error(0)+=v.gc->p0;	       // Add p0 part
     vd rhoTti=v.rho.tdata()%v.T.tdata();
-    error+=v.gc->gas.Rs()*(v.gc->fDFT*(v.sLWi*rhoTti));
+    error+=v.gc->gas.Rs()*(v.gc->fDFT*(WLi*rhoTti));
     if(v.left)  
-      error+=v.gc->gas.Rs()*(v.gc->fDFT*(v.sLWim1*v.left->rho.tdata()%v.left->T.tdata()));
+      error+=v.gc->gas.Rs()*(v.gc->fDFT*(WLim1*v.left->rho.tdata()%v.left->T.tdata()));
     else
-      error+=v.gc->gas.Rs()*(v.gc->fDFT*(v.sLWip1*v.right->rho.tdata()%v.right->T.tdata()));      
+      error+=v.gc->gas.Rs()*(v.gc->fDFT*(WLip1*v.right->rho.tdata()%v.right->T.tdata()));      
     return STATE_SCALE*error;
   }
   JacRow StateL::jac(const TubeVertex& v) const{
@@ -92,37 +92,37 @@ namespace tube{
    const {
     TRACE(0,"StateL::dTi()");
     dmat rhotidiag=diagmat(v.rho.tdata());
- return  JacCol(v.T,v.sLWi*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotidiag*v.gc->iDFT);
+ return  JacCol(v.T,WLi*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotidiag*v.gc->iDFT);
   }
   JacCol StateL::drhoi(const TubeVertex& v)
    const {
     TRACE(0,"StateL::drhoi()");
     dmat Ttidiag=diagmat(v.T.tdata());
-    return JacCol(v.rho,v.sLWi*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttidiag*v.gc->iDFT);
+    return JacCol(v.rho,WLi*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttidiag*v.gc->iDFT);
   }
   JacCol StateL::dTim1(const TubeVertex& v)
    const {
     TRACE(0,"StateL::dTim1()");
     dmat rhotim1diag=diagmat(v.left->rho.tdata());
-    return JacCol(v.left->T,v.sLWim1*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotim1diag*v.gc->iDFT);
+    return JacCol(v.left->T,WLim1*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotim1diag*v.gc->iDFT);
   }
   JacCol StateL::drhoim1(const TubeVertex& v)
    const {
     TRACE(0,"StateL::drhoim1()");
     dmat Ttim1diag=diagmat(v.left->T.tdata());
-    return JacCol(v.left->rho,v.sLWim1*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttim1diag*v.gc->iDFT);
+    return JacCol(v.left->rho,WLim1*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttim1diag*v.gc->iDFT);
   }
   JacCol StateL::dTip1(const TubeVertex& v)
    const {
     TRACE(0,"StateL::dTip1()");
     dmat rhotip1diag=diagmat(v.right->rho.tdata());
-    return JacCol(v.right->T,v.sLWip1*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotip1diag*v.gc->iDFT);
+    return JacCol(v.right->T,WLip1*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotip1diag*v.gc->iDFT);
   }
   JacCol StateL::drhoip1(const TubeVertex& v)
    const {
     TRACE(0,"StateL::drhoip1()");
     dmat Ttip1diag=diagmat(v.right->T.tdata());
-    return JacCol(v.right->rho,v.sLWip1*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttip1diag*v.gc->iDFT);
+    return JacCol(v.right->rho,WLip1*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttip1diag*v.gc->iDFT);
   }
     
   // *********************************************** Now for pR,
@@ -137,9 +137,9 @@ namespace tube{
     error+=v.pR()();
     error(0)+=v.gc->p0;	       // Add p0 part
     vd rhoTti=v.rho.tdata()%v.T.tdata();
-    error+=-v.gc->gas.Rs()*(v.gc->fDFT*(v.w.wRNm1*rhoTti));
+    error+=-v.gc->gas.Rs()*(v.gc->fDFT*(v.wRNm1*rhoTti));
     if(v.left)  
-      error+=-v.gc->gas.Rs()*(v.gc->fDFT*(v.w.wRNm2*v.left->rho.tdata()%v.left->T.tdata()));
+      error+=-v.gc->gas.Rs()*(v.gc->fDFT*(v.wRNm2*v.left->rho.tdata()%v.left->T.tdata()));
     else{
       WARN("StateR equation not implemented correctly");
       exit(1);
@@ -172,26 +172,26 @@ namespace tube{
    const {
     TRACE(10,"StateR::dTi()");
     dmat rhotidiag=diagmat(v.rho.tdata());
-    return JacCol(v.T,-v.w.wRNm1*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotidiag*v.gc->iDFT);
+    return JacCol(v.T,-v.wRNm1*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotidiag*v.gc->iDFT);
   }    
   JacCol StateR::drhoi(const TubeVertex& v)
    const {
     TRACE(10,"StateR::drhoi()");
     dmat Ttidiag=diagmat(v.T.tdata());
-    return JacCol(v.rho,-v.w.wRNm1*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttidiag*v.gc->iDFT);
+    return JacCol(v.rho,-v.wRNm1*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttidiag*v.gc->iDFT);
   }
 
   JacCol StateR::dTim1(const TubeVertex& v)
    const {
     TRACE(10,"StateR::dTim1()");
     dmat rhotim1diag=diagmat(v.left->rho.tdata());
-    return JacCol(v.left->T,-v.w.wRNm2*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotim1diag*v.gc->iDFT);
+    return JacCol(v.left->T,-v.wRNm2*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotim1diag*v.gc->iDFT);
   }
   JacCol StateR::drhoim1(const TubeVertex& v)
    const {
     TRACE(10,"StateR::drhoim1()");
     dmat Ttim1diag=diagmat(v.left->T.tdata());
-    return JacCol(v.left->rho,-v.w.wRNm2*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttim1diag*v.gc->iDFT);
+    return JacCol(v.left->rho,-v.wRNm2*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttim1diag*v.gc->iDFT);
   }    
 } // namespace tube
 

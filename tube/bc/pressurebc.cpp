@@ -64,13 +64,13 @@ namespace tube{
     lseq.init(thisseg);
 
     // Set our own momentumeq,energy eq and state eq
-    eqs.at(1).reset(lmomeq.copy());
+    eqs.at(1)=&lmomeq;
     if(thisseg.getName().compare("IsentropicTube")==0){
       TRACE(15,"Tube is isentropic, adapting isentropic state for leftpressure bc");
-      eqs.at(2).reset(liseq.copy());
+      eqs.at(2)=&liseq;
     }
     else{
-      eqs.at(2).reset(leneq.copy());    // Remove state equation from list
+      eqs.at(2)=&leneq;    // Remove state equation from list
       TRACE(15,"Tube is not isentropic, full energy eq for leftpressure bc");
     }
     eqs.erase(eqs.begin()+3);
@@ -96,38 +96,42 @@ namespace tube{
     // Change continuity equation for an open boundary
     TRACE(8,"LeftPressure::updateW()");
 
-    cWim1=0;
-    cWi=w.wRl-w.wL0;
-    cWip1=w.wRr-w.wL1;
+    c.Wim1=0;
+    c.Wi=wRl-wL0;
+    c.Wip1=wRr-wL1;
 
-    // Change momentum equation for open boundary, and prescribed pressure
-    mWuim1=0;
-    mWui=w.wRl/w.vSfR-w.wL0/w.vSfL;
-    mWuip1=w.wRr/w.vSfR-w.wL1/w.vSfL;
-
-    // mWpim1=0;     
-    // mWpi=lg.vSf*w.wRl;
-    // mWpip1=lg.vSf*w.wRr;
-    // Change energy equation for open boundary and prescribed pressure
-    eWgim1= 0;
-    // Left boundary, velocity 
-    eWgim=-w.wL0;
-    eWgUip1pL=-w.wL1;
+    const LocalGeom& rlg=right->lg;
     
-    eWgip=w.wRl;
-    eWgip1= w.wRr;    
+    // Change momentum equation for open boundary, and prescribed pressure
 
-    eWkinim1=0;
-    eWkini=w.wRl/pow(lg.vSf,2)-w.wL0/pow(lg.SfL,2);    
-    eWkinip1=w.wRr/pow(w.vSfR,2)-w.wL1/pow(lg.SfL,2);    
+    lmomeq.Wddt=m.Wddt;
+    lmomeq.Wuim1=0;
+    lmomeq.Wui=wRl/lg.vSf-wL0/lg.SfL;
+    lmomeq.Wuip1=wRr/rlg.vSf-wL1/lg.SfL;
+    lmomeq.WpL=m.WpL;
+    lmomeq.WpR=m.WpR;
 
+    leneq.Wddt=e.Wddt;
+    leneq.Wddtkin=e.Wddtkin;    
+    // Change energy equation for open boundary and prescribed pressure
+    leneq.Wgim1= 0;
+    // Left boundary, velocity 
+    leneq.Wgim=-wL0;
+    leneq.WgUip1pL=-wL1;
+    
+    leneq.Wgip=wRl;
+    leneq.Wgip1= wRr;    
 
-    d x0=w.xvi;
+    leneq.Wkinim1=0;
+    leneq.Wkini=wRl/pow(lg.vSf,2)-wL0/pow(lg.SfL,2);    
+    leneq.Wkinip1=wRr/pow(rlg.vSf,2)-wL1/pow(lg.SfL,2);    
 
-    eWc1=0;
-    eWc2=lg.SfL/x0;
-    eWc3=lg.SfR/w.dxp;
-    eWc4=-lg.SfR/w.dxp;    
+    d x0=xvi;
+
+    leneq.Wc1=0;
+    leneq.Wc2=lg.SfL/x0;
+    leneq.Wc3=lg.SfR/dxp;
+    leneq.Wc4=-lg.SfR/dxp;    
 
   }
   vd LeftPressure::msource() const{
@@ -145,7 +149,7 @@ namespace tube{
 
     const Energy& e=static_cast<const Energy&>(*eqs[2]);
     
-    vd kappaL=e.kappaL(*this);
+    vd kappaL=leneq.kappaL(*this);
 
     d x0=lg.xvi;
 

@@ -11,12 +11,6 @@
 #include "tube.h"
 #include "vtypes.h"
 #include "math_common.h"
-#include "continuityeq.h"
-#include "momentumeq.h"
-#include "isentropiceq.h"
-#include "stateeq.h"
-#include "solidenergyeq.h"
-
 
 namespace tube{
   SPOILNAMESPACE
@@ -38,12 +32,6 @@ namespace tube{
     virtual SegBase* copy() const {TRACE(10,"IsentropicTube copy()");return new IsentropicTube(*this);}
     virtual void init(const Globalconf&);
     void cleanup();
-    vector<const TubeEquation*> getEqs() const;
-    Continuity c;		// Continuity equation
-    Momentum m;			// Momentum equation
-    Isentropic is;		// Isentropic energy
-    StateL s;			// State equation for pL (ideal gas)
-    SolidTPrescribed se;		// Solid energy equation
     virtual ~IsentropicTube();
   };
   

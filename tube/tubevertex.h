@@ -6,7 +6,14 @@
 #include "vertex.h"
 #include "tubeequation.h"
 #include "localgeom.h"
-#include "w.h"
+
+#include "continuityeq.h"
+#include "momentumeq.h"
+#include "energyeq.h"
+#include "stateeq.h"
+#include "solidenergyeq.h"
+#include "isentropiceq.h"
+
 namespace segment{class SegBase;}
 
 
@@ -24,31 +31,28 @@ namespace tube{
   // vertices. Reserved for later more complicated stuff.
   
   class TubeVertex:public segment::Vertex{ //Gridpoint at a position in a Tube
+  protected: 
+    d wLl=0,wRr=0,wLr=0,wRl=0;		// Basic weight functions
+    d wL0=0,wL1=0,wRNm1=0,wRNm2=0;    	// Special boundary weight functions
+    d xvim1=0,xvi=0,xvip1=0;
+    d dxm=0,dxp=0;
+    d vSfR=0,vSfL=0;		// Cross sectional area at x-position
+    // of vertex.
+    int UsignL=1;
+    int UsignR=1;
+
   public:
-    W::W w;
+    friend class StateR;
+    friend class RightImpedance;
+    friend class RightImpedanceMomentumEq;
+    friend class RightTwImpedanceEq;
+    friend class LeftImpedance;
+    friend class TwImpedance;    
+
     dmat zero;			// Zeros matrix of right size
     const TubeVertex* left=NULL;
     const TubeVertex* right=NULL;
     us nCells;    
-
-    // Equation-specific weight factors
-    d cWddt=0,cWim1=0,cWi=0,cWip1=0;
-    // Continuity artificial viscosity weight factor
-    d cWart1=0,cWart2=0,cWart3=0,cWart4=0;		       
-    d mWart1=0,mWart2=0,mWart3=0,mWart4=0;		       
-    d mWddt=0,mWuim1=0,mWui=0,mWuip1=0;
-    d mWpL=0,mWpR=0;
-    d eWddt=0,eWddtkin=0;
-    d eWgip1=0,eWgip=0,eWgim=0,eWgim1=0;
-
-    d sLWi=0,sLWip1=0,sLWim1=0;
-    
-    // The following are for boundary conditions
-    d eWgUip1pL=0,eWgUim1pR=0;
-    
-    
-    d eWc1=0,eWc2=0,eWc3=0,eWc4=0; // Conduction weight factors
-    d eWkini=0,eWkinim1=0,eWkinip1=0;
 
     // This is also the order in which they appear in the variable ptr
     // vector.
@@ -60,13 +64,21 @@ namespace tube{
     
     virtual const variable::var& pL() const;
     virtual const variable::var& pR() const;
+
+    vector<variable::var*> vars;
+    vector<TubeEquation*> eqs; // Vector of pointers to the
+    // equations to solve for.
+    Continuity c;
+    Momentum m;
+    Energy e;
+    StateL sL;
+    SolidTPrescribed se;
+    Isentropic is;
     virtual void setpR(const variable::var& o) {
       WARN("pR tried to be set on normal tubeVertex!");
     }
-    std::vector<variable::var*> vars;
 
-    vector<std::unique_ptr<TubeEquation> > eqs; // Vector of pointers to the
-    // equations to solve for.
+    void setIsentropic();
     void resetHarmonics();
     virtual us getNDofs() const;
     virtual us getNEqs() const;
@@ -86,11 +98,6 @@ namespace tube{
     // Convenience function, we need a lot of static (background
     // pressure) addings in the equations.
     vd getp0t() const;
-  private:
-    void connectTubeLeft(const SegBase& thisseg);
-    void connectTubeRight(const SegBase& thisseg);
-    void updateW(const SegBase& thisseg);
-    void updateWEqs(const SegBase& thisseg);
   public:
     virtual void initTubeVertex(us i,const Tube&);   
     // These virtual functions are reqsuired such that boundary
@@ -101,7 +108,16 @@ namespace tube{
     virtual vd csource() const;	// Continuity source
     virtual vd msource() const;	// Momentum source
     virtual vd esource() const;	// Energy source
+  private:
 
+    void leftVertex();
+    void middleVertex();
+    void rightVertex();
+    void allVertex();
+   
+    void connectTubeLeft(const Tube& thisseg);
+    void connectTubeRight(const Tube& thisseg);
+    void updateW(const Tube& thisseg);
     
   };				// TubeVertex class
 } // namespace tube

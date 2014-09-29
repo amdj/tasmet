@@ -9,7 +9,6 @@ namespace tube{
   private:
     const vd* Tsmirror=NULL;
   public:
-    virtual TubeEquation* copy() const {return new SolidTPrescribed(*this);}    
     SolidTPrescribed();
     void init(const Tube& t);
     virtual enum EqType getType() const { return EqType::Sol;}

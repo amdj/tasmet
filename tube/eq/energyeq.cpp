@@ -11,7 +11,7 @@
 namespace tube{
 
   void Energy::show() const{
-    cout << "Full energy equation\n";
+    cout << "------------- Full energy equation\n";
     #ifdef EN_VISCOSITY
     cout << "Artificial viscosity turned ON for energy equation\n";
     #else
@@ -64,36 +64,36 @@ namespace tube{
 
     // Time derivative of thermal energy
 
-    error+=v.eWddt*DDTfd*0.5*(v.pL()()+v.pR()())/(gamma-1.0);
+    error+=Wddt*DDTfd*0.5*(v.pL()()+v.pR()())/(gamma-1.0);
 
     // Time derivative of kinetic energy
-    error+=v.eWddtkin*DDTfd*fDFT*(rhoti%Uti%Uti); //
+    error+=Wddtkin*DDTfd*fDFT*(rhoti%Uti%Uti); //
 
     // Thermal energy flux
-    error+=v.eWgim*fDFT*(gamfac*pLt%Uti);    
-    error+=v.eWgip*fDFT*(gamfac*pRt%Uti);
+    error+=Wgim*fDFT*(gamfac*pLt%Uti);    
+    error+=Wgip*fDFT*(gamfac*pRt%Uti);
     
     // Flux of kinetic energy
-    error+=fDFT*(v.eWkini*rhoti%pow(Uti,3));
+    error+=fDFT*(Wkini*rhoti%pow(Uti,3));
 
     // Conduction
-    error+=fDFT*((v.eWc2*kappaL(v)+v.eWc3*kappaR(v))%Tti);
+    error+=fDFT*((Wc2*kappaL(v)+Wc3*kappaR(v))%Tti);
 
     if(v.left){
       const vd& Utim1=v.left->U.tdata();
       const vd& rhotim1=v.left->rho.tdata();
 
       // Thermal energy flux
-      error+=fDFT*(v.eWgim1*gamfac*pLt%Utim1);
+      error+=fDFT*(Wgim1*gamfac*pLt%Utim1);
       // Specially for boundary conditions
-      error+=fDFT*(v.eWgUim1pR*gamfac*pRt%Utim1);
+      error+=fDFT*(WgUim1pR*gamfac*pRt%Utim1);
       
       // Flux of kinetic energy
-      error+=fDFT*(v.eWkinim1*rhotim1%pow(Utim1,3));
+      error+=fDFT*(Wkinim1*rhotim1%pow(Utim1,3));
 
       // Conduction term
       const vd& Tim1=v.left->T.tdata();
-      error+=v.eWc1*fDFT*(kappaL(v)%Tim1);
+      error+=Wc1*fDFT*(kappaL(v)%Tim1);
 
     }
     // TRACE(100,"error:"<<error);
@@ -102,17 +102,17 @@ namespace tube{
       const vd& rhotip1=v.right->rho.tdata(); 
 
       // Thermal energy flux
-      error+=fDFT*(v.eWgip1*gamfac*pRt%Utip1);
+      error+=fDFT*(Wgip1*gamfac*pRt%Utip1);
 
       // Specially for boundary conditions
-      error+=fDFT*(v.eWgUip1pL*gamfac*pLt%Utip1);      
+      error+=fDFT*(WgUip1pL*gamfac*pLt%Utip1);      
       
       // Flux of kinetic energy
-      error+=fDFT*(v.eWkinip1*rhotip1%pow(Utip1,3));
+      error+=fDFT*(Wkinip1*rhotip1%pow(Utip1,3));
 
       // Conduction term
       const vd& Tip1=v.right->T.tdata();
-      error+=v.eWc4*fDFT*(kappaR(v)%Tip1);
+      error+=Wc4*fDFT*(kappaR(v)%Tip1);
     }
 
     // Artificial viscosity terms      
@@ -126,7 +126,7 @@ namespace tube{
 
     // External heat    
     assert(heat!=NULL);
-    error+=v.eWddt*heat->heat(v);
+    error+=Wddt*heat->heat(v);
     // (Boundary source term)
     error+=v.esource();
     // TRACE(100,"error:"<<error);
@@ -139,8 +139,8 @@ namespace tube{
     const dmat& fDFT=v.gc->fDFT;
     d gamma=this->gamma(v);
     d gamfac=gamma/(gamma-1.0);
-    vd domg_full=v.eWddt*DDTfd*v.p()/(gamma-1.0)/v.gc->getomg(); // Static
-    domg_full+=v.eWddtkin*DDTfd*(fDFT*(v.rho.tdata()%v.U.tdata()%v.U.tdata()))/v.gc->getomg();                                                        // enthalpy
+    vd domg_full=Wddt*DDTfd*v.p()/(gamma-1.0)/v.gc->getomg(); // Static
+    domg_full+=Wddtkin*DDTfd*(fDFT*(v.rho.tdata()%v.U.tdata()%v.U.tdata()))/v.gc->getomg();                                                        // enthalpy
                                                              // term
     domg_.subvec(dofnr+1,dofnr+2)=domg_full.subvec(1,2);
   }
@@ -153,17 +153,17 @@ namespace tube{
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      
 
-    // v.eWddt = vVf, as defined in tubevertex.cpp
+    // Wddt = vVf, as defined in tubevertex.cpp
     d gamfac=gamma/(gamma-1.0);
-    dpL+=(0.5*v.eWddt/(gamma-1.0))*DDTfd;
-    dpL+=v.eWgim*gamfac*fDFT*v.U.diagt()*iDFT;
+    dpL+=(0.5*Wddt/(gamma-1.0))*DDTfd;
+    dpL+=Wgim*gamfac*fDFT*v.U.diagt()*iDFT;
     if(v.left){
-      dpL+=(v.eWgim1*gamfac)*fDFT*v.left->U.diagt()*iDFT;
+      dpL+=(Wgim1*gamfac)*fDFT*v.left->U.diagt()*iDFT;
     }
 
     // Specially for boundary conditions
     if(v.right)
-      dpL+=(v.eWgUip1pL*gamfac)*fDFT*v.right->U.diagt()*iDFT;      
+      dpL+=(WgUip1pL*gamfac)*fDFT*v.right->U.diagt()*iDFT;      
 
     return dpL;
   }
@@ -176,16 +176,16 @@ namespace tube{
     const dmat& iDFT=v.gc->iDFT;      
 
     d gamfac=gamma/(gamma-1.0);
-    // v.eWddt = vVf, as defined in tubevertex.cpp
+    // Wddt = vVf, as defined in tubevertex.cpp
 
-    dpR+=(0.5*v.eWddt/(gamma-1.0))*DDTfd;
+    dpR+=(0.5*Wddt/(gamma-1.0))*DDTfd;
 
-    dpR+=v.eWgip*gamfac*fDFT*v.U.diagt()*iDFT;
+    dpR+=Wgip*gamfac*fDFT*v.U.diagt()*iDFT;
     if(v.right){
-      dpR+=(v.eWgip1*gamfac)*fDFT*v.right->U.diagt()*iDFT;
+      dpR+=(Wgip1*gamfac)*fDFT*v.right->U.diagt()*iDFT;
     }
     if(v.left){
-      dpR+=(v.eWgUim1pR*gamfac)*fDFT*v.left->U.diagt()*iDFT;
+      dpR+=(WgUim1pR*gamfac)*fDFT*v.left->U.diagt()*iDFT;
     }
     
     return dpR;
@@ -206,18 +206,18 @@ namespace tube{
 
 
     // Derivative of kinetic energy
-    dUi+=DDTfd*fDFT*diagmat(2*v.eWddtkin*rhoti%Uti)*iDFT;
+    dUi+=DDTfd*fDFT*diagmat(2*Wddtkin*rhoti%Uti)*iDFT;
 
     // Flux of thermal energy
-    dUi+=fDFT*diagmat(v.eWgim*gamfac*pLt)*iDFT;       
-    dUi+=fDFT*diagmat(v.eWgip*gamfac*pRt)*iDFT; 
+    dUi+=fDFT*diagmat(Wgim*gamfac*pLt)*iDFT;       
+    dUi+=fDFT*diagmat(Wgip*gamfac*pRt)*iDFT; 
 
     // Flux of kinetic energy
-    dUi+=fDFT*diagmat(v.eWkini*3*rhoti%pow(Uti,2))*iDFT;
+    dUi+=fDFT*diagmat(Wkini*3*rhoti%pow(Uti,2))*iDFT;
 
     // External heat
     assert(heat!=NULL);
-    dUi+=v.eWddt*heat->dUi(v);
+    dUi+=Wddt*heat->dUi(v);
     return dUi;
   }
   JacCol Energy::drhoi(const TubeVertex& v) const {
@@ -230,8 +230,8 @@ namespace tube{
     d gamfac=gamma/(gamma-1.0);
 
     const vd& Uti=v.U.tdata();
-    drhoi+=DDTfd*fDFT*diagmat(v.eWddtkin*pow(Uti,2))*iDFT; // This term should get a eWuddt factor later on
-    drhoi+=fDFT*diagmat(v.eWkini*pow(Uti,3))*iDFT;
+    drhoi+=DDTfd*fDFT*diagmat(Wddtkin*pow(Uti,2))*iDFT; // This term should get a eWuddt factor later on
+    drhoi+=fDFT*diagmat(Wkini*pow(Uti,3))*iDFT;
 
     return drhoi;
   }  
@@ -248,12 +248,12 @@ namespace tube{
 
     vd pLt=v.pL().tdata()+v.getp0t();
     vd pRt=v.pR().tdata()+v.getp0t();
-    dUim1+=(v.eWgim1*gamfac)*fDFT*diagmat(pLt)*iDFT;
+    dUim1+=(Wgim1*gamfac)*fDFT*diagmat(pLt)*iDFT;
 
     // Specially for boundary conditions
-    dUim1+=fDFT*diagmat(v.eWgUim1pR*gamfac*pRt)*iDFT;    
+    dUim1+=fDFT*diagmat(WgUim1pR*gamfac*pRt)*iDFT;    
     
-    dUim1+=fDFT*diagmat(v.eWkinim1*3*rhotim1%pow(Utim1,2))*iDFT;
+    dUim1+=fDFT*diagmat(Wkinim1*3*rhotim1%pow(Utim1,2))*iDFT;
 
     
     return dUim1;
@@ -271,12 +271,12 @@ namespace tube{
 
     const vd& rhotip1=v.right->rho.tdata(); 
 
-    dUip1+=fDFT*diagmat(v.eWgip1*gamfac*pRt)*iDFT;
+    dUip1+=fDFT*diagmat(Wgip1*gamfac*pRt)*iDFT;
 
     // Specially for boundary conditions
-    dUip1+=fDFT*diagmat(v.eWgUip1pL*gamfac*pLt)*iDFT;    
+    dUip1+=fDFT*diagmat(WgUip1pL*gamfac*pLt)*iDFT;    
     
-    dUip1+=fDFT*diagmat(v.eWkinip1*3*rhotip1%pow(Utip1,2))*iDFT;
+    dUip1+=fDFT*diagmat(Wkinip1*3*rhotip1%pow(Utip1,2))*iDFT;
 
     return dUip1;
   }
@@ -288,7 +288,7 @@ namespace tube{
     d gamfac=gamma/(gamma-1.0);
     JacCol drhoim1(v.left->rho);
     const vd& Utim1=v.left->U.tdata();
-    drhoim1+=fDFT*diagmat(v.eWkinim1*pow(Utim1,3))*iDFT;
+    drhoim1+=fDFT*diagmat(Wkinim1*pow(Utim1,3))*iDFT;
     return drhoim1;
   }
   JacCol Energy::drhoip1(const TubeVertex& v) const {
@@ -301,7 +301,7 @@ namespace tube{
 
     const vd& rhotip1=v.right->rho.tdata();
     const vd& Utip1=v.right->U.tdata();
-    drhoip1+=fDFT*diagmat(v.eWkinip1*pow(Utip1,3))*iDFT;
+    drhoip1+=fDFT*diagmat(Wkinip1*pow(Utip1,3))*iDFT;
 
     return drhoip1;
   }
@@ -315,7 +315,7 @@ namespace tube{
 
     JacCol dTip1(v.right->T);
     // TRACE(100,"dTip1, right is"<<v.right);
-    dTip1+=v.eWc4*fDFT*diagmat(kappaR(v))*iDFT;
+    dTip1+=Wc4*fDFT*diagmat(kappaR(v))*iDFT;
 
     return dTip1;
   }
@@ -325,9 +325,9 @@ namespace tube{
     const dmat& iDFT=v.gc->iDFT;      
     TRACE(0,"Energy::dTi()");
     JacCol dTi(v.T);
-    dTi+=fDFT*diagmat(v.eWc2*kappaL(v)+v.eWc3*kappaR(v))*iDFT;
+    dTi+=fDFT*diagmat(Wc2*kappaL(v)+Wc3*kappaR(v))*iDFT;
     assert(heat!=NULL);
-    dTi+=v.eWddt*heat->dTi(v);
+    dTi+=Wddt*heat->dTi(v);
     return dTi;
   }
   JacCol Energy::dTim1(const TubeVertex& v) const {
@@ -336,7 +336,7 @@ namespace tube{
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      
     JacCol dTim1(v.left->T);
-    dTim1+=v.eWc1*fDFT*diagmat(kappaL(v))*iDFT;
+    dTim1+=Wc1*fDFT*diagmat(kappaL(v))*iDFT;
     return dTim1;
   }
 

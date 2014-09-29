@@ -11,12 +11,6 @@
 #include "tube.h"
 #include "vtypes.h"
 #include "math_common.h"
-#include "continuityeq.h"
-#include "momentumeq.h"
-#include "energyeq.h"
-#include "stateeq.h"
-#include "solidenergyeq.h"
-#include "energyeq.h"
 #include "laminardrag.h"
 
 namespace tube{
@@ -27,12 +21,6 @@ namespace tube{
 
   class LaminarDuct:public Tube
   {
-  public:
-    Continuity c;		// Continuity equation
-    Momentum m;			// Momentum equation
-    Energy e;			// Full energy equation
-    StateL s;			// State equation (ideal gas)
-    SolidTPrescribed se;		// Solid energy equation
   private:
     LaminarDragResistance laminardrag;
     HeatSource heat;
@@ -49,7 +37,6 @@ namespace tube{
     // version of the heat source. This version is more applicable to
     // wide tubes for arbitrary cross-sectional geometries.
     void cleanup();
-    EqVec getEqs() const;
     virtual ~LaminarDuct();
   };
 

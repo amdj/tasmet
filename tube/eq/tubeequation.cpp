@@ -1,6 +1,6 @@
 #include "tubeequation.h"
 #include "tubevertex.h"
-#include "tube.h"
+
 
 namespace tube{
   inline double min(d x,d y)  {

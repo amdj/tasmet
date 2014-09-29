@@ -9,7 +9,6 @@ namespace tube{
   class State:public TubeEquation
   {
   public:
-    virtual TubeEquation* copy() const {return new State(*this);}    
     JacRow jac(const TubeVertex&) const;
     vd error(const TubeVertex&) const;			// Error in momentum equation at node i
   private:
@@ -22,7 +21,8 @@ namespace tube{
   class StateL:public TubeEquation
   {
   public:
-    virtual TubeEquation* copy() const {return new StateL(*this);}    
+    d WLi=0,WLip1=0,WLim1=0;
+    
     JacRow jac(const TubeVertex&) const;
     vd error(const TubeVertex&) const;			// Error in momentum equation at node i
   private:
@@ -37,7 +37,6 @@ namespace tube{
   class StateR:public TubeEquation
   {
   public:
-    virtual TubeEquation* copy() const {return new StateR(*this);}    
     JacRow jac(const TubeVertex&) const;
     vd error(const TubeVertex&) const;			// Error in momentum equation at node i
   protected:

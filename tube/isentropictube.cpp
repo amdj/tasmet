@@ -35,20 +35,12 @@ namespace tube {
   }  
   void IsentropicTube::init(const Globalconf& gc){
     Tube::init(gc);
-    c.init(*this);
-    m.init(*this);
-    is.init(*this);
-    s.init(*this);
-    se.init(*this);
-  }
-  vector<const TubeEquation*> IsentropicTube::getEqs() const {
-    vector<const TubeEquation*> eq;
-    eq.push_back(&c);
-    eq.push_back(&m);
-    eq.push_back(&is);
-    eq.push_back(&s);
-    eq.push_back(&se);
-    return eq;
+
+    for(auto vertex=vvertex.begin();vertex!=vvertex.end();vertex++){
+      TubeVertex& cvertex=*static_cast<TubeVertex*>((*vertex).get());
+      cvertex.setIsentropic();
+    }
+      
   }
 
   IsentropicTube::~IsentropicTube(){

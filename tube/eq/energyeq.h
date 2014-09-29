@@ -6,11 +6,23 @@
 
 namespace tube{
   SPOILNAMESPACE
+
+
+  
+  
   class Energy:public TubeEquation
   {
-    const HeatSource* heat;
+    const HeatSource* heat=NULL;
   public:
-    virtual TubeEquation* copy() const {return new Energy(*this);}    
+    d Wddt=0,Wddtkin=0;
+    d Wgip1=0,Wgip=0,Wgim=0,Wgim1=0;
+
+    // The following are for boundary conditions
+    d WgUip1pL=0,WgUim1pR=0;
+    
+    d Wc1=0,Wc2=0,Wc3=0,Wc4=0; // Conduction weight factors
+    d Wkini=0,Wkinim1=0,Wkinip1=0;
+  public:
     virtual void init(const Tube&);
     virtual JacRow jac(const TubeVertex&) const;
     virtual enum EqType getType() const { return EqType::Ene;}

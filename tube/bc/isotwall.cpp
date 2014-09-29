@@ -22,10 +22,10 @@ namespace tube{
    void RightIsoTWall::updateW(const SegBase& thisseg){
      TRACE(8,"RightIsoTWall::updateW()");
 
-     eWc1=-lg.SfL/w.dxm;
-     eWc2= lg.SfL/w.dxm;
-     eWc3= lg.SfR/lg.xr;
-     eWc4=0;
+     e.Wc1=-lg.SfL/dxm;
+     e.Wc2= lg.SfL/dxm;
+     e.Wc3= lg.SfR/lg.xr;
+     e.Wc4=0;
 
    }
    vd RightIsoTWall::esource() const {
@@ -37,7 +37,7 @@ namespace tube{
      TRACE(0,"Tbc:"<<Tbc);
      vd TRt=Tbc*vd(gc->Ns,fillwith::ones);
      vd T0=gc->T0*vd(gc->Ns,fillwith::ones);
-     vd kappaR=static_cast<const Energy*>(eqs.at(2).get())->kappaR(*this);    
+     vd kappaR=e.kappaR(*this);    
      // vd kappaR=gc->gas.kappa(T0);
      esource+=-1.0*lg.SfR*fDFT*(kappaR%TRt)/lg.xr;
      TRACE(3,"esource:"<<esource);
@@ -57,10 +57,10 @@ namespace tube{
    void LeftIsoTWall::updateW(const SegBase& thisseg){
      TRACE(8,"LeftIsoTWall::updateW()");
 
-     eWc1=0;
-     eWc2= lg.SfL/lg.xl;
-     eWc3= lg.SfR/w.dxp;
-     eWc4=-lg.SfR/w.dxp;
+     e.Wc1=0;
+     e.Wc2= lg.SfL/lg.xl;
+     e.Wc3= lg.SfR/dxp;
+     e.Wc4=-lg.SfR/dxp;
    }
    vd LeftIsoTWall::esource() const {
      TRACE(6,"LeftIsoTWall::esource()");
@@ -71,7 +71,7 @@ namespace tube{
      TRACE(0,"Tbc:"<<Tbc);
      vd TLt=Tbc*vd(gc->Ns,fillwith::ones);
      vd T0=gc->T0*vd(gc->Ns,fillwith::ones);
-     vd kappaL=static_cast<const Energy*>(eqs.at(2).get())->kappaL(*this);    
+     vd kappaL=e.kappaL(*this);    
      // vd kappaR=gc->gas.kappa(T0);
      esource+=-1.0*lg.SfL*fDFT*(kappaL%TLt)/lg.xl;
      TRACE(3,"esource:"<<esource);

@@ -25,8 +25,6 @@ namespace tube {
     TRACE(13,"LaminarDuct constructor()...");
   }
   LaminarDuct::LaminarDuct(const LaminarDuct& o):Tube(o),
-						 c(o.c),m(o.m),e(o.e)	\
-						,s(o.s),se(o.se),	\
 						 laminardrag(o.laminardrag)	\
 						,heat(o.heat)
   {
@@ -37,11 +35,6 @@ namespace tube {
     Tube::operator=(o);
     // drag(geom);
     cleanup();
-    c=o.c;
-    m=o.m;
-    e=o.e;
-    s=o.s;
-    se=o.se;
     laminardrag=o.laminardrag;
     heat=o.heat;    
     return *this;
@@ -49,16 +42,6 @@ namespace tube {
   void LaminarDuct::init(const Globalconf& gc){
     Tube::init(gc);
   }
-  EqVec LaminarDuct::getEqs() const {
-    EqVec eqs;
-    eqs.push_back(&c);
-    eqs.push_back(&m);
-    eqs.push_back(&e);
-    eqs.push_back(&s);
-    eqs.push_back(&se);
-    return eqs;
-  }
-
   LaminarDuct::~LaminarDuct(){
     TRACE(15,"~LaminarDuct()");
     cleanup();

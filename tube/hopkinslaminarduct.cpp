@@ -1,6 +1,8 @@
 #include "hopkinslaminarduct.h"
 #include "tube.h"
 #include "bessel.h"
+#include "tubevertex.h"
+
 namespace tube{
   HopkinsLaminarDuct::HopkinsLaminarDuct(const Geom& geom,d Tl):HopkinsLaminarDuct(geom,Tl,Tl){}
 

@@ -2,7 +2,7 @@
 // Author: J.A. de Jong
 #include "impedancebc.h"
 #include "tubevertex.h"
-#include "w.h"
+
 
 namespace tube{
   RightImpedance::RightImpedance(vd Z1):TubeBcVertex(),Z(Z1),mright(*this,Z){
@@ -23,41 +23,41 @@ namespace tube{
   {
     TRACE(8,"RightImpedance::Init(), vertex "<< i <<".");
     TubeVertex::initTubeVertex(i,thisseg);
-    eqs.at(1).reset(mright.copy());
+    eqs.at(1)=&mright;
     eqs.at(1)->init(thisseg);
     updateW(thisseg);
   }
   
   void RightImpedance::updateW(const Tube& thisseg){
     TRACE(8,"RightImpedance::updateW()");
-    cWddt=lg.vVf;
-    cWim1=w.wRNm2-w.wLl;
-    cWi  =w.wRNm1-w.wLr;
-    cWip1=0;
+    c.Wddt=lg.vVf;
+    c.Wim1=wRNm2-wLl;
+    c.Wi  =wRNm1-wLr;
+    c.Wip1=0;
 
     // Change momentum eq for open boundary
-    mWddt=lg.vVf/lg.vSf;	// VERY IMPORTANT: update this!! (Is still zero)
-    mWuim1=-w.wLl/w.vSfL+w.wRNm2/lg.SfR;
-    mWui	=-w.wLr/w.vSfL+w.wRNm1/lg.SfR;
-    mWuip1=0;
+    m.Wddt=lg.vVf/lg.vSf;	// VERY IMPORTANT: update this!! (Is still zero)
+    m.Wuim1=-wLl/vSfL+wRNm2/lg.SfR;
+    m.Wui	=-wLr/vSfL+wRNm1/lg.SfR;
+    m.Wuip1=0;
     WARN("Not yet updated!");
-    // mWpim1=-w.vSfL*w.wLl;
-    // mWpi	=-w.vSfL*w.wLr+(w.vSfL-lg.SfR);
+    // mWpim1=-vSfL*wLl;
+    // mWpi	=-vSfL*wLr+(vSfL-lg.SfR);
     // mWpip1=0;
     
-    eWgim1=-w.wLl;
-    eWgim =-w.wLr;
+    e.Wgim1=-wLl;
+    e.Wgim =-wLr;
 
-    eWgUim1pR=w.wRNm2;
-    eWgip=w.wRNm1;
+    e.WgUim1pR=wRNm2;
+    e.Wgip=wRNm1;
 
-    eWgip1=0;
+    e.Wgip1=0;
     
     WARN("Not updated for kinetic energy terms!");
-    eWc1=-w.vSfL/lg.dxm;
-    eWc2= w.vSfL/lg.dxm;
-    eWc3=0;
-    eWc4=0;
+    e.Wc1=-vSfL/lg.dxm;
+    e.Wc2= vSfL/lg.dxm;
+    e.Wc3=0;
+    e.Wc4=0;
 
     // Conduction terms are not changed.
   }
@@ -70,7 +70,7 @@ namespace tube{
 
     vd error=Momentum::error(v);
     // SfR*p = SfR*Z*U
-    vd errorZ=v.lg.SfR*Z%(v.w.wRNm1*v.U()+v.w.wRNm2*v.left->U());
+    vd errorZ=v.lg.SfR*Z%(v.wRNm1*v.U()+v.wRNm2*v.left->U());
     error+=errorZ;
     return error;
   }
@@ -82,7 +82,7 @@ namespace tube{
   JacCol RightImpedanceMomentumEq::dUi(const TubeVertex& v) const {
     TRACE(40,"RightImpedanceMomentumEq::dUi()");
     JacCol dUi=Momentum::dUi(v);
-    dUi+=v.w.wRNm1*v.lg.SfR*diagmat(Z);
+    dUi+=v.wRNm1*v.lg.SfR*diagmat(Z);
     // For pressure boundary condition
     // dUi.row(0).zeros();
     return dUi;
@@ -91,7 +91,7 @@ namespace tube{
   JacCol RightImpedanceMomentumEq::dUim1(const TubeVertex& v) const {
     TRACE(1,"RightImpedanceMomentumEq::dUim1()");
     JacCol dUim1=Momentum::dUim1(v);    
-    dUim1+=v.w.wRNm2*v.lg.SfR*diagmat(Z);
+    dUim1+=v.wRNm2*v.lg.SfR*diagmat(Z);
     return dUim1;
   }
 

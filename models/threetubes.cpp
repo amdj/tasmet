@@ -12,12 +12,12 @@ using namespace tube;
 using namespace variable;
 using namespace gases;
 
-Solver* ThreeTubes(us gp,us Nf,d freq,d L,d R1,d R2,vd p1,int loglevel,d kappa,d Tr,int options)
+Solver* ThreeTubes(us gp,us Nf,d freq,d p0,d L,d R1,d R2,vd p1,int loglevel,d kappa,d Tr,int options)
 {
   inittrace(loglevel);
   TRACE(100,"L:"<<L);
   Globalconf gc=Globalconf::airSTP(Nf,freq,kappa);
-  gc.setp0(50*gc.p0);
+  gc.setp0(p0);
   gc.show();
 
   d Sf1=number_pi*pow(R1,2);
@@ -59,7 +59,6 @@ Solver* ThreeTubes(us gp,us Nf,d freq,d L,d R1,d R2,vd p1,int loglevel,d kappa,d
     t1is.addBc(pleft);
   }
     
-  // RightAdiabaticWall right;
   cout << "Tr:" << Tr<<"\n";
   TubeBcVertex* b;
   RightAdiabaticWall raw;
@@ -67,8 +66,8 @@ Solver* ThreeTubes(us gp,us Nf,d freq,d L,d R1,d R2,vd p1,int loglevel,d kappa,d
     b=new RightAdiabaticWall();
   else
     b=new RightIsoTWall(Tr);
-  t3.addBc(raw);
-  t3is.addBc(raw);
+  t3.addBc(*b);
+  t3is.addBc(*b);
   delete b;
   TaSystem sys(gc);
   if(options & ISENTROPIC){
