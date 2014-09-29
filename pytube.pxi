@@ -8,6 +8,7 @@ cdef extern from "globalconf.h" namespace "tasystem":
     cdef cppclass Globalconf:
         Globalconf(us Nf,d freq,string Gas,d T0,d p0,d Mach,d S,d dx,d Mass,d kappa)
         d getfreq()
+        void setfreq(d)        
         d getomg()
         us Nf
 
