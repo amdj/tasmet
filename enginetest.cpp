@@ -6,7 +6,7 @@
 #include "enginesystem.h"
 #include "solver.h"
 #include "bc.h"
-#include "enginepressure.h"
+
 using namespace std;
 using namespace segment; 
 using namespace tasystem;
@@ -87,8 +87,8 @@ int main(int argc,char* argv[]) {
   Geom geom1=drivensol.sys().getSeg(0)->geom;
   // IsentropicTube t1(geom1);
   HopkinsLaminarDuct t1(geom1,gc.T0);
-  // t1.addBc(LeftAdiabaticWall());
-  t1.addBc(LeftEnginePressure(1));
+  t1.addBc(LeftAdiabaticWall());
+  // t1.addBc(LeftEnginePressure(1));
   t1.addBc(RightIsoTWall(gc.T0+10));
   EngineSystem esys(gc);
   // TaSystem esys(gc);

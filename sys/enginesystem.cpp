@@ -4,8 +4,8 @@
 
 
 // To set divide by amplitude on
-// #define DIVAMPL
-// #define TIMINGCONSTRAINT
+#define DIVAMPL
+#define TIMINGCONSTRAINT
 #define DOMGFAC (1e-2)
 
 #define MASSEQ (0)
