@@ -1,5 +1,7 @@
 #include "jacobian.h"
 #include "triplets.h"
+#include "var.h"
+#include "globalconf.h"
 
 namespace tasystem{
 
@@ -7,6 +9,15 @@ namespace tasystem{
     __coldof(thevar.getDofNr()),
     __data(thevar.gc->Ns,thevar.gc->Ns,fillwith::zeros)
   {  }
+  JacCol::JacCol(us coldof,const tasystem::Globalconf* gc):
+    __coldof(coldof),
+    __data(gc->Ns,gc->Ns,fillwith::zeros)
+  {  }
+  JacCol::JacCol(us coldof,const dmat& data):
+    __coldof(coldof),
+    __data(data)
+  {  }
+
   JacCol::JacCol(const variable::var& thevar,const dmat& data):
     __coldof(thevar.getDofNr()),
     __data(data)

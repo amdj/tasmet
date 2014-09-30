@@ -1,19 +1,22 @@
 #pragma once
 #ifndef _JACBLOCK_H_
 #define _JACBLOCK_H_
-#include "var.h"
 #include "arma_eigen.h"
 
-namespace tasystem{
+namespace variable{ class var;}
+namespace tasystem{ class Globalconf;}
 
+namespace tasystem{
+  SPOILNAMESPACE
   class TripletList;
-  
   class JacCol{                // Column block of Jacobian
     bool tobeadded=true;
     us __coldof;                  // First dof of column
     dmat __data;                  // data
   public:
     JacCol(const variable::var&);
+    JacCol(us coldof,const tasystem::Globalconf*);
+    JacCol(us coldof,const dmat&);    
     JacCol(const variable::var&,const dmat&);
     bool isToAdd() const {return tobeadded;}
     void setToAdd(bool set){tobeadded=set;} // If this is set to
@@ -35,6 +38,7 @@ namespace tasystem{
     JacRow& operator*=(const d& val); // Multiply all terms with constant value
 
     us rowDof() const {return __rowdof;}
+    void setRowDof(us dofnr){__rowdof=dofnr;}
   };
 
   class Jacobian{

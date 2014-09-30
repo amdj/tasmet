@@ -13,6 +13,7 @@
 #include "stateeq.h"
 #include "solidenergyeq.h"
 #include "isentropiceq.h"
+#include "var.h"
 
 namespace segment{class SegBase;}
 

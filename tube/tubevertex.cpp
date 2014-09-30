@@ -141,9 +141,7 @@ namespace tube{
     eqs.push_back(&se);    
     us eqnr_=0;
     for(auto eq=eqs.begin();eq!=eqs.end();eq++){
-      // eqs.push_back(std::unique_ptr<TubeEquation>((*eq)->copy()));
       (*eq)->init(thistube);
-      // eqnr_++;
     }
 
     // For compatibility, we store these params in the TubeVertex class.

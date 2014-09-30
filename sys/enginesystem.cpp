@@ -4,7 +4,8 @@
 
 
 // To set divide by amplitude on
-#define DIVAMPL
+// #define DIVAMPL
+// #define TIMINGCONSTRAINT
 #define DOMGFAC (1e-2)
 
 #define MASSEQ (0)
@@ -101,8 +102,11 @@ namespace tasystem{
     #endif
 
     us Ndofs=getNDofs();	// This number is without extra omega dof
+    #ifdef TIMINGCONSTRAINT
+    TRACE(100,"Timincontraint on!");
     if(gc.Nf>0)
       Ndofs++;
+    #endif
     esdmat jac(Ndofs,Ndofs);
 
     jactr.setValid();
@@ -119,9 +123,10 @@ namespace tasystem{
     jacTriplets(jactriplets);
 
     us Ndofs=getNDofs();
+    #ifdef TIMINGCONSTRAINT
     if(gc.Nf>0)
       Ndofs++;
-
+    #endif
     jactriplets.zeroOutRow(MASSEQ);  // Replace this equation with global
                                 // mass conservation
     // Reserve some extra space in this tripletlist and add the extra components
@@ -129,8 +134,9 @@ namespace tasystem{
     // cout << "dmtotdx:" <<dmtotdx;
     us dmtotdxsize=dmtotdx.size();
     us extraspace=getNVertex();
-
+    #ifdef TIMINGCONSTRAINT
     if(gc.Nf>0){
+
       vd domg=this->domg();
       if(dampfac>0){
         TRACE(25,"Dampfac set:"<< dampfac << "Norm of domg:"<< arma::norm(domg));
@@ -151,6 +157,7 @@ namespace tasystem{
       
     } // gc.Nf>0
     else			// Only dofs for dmtotdx
+      #endif
       jactriplets.reserveExtraDofs(extraspace);
 
     for(us k=0;k<dmtotdxsize;k++)
@@ -200,18 +207,22 @@ namespace tasystem{
     TRACE(15,"EngineSystem::errorL()");
     
     us Ndofs=getNDofs();
+    #ifdef TIMINGCONSTRAINT
     if(gc.Nf>0)
       Ndofs++;
+    #endif
     evd error(Ndofs);		// Add one for the timing constraint  
-
+    #ifdef TIMINGCONSTRAINT
     if(gc.Nf>0)    {
       error.head(Ndofs-1)=TaSystem::error();
       error(Ndofs-1)=tc.value(*this);
     }
     else {
+      #endif
       error=TaSystem::error();
+    #ifdef TIMINGCONSTRAINT      
     }      
-
+    #endif
     // Strip first equation (for now, assuming it is a continuity
     d curmass=getCurrentMass();
     TRACE(25,"Current mass in system: "<< curmass << " [kg]\n");
@@ -221,6 +232,7 @@ namespace tasystem{
   evd EngineSystem::getRes(){
     TRACE(15,"EngineSystem::getRes()");
     checkInit();
+    #ifdef TIMINGCONSTRAINT
     if(gc.Nf>0){
       us Ndofs=getNDofs()+1;
       evd res(Ndofs);		// Add one for the timing constraint
@@ -229,8 +241,11 @@ namespace tasystem{
       res(Ndofs-1)=gc.getomg();
       return res;
     } else{
+      #endif
       return TaSystem::getRes();
+    #ifdef TIMINGCONSTRAINT
     }
+    #endif
   }
   void EngineSystem::setRes(const vd& res){
     TRACE(15,"EngineSystem::setRes()");

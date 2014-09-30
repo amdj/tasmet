@@ -295,6 +295,8 @@ namespace tasystem{
     }
     else 
       cout << "Jacobian size is too large to show.\n";
+    cout << "Number of columns in Jacobian: " << jac.cols() << "\n";
+    cout << "Number of rows    in Jacobian: " << jac.rows() << "\n";    
   }
   TaSystem::~TaSystem() {
     TRACE(-5,"~TaSystem()");
