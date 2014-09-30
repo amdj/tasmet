@@ -3,6 +3,7 @@
 #include "enginesystem.h"
 #include "isentropictube.h"
 #include "hopkinslaminarduct.h"
+#include "enginepressure.h"
 SPOILNAMESPACE
 using namespace tasystem;
 using namespace tube;
@@ -29,9 +30,13 @@ Solver* SimpleTube(us gp,us Nf,d freq,d L,d r,d Tl,d Tr,vd p1,int loglevel,d kap
   var pL(air,0);
   pL.set(p1);
 
+  d amplitude=0;
+  if(p1.size()>1)
+    amplitude=p1(1);
 
   tube::LeftPressure leftpressure(pL);
-  tube::LeftIsoTWall leftisotwall(air.T0);
+  tube::LeftEnginePressure lep(amplitude);
+  // tube::LeftIsoTWall leftisotwall(air.T0);
 
   tube::RightIsoTWall ritw(Tr);
   tube::RightAdiabaticWall raw;  
@@ -54,7 +59,7 @@ Solver* SimpleTube(us gp,us Nf,d freq,d L,d r,d Tl,d Tr,vd p1,int loglevel,d kap
   if(options & DRIVEN)
     t1->addBc(leftpressure);
   else
-    t1->addBc(leftisotwall);
+    t1->addBc(lep);
   
   if(options & ISOTWALL)
     t1->addBc(ritw);
@@ -70,7 +75,7 @@ Solver* SimpleTube(us gp,us Nf,d freq,d L,d r,d Tl,d Tr,vd p1,int loglevel,d kap
   } else {
     cout << "Not driven system\n";
     EngineSystem sys(air);
-    sys.setTimingConstraint(0,0,2,2);
+    // sys.setTimingConstraint(0,0,2,2);
     sys.addSeg(*t1);
     delete t1;
     return new Solver(sys);

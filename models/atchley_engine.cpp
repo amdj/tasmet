@@ -5,6 +5,7 @@
 #include "isentropictube.h"
 #include "hopkinslaminarduct.h"
 #include "enginesystem.h"
+#include "enginepressure.h"
 using namespace segment;
 using namespace tasystem;
 using namespace tube;
@@ -21,6 +22,7 @@ Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,i
   inittrace(loglevel);
 
   // d p0=376e3;
+  
   d T0=293.15;  
   Globalconf gc(Nf,freq,"helium",T0,p0,kappa);
 
@@ -105,7 +107,11 @@ Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,i
 
     EngineSystem sys(gc);
     cout << "NOT driven system\n";
-    LeftIsoTWall lwall(T0);
+    d amplitude=0;
+    if(Nf)
+      amplitude=p1(1);
+    LeftEnginePressure lwall(amplitude);
+    // LeftIsoTWall lwall(T0);
     resonator.addBc(lwall);
 
     sys.addSeg(resonator);
