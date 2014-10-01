@@ -68,7 +68,7 @@ namespace tube{
     const dmat& DDTfd=v.gc->DDTfd;
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      
-    vd error(v.gc->Ns,fillwith::zeros);
+    vd error(v.gc->Ns(),fillwith::zeros);
     d gamma=this->gamma(v);
     d gamfac=gamma/(gamma-1.0);
 
@@ -160,7 +160,7 @@ namespace tube{
     domg_full+=Wddtkin*DDTfd*(fDFT*(v.rho.tdata()%v.U.tdata()%v.U.tdata()))/v.gc->getomg();                                                        // enthalpy
                                                              // term
     // domg_.subvec(dofnr+1,dofnr+2)=domg_full.subvec(1,2);
-    domg_.subvec(dofnr,dofnr+v.gc->Ns-1)=domg_full;
+    domg_.subvec(dofnr,dofnr+v.gc->Ns()-1)=domg_full;
   }
 
   JacCol Energy::dpL(const TubeVertex& v) const {
@@ -365,7 +365,7 @@ namespace tube{
     // const dmat& fDFT=v.gc->fDFT;
     // const dmat& iDFT=v.gc->iDFT;      
     
-    // vd kappaL(v.gc->Ns,fillwith::zeros);
+    // vd kappaL(v.gc->Ns(),fillwith::zeros);
     // vd Tti=v.T.tdata();
     // vd kappait=v.gc->gas.kappa(Tti);
 
@@ -381,7 +381,7 @@ namespace tube{
     // }
     // TRACE(100,"kappaL(0):"<<kappaL(0));
 
-    vd kappaL(v.gc->Ns,fillwith::ones);
+    vd kappaL(v.gc->Ns(),fillwith::ones);
     kappaL*=v.gc->gas.kappa(v.gc->T0);
     
     // kappaL.zeros();		// WARNING
@@ -393,7 +393,7 @@ namespace tube{
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      
     
-    // vd kappaR(v.gc->Ns,fillwith::zeros);
+    // vd kappaR(v.gc->Ns(),fillwith::zeros);
     // const vd& Tti=v.T.tdata();
     // vd kappait=v.gc->gas.kappa(Tti);
 
@@ -408,7 +408,7 @@ namespace tube{
     //   kappaR=v.w.wRl*kappait+v.w.wRr*kappaitp1;
     // }
     // TRACE(100,"kappaR(0):"<<kappaR(0));
-    vd kappaR(v.gc->Ns,fillwith::ones);
+    vd kappaR(v.gc->Ns(),fillwith::ones);
     kappaR*=v.gc->gas.kappa(v.gc->T0);
 
     // kappaR.zeros();		// WARNING!!

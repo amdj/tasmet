@@ -23,15 +23,15 @@ namespace variable {
 
   class var {
     int dofnr=-1;
-  protected:
+    const Globalconf* gc__=NULL;
     vd timedata,amplitudedata;
+    us Nf=0,Ns=0;
+
   public:
     void setDofNr(us Dofnr){dofnr=Dofnr;}
     int getDofNr() const{return dofnr;}
-    const Globalconf* gc=NULL;
-    us Nf=0,Ns=0;
-    
     var() {}
+    var(const var& o);
     var(const Globalconf&);	// Initialize with zeros
     var(const Globalconf *g): var(*g){}
     var(const Globalconf&,double); // Initialize with one time-average value
@@ -39,7 +39,8 @@ namespace variable {
     var& operator=(const var&);			  // Copy assignment operator
     // var operator()(const var&); //Copy constructor
     // Get methods
-
+    const Globalconf& gc() const {return *gc__;}
+    void setGc(const Globalconf& gc){gc__=&gc;}
     const d& operator()(us i) const;				   // Extract amplitude data result at specific frequency    
 
     const vd& operator()() const { return amplitudedata;} //Extract result

@@ -43,7 +43,7 @@ namespace tube {
     assert(vvertex.size()!=0);
     // Necessary to let it work
     assert(vvertex.size()==other.vvertex.size());
-    assert(gc->Ns==other.gc->Ns);
+    assert(gc->Ns()==other.gc->Ns());
     auto otherv=other.vvertex.begin();
 
     for(auto v=vvertex.begin();v!=vvertex.end();v++){
@@ -246,13 +246,11 @@ namespace tube {
   vd Tube::getErrorAt(us eqnr,us freqnr) const{
     const us& nCells=geom.nCells;
     vd er(nCells,fillwith::zeros);
-    WARN("Unupdated function!!");
-    // assert(eqnr<getNDofs());
-    // auto eqs=this->getEqs();
-    // for(us i=0;i<nCells;i++){
-    //   TubeVertex& cvertex=*static_cast<TubeVertex*>(vvertex[i].get());
-    //   er(i)=(cvertex.eqs.at(eqnr)->error(cvertex))(freqnr);
-    // }
+    assert(eqnr<getNDofs());
+    for(us i=0;i<nCells;i++){
+      TubeVertex& cvertex=*static_cast<TubeVertex*>(vvertex[i].get());
+      er(i)=(cvertex.eqs.at(eqnr)->error(cvertex))(freqnr);
+    }
     return er;
   }
   void Tube::resetHarmonics(){

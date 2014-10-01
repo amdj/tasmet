@@ -39,13 +39,13 @@ namespace tube{
   }
   LeftPressure::LeftPressure(const var& pres):
     pLbc(pres),
-    TLbc(*pres.gc)
+    TLbc(pres.gc())
   {
     TRACE(8,"LeftPressure constructor for given pressure. Temperature computed");    
-    const Globalconf* gc=pres.gc;
-    d T0=gc->T0;
-    d gamma=gc->gas.gamma(T0);
-    vd p0(gc->Ns,fillwith::ones); p0*=gc->p0;
+    const Globalconf& gc=pres.gc();
+    d T0=gc.T0;
+    d gamma=gc.gas.gamma(T0);
+    vd p0(gc.Ns(),fillwith::ones); p0*=gc.p0;
     vd TLbct=T0*pow((p0+pLbc.tdata())/p0,(gamma-1.0)/gamma);		// Adiabatic compression/expansion
     TLbc.settdata(TLbct);
     // TRACE(100,"TLbc(0):"<<TLbc);
@@ -60,8 +60,8 @@ namespace tube{
   {
     TRACE(8,"LeftPressure::initTubeVertex()");
     TubeVertex::initTubeVertex(i,thisseg);
-    pLbc.gc=thisseg.gc;
-    TLbc.gc=thisseg.gc;
+    pLbc.setGc(*thisseg.gc);
+    TLbc.setGc(*thisseg.gc);
     // eqs.at(3).reset(leq.copy()); // Replace equation of state for the
     // boundary condition on pressure
     lmomeq.init(thisseg);
@@ -141,7 +141,7 @@ namespace tube{
   }
   vd LeftPressure::msource() const{
     TRACE(5,"LeftPressure::msource()");
-    vd msource(gc->Ns,fillwith::zeros);
+    vd msource(gc->Ns(),fillwith::zeros);
     // msource=-1.0*lg.SfL*pLbc();
     return msource;
   }

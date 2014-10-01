@@ -19,7 +19,7 @@ namespace tasystem{
     }
     d value(const TaSystem& sys) const {
       TRACE(15,"PickADof::error()");
-      us Ns=sys.gc.Ns;
+      us Ns=sys.gc.Ns();
       return static_cast<segment::Seg*>(sys.getSeg(segnr))->vvertex.at(vertexnr)->getRes()(varnr*Ns+freqnr);
     }
     us dofnr(const TaSystem& sys) const {
@@ -29,7 +29,7 @@ namespace tasystem{
         dofnr+=sys.getSeg(i)->getNDofs();
       for(us i=0;i<vertexnr;i++)
         dofnr+=static_cast<segment::Seg*>(sys.getSeg(segnr))->vvertex.at(i)->getNDofs();
-      dofnr+=varnr*sys.gc.Ns;
+      dofnr+=varnr*sys.gc.Ns();
       dofnr+=freqnr;
       return dofnr;
     }

@@ -26,7 +26,7 @@ namespace tube{
 
   dmat TubeEquation::d_r(const TubeVertex& v) const {
     TRACE(3,"TubeEquation::d_r()");
-    const us Ns=v.gc->Ns;
+    const us Ns=v.gc->Ns();
     if(v.right==NULL)
       return d_l(v);
     else {
@@ -41,7 +41,7 @@ namespace tube{
   
   dmat TubeEquation::d_l(const TubeVertex& v) const {
     TRACE(3,"TubeEquation::d_l()");
-    const us Ns=v.gc->Ns;
+    const us Ns=v.gc->Ns();
     if(v.left==NULL)
       return d_r(v);
     else{
@@ -54,7 +54,7 @@ namespace tube{
   }
   vd TubeEquation::nu(const TubeVertex& v) const {
     TRACE(3,"TubeEquation::nu()");
-    const d& Ns=v.gc->Ns;
+    const d& Ns=v.gc->Ns();
     TRACE(3,"SFSG"<<Ns);    
     vd pi(Ns);
     vd pip1(Ns);

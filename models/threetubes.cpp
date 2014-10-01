@@ -44,7 +44,7 @@ Solver* ThreeTubes(us gp,us Nf,d freq,d p0,d L,d R1,d R2,vd p1,int loglevel,d ka
   HopkinsLaminarDuct t3(geom3,Tr);
 
   var pL(gc);
-  for(us i=0;i<gc.Ns;i++)
+  for(us i=0;i<gc.Ns();i++)
     pL.set(i,p1(i));
   if(options&DRIVEN){
     cout << "Driven system\n";

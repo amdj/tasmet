@@ -70,10 +70,10 @@ namespace tube{
   }
   us TubeVertex::getNDofs() const{
     TRACE(5,"TubeVertex::getNDofs()");
-    return vars.size()*gc->Ns;
+    return vars.size()*gc->Ns();
   }
   us TubeVertex::getNEqs() const{
-    return eqs.size()*gc->Ns;
+    return eqs.size()*gc->Ns();
   }
   void TubeVertex::setDofNrs(us firstdof){
     TRACE(5,"TubeVertex::setDofNrs()");
@@ -81,7 +81,7 @@ namespace tube{
     // in the vars vector
     for(us i=0;i<nvars;i++){
       vars.at(i)->setDofNr(firstdof);
-      firstdof+=gc->Ns;
+      firstdof+=gc->Ns();
     }
   }
   void TubeVertex::setEqNrs(us firsteq){
@@ -90,7 +90,7 @@ namespace tube{
     // in the vars vector
     for(us i=0;i<neqs;i++){
       eqs.at(i)->setDofNr(firsteq);
-      firsteq+=gc->Ns;
+      firsteq+=gc->Ns();
     }
   }
   void TubeVertex::resetHarmonics(){
@@ -127,9 +127,9 @@ namespace tube{
     
 
     // assert(gc!=NULL);
-    TRACE(10,"Ns:"<<gc->Ns);
+    TRACE(10,"Ns:"<<gc->Ns());
     // Set the zero matrix    
-    zero=zeros<dmat>(thistube.gc->Ns,thistube.gc->Ns);
+    zero=zeros<dmat>(thistube.gc->Ns(),thistube.gc->Ns());
     
     // Fill the vector of equation pointers from the Tube instance.
     eqs.clear(); eqs.reserve(6); // Room for one extra equation (minor
@@ -495,7 +495,7 @@ namespace tube{
   
   vd TubeVertex::getp0t() const {
     TRACE(0,"TubeEquation::getp0t()");
-    return gc->p0*vd(gc->Ns,fillwith::ones);
+    return gc->p0*vd(gc->Ns(),fillwith::ones);
   }    
 
   vd TubeVertex::error() const
@@ -503,7 +503,7 @@ namespace tube{
     TRACE(4,"TubeVertex::error() for TubeVertex "<< i << ".");
     // TRACE(4,"Check for position i>0 && i<gp-1...");
     // assert(i>0 && i<seg.geom.gp-1);
-    const us& Ns=gc->Ns;
+    const us& Ns=gc->Ns();
     TRACE(4,"Assignment of Ns survived:"<< Ns);
     us Neq=eqs.size();
     us Neqfull=getNEqs();
@@ -517,7 +517,7 @@ namespace tube{
   void TubeVertex::domg(vd& domg_) const
   {
     TRACE(4,"TubeVertex::domg() for TubeVertex "<< i << ".");
-    const us& Ns=gc->Ns;
+    const us& Ns=gc->Ns();
     TRACE(4,"Assignment of Ns survived:"<< Ns);
     us neqs=eqs.size();
 
@@ -527,7 +527,7 @@ namespace tube{
   }
   vd TubeVertex::getRes() const {			// Get current result vector
     TRACE(4,"TubeVertex::GetRes()");
-    const us& Ns=gc->Ns;
+    const us& Ns=gc->Ns();
     us nvars=vars.size();        // Only return for number of equations
     vd res(getNDofs());
 
@@ -543,11 +543,11 @@ namespace tube{
   }
   void TubeVertex::setRes(vd res){
     TRACE(10,"TubeVertex::setRes(), i="<< i);
-    const us& Ns=gc->Ns;
+    const us& Ns=gc->Ns();
     us nvars=vars.size();        // Only put in for number of equations
     assert(res.size()==getNDofs());
     for(us k=0;k<nvars;k++){
-      vars[k]->set(res.subvec(k*gc->Ns,k*Ns+Ns-1));
+      vars[k]->set(res.subvec(k*gc->Ns(),k*Ns+Ns-1));
     }
     TRACE(10,"TubeVertex::setRes() exiting, i="<< i);    
   }
@@ -564,13 +564,13 @@ namespace tube{
   
   vd TubeVertex::csource() const {
     TRACE(4,"TubeVertex::csource()");
-    return zeros(gc->Ns);}
+    return zeros(gc->Ns());}
   vd TubeVertex::msource() const {
     TRACE(4,"TubeVertex::msource()");
-    return zeros(gc->Ns);}
+    return zeros(gc->Ns());}
   vd TubeVertex::esource() const {
     TRACE(4,"TubeVertex::esource()");
-    vd esource=zeros(gc->Ns);
+    vd esource=zeros(gc->Ns());
     return esource;
   }    
 

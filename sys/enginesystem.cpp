@@ -81,7 +81,7 @@ namespace tasystem{
   evd EngineSystem::error(){
     checkInit();
     TRACE(15,"EngineSystem::error()");
-    if(gc.Nf>0){
+    if(gc.Nf()>0){
       d aval=av.value(*this);
       cout << "Current amplitude value: " << aval << "\n";
       cout << "Current frequency      : " << gc.getfreq() << "\n";
@@ -104,7 +104,7 @@ namespace tasystem{
     us Ndofs=getNDofs();	// This number is without extra omega dof
     #ifdef TIMINGCONSTRAINT
     TRACE(100,"Timincontraint on!");
-    if(gc.Nf>0)
+    if(gc.Nf()>0)
       Ndofs++;
     #endif
     esdmat jac(Ndofs,Ndofs);
@@ -124,7 +124,7 @@ namespace tasystem{
 
     us Ndofs=getNDofs();
     #ifdef TIMINGCONSTRAINT
-    if(gc.Nf>0)
+    if(gc.Nf()>0)
       Ndofs++;
     #endif
     jactriplets.zeroOutRow(MASSEQ);  // Replace this equation with global
@@ -135,7 +135,7 @@ namespace tasystem{
     us dmtotdxsize=dmtotdx.size();
     us extraspace=getNVertex();
     #ifdef TIMINGCONSTRAINT
-    if(gc.Nf>0){
+    if(gc.Nf()>0){
 
       vd domg=this->domg();
       if(dampfac>0){
@@ -155,7 +155,7 @@ namespace tasystem{
       TRACE(14,"Dofnr timingconstraint:"<<tc.dofnr(*this));
       jactriplets.push_back(Triplet(Ndofs-1,tc.dofnr(*this),1));
       
-    } // gc.Nf>0
+    } // gc.Nf()>0
     else			// Only dofs for dmtotdx
       #endif
       jactriplets.reserveExtraDofs(extraspace);
@@ -172,7 +172,7 @@ namespace tasystem{
     TRACE(15,"EngineSystem::Mjac("<<dampfac<<")");
     
     TripletList Mjac=this->Ljac(dampfac); // Its called Mjac, but here it is still Ljac
-    if(gc.Nf>0){
+    if(gc.Nf()>0){
       d aval=av.value(*this);
       assert(aval!=0);		// Otherwise, something is wrong.
       Mjac.multiplyTriplets(1/aval); // Now its nearly Mjac
@@ -192,7 +192,7 @@ namespace tasystem{
   }
   evd EngineSystem::errorM(){
     TRACE(15,"EngineSystem::errorM()");
-    if(gc.Nf>0)    {
+    if(gc.Nf()>0)    {
       d aval=av.value(*this);
       assert(aval!=0);
       // Divide L by amplitude value to
@@ -208,12 +208,12 @@ namespace tasystem{
     
     us Ndofs=getNDofs();
     #ifdef TIMINGCONSTRAINT
-    if(gc.Nf>0)
+    if(gc.Nf()>0)
       Ndofs++;
     #endif
     evd error(Ndofs);		// Add one for the timing constraint  
     #ifdef TIMINGCONSTRAINT
-    if(gc.Nf>0)    {
+    if(gc.Nf()>0)    {
       error.head(Ndofs-1)=TaSystem::error();
       error(Ndofs-1)=tc.value(*this);
     }
@@ -233,7 +233,7 @@ namespace tasystem{
     TRACE(15,"EngineSystem::getRes()");
     checkInit();
     #ifdef TIMINGCONSTRAINT
-    if(gc.Nf>0){
+    if(gc.Nf()>0){
       us Ndofs=getNDofs()+1;
       evd res(Ndofs);		// Add one for the timing constraint
 

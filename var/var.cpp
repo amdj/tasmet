@@ -13,17 +13,16 @@ namespace variable {
   
   var operator*(const double& scalar,const var& var1){ // Pre-multiplication with scalar
     TRACE(0,"operator*(scalar,var)");
-    assert(var1.gc!=NULL);
     vd newtdata=scalar*var1.tdata();
-    return var(*(var1.gc),newtdata);
+    return var(var1.gc(),newtdata);
   }
 
   //***************************************** The var class
   var::var(const Globalconf& gc): var(gc,0.0) {  }
-  var::var(const Globalconf& gc1,double initval) :gc(&gc1),Nf(gc1.Nf),Ns(gc1.Ns) {
+  var::var(const Globalconf& gc1,double initval) :gc__(&gc1),Nf(gc1.Nf()),Ns(gc1.Ns()) {
     TRACE(0,"var::var(const Globalconf& gc, double initval)");
-    timedata=vd(gc->Ns);
-    amplitudedata=vd(gc->Ns);
+    timedata=vd(gc__->Ns());
+    amplitudedata=vd(gc__->Ns());
     settdata(initval);
   }
   var::var(const Globalconf& gc,const vd& timedata):var(gc){ // Create a variable and fill it with time data.
@@ -33,17 +32,24 @@ namespace variable {
   }
   void var::resetHarmonics(){
     TRACE(10,"var::resetHarmonics()");
-    if(gc->Nf>1){
-      for(us i=3;i<gc->Ns;i++)
+    if(gc__->Nf()>1){
+      for(us i=3;i<gc__->Ns();i++)
         amplitudedata(i)=0;
     }
     idft();
   }
+  var::var(const var& other){
+    // Nope, we do not adjust gc__
+    this->Nf=other.Nf;
+    this->Ns=other.Ns;
+    this->timedata=other.timedata;
+    this->amplitudedata=other.amplitudedata;
+  }
   var& var::operator=(const var& other){
     // THIS WOULD COUPLE TO THE WRONG GLOBALCONF when setRes is used
     // between tubes!!!!!
-    if(this->gc==NULL)
-      this->gc=other.gc;
+    if(this->gc__==NULL)
+      this->gc__=other.gc__;
     
     this->Nf=other.Nf;
     this->Ns=other.Ns;
@@ -52,25 +58,25 @@ namespace variable {
     return *this;
   }
   var var::operator+(const var& other) const{
-    var result(*this->gc);
+    var result(*this->gc__);
     result.set(this->operator()()+other());
     return result;
   }
   void var::updateNf(){
-    TRACE(5,"var::updateNf(), this Ns:"<< Ns << ", new Ns:" << gc->Ns << ". Adress gc: " << gc);
-    if(this->Ns!=gc->Ns){
-      assert((gc->Ns%2)==1);	// Check if number of samples is not even
-      if(this->Ns>gc->Ns){
-        amplitudedata=amplitudedata.subvec(0,gc->Ns-1);
+    TRACE(5,"var::updateNf(), this Ns:"<< Ns << ", new Ns:" << gc__->Ns() << ". Adress gc__: " << gc__);
+    if(this->Ns!=gc__->Ns()){
+      assert((gc__->Ns()%2)==1);	// Check if number of samples is not even
+      if(this->Ns>gc__->Ns()){
+        amplitudedata=amplitudedata.subvec(0,gc__->Ns()-1);
       }
       else{
         vd oldadata=amplitudedata;
-        amplitudedata=vd(gc->Ns,fillwith::zeros);
+        amplitudedata=vd(gc__->Ns(),fillwith::zeros);
         // TRACE(25,"New amplitude data size: "<< amplitudedata.size());
         amplitudedata.subvec(0,this->Ns-1)=oldadata;
       }
-      this->Ns=gc->Ns;		       // Update this number of samples
-      timedata=vd(gc->Ns,fillwith::zeros); // Reinitialize timedata
+      this->Ns=gc__->Ns();		       // Update this number of samples
+      timedata=vd(gc__->Ns(),fillwith::zeros); // Reinitialize timedata
       idft();
     }
   }
@@ -78,15 +84,15 @@ namespace variable {
     // variables in time domain
     TRACE(0,"var::operator*(const var& var2) const");
     assert(this->Ns==var2.Ns);
-    var result(this->gc);
+    var result(this->gc__);
     vd tdata=this->tdata()%var2.tdata();
     result.settdata(tdata);
     return result;
   }
   var var::operator*(const d& scalar) const {	// Post-multiplication with scalar
-    assert(this->gc!=NULL);
+    assert(this->gc__!=NULL);
     vd thisadata=this->tdata();
-    return var(*(this->gc),scalar*thisadata);
+    return var(*(this->gc__),scalar*thisadata);
   }
   
   // Get methods (which require implementation)
@@ -114,7 +120,7 @@ namespace variable {
     vc cres=getcRes();
     for(us n=0;n<Nf+1;n++)
       {
-        result+=real(cres(n)*exp(I*double(n)*gc->getomg()*t));
+        result+=real(cres(n)*exp(I*double(n)*gc__->getomg()*t));
       }
     return result;
   }
@@ -130,7 +136,7 @@ namespace variable {
   void var::set(const vc& res)
   {
     TRACE(0,"var::set(const vc& res)");
-    assert(res.size()==gc->Nf+1);
+    assert(res.size()==gc__->Nf()+1);
     amplitudedata(0)=res(0).real();
     for(us i=1;i<Nf+1;i++){
       amplitudedata(2*i-1)=res(i).real();
@@ -175,10 +181,10 @@ namespace variable {
 
   }
   dmat var::freqMultiplyMat() const{
-    dmat result(gc->Ns,gc->Ns,fillwith::zeros);
+    dmat result(gc__->Ns(),gc__->Ns(),fillwith::zeros);
     result(0,0)=amplitudedata(0);
     if(Nf>0){
-      for(us j=1;j<gc->Nf+1;j++){
+      for(us j=1;j<gc__->Nf()+1;j++){
         result(2*j-1,2*j-1)= amplitudedata(2*j-1);
         result(2*j-1,2*j  )=-amplitudedata(2*j  ); // Yes only one
         // minus sign
@@ -192,16 +198,16 @@ namespace variable {
   // Internal methods for syncing time and amplitude data
   void var::dft() {
     TRACE(0,"var::dft()");
-    amplitudedata=gc->fDFT*timedata;
+    amplitudedata=gc__->fDFT*timedata;
   }
   void var::idft() { //Internal idft
-    timedata=gc->iDFT*amplitudedata;
+    timedata=gc__->iDFT*amplitudedata;
   }
 
   //Get a variable which is the time derivative of the current one
   var var::ddt() const {
-    var result(*(this->gc));
-    vd newadata=gc->DDTfd*amplitudedata;
+    var result(*(this->gc__));
+    vd newadata=gc__->DDTfd*amplitudedata;
     result.set(newadata);
     return result;
   }
@@ -210,7 +216,7 @@ namespace variable {
   var var::operator/(const var& var2) const
   {
     vd tdata=this->tdata()/var2.tdata();
-    var newvar(*(this->gc));
+    var newvar(*(this->gc__));
     newvar.settdata(tdata);
     return newvar;
   }

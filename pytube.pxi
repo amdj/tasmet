@@ -13,7 +13,7 @@ cdef extern from "globalconf.h" namespace "tasystem":
         void setfreq(d)        
         d getomg()
         void setNf(us)
-        us Nf
+        us Nf()
 
 cdef extern from "seg.h" namespace "segment":
     cdef cppclass Seg:

@@ -7,7 +7,7 @@ namespace tube{
   vd State::error(const TubeVertex& v)
    const {
     TRACE(6,"State::Error()");
-    vd error(v.gc->Ns,fillwith::zeros);
+    vd error(v.gc->Ns(),fillwith::zeros);
     // TRACE(-1,"State p0:"<<p0);
     error+=0.5*(v.pL()()+v.pR()());
     error(0)+=v.gc->p0;	       // Add p0 part
@@ -29,11 +29,11 @@ namespace tube{
   }
   JacCol State::dpL(const TubeVertex& v) const {
     TRACE(0,"State::dpi");
-    return JacCol(v.pL(),0.5*STATE_SCALE*eye<dmat>(v.gc->Ns,v.gc->Ns));
+    return JacCol(v.pL(),0.5*STATE_SCALE*eye<dmat>(v.gc->Ns(),v.gc->Ns()));
   }
   JacCol State::dpR(const TubeVertex& v) const {
     TRACE(0,"State::dpi");
-    return JacCol(v.pR(),0.5*STATE_SCALE*eye<dmat>(v.gc->Ns,v.gc->Ns));
+    return JacCol(v.pR(),0.5*STATE_SCALE*eye<dmat>(v.gc->Ns(),v.gc->Ns()));
   }
   JacCol State::dTi(const TubeVertex& v)
    const {
@@ -53,7 +53,7 @@ namespace tube{
   vd StateL::error(const TubeVertex& v)
    const {
     TRACE(6,"StateL::Error()");
-    vd error(v.gc->Ns,fillwith::zeros);
+    vd error(v.gc->Ns(),fillwith::zeros);
     // TRACE(-1,"StateL p0:"<<p0);
     error+=v.pL()();
     error(0)+=v.gc->p0;	       // Add p0 part
@@ -85,7 +85,7 @@ namespace tube{
   JacCol StateL::dpL(const TubeVertex& v)
    const {
     TRACE(0,"StateL::dpi");
-    return JacCol(v.pL(),STATE_SCALE*eye<dmat>(v.gc->Ns,v.gc->Ns));
+    return JacCol(v.pL(),STATE_SCALE*eye<dmat>(v.gc->Ns(),v.gc->Ns()));
   }
 
   JacCol StateL::dTi(const TubeVertex& v)
@@ -132,7 +132,7 @@ namespace tube{
     vd StateR::error(const TubeVertex& v)
    const {
     TRACE(6,"StateR::Error()");
-    vd error(v.gc->Ns,fillwith::zeros);
+    vd error(v.gc->Ns(),fillwith::zeros);
     // TRACE(-1,"StateL p0:"<<p0);
     error+=v.pR()();
     error(0)+=v.gc->p0;	       // Add p0 part
@@ -166,7 +166,7 @@ namespace tube{
   JacCol StateR::dpR(const TubeVertex& v)
    const {
     TRACE(10,"StateR::dpR");
-    return JacCol(v.pR(),STATE_SCALE*eye<dmat>(v.gc->Ns,v.gc->Ns));
+    return JacCol(v.pR(),STATE_SCALE*eye<dmat>(v.gc->Ns(),v.gc->Ns()));
   }
   JacCol StateR::dTi(const TubeVertex& v)
    const {

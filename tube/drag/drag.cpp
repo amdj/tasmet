@@ -4,7 +4,7 @@
 #include "segbase.h"
 namespace tube{
 
-  vd DragResistance::drag(const TubeVertex& v) const {return vd(v.gc->Ns,fillwith::zeros);}
+  vd DragResistance::drag(const TubeVertex& v) const {return vd(v.gc->Ns(),fillwith::zeros);}
   dmat DragResistance::dUi(const TubeVertex& v) const {return v.zero;}
   // dmat DragResistance::drhoi(const TubeVertex& v) const {return v.zero;}
   // dmat DragResistance::dpi(const TubeVertex& v) const {return v.zero;}

@@ -32,7 +32,7 @@ namespace tube{
   vd Momentum::error(const TubeVertex& v) const {		// Error in momentum equation
 
     TRACE(6,"Momentum::Error()");
-    vd error(v.gc->Ns,fillwith::zeros);
+    vd error(v.gc->Ns(),fillwith::zeros);
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;
     const vd& rhoti=v.rho.tdata();
@@ -95,10 +95,10 @@ namespace tube{
     // Possibly later adding drag->domg();
     const dmat& DDTfd=v.gc->DDTfd;
     const dmat& fDFT=v.gc->fDFT;
-    const us& Ns=v.gc->Ns;
+    const us& Ns=v.gc->Ns();
     vd domg_full=v.gc->DDTfd*Wddt*fDFT*(v.rho.tdata()%v.U.tdata())/v.gc->getomg();
     // domg_.subvec(dofnr+1,dofnr+2)=domg_full.subvec(1,2);
-    domg_.subvec(dofnr,dofnr+v.gc->Ns-1)=domg_full;
+    domg_.subvec(dofnr,dofnr+v.gc->Ns()-1)=domg_full;
     TRACE(0,"Momentum::domg() done");
   }
   JacCol Momentum::dUi(const TubeVertex& v) const {
@@ -195,14 +195,14 @@ namespace tube{
   JacCol Momentum::dpR(const TubeVertex& v) const {
     TRACE(0,"Momentum::dpR()");
 
-    dmat I(v.gc->Ns,v.gc->Ns,fillwith::eye);
+    dmat I(v.gc->Ns(),v.gc->Ns(),fillwith::eye);
     JacCol dpR(v.pR(),WpR*I);
     return dpR;
   }
   JacCol Momentum::dpL(const TubeVertex& v) const {
     TRACE(0,"Momentum::dpR()");
 
-    dmat I(v.gc->Ns,v.gc->Ns,fillwith::eye);
+    dmat I(v.gc->Ns(),v.gc->Ns(),fillwith::eye);
     JacCol dpL(v.pL(),WpL*I);
     return dpL;
   }

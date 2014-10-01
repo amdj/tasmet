@@ -46,8 +46,8 @@ namespace tube{
   vd Continuity::error(const TubeVertex& v) const {	// Current error in continuity equation
     // The default boundary implementation is an adiabatic no-slip wall.
     TRACE(6,"Continuity::Error()");
-    vd error(v.gc->Ns,fillwith::zeros);
-    TRACE(10,"Ns:"<<v.gc->Ns);
+    vd error(v.gc->Ns(),fillwith::zeros);
+    TRACE(10,"Ns:"<<v.gc->Ns());
     error+=Wddt*v.gc->DDTfd*v.rho();
     error+=Wi*v.gc->fDFT*(v.rho.tdata()%v.U.tdata());
     if(v.left!=NULL){
@@ -79,7 +79,7 @@ namespace tube{
     TRACE(0,"Continuity::domg()");
     vd domg_full=Wddt*v.gc->DDTfd*v.rho()/v.gc->getomg();
     // domg_.subvec(dofnr+1,dofnr+2)=domg_full.subvec(1,2); 
-    domg_.subvec(dofnr,dofnr+v.gc->Ns-1)=domg_full;     
+    domg_.subvec(dofnr,dofnr+v.gc->Ns()-1)=domg_full;     
   }
   JacCol Continuity::drhoi(const TubeVertex& v) const {
     TRACE(0,"Continuity::drhoi()");

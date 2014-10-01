@@ -25,9 +25,10 @@ namespace tasystem{
     d Mass=0;			/* Fluid mass in the system (should remain constant) */
     d omg;		// The "base" frequency in rad/s
     bool driven=true;
+    us Nf__;			// Number of frequencies to solve for
+    us Ns__;			// Corresponding number of time samples
+
   public:
-    us Nf;			// Number of frequencies to solve for
-    us Ns;			// Corresponding number of time samples
     d T0,p0,rho0;			/* Reference temperature and pressure (used to initialize a lot of variables. */
     d c0;		// Typical cross-sectional area,
 				// finite volume size, speed of sound,
@@ -38,6 +39,8 @@ namespace tasystem{
   public:
     Globalconf(){}
     Globalconf(us Nf,d freq,string Gas="air",d T0=293.15,d p0=101325.0,d kappa=1.0,bool driven=true);
+    const us& Nf() const {return Nf__;}
+    const us& Ns() const {return Ns__;}    
     static Globalconf airSTP(us Nf,d freq,d kappa=1.0);
     ~Globalconf(){TRACE(-5,"~Globalconf()");}
     const TaSystem* getSys()const { return thesys;}

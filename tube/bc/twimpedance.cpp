@@ -78,7 +78,7 @@ namespace tube{
     TRACE(15,"TwImpedance::esource()");
     const dmat& fDFT=gc->fDFT;
     const dmat& iDFT=gc->iDFT;
-    vd esource(gc->Ns,fillwith::zeros);
+    vd esource(gc->Ns(),fillwith::zeros);
     d p0=gc->p0;
     d T0=gc->T0;
     d c0=gc->gas.cm(T0);
@@ -90,7 +90,7 @@ namespace tube{
     // TRACE(100,"prt:"<<prt);
     vd Trt=T0*pow(prt/p0,(gamma-1.0)/gamma);		// Adiabatic compression/expansion
     // TRACE(100,"Trt:"<<Trt);
-    vd T0t=gc->T0*vd(gc->Ns,fillwith::ones);
+    vd T0t=gc->T0*vd(gc->Ns(),fillwith::ones);
     vd kappaR=gc->gas.kappa(T0t);
     // vd kappaR=eright.kappaR();
     // TRACE(100,"kappaR:"<<kappaR);
@@ -160,7 +160,7 @@ namespace tube{
   // }
   vd RightTwImpedanceEq::error(const TubeVertex& v) const {
     TRACE(10,"TwImpedanceMomentumEq::Error()");
-    vd error(v.gc->Ns,fillwith::zeros);
+    vd error(v.gc->Ns(),fillwith::zeros);
     // Add the normal stuff
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;    
@@ -198,7 +198,7 @@ namespace tube{
     TRACE(10,"RightTwImpedanceEq::dUi()");
     TRACE(5,"dUi wRNm1:"<< v.wRNm1);
 
-    return JacCol(v.U,eye(v.gc->Ns,v.gc->Ns));
+    return JacCol(v.U,eye(v.gc->Ns(),v.gc->Ns()));
   }
   // JacCol RightTwImpedanceEq::dUim1(const TubeVertex& v) const{
   //   TRACE(10,"RightTwImpedanceEq::dUim1()");
@@ -206,8 +206,8 @@ namespace tube{
   // }
 
   dmat dp(const TubeVertex& v) {
-    dmat dp(v.gc->Ns,v.gc->Ns,fillwith::zeros);
-    const us& Ns=v.gc->Ns;
+    dmat dp(v.gc->Ns(),v.gc->Ns(),fillwith::zeros);
+    const us& Ns=v.gc->Ns();
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;    
     d T0=v.gc->T0;

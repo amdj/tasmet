@@ -117,7 +117,7 @@ namespace tasystem{
     for(auto seg=segs.begin();seg!=segs.end();seg++)      {
       (*seg)->updateNf();
     }
-    TRACE(25,"New Ns:"<< gc.Ns << " . Adres gc: " << &gc);
+    TRACE(25,"New Ns:"<< gc.Ns() << " . Adres gc: " << &gc);
 
     setDofEqNrs();
   }
@@ -188,7 +188,7 @@ namespace tasystem{
     // the different segments in the sense that blocks of Jacobian
     // matrix parts have to be moved to the right place etc. To be
     // continued...
-    const us& Ns=gc.Ns;
+    const us& Ns=gc.Ns();
     us Ndofs=getNDofs();
     TRACE(-1,"Ndofs:"<<Ndofs);    
     TripletList triplets;
@@ -222,7 +222,7 @@ namespace tasystem{
     checkInit();
     us Ndofs=getNDofs();
     TRACE(14,"TaSystem::GetRes(), Ndofs:"<< Ndofs);
-    const us& Ns=gc.Ns;
+    const us& Ns=gc.Ns();
     evd res(Ndofs);
     
     vd Res(res.data(),Ndofs,false,false);

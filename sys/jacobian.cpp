@@ -7,11 +7,11 @@ namespace tasystem{
 
   JacCol::JacCol(const variable::var& thevar):
     __coldof(thevar.getDofNr()),
-    __data(thevar.gc->Ns,thevar.gc->Ns,fillwith::zeros)
+    __data(thevar.gc().Ns(),thevar.gc().Ns(),fillwith::zeros)
   {  }
   JacCol::JacCol(us coldof,const tasystem::Globalconf* gc):
     __coldof(coldof),
-    __data(gc->Ns,gc->Ns,fillwith::zeros)
+    __data(gc->Ns(),gc->Ns(),fillwith::zeros)
   {  }
   JacCol::JacCol(us coldof,const dmat& data):
     __coldof(coldof),

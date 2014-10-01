@@ -80,7 +80,7 @@ namespace tube{
   }
   vd HopkinsHeatSource::heat(const TubeVertex& v) const{
     TRACE(5,"HopkinsHeatSource::heat(v)");
-    vd heat(v.gc->Ns,fillwith::zeros);
+    vd heat(v.gc->Ns(),fillwith::zeros);
     variable::var htcoefH(v.gc);
     variable::var htcoefQ(v.gc);
     htcoefH.set(HeatTransferCoefH(v));
@@ -96,7 +96,7 @@ namespace tube{
     TRACE(5,"HopkinsHeatSource::dTi(v)");
     variable::var htcoefH(v.gc);
     htcoefH.set(HeatTransferCoefH(v));
-    dmat dTi(v.gc->Ns,v.gc->Ns,fillwith::zeros);
+    dmat dTi(v.gc->Ns(),v.gc->Ns(),fillwith::zeros);
     dTi=htcoefH.freqMultiplyMat();
     return dTi;
   }
@@ -104,12 +104,12 @@ namespace tube{
     TRACE(5,"HopkinsHeatSource::dUi(v)");
     variable::var htcoefQ(v.gc);
     htcoefQ.set(HeatTransferCoefQ(v));
-    dmat dUi(v.gc->Ns,v.gc->Ns,fillwith::zeros);
+    dmat dUi(v.gc->Ns(),v.gc->Ns(),fillwith::zeros);
     dUi=htcoefQ.freqMultiplyMat()/v.lg.vSf;
     return dUi;
   }  
   vc HopkinsHeatSource::HeatTransferCoefQ(const TubeVertex& v) const{
-    const us& Nf=v.gc->Nf;
+    const us& Nf=v.gc->Nf();
     vc htcoefQ(Nf+1,fillwith::zeros);
 
     // Obtain dTwdx
@@ -136,7 +136,7 @@ namespace tube{
   }
   vc HopkinsHeatSource::HeatTransferCoefH(const TubeVertex& v) const{
     TRACE(8,"HopkinsHeatSource::HeatTransferCoefH()");
-    const us& Nf=v.gc->Nf;
+    const us& Nf=v.gc->Nf();
     d T0=v.T(0);	// Time-averaged temperature
     d kappa0=v.gc->gas.kappa(T0);
     d p0=v.p(0)+v.gc->p0;

@@ -33,10 +33,10 @@ namespace tube{
      const dmat& fDFT=gc->fDFT;
      const dmat& iDFT=gc->iDFT;
      // Source term related to temperature boundary condition
-     vd esource(gc->Ns,fillwith::zeros);
+     vd esource(gc->Ns(),fillwith::zeros);
      TRACE(0,"Tbc:"<<Tbc);
-     vd TRt=Tbc*vd(gc->Ns,fillwith::ones);
-     vd T0=gc->T0*vd(gc->Ns,fillwith::ones);
+     vd TRt=Tbc*vd(gc->Ns(),fillwith::ones);
+     vd T0=gc->T0*vd(gc->Ns(),fillwith::ones);
      vd kappaR=e.kappaR(*this);    
      // vd kappaR=gc->gas.kappa(T0);
      esource+=-1.0*lg.SfR*fDFT*(kappaR%TRt)/lg.xr;
@@ -67,10 +67,10 @@ namespace tube{
      const dmat& fDFT=gc->fDFT;
      const dmat& iDFT=gc->iDFT;
      // Source term related to temperature boundary condition
-     vd esource(gc->Ns,fillwith::zeros);
+     vd esource(gc->Ns(),fillwith::zeros);
      TRACE(0,"Tbc:"<<Tbc);
-     vd TLt=Tbc*vd(gc->Ns,fillwith::ones);
-     vd T0=gc->T0*vd(gc->Ns,fillwith::ones);
+     vd TLt=Tbc*vd(gc->Ns(),fillwith::ones);
+     vd T0=gc->T0*vd(gc->Ns(),fillwith::ones);
      vd kappaL=e.kappaL(*this);    
      // vd kappaR=gc->gas.kappa(T0);
      esource+=-1.0*lg.SfL*fDFT*(kappaL%TLt)/lg.xl;

@@ -28,7 +28,7 @@ namespace tube{
 
   vc LaminarDragResistance::ComplexResistancecoef(const TubeVertex& v) const {
     TRACE(0,"LaminarDragResistance::ComplexResistancecoef()");
-    const us& Nf=v.gc->Nf;
+    const us& Nf=v.gc->Nf();
     const us& i=v.i;
     d T0=v.T(0);	// Time-averaged temperature
     d mu0=v.gc->gas.mu(T0);

@@ -16,7 +16,7 @@ cdef class pytubeBase:
         if self.sol!=NULL:
             del self.sol
     cpdef getNf(self):
-        return self.sol[0].sys().gc.Nf
+        return self.sol[0].sys().gc.Nf()
     cpdef getL(self,nr):
         assert(nr<self.ntubes)
         return self.tube[nr].geom.L

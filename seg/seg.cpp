@@ -40,7 +40,7 @@ namespace segment{
   void Seg::jac(Jacobian& tofill) const{			// Return Jacobian matrix of error operator
     // sdmat Seg::Jac(){			// Return Jacobian matrix of error operator    
     TRACE(8," Seg::Jac() for Segment "<< getNumber() << ".");
-    const us& Ns=gc->Ns;
+    const us& Ns=gc->Ns();
     us nVertex=vvertex.size();
 
     for(us j=0;j<nVertex;j++){			   // Fill the Jacobian
@@ -57,7 +57,7 @@ namespace segment{
     assert(gc!=NULL);
     vd Result(getNDofs(),fillwith::zeros);
     us nVertex=vvertex.size();    
-    us Ns=gc->Ns;
+    us Ns=gc->Ns();
     us vndofs,curpos=0;
     for(us k=0; k<nVertex;k++) {
       vndofs=vvertex.at(k)->getNDofs();
@@ -73,7 +73,7 @@ namespace segment{
     assert(gc!=NULL);
     vd error(getNEqs(),fillwith::zeros);
     us nVertex=vvertex.size();    
-    us Ns=gc->Ns;
+    us Ns=gc->Ns();
     us vneqs,curpos=0;
 
     for(us k=0; k<nVertex;k++) {
@@ -86,7 +86,7 @@ namespace segment{
   }
   void Seg::domg(vd& domg_v) const{
     TRACE(8,"Seg::Error()");
-    const us& Ns=gc->Ns;
+    const us& Ns=gc->Ns();
     us nVertex=vvertex.size();    
     // vd domg(getNDofs(),fillwith::zeros);
     us vndofs,curpos=0;
@@ -99,7 +99,7 @@ namespace segment{
     TRACE(8,"Seg::SetRes()");
     assert(res.size()==getNDofs());
     // const us& Neq=(vvertex[0]).Neq;
-    const us& Ns=gc->Ns;
+    const us& Ns=gc->Ns();
     us vertexdofs;
     us firstdof=0;
     for(us k=0; k<vvertex.size();k++) {

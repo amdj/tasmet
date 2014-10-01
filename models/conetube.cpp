@@ -25,7 +25,7 @@ Solver* ConeTube(us gp,us Nf,d freq,d L,d r1,d r2,vd p1,int loglevel,d kappa,us 
     
   TaSystem sys(gc);
   var pL(gc);
-  for(us i=0;i<gc.Ns;i++)
+  for(us i=0;i<gc.Ns();i++)
     pL.set(i,p1(i));
   LeftPressure pleft(pL);
   // TwImpedance rightbc;

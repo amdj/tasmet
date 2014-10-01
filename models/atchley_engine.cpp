@@ -86,7 +86,7 @@ Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,i
     cout << "Driven system\n";
     TaSystem sys(gc);
     var pL(gc);
-    for(us i=0;i<gc.Ns;i++)
+    for(us i=0;i<gc.Ns();i++)
       pL.set(i,p1(i));
     LeftPressure l1(pL);
 
