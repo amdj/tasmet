@@ -48,6 +48,7 @@ namespace tube{
 				    // system to all dofs.
     virtual void resetHarmonics();
     virtual void setRes(const SegBase& other); // To copy from a
+    virtual void updateNf();    
     // *similar* segment
     vd getResAt(us varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
     vd getErrorAt(us varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.

@@ -9,6 +9,7 @@ namespace segment{
     // Initialize the Globalconf* ptr and i (the vertex number), 
     this->i=i;
     this->gc=seg.gc;
+    // TRACE(25,"Address gc:" <<gc);
     lg=seg.geom.localGeom(i);
   }
   // void Vertex::setLeft(const Vertex& v) { vleft.push_back(&v);}

@@ -43,6 +43,9 @@ namespace tasystem{
     
 
   }
+  void Globalconf::setNf(us Nf){
+    set(Nf,this->omg/2/number_pi);
+  }
   void Globalconf::set(us Nf,d freq){
     TRACE(15,"Globalconf::set(Nf,freq)");
     //ctor

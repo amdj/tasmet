@@ -148,6 +148,7 @@ namespace tube{
     nCells=thistube.geom.nCells;
 
     // Intialize the variables for the right number of harmonics.
+    // TRACE(25,"Address gc:" <<gc);    
     rho=var(*gc);
     U=var(*gc);
     T=var(*gc);
@@ -534,6 +535,11 @@ namespace tube{
       res.subvec(k*Ns,k*Ns+Ns-1)=(*vars[k])();
     }
     return res;
+  }
+  void TubeVertex::updateNf(){
+    TRACE(10,"TubeVertex::setNf()");
+    for(auto var=vars.begin();var!=vars.end();var++)
+      (*var)->updateNf();
   }
   void TubeVertex::setRes(vd res){
     TRACE(10,"TubeVertex::setRes(), i="<< i);

@@ -31,8 +31,8 @@ Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,i
   d Ltot=1.0;
   // ############################## Resonator
   d Lresendorig=87.97e-2;
-  d Lres=0.774;
-
+  // d Lres=0.774;
+  d Lres=Lresendorig;
   // WARN("Wrong length of resonator");
   // d Lres=87.97e-2*1.5;
   us gpres=max(round(gp*Lres/Ltot),4);  
@@ -123,9 +123,13 @@ Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,i
     sys.connectSegs(3,4,tasystem::SegCoupling::tailhead);  
     
     // CHANGED to constraint on second harmonic, see what happens
-    // ensys.setTimingConstraint(0,0,3,4);
     sys.setTimingConstraint(0,0,2,2);
     sys.setAmplitudeDof(0,0,2,1);
+
+    // sys.setTimingConstraint(0,0,2,4);
+    // sys.setAmplitudeDof(0,0,2,3);
+    
+    
     Solver* Sol=new Solver(sys);
     return Sol;
   }

@@ -40,12 +40,11 @@ namespace variable {
     // var operator()(const var&); //Copy constructor
     // Get methods
 
-    d operator()(us i) const;				   // Extract amplitude data result at specific frequency    
+    const d& operator()(us i) const;				   // Extract amplitude data result at specific frequency    
 
     const vd& operator()() const { return amplitudedata;} //Extract result
 						   //vector
     void resetHarmonics();
-    vd getResfluc() const { return amplitudedata.subvec(1,Ns-1);}
     vc getcRes() const; //Implementation for complex amplitude vector
     const vd& tdata() const  {return timedata; } //Get time data vector
     d tdata(d t) const; //Extract the estimated value for a given time t
@@ -80,12 +79,12 @@ namespace variable {
     // can be obtained by getting the matrix-variant of the first
     // variable. The following function will give the effective matrix
     dmat freqMultiplyMat() const;
-
+    void updateNf();
     
   protected:
     void dft();
     void idft();
-    void updateNf();
+
   };
 
 

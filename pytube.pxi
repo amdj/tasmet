@@ -12,6 +12,7 @@ cdef extern from "globalconf.h" namespace "tasystem":
         d getfreq()
         void setfreq(d)        
         d getomg()
+        void setNf(us)
         us Nf
 
 cdef extern from "seg.h" namespace "segment":
@@ -32,6 +33,7 @@ cdef extern from "tasystem.h" namespace "tasystem":
         Seg* getSeg(us i)
         void showJac()
         void resetHarmonics()
+        void setNf(us)
         
 cdef extern from "solver.h" namespace "tasystem":
     cdef cppclass Solver:

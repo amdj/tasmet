@@ -32,6 +32,11 @@ namespace tube{
   {
     TRACE(8,"LeftPressure full constructor");
   }
+  void LeftPressure::updateNf(){
+    pLbc.updateNf();
+    TLbc.updateNf();
+    TubeVertex::updateNf();
+  }
   LeftPressure::LeftPressure(const var& pres):
     pLbc(pres),
     TLbc(*pres.gc)

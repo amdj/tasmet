@@ -96,6 +96,7 @@ namespace tube{
     virtual void setRes(vd res);			  // Set result vector to res
     virtual void domg(vd& ) const;
     virtual vd getRes() const;			  // Extract current result vector
+    virtual void updateNf();
     // Convenience function, we need a lot of static (background
     // pressure) addings in the equations.
     vd getp0t() const;

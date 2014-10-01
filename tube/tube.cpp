@@ -31,6 +31,11 @@ namespace tube {
     bcRight.reset();
     vvertex.clear();
   }
+  void Tube::updateNf(){
+    for(auto v=vvertex.begin();v!=vvertex.end();v++){
+      (*v)->updateNf();
+    }
+  }
   void Tube::setRes(const SegBase& otherseg){
     TRACE(20,"Tube::setRes(othertube)");
     const Tube& other=asTube_const(otherseg);

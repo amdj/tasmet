@@ -6,7 +6,7 @@
 // To set divide by amplitude on
 #define DIVAMPL
 #define TIMINGCONSTRAINT
-#define DOMGFAC (1e0)
+#define DOMGFAC (1e-2)
 
 #define MASSEQ (0)
 // #define MASSEQ (0)
@@ -139,8 +139,8 @@ namespace tasystem{
 
       vd domg=this->domg();
       if(dampfac>0){
-        TRACE(25,"Dampfac set:"<< dampfac << "\nNorm of domg:"<< arma::norm(domg));
-        // domg*=DOMGFAC*dampfac;
+        TRACE(15,"Dampfac set:"<< dampfac << "\nNorm of domg:"<< arma::norm(domg));
+        domg*=DOMGFAC/dampfac;
       }
       // TRACE(50,"domg:"<<domg);
       us domgsize=domg.size();
@@ -225,7 +225,7 @@ namespace tasystem{
     #endif
     // Strip first equation (for now, assuming it is a continuity
     d curmass=getCurrentMass();
-    TRACE(25,"Current mass in system: "<< curmass << " [kg]\n");
+    TRACE(20,"Current mass in system: "<< curmass << " [kg] \n");
     error(MASSEQ)=curmass-gc.getMass();
     return error;
   }

@@ -22,6 +22,9 @@ cdef class pytubeBase:
         return self.tube[nr].geom.L
     cpdef nTubes(self):
         return self.ntubes
+    cpdef setNf(self,Nf):
+        self.sol.sys().setNf(Nf)
+        
     cpdef getFreq(self):
         return self.sol[0].sys().gc.getfreq()
     cpdef setFreq(self,d freq):

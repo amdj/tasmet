@@ -33,7 +33,6 @@ namespace tasystem{
   class TaSystem{
   private:
     vector<SegConnection> segConnections;
-
     bool hasInit=false;
   protected:
     vector<std::unique_ptr<SegBase> > segs;		
@@ -59,7 +58,8 @@ namespace tasystem{
     virtual evd getRes();			// Extract result vector
     virtual void setRes(const vd& resvec);	// Set result vector
     void setRes(const evd& res);
-    virtual esdmat jac(d dummy=-1);		// Return Jacobian matrix    
+    virtual esdmat jac(d dummy=-1);		// Return Jacobian matrix
+    void setNf(us);
   protected:
     void jacTriplets(TripletList&);
   public:
@@ -82,6 +82,7 @@ namespace tasystem{
       if(!hasInit){ init(); hasInit=true; }
     }
   private:
+    void setDofEqNrs();
     // A vector of boundary conditions is required
     void copyTaSystem(const TaSystem& other);
     void cleanup();

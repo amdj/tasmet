@@ -25,7 +25,9 @@ namespace segment{
     virtual ~Vertex(){}
     // const VertexVec& getLeft() const {return vleft;}
     // const VertexVec& getRight() const {return vright;}
-    virtual vd error() const=0;		       // Compute error for this gridpoint
+    virtual vd error() const=0;		       // Compute error for this
+                                           // gridpoint
+    virtual void updateNf()=0;
     virtual void jac(Jacobian&) const=0;		       // Fill complete Jacobian for this node
     virtual void setRes(vd res)=0;			  // Set result vector to res
     virtual vd getRes() const=0;			  // Extract current result vector

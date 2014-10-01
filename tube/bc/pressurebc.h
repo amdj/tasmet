@@ -44,7 +44,7 @@ namespace tube{
   public:
     // PressureBcEnergyEq peq;
     virtual void show() const;
-
+    virtual void updateNf();
     virtual const variable::var& pL() const final { return pLbc;}    
     LeftPressure(const var&);
     LeftPressure(const var&,const var& temp);

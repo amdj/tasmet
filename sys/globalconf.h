@@ -48,7 +48,7 @@ namespace tasystem{
     d getomg() const {return omg;}
     d getfreq() const {return omg/2/number_pi;}
     vd omgvec;    
-
+    void setNf(us);
     void setp0(d p0){this->p0=p0; this->rho0=gas.rho(T0,p0);}
     void set(us Nf,d freq);	// Set data for new frequency and
 				// number of samples

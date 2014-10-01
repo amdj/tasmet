@@ -56,26 +56,14 @@ namespace tasystem{
     else
       return NULL;
   }
+  void TaSystem::setDofEqNrs(){
+    TRACE(14,"TaSystem::setDofnrs()");
 
-  void TaSystem::init(){
-    TRACE(14,"TaSystem::init()");
-    us Nsegs=getNSegs();
     us Ndofs=0;
-
-    us i=0;
-    for(auto v=segConnections.begin();v!=segConnections.end();++v){
-      TRACE(90,"Connecting segment connection " << i << "...");
-      coupleSegs(*v,*this);
-      i++;
-    }
     us firstdof=0;
     us firsteq=0;
-
-    for(us i=0;i<Nsegs;i++)      {
-      TRACE(9,"Initializing Segment "<<i<<"...");
-      assert(segs.at(i));
-      segs.at(i)->init(gc);
-
+    us Nsegs=getNSegs();
+    for(us i=0;i<Nsegs;i++)      {    
       // Set the dofnrs
       segs.at(i)->setDofNrs(firstdof);
       segs.at(i)->setEqNrs(firsteq);
@@ -88,9 +76,25 @@ namespace tasystem{
       firsteq+=segs.at(i)->getNEqs();
 
     }
+  }
+  void TaSystem::init(){
+    TRACE(14,"TaSystem::init()");
+    us Nsegs=getNSegs();
+    TRACE(25,"Address gc:" <<&gc);
+    us i=0;
+    for(auto v=segConnections.begin();v!=segConnections.end();++v){
+      TRACE(90,"Connecting segment connection " << i << "...");
+      coupleSegs(*v,*this);
+      i++;
+    }
+
+    for(auto seg=segs.begin();seg!=segs.end();seg++)      {
+      (*seg)->init(gc);
+    }
 
     // Do some post-sanity checks
-    
+    setDofEqNrs();
+    us Ndofs=getNDofs();
     TRACE(10,"Segment initialization done. Total NDofs:"<< Ndofs);
     if(Ndofs>MAXNDOFS)      {
       WARN("Way too many DOFS required: Ndofs=" <<Ndofs << ". Exiting...\n");
@@ -102,14 +106,21 @@ namespace tasystem{
       WARN("Neqs ="<< getNEqs());
       exit(1);
     }
-    
     // Last, but not least: initialize a pointer to this tasystem in
     // globalconf
     gc.setSys(this);
-    
     hasInit=true;
   }
-  
+  void TaSystem::setNf(us Nf){
+    TRACE(30,"TaSystem::setNf()");
+    gc.setNf(Nf);
+    for(auto seg=segs.begin();seg!=segs.end();seg++)      {
+      (*seg)->updateNf();
+    }
+    TRACE(25,"New Ns:"<< gc.Ns << " . Adres gc: " << &gc);
+
+    setDofEqNrs();
+  }
 
   
   us TaSystem::getNDofs() const  {
