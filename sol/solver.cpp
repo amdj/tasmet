@@ -86,6 +86,14 @@ namespace tasystem{
     this->dampfac=dampfac;
     if(maxiter==0)
       maxiter=SOLVER_MAXITER;
+
+    if(solverThread){
+      if(solverThread->joinable()){
+        cout << "Killing old solver thread...\n";
+        stop();
+      }
+    }
+    
     if(!solverThread){
       sc.reset(new SolverConfiguration(maxiter,funtol,reltol,dampfac));
       // SolverInstance si(*this,*sc);

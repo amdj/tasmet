@@ -46,7 +46,7 @@ namespace tube{
     return jac;    
   }
   d Energy::Htot(const TubeVertex& v) const{
-    TRACE(30,"Energy::Htot()");
+    TRACE(10,"Energy::Htot()");
     const dmat& fDFT=v.gc->fDFT;
     d Htot=0;
     d gamma=this->gamma(v);
@@ -159,7 +159,8 @@ namespace tube{
     vd domg_full=Wddt*DDTfd*v.p()/(gamma-1.0)/v.gc->getomg(); // Static
     domg_full+=Wddtkin*DDTfd*(fDFT*(v.rho.tdata()%v.U.tdata()%v.U.tdata()))/v.gc->getomg();                                                        // enthalpy
                                                              // term
-    domg_.subvec(dofnr+1,dofnr+2)=domg_full.subvec(1,2);
+    // domg_.subvec(dofnr+1,dofnr+2)=domg_full.subvec(1,2);
+    domg_.subvec(dofnr,dofnr+v.gc->Ns-1)=domg_full;
   }
 
   JacCol Energy::dpL(const TubeVertex& v) const {

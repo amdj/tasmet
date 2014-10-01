@@ -268,7 +268,7 @@ namespace tube {
   }
 
   vd Tube::Htot() const{
-    TRACE(25,"Tube::Htot()");
+    TRACE(15,"Tube::Htot()");
     
     us nvertex=vvertex.size();
     vd Htot(nvertex);

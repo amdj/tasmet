@@ -6,7 +6,7 @@
 // To set divide by amplitude on
 #define DIVAMPL
 #define TIMINGCONSTRAINT
-#define DOMGFAC (1e-2)
+#define DOMGFAC (1e0)
 
 #define MASSEQ (0)
 // #define MASSEQ (0)
@@ -139,8 +139,8 @@ namespace tasystem{
 
       vd domg=this->domg();
       if(dampfac>0){
-        TRACE(25,"Dampfac set:"<< dampfac << "Norm of domg:"<< arma::norm(domg));
-        domg*=DOMGFAC*dampfac;
+        TRACE(25,"Dampfac set:"<< dampfac << "\nNorm of domg:"<< arma::norm(domg));
+        // domg*=DOMGFAC*dampfac;
       }
       // TRACE(50,"domg:"<<domg);
       us domgsize=domg.size();
