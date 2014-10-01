@@ -21,7 +21,6 @@
 namespace tube {
 
   
-  
   Tube::Tube(const Geom& geom):Seg(geom){
     // Fill vector of gridpoints with data:
     TRACE(13,"Tube constructor()...");
@@ -266,7 +265,20 @@ namespace tube {
       rhodof=cvertex.rho.getDofNr();
       dmtotdx_(rhodof)=cvertex.lg.vVf;
     }
-  }  
+  }
+
+  vd Tube::Htot() const{
+    TRACE(25,"Tube::Htot()");
+    
+    us nvertex=vvertex.size();
+    vd Htot(nvertex);
+    for(us i=0;i<nvertex;i++){
+      auto &cvertex=*static_cast<TubeVertex*>(vvertex.at(i).get());
+      Htot(i)=cvertex.e.Htot(cvertex);
+    }
+    return Htot;
+  }
+  
   Tube::~Tube(){
     TRACE(15,"~Tube()");
     cleanup();

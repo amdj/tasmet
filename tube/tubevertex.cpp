@@ -242,7 +242,7 @@ namespace tube{
     
 
   void TubeVertex::allVertex(){
-    TRACE(15,"TubeVertex::allVertex()");
+    TRACE(5,"TubeVertex::allVertex()");
     
     c.Wddt=lg.vVf;
     m.Wddt=lg.vVf/lg.vSf;
@@ -340,7 +340,7 @@ namespace tube{
   }
   
   void TubeVertex::middleVertex(){
-    TRACE(15,"TubeVertex::middleVertex()");
+    TRACE(5,"TubeVertex::middleVertex()");
     
     assert(left && right);
     allVertex();

@@ -45,6 +45,23 @@ namespace tube{
     jac*=ENERGY_SCALE;
     return jac;    
   }
+  d Energy::Htot(const TubeVertex& v) const{
+    TRACE(30,"Energy::Htot()");
+    const dmat& fDFT=v.gc->fDFT;
+    d Htot=0;
+    d gamma=this->gamma(v);
+    d gamfac=gamma/(gamma-1.0);
+    Htot+=gamfac*0.5*((v.pL()+v.pR())*v.U)(0);
+
+    if(v.left&&v.right){
+      const vd& Tim1=v.left->T.tdata();
+      const vd& Tip1=v.right->T.tdata();
+      vd conduction=fDFT*(0.5*v.lg.vSf*(kappaL(v)+kappaR(v))%(Tim1-Tip1))/(v.lg.xR+v.lg.xL);
+      Htot+=conduction(0);
+    }
+    return Htot;
+  }
+  
   vd Energy::error(const TubeVertex& v) const {		// Error in momentum equation
     TRACE(6,"Energy::Error(), i="<<v.i);
     assert(v.gc!=NULL);

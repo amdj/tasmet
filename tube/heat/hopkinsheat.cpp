@@ -86,6 +86,8 @@ namespace tube{
     htcoefH.set(HeatTransferCoefH(v));
     htcoefQ.set(HeatTransferCoefQ(v));    
     // TRACE(100,"TminTs:\n"<<v.T()-v.Ts());
+    // if(v.i==0)
+      // TRACE(25,"H freqmultiplymat:"<< htcoefQ.freqMultiplyMat());
     heat+=htcoefH.freqMultiplyMat()*(v.T()-v.Ts());
     heat+=htcoefQ.freqMultiplyMat()*(v.U()/v.lg.vSf);    
     return heat;    
