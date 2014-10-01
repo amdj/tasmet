@@ -27,15 +27,19 @@ Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,i
   Globalconf gc(Nf,freq,"helium",T0,p0,kappa);
 
   d Rtube=38.2e-3/2;
+  // d R1tube=Rtube*1.2;
   d S0=number_pi*pow(Rtube,2);
   d rhtube=Rtube/2;
   d Ltot=1.0;
   // ############################## Resonator
-  d Lres=87.97e-2;
+  d Lresendorig=87.97e-2;
+  d Lres=0.774;
+
   // WARN("Wrong length of resonator");
   // d Lres=87.97e-2*1.5;
   us gpres=max(round(gp*Lres/Ltot),4);  
   Geom resgeom=Geom::CylinderBlApprox(gpres,Lres,Rtube);
+  // Geom resgeom=Geom::ConeBlApprox(gpres,Lres,R1tube,Rtube);
 
   // ############################## Cold HX's
   d Lchx=10.2e-3*2;
@@ -59,7 +63,7 @@ Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,i
   Geom hhxgeom=Geom::VertPlates(gphx,Lhhx,S0,phihhx,y0hhx);
 
   // ############################## Hot end
-  d Lhotend=(5e-2)-Lhhx;
+  d Lhotend=(5.5e-2)-Lhhx+Lresendorig-Lres;
   us gphotend=90;
   Geom hotendgeom=Geom::CylinderBlApprox(gphotend,Lhotend,Rtube);
 

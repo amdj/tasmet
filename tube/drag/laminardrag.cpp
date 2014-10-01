@@ -38,6 +38,7 @@ namespace tube{
     const d& rh=v.lg.vrh;
     d omg=v.gc->getomg();
     vc rescoef(Nf+1);
+    rescoef(0)=zfd(mu0,rh);	// Zero frequency drag divided by zero-frequency velocity
     if(Nf>0){
       vd omgvec=omg*linspace(1,Nf,Nf);
       // TRACE(100,"omgvec:\n"<<omgvec);
@@ -46,7 +47,6 @@ namespace tube{
       vc fnu=rf.fx(rh/deltanu); // Viscous rott function
       rescoef.subvec(1,Nf)=I*rho0*omgvec%(fnu/(1.0-fnu));
     }
-    rescoef(0)=zfd(mu0,rh);	// Zero frequency drag divided by zero-frequency velocity
     return rescoef;
   }
   

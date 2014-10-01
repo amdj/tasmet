@@ -25,7 +25,7 @@ namespace tube{
   }
   void Momentum::init(const Tube& t)
   {
-    TRACE(15,"Momentum::init(tube)");
+    TRACE(5,"Momentum::init(tube)");
     drag=&t.getDragResistance();
   }
   

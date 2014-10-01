@@ -86,6 +86,8 @@ namespace tube{
     htcoefH.set(HeatTransferCoefH(v));
     htcoefQ.set(HeatTransferCoefQ(v));    
     // TRACE(100,"TminTs:\n"<<v.T()-v.Ts());
+    // if(v.i==0)
+      // TRACE(25,"H freqmultiplymat:"<< htcoefQ.freqMultiplyMat());
     heat+=htcoefH.freqMultiplyMat()*(v.T()-v.Ts());
     heat+=htcoefQ.freqMultiplyMat()*(v.U()/v.lg.vSf);    
     return heat;    
@@ -123,10 +125,9 @@ namespace tube{
     d mu0=v.gc->gas.mu(T0);
     if(Nf>0){
       vd omgvec=v.gc->getomg()*linspace(1,Nf,Nf);
-
       vd deltak=sqrt(2*kappa0/(rho0*cp0*omgvec));
-      if(v.i==0)
-        TRACE(25,std::scientific <<deltak);
+      // if(v.i==0)
+        // TRACE(25,std::scientific <<deltak);
       vd deltanu=sqrt(2*mu0/(rho0*omgvec));
       vc fnu=rf.fx(rh/deltanu); // Viscous rott function
       vc fk=rf.fx(rh/deltak); // Thermal rott function

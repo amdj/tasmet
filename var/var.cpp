@@ -47,7 +47,7 @@ namespace variable {
     this->amplitudedata=other.amplitudedata;
     return *this;
   }
-  var var::operator+(const var& other){
+  var var::operator+(const var& other) const{
     var result(*this->gc);
     result.set(this->operator()()+other());
     return result;

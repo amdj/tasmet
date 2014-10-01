@@ -70,7 +70,7 @@ namespace variable {
     var operator*(const var& variable);		   // Multiply two variables in time domain
     var operator*(const d& scalar) const;   // Multiply a variable with a scalar. This operation is possible for both
 				      // frequency and time domain data
-    var operator+(const var& other);  // add two variables
+    var operator+(const var& other) const;  // add two variables
 
     // with Note multiplication is defined outside of the class
 

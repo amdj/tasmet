@@ -8,7 +8,7 @@ SPOILNAMESPACE
 using namespace tasystem;
 using namespace tube;
 
-Solver* SimpleTube(us gp,us Nf,d freq,d L,d r,d Tl,d Tr,vd p1,int loglevel,d kappa,int options){
+Solver* SimpleTube(us gp,us Nf,d freq,d L,d r,d Tl,d Tr,vd p1,int loglevel,d kappa,int options,d r2){
   d S=1;
   cout << "Simpletube called. Options are:\n   ISENTROPIC\n   BLAPPROX\n   DRIVEN\n";
   cout << "Chosen options:\n";
@@ -22,11 +22,18 @@ Solver* SimpleTube(us gp,us Nf,d freq,d L,d r,d Tl,d Tr,vd p1,int loglevel,d kap
   inittrace(loglevel);
   Globalconf air=Globalconf::airSTP(Nf,freq);
   Geom geom1;
-  if(options & BLAPPROX)
-    geom1=Geom::CylinderBlApprox(gp,L,r);
-  else
-    geom1=Geom::Cylinder(gp,L,r);
-  
+  if(r2<0){
+    if(options & BLAPPROX)
+      geom1=Geom::CylinderBlApprox(gp,L,r);
+    else
+      geom1=Geom::Cylinder(gp,L,r);
+  }
+  else{
+    if(options & BLAPPROX)
+      geom1=Geom::ConeBlApprox(gp,L,r,r2);
+    else
+      geom1=Geom::Cone(gp,L,r,r2);
+  }
   var pL(air,0);
   pL.set(p1);
 

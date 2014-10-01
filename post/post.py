@@ -47,6 +47,7 @@ class nonlinpost(nlpost):
         self.rho.append(tube.getResVar('rho',0,nr))
         self.U.append(tube.getResVar('volu',0,nr))
         #Compute Fubini solution
+        self.Htot=tube.getHtot(nr)
         Nf=self.Nf
         for i in range(1,Nf+1):
             self.rho.append(tube.getResVar("rho",2*i-1,nr)+1j*tube.getResVar("rho",2*i,nr))
@@ -65,7 +66,8 @@ class nonlinpost(nlpost):
         return self.Ts[i]
     def getU(self,i):
         return self.U[i]
-
+    def getHtot(self):
+        return self.Htot            
     def pressureprofile(self,pos,Nperiods=2,ns=100):
         p=[]
         for k in range(self.Nf+1):
@@ -107,6 +109,12 @@ class combinedsys:
         for sys in self.systems:
             Ts=n.concatenate((Ts,sys.getTs(i)))
         return Ts
+    def getHtot(self):
+        Htot=[]
+        for sys in self.systems:
+            Htot=n.concatenate((Htot,sys.getHtot()))
+        return Htot
+
     def getU(self,i):
         U=[]
         for sys in self.systems:

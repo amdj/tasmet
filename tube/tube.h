@@ -51,7 +51,9 @@ namespace tube{
     // *similar* segment
     vd getResAt(us varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
     vd getErrorAt(us varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
-    friend class TubeVertex;    
+    friend class TubeVertex;
+    vd Htot() const;
+    vd mtot() const;
   protected:
     void cleanup();
   private:

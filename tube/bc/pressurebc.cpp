@@ -1,7 +1,6 @@
 #include "tube.h"
 #include "pressurebc.h"
 
-
 // Can be removed later
 #include "energyeq.h"
 namespace tube{
@@ -50,6 +49,7 @@ namespace tube{
     LeftPressure(other.pLbc,other.TLbc)
   {
     TRACE(8,"LeftPressure copy constructor");
+    TRACE(15,"pLbc:"<<pLbc());
   }
   void LeftPressure::initTubeVertex(us i,const Tube& thisseg)
   {
