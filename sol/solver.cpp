@@ -4,7 +4,6 @@
 #include "vtypes.h"
 #include <Eigen/Sparse>
 #include "arma_eigen.h"
-#define MINDAMPFAC (5e-4)
 
 
 
@@ -81,9 +80,10 @@ namespace tasystem{
   }
 
   typedef tuple<d,d> dtuple;
-  void Solver::solve(us maxiter,d funtol,d reltol,d dampfac,bool wait){
+  void Solver::solve(us maxiter,d funtol,d reltol,d mindampfac,bool wait){
     TRACE(20,"Solver started.");
-    this->dampfac=dampfac;
+    this->mindampfac=mindampfac;
+    this->dampfac=1.0;
     if(maxiter==0)
       maxiter=SOLVER_MAXITER;
 
@@ -159,13 +159,13 @@ namespace tasystem{
       sys().setRes(Newx);
       newfuner=sys().error().norm();
       reler=dampfac*fulldx.norm();
-      if(newfuner>oldfuner)
-        dampfac=dampfac*0.5;
-    } while((dampfac> MINDAMPFAC) && (newfuner>oldfuner) && (newfuner>0));
-    if(dampfac<=0.25)
-      dampfac=4*dampfac;
-    else
-      dampfac=1;
+      if(newfuner>oldfuner && dampfac>mindampfac){
+        dampfac=dampfac*0.9;
+        cout << "Decreasing dampfac, new dampfac = " << dampfac << "\n";
+      }
+    } while((dampfac>mindampfac) && (newfuner>oldfuner) && (newfuner>0));
+    if(dampfac<=0.88 && newfuner<oldfuner)
+      dampfac=dampfac/0.88;
     
     TRACE(10,"Iteration done...");
     return std::make_tuple(newfuner,reler);		// Return function error

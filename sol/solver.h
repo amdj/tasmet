@@ -15,6 +15,7 @@ namespace tasystem{
     std::unique_ptr<TaSystem> tasystem;
     std::unique_ptr<boost::thread> solverThread;
     std::unique_ptr<SolverConfiguration> sc;
+    boost::atomic<d> mindampfac;
     boost::atomic<d> dampfac;
 
   public:
@@ -23,7 +24,7 @@ namespace tasystem{
     Solver(const Solver& other);
     Solver& operator=(const Solver& other);
     void stop();
-    void solve(us maxiter=0,d funer=1e-8,d reler=1e-6,d dampfac=1.0,bool wait=true);
+    void solve(us maxiter=0,d funer=1e-8,d reler=1e-6,d mindampfac=1e-2,bool wait=true);
     tuple<d,d> doIter(d dampfac=-1.0);
     ~Solver();
   };
