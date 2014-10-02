@@ -167,6 +167,7 @@ namespace tube{
   }
   void TubeVertex::setIsentropic(){
     TRACE(15,"TubeVertex::setIsentropic()");
+    is.setDofNr(eqs.at(2)->getDofNr());
     eqs[2]=&is;
   }
   void TubeVertex::updateW(const Tube& thistube){

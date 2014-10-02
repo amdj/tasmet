@@ -54,10 +54,10 @@ namespace tube{
     // dpR.data()*=v.eWispR/p0;
     dpR.data()*=0.5/p0;
     return dpR;
-  }  JacCol Isentropic::drhoi(const TubeVertex& v) const {
+  }
+  JacCol Isentropic::drhoi(const TubeVertex& v) const {
     TRACE(1,"Isentropic::drhoi()"); 
     JacCol drhoi(v.rho);
-
     d T0=v.gc->T0;
     d p0=v.gc->p0;
     d rho0=v.gc->gas.rho(T0,p0);

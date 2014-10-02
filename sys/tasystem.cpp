@@ -168,7 +168,6 @@ namespace tasystem{
   }
   void TaSystem::jacTriplets(TripletList& trips){
     TRACE(14,"TaSystem::jacTriplets()");
-    
     Jacobian jnew;
     us Nsegs=getNSegs();
     for(us j=0;j<getNSegs();j++){
@@ -179,6 +178,8 @@ namespace tasystem{
     } // end for loop
     // TRACE(25,"Jac\n"<<jac);
     trips=jnew.getTriplets();
+    // trips.show();
+    // cout << "Ndofs:" << getNDofs() << "\n";
 
   }
   esdmat TaSystem::jac(d dummy){

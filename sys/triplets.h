@@ -46,7 +46,7 @@ namespace tasystem{
 
     vector<Triplet>::iterator begin() { return trlist.begin();}
     vector<Triplet>::iterator end() {return trlist.end();}
-
+    void show() const;
     void zeroOutRow(us rownr);
     void multiplyTriplets(const d& multiplicationfactor);
     void reserveExtraDofs(us n); // Add to capacity

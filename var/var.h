@@ -63,7 +63,7 @@ namespace variable {
     void showtdata() const; //Print time data to
     void showRes() const;
     // Operations
-    var ddt() const;			  // Derivative operator
+    var ddt() const;			  // Time derivative of this variable
     var operator/(const var& var2) const; // Time-domain division operator
     var operator-(const var& var2) const; //Not yet implemented
     var operator*(d scalar);			   // post-multiplication

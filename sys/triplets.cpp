@@ -24,7 +24,11 @@ namespace tasystem{
 
     valid=true;
   }
-  
+  void TripletList::show()  const {
+    for(auto t=trlist.begin();t!=trlist.end();t++){
+      cout << "Row: " << t->row() << " , column: " << t->col() << " , value: " << t->value() << "\n";
+    }
+  }
   void TripletList::multiplyTriplets(const d& factor){
     TRACE(15,"multiplyTriplets()");
     for(auto tr=trlist.begin();tr!=trlist.end();tr++)

@@ -17,7 +17,7 @@ int main(int argc,char* argv[]) {
   cout <<  "Running test..." << endl;
   int loglevel=25;
   us gp=4;
-  us Nf=1;
+  us Nf=0;
   us Ns=2*Nf+1;
 
   cout << "Max value of int: " << std::numeric_limits<int>::max() << "\n";
@@ -51,16 +51,16 @@ int main(int argc,char* argv[]) {
   Globalconf air=Globalconf::airSTP(Nf,f);
   Globalconf gc=air;
   Geom geom1=Geom::CylinderBlApprox(gp,L,rtube);
-  HopkinsLaminarDuct t1(geom1,gc.T0,gc.T0);
-  // IsentropicTube t1(geom1);
+  // HopkinsLaminarDuct t1(geom1,gc.T0,gc.T0);
+  IsentropicTube t1(geom1);
   var pL(gc,0);
   // pL.set(0,3.14);
   if(Nf>0)
     pL.set(1,1.0);
   tube::LeftPressure bcleft(pL);
   // tube::LeftAdiabaticWall bcleft;
-  // tube::RightAdiabaticWall bcright;
-  tube::TwImpedance bcright;  
+  tube::RightAdiabaticWall bcright;
+  // tube::TwImpedance bcright;  
   // tube::RightIsoTWall bcright(T0);
   // TRACE(100,"Add bc to tube...");
   t1.addBc(bcleft);
@@ -82,8 +82,8 @@ int main(int argc,char* argv[]) {
   // vd domg(15,fillwith::zeros);
   // sol.sys().getSeg(0)->domg(domg);
   // cout << "domg: "<< domg << "\n";
-  cout << "Result:\n"<< sol.sys().getRes() << "\n";
-  cout << "Error:\n"<< sol.sys().error() << "\n";
+  // cout << "Result:\n"<< sol.sys().getRes() << "\n";
+  // cout << "Error:\n"<< sol.sys().error() << "\n";
 
   sol.doIter();
   return 0;

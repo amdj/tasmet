@@ -55,7 +55,7 @@ namespace tasystem{
   }
   TripletList Jacobian::getTriplets() const{
     TRACE(18,"Jacobian::getTriplets()");
-    us insertrow,insertcol;
+    int insertrow,insertcol;
     TripletList res;
     const dmat& typicaldatacel=jacrows.at(0).jaccols.at(0).const_data();
     us size=typicaldatacel.n_rows;
@@ -66,19 +66,22 @@ namespace tasystem{
     // WARN("Dangerous setting");
 
     for(auto row=jacrows.begin();row!=jacrows.end();row++){
-      insertrow=row->rowDof();
+      insertrow=row->getRowDof();
       for(auto col=row->jaccols.begin();col<row->jaccols.end();col++){
-        insertcol=col->colDof();
-        const dmat& data=col->const_data();
-        for(us i=0;i<size;i++)
-          for(us j=0;j<size;j++){
-            if(data(i,j)!=0)
+        insertcol=col->getColDof();
+        if(insertcol>=0){
+          const dmat& data=col->const_data();
+          for(us i=0;i<size;i++){
+            for(us j=0;j<size;j++){
+              if(data(i,j)!=0)
             // TRACE(20,"abs data:" << std::abs(data(i,j)));
             // if(std::abs(data(i,j))>1e-15)
-              res.push_back(Triplet(i+insertrow,j+insertcol,data(i,j)));
+                res.push_back(Triplet(i+insertrow,j+insertcol,data(i,j)));
+            }
           }
-      }
-    }
+        } // insertcol>0
+      }   // for loop over cols
+    }     // for loop over rows
     // TRACE(10,"SFSG");
     return res;
   }

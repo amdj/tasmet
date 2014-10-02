@@ -24,7 +24,8 @@ namespace tasystem{
     JacCol& operator+=(const dmat& add);
     dmat& data(){return __data;}
     const dmat& const_data() const {return __data;}
-    us colDof() const{return __coldof;}
+    const us& getColDof() const{return __coldof;}
+    void show() const;
   };
 
   class JacRow{                 // Row in Jacobian matrix
@@ -37,14 +38,17 @@ namespace tasystem{
     JacRow& operator+=(const JacCol& jaccol){addCol(jaccol); return *this;}
     JacRow& operator*=(const d& val); // Multiply all terms with constant value
 
-    us rowDof() const {return __rowdof;}
+    const us& getRowDof() const {return __rowdof;}
     void setRowDof(us dofnr){__rowdof=dofnr;}
+    void show() const;
   };
 
   class Jacobian{
 
   public:
     vector<JacRow> jacrows;
+    us maxRow() const;
+    us maxCol() const;
     void operator+=(const Jacobian&);
     void operator+=(const JacRow&);
     TripletList getTriplets() const;
