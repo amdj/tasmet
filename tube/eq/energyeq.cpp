@@ -1,6 +1,13 @@
 // #define ENERGY_SCALE (1/v.gc->rho0/v.gc->c0)
 // #define ENERGY_SCALE (1.0/v.gc->p0)
-#define ENERGY_SCALE (1.0/100)
+// #define ENERGY_SCALE (1.0/100)
+#define ENERGY_SCALE (1.0)
+
+#ifdef NOHEAT
+#error Noheat already defined!
+#endif
+// #define NOHEAT
+
 #include "energyeq.h"
 #include "tubevertex.h"
 #include "tube.h"
@@ -143,7 +150,12 @@ namespace tube{
 
     // External heat    
     assert(heat!=NULL);
+    #ifndef NOHEAT
     error+=Wddt*heat->heat(v);
+    #else
+    if(v.i==0)
+      TRACE(25,"Applying no heat coupling");
+    #endif
     // (Boundary source term)
     error+=v.esource();
     // TRACE(100,"error:"<<error);
@@ -235,7 +247,9 @@ namespace tube{
 
     // External heat
     assert(heat!=NULL);
+    #ifdef NOHEAT
     dUi+=Wddt*heat->dUi(v);
+    #endif
     return dUi;
   }
   JacCol Energy::drhoi(const TubeVertex& v) const {
@@ -345,7 +359,9 @@ namespace tube{
     JacCol dTi(v.T);
     dTi+=fDFT*diagmat(Wc2*kappaL(v)+Wc3*kappaR(v))*iDFT;
     assert(heat!=NULL);
+    #ifndef NOHEAT
     dTi+=Wddt*heat->dTi(v);
+    #endif
     return dTi;
   }
   JacCol Energy::dTim1(const TubeVertex& v) const {

@@ -249,7 +249,7 @@ namespace tube{
     c.Wddt=lg.vVf;
     m.Wddt=lg.vVf/lg.vSf;
     e.Wddt=lg.vVf;
-    e.Wddtkin=0.5*e.Wddt/pow(lg.vSf,3);
+    e.Wddtkin=0.5*e.Wddt/pow(lg.vSf,2);
 
     // Always the same
     m.WpL=-lg.vSf;

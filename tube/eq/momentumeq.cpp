@@ -1,4 +1,9 @@
 // #define TRACERPLUS 20
+#ifdef NODRAG
+#error NODRAG already defined!
+#endif
+// #define NODRAG
+
 #include "momentumeq.h"
 #include "tube.h"
 #include "tubevertex.h"
@@ -66,8 +71,12 @@ namespace tube{
 
     // Drag term
     assert(drag!=NULL);
+    #ifndef NODRAG
     error+=Wddt*drag->drag(v);
-
+    #else
+    if(v.i==0)
+      TRACE(25,"Drag is turned off!");
+    #endif
     // (Boundary) source term
     error+=v.msource();
     return error;
@@ -116,7 +125,9 @@ namespace tube{
       dUi+=(art2*d_l(v)+art2*d_r(v))*fDFT*v.rho.diagt()*iDFT;
     #endif
     assert(drag!=NULL);
+    #ifndef NODRAG
     dUi+=Wddt*drag->dUi(v);
+    #endif
     return dUi;
   }
   JacCol Momentum::drhoi(const TubeVertex& v) const {
