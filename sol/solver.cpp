@@ -4,7 +4,7 @@
 #include "vtypes.h"
 #include <Eigen/Sparse>
 #include "arma_eigen.h"
-#define MINDAMPFAC (1e-4)
+#define MINDAMPFAC (5e-4)
 
 
 
@@ -159,8 +159,9 @@ namespace tasystem{
       sys().setRes(Newx);
       newfuner=sys().error().norm();
       reler=dampfac*fulldx.norm();
-      dampfac=dampfac*0.5;
-    } while((dampfac> MINDAMPFAC) && (newfuner>oldfuner || !(newfuner>0)));
+      if(newfuner>oldfuner)
+        dampfac=dampfac*0.5;
+    } while((dampfac> MINDAMPFAC) && (newfuner>oldfuner) && (newfuner>0));
     if(dampfac<=0.25)
       dampfac=4*dampfac;
     else
