@@ -4,8 +4,6 @@
 #include "vtypes.h"
 #include <Eigen/Sparse>
 #include "arma_eigen.h"
-#include <Eigen/UmfPackSupport>
-
 
 
 namespace tasystem{
@@ -29,8 +27,7 @@ namespace tasystem{
     // Eigen::FullPivLU<edmat> dec(K);
     TRACE(19,"Initializing solver...");    
     // Eigen::SparseQR<esdmat,Eigen::COLAMDOrdering<int> > solver(K);
-    // Eigen::SparseLU<esdmat,Eigen::COLAMDOrdering<int> > solver(K);
-    Eigen::UmfPackLU<esdmat> solver(K);
+    Eigen::SparseLU<esdmat,Eigen::COLAMDOrdering<int> > solver(K);
     switch(solver.info()){
     case ComputationInfo::InvalidInput:
       cout << "Solver initialization failed: invalid input" << "\n";
@@ -44,7 +41,7 @@ namespace tasystem{
     case ComputationInfo::Success:
       break;
     } // switch
-    // cout << "Logarithm of absolute value of determinant of matrix: "<<solver.logAbsDeterminant() <<"\n";
+    TRACE(19,"Logarithm of absolute value of determinant of matrix: "<<solver.logAbsDeterminant());
     // Eigen::BiCGSTAB<Eigen::SparseMatrix<double> > solver(K);
     // cout << "Logarithm of absolute value of determinant of matrix: "<<solver.logAbsDeterminant() <<"\n";
     
@@ -107,7 +104,6 @@ namespace tasystem{
         cout << "Waiting for solver...\n";
         solverThread->join();
         solverThread.reset();
-        cout << "Solver done.\n";
       }
       // si.Join();
       // solverThread.join();
@@ -155,17 +151,17 @@ namespace tasystem{
     reler=fulldx.norm();
     do{
       TRACE(25,"Dampfac:"<< dampfac);
-      newx=oldx+dampfac*fulldx; 
+      newx=oldx+dampfac*fulldx;
       sys().setRes(Newx);
       newfuner=sys().error().norm();
-      if((newfuner>oldfuner && dampfac>mindampfac) || !(newfuner>0)){
+      if((newfuner>oldfuner && dampfac>mindampfac)){
         dampfac=dampfac*0.9;
         cout << "Decreasing dampfac, new dampfac = " << dampfac << "\n";
       }
-    } while((dampfac>mindampfac && newfuner>oldfuner) || !(newfuner>0));
-    if(dampfac<=0.88 && newfuner<oldfuner)
-      dampfac=dampfac/0.88;
-    
+    } while((dampfac>mindampfac && newfuner>oldfuner));
+    if(dampfac<=0.91 && newfuner<oldfuner)
+      dampfac=dampfac/0.91;
+    cout << "Current dampfac: " << dampfac << "\n";
     TRACE(10,"Iteration done...");
     return std::make_tuple(newfuner,reler);		// Return function error
 

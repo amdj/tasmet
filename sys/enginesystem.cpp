@@ -4,7 +4,7 @@
 
 
 // To set divide by amplitude on
-// #define DIVAMPL
+#define DIVAMPL
 #define TIMINGCONSTRAINT
 #define DOMGFAC (1e0)
 
@@ -103,7 +103,7 @@ namespace tasystem{
 
     us Ndofs=getNDofs();	// This number is without extra omega dof
     #ifdef TIMINGCONSTRAINT
-    TRACE(100,"Timincontraint on!");
+    TRACE(15,"Timincontraint on!");
     if(gc.Nf()>0)
       Ndofs++;
     #endif
@@ -117,7 +117,7 @@ namespace tasystem{
 
 
   TripletList EngineSystem::Ljac(d dampfac){
-    TRACE(25,"Enginesystem::Ljac("<<dampfac<<")");
+    TRACE(15,"Enginesystem::Ljac("<<dampfac<<")");
 
     TripletList jactriplets;
     jacTriplets(jactriplets);

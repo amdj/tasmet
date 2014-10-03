@@ -73,10 +73,10 @@ set_target_properties(pytube PROPERTIES COMPILE_FLAGS "-Wno-cpp  -Wno-strict-ali
 
 
 # target_link_libraries(doubletube nonlin math_common armadillo)
-target_link_libraries(test123 nonlin math_common umfpack amd cholmod colamd suitesparseconfig blas lapack)
-target_link_libraries(enginetest nonlin math_common umfpack amd cholmod colamd suitesparseconfig blas lapack)
-target_link_libraries(threetubes nonlin math_common umfpack amd cholmod colamd suitesparseconfig blas lapack)
-target_link_libraries(pytube nonlin math_common umfpack amd cholmod colamd suitesparseconfig blas lapack)
+target_link_libraries(test123 nonlin math_common blas lapack)
+target_link_libraries(enginetest nonlin math_common blas lapack)
+target_link_libraries(threetubes nonlin math_common blas lapack)
+target_link_libraries(pytube nonlin math_common blas lapack)
 
 
 # To execute the test directly

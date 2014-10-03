@@ -43,7 +43,7 @@ namespace tasystem{
             WARN("Function error: "<< funer << " . Quiting solving procedure.");
             throw 0;
           }
-          cout << green <<  "Iteration: "<<nloop<<" , function error: "<<funer<<" , relative error:" << reler<< ".\n" << def;
+          cout << green <<  "Iteration: "<<nloop<<" , function error: "<<funer<<" , relative error:" << reler<< "."<< def <<"\n";
           nloop++;
         }
         catch(int Error){
@@ -57,6 +57,7 @@ namespace tasystem{
       WARN("Solver reached maximum number of iterations! Results might not be reliable!");
     if(sc->maxiter==0)
       WARN("Solver stopped externally");
+    cout << "Solver done.\n";
   }
   
   
