@@ -128,8 +128,7 @@ namespace tube{
 
     // assert(gc!=NULL);
     TRACE(10,"Ns:"<<gc->Ns());
-    // Set the zero matrix    
-    zero=zeros<dmat>(thistube.gc->Ns(),thistube.gc->Ns());
+
     
     // Fill the vector of equation pointers from the Tube instance.
     eqs.clear(); eqs.reserve(6); // Room for one extra equation (minor

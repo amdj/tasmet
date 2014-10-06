@@ -50,7 +50,6 @@ namespace tube{
     friend class LeftImpedance;
     friend class TwImpedance;    
 
-    dmat zero;			// Zeros matrix of right size
     const TubeVertex* left=NULL;
     const TubeVertex* right=NULL;
     us nCells;    
@@ -87,7 +86,8 @@ namespace tube{
     void setEqNrs(us firstdofnr);    
     virtual ~TubeVertex(){}
     TubeVertex(){}
-    TubeVertex(const TubeVertex& other){}
+    TubeVertex(const TubeVertex& v){} // Copy does nothing
+    TubeVertex& operator=(const TubeVertex& v){return *this;} // Assignment does nothing
     virtual void setLeft(const Vertex&);
     virtual void setRight(const Vertex&);
     virtual void show() const;
