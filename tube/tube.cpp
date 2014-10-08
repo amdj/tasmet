@@ -228,7 +228,7 @@ namespace tube {
           res(i)=cvertex->U(freqnr);
           break;
         case 2:                   // Pressure
-          res(i)=cvertex->pL()(freqnr);
+          res(i)=0.5*(cvertex->pL()(freqnr)+cvertex->pR()(freqnr));
           break;
         case 3:                 // Temp
           res(i)=cvertex->T()(freqnr);
