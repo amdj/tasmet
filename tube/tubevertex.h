@@ -44,6 +44,7 @@ namespace tube{
 
   public:
     friend class StateR;
+    friend class Energy;
     friend class RightImpedance;
     friend class RightImpedanceMomentumEq;
     friend class RightTwImpedanceEq;
@@ -72,6 +73,7 @@ namespace tube{
     Momentum m;
     Energy e;
     StateL sL;
+    State s;
     SolidTPrescribed se;
     Isentropic is;
     virtual void setpR(const variable::var& o) {

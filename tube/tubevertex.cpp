@@ -137,6 +137,8 @@ namespace tube{
     eqs.push_back(&m);
     eqs.push_back(&e);
     eqs.push_back(&sL);
+
+
     eqs.push_back(&se);    
     us eqnr_=0;
     for(auto eq=eqs.begin();eq!=eqs.end();eq++){
@@ -269,6 +271,7 @@ namespace tube{
   
   void TubeVertex::leftVertex(){
     TRACE(15,"TubeVertex::leftVertex()");
+    assert(right);
     allVertex();
     const Geom& geom=*lg.geom;
     const LocalGeom& rlg=right->lg;      
@@ -380,14 +383,14 @@ namespace tube{
     // m.art4=-1;
 
     // This one should be correct
-    // m.uim1=-wLl/vSfL;
-    // m.ui=(wRl/lg.vSf-wLr/lg.vSf);
-    // m.uip1=wRr/vSfR;
+    m.Wuim1=-wLl/SfL;
+    m.Wui=(wRl/SfR-wLr/SfL);
+    m.Wuip1=wRr/SfR;
 
     // But this is also possible
-    m.Wuim1=-wLl/vSfL;
-    m.Wui=(wRl/lg.vSf-wLr/lg.vSf);
-    m.Wuip1=wRr/vSfR;
+    // m.Wuim1=-wLl/vSfL;
+    // m.Wui=(wRl/lg.vSf-wLr/lg.vSf);
+    // m.Wuip1=wRr/vSfR;
       
       
     e.Wgim1=-wLl;
@@ -395,9 +398,14 @@ namespace tube{
     e.Wgip = wRl;
     e.Wgip1= wRr;
 
-    e.Wkinim1=-0.5*UsignL*wLl/vSfLsq;
-    e.Wkini=0.5*(wRl/vSfsq-wLr/vSfsq);
-    e.Wkinip1=0.5*UsignR*wRr/vSfRsq;
+    // e.Wkinim1=-0.5*UsignL*wLl/vSfLsq;
+    // e.Wkini=0.5*(wRl/vSfsq-wLr/vSfsq);
+    // e.Wkinip1=0.5*UsignR*wRr/vSfRsq;
+
+    e.Wkinim1=-0.5*UsignL*wLl/SfLsq;
+    e.Wkini=0.5*(wRl/SfRsq-wLr/SfLsq);
+    e.Wkinip1=0.5*UsignR*wRr/SfRsq;
+    
 
     // TRACE(1,"dxm:"<< dxm);
     // TRACE(1,"dxp:"<< dxp);

@@ -381,25 +381,23 @@ namespace tube{
     // const dmat& fDFT=v.gc->fDFT;
     // const dmat& iDFT=v.gc->iDFT;      
     
-    // vd kappaL(v.gc->Ns(),fillwith::zeros);
-    // vd Tti=v.T.tdata();
-    // vd kappait=v.gc->gas.kappa(Tti);
+    vd kappaL(v.gc->Ns(),fillwith::zeros);
+    const vd& Tti=v.T.tdata();
+    vd kappait=v.gc->gas.kappa(Tti);
 
-    // if(v.left==NULL){
-    //   vd Ttip1=v.right->T.tdata();
-    //   vd kappaitp1=v.gc->gas.kappa(Ttip1);
-    //   kappaL=v.w.wL1*kappaitp1+v.w.wL0*kappait;
-    // }
-    // else{
-    //   const vd& Ttim1=v.left->T.tdata();
-    //   vd kappaitm1=v.gc->gas.kappa(Ttim1);
-    //   kappaL=v.w.wLr*kappait+v.w.wLl*kappaitm1;
-    // }
+    if(v.left){
+      const vd& Ttim1=v.left->T.tdata();
+      vd kappaitm1=v.gc->gas.kappa(Ttim1);
+      kappaL=v.wLr*kappait+v.wLl*kappaitm1;
+    }
+    else{
+      const vd& Ttip1=v.right->T.tdata();
+      vd kappaitp1=v.gc->gas.kappa(Ttip1);
+      kappaL=v.wL1*kappaitp1+v.wL0*kappait;
+    }
     // TRACE(100,"kappaL(0):"<<kappaL(0));
-
-    vd kappaL(v.gc->Ns(),fillwith::ones);
-    kappaL*=v.gc->gas.kappa(v.gc->T0);
-    
+    // vd kappaL(v.gc->Ns(),fillwith::ones);
+    // kappaL*=v.gc->gas.kappa(v.gc->T0);
     // kappaL.zeros();		// WARNING
     return kappaL;
   }
@@ -409,23 +407,23 @@ namespace tube{
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;      
     
-    // vd kappaR(v.gc->Ns(),fillwith::zeros);
-    // const vd& Tti=v.T.tdata();
-    // vd kappait=v.gc->gas.kappa(Tti);
+    vd kappaR(v.gc->Ns(),fillwith::zeros);
+    const vd& Tti=v.T.tdata();
+    vd kappait=v.gc->gas.kappa(Tti);
 
-    // if(v.right==NULL){
-    //   const vd& Ttim1=v.left->T.tdata();
-    //   vd kappaitm1=v.gc->gas.kappa(Ttim1);
-    //   kappaR=v.w.wRNm2*kappaitm1+v.w.wRNm1*kappait;
-    // }
-    // else{
-    //   const vd& Ttip1=v.right->T.tdata();
-    //   vd kappaitp1=v.gc->gas.kappa(Ttip1);
-    //   kappaR=v.w.wRl*kappait+v.w.wRr*kappaitp1;
-    // }
+    if(v.right){
+      const vd& Ttip1=v.right->T.tdata();
+      vd kappaitp1=v.gc->gas.kappa(Ttip1);
+      kappaR=v.wRl*kappait+v.wRr*kappaitp1;
+    }
+    else{
+      const vd& Ttim1=v.left->T.tdata();
+      vd kappaitm1=v.gc->gas.kappa(Ttim1);
+      kappaR=v.wRNm2*kappaitm1+v.wRNm1*kappait;
+    }
     // TRACE(100,"kappaR(0):"<<kappaR(0));
-    vd kappaR(v.gc->Ns(),fillwith::ones);
-    kappaR*=v.gc->gas.kappa(v.gc->T0);
+    // vd kappaR(v.gc->Ns(),fillwith::ones);
+    // kappaR*=v.gc->gas.kappa(v.gc->T0);
 
     // kappaR.zeros();		// WARNING!!
     return kappaR;

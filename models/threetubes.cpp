@@ -61,11 +61,12 @@ Solver* ThreeTubes(us gp,us Nf,d freq,d p0,d L,d R1,d R2,vd p1,int loglevel,d ka
     
   cout << "Tr:" << Tr<<"\n";
   TubeBcVertex* b;
-  RightAdiabaticWall raw;
-  if(options & BLAPPROX)
-    b=new RightAdiabaticWall();
-  else
+  if(options & ISOTWALL)
+    cout << "RightIsoTWall\n";
+  if(options & ISOTWALL)
     b=new RightIsoTWall(Tr);
+  else
+    b=new RightAdiabaticWall();
   t3.addBc(*b);
   t3is.addBc(*b);
   delete b;
