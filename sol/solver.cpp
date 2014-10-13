@@ -150,17 +150,17 @@ namespace tasystem{
     vd Newx=math_common::armaView(newx);
     reler=fulldx.norm();
     do{
-      TRACE(25,"Dampfac:"<< dampfac);
       newx=oldx+dampfac*fulldx;
       sys().setRes(Newx);
       newfuner=sys().error().norm();
-      if((newfuner>oldfuner && dampfac>mindampfac)){
-        dampfac=dampfac*0.9;
+      if((newfuner>oldfuner || !(newfuner>0)) && dampfac>mindampfac){
+        dampfac=dampfac*0.5;
         cout << "Decreasing dampfac, new dampfac = " << dampfac << "\n";
       }
-    } while((dampfac>mindampfac && newfuner>oldfuner));
-    if(dampfac<=0.91 && newfuner<oldfuner)
-      dampfac=dampfac/0.91;
+    } while((newfuner>oldfuner || !(newfuner>0)) && dampfac>mindampfac);
+    if(dampfac<=0.25 && newfuner<oldfuner)
+      dampfac=dampfac*4;
+    
     cout << "Current dampfac: " << dampfac << "\n";
     TRACE(10,"Iteration done...");
     return std::make_tuple(newfuner,reler);		// Return function error

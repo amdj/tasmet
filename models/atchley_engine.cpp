@@ -44,13 +44,13 @@ Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,i
   d y0chx=1.02e-3/2;
   d phichx=0.70;
   d Lchxgap=1.5e-3;
-  us gphx=35;  
+  us gphx=60;  
   Geom chxgeom=Geom::VertPlates(gphx,Lchx,S0,phichx,y0chx);
 
   // ############################## Stack
   d y0stk=0.77e-3/2;
   d Lstk=3.5e-2;
-  us gpstk=60;
+  us gpstk=120;
   d phistk=0.73;
   Geom stkgeom=Geom::VertPlates(gpstk,Lstk,S0,phistk,y0stk);
 
@@ -62,7 +62,7 @@ Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,i
 
   // ############################## Hot end
   d Lhotend=(5.5e-2)-Lhhx+Lresendorig-Lres;
-  us gphotend=90;
+  us gphotend=150;
   Geom hotendgeom=Geom::CylinderBlApprox(gphotend,Lhotend,Rtube);
 
   

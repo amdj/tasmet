@@ -19,7 +19,7 @@ namespace tube{
   class HopkinsHeatSource:public HeatSource{
     string cshape;
     d (*zeroheatH_funptr)(d,d);
-    d zeroheatQ;
+    d zeroheatQ=0;
     rottfuncs::RottFuncs rf;
     // This function computes for all nonzero frequencies the heat
     // transfer coeficient mathcalH.

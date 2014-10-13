@@ -99,6 +99,11 @@ class combinedsys:
         for sys in self.systems:
             p=n.concatenate((p,sys.getp(i)))
         return p
+    def getrho(self,i):
+        rho=[]
+        for sys in self.systems:
+            rho=n.concatenate((rho,sys.getrho(i)))
+        return rho
     def getT(self,i):
         T=[]
         for sys in self.systems:
