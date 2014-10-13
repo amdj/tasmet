@@ -3,20 +3,23 @@
 #define _HOPKINSHEAT_H_
 #include "vtypes.h"
 #include "heat.h"
-#include "tube.h"
+
 #include "rottfuncs.h"
 
+
+
+namespace segment{class Geom;}
 namespace tube{
   SPOILNAMESPACE
+  using segment::Geom;
   class TubeVertex;
-  // Stub for a DragResistance class
-
-
+  class Tube;
 
   
   class HopkinsHeatSource:public HeatSource{
     string cshape;
     d (*zeroheatH_funptr)(d,d);
+    d zeroheatQ;
     rottfuncs::RottFuncs rf;
     // This function computes for all nonzero frequencies the heat
     // transfer coeficient mathcalH.

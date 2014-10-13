@@ -10,11 +10,11 @@
 #define HOPKINSLAMINARDUCT_H_
 #include "laminarduct.h"
 #include "hopkinsheat.h"
+
 namespace tube{
 
   class HopkinsLaminarDuct:public LaminarDuct{
     HopkinsHeatSource hopkinsheat;
-    HeatSource noheatatall;
     d Tl,Tr;
     vd dTwdx;
     bool Tset=false;

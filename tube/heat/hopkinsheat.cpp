@@ -1,6 +1,6 @@
 #include "hopkinsheat.h"
 #include "tubevertex.h"
-
+#include "tube.h"
 
 
 /* For obtaining time-averaged heat transfer, we have to find the
@@ -19,27 +19,49 @@
 
 */
 
-namespace H{
-  SPOILNAMESPACE
-  d zeroheat_vert(d kappa,d rh){
-    return 3*kappa/pow(rh,2);
-  }
-  d zeroheat_circ(d kappa,d rh){
-    return 2*kappa/pow(rh,2);
-  }
-  d zeroheat_blapprox(d kappa,d rh){
-    TRACE(2,"zeroheat_blapprox");
-    // return 2*kappa/pow(rh,2);
-    return 0;
-  }
-  d zeroheat_inviscid(d dummy,d dummy2){
-    TRACE(2,"zeroheat_inviscid");
-    return 0;
-  }
-}
 
 
 namespace tube{
+  namespace H{
+    SPOILNAMESPACE
+    d zeroheat_vert(d kappa,d rh){
+      return 3*kappa/pow(rh,2);
+    }
+    d zeroheat_circ(d kappa,d rh){
+      return 2*kappa/pow(rh,2);
+    }
+    d zeroheat_blapprox(d kappa,d rh){
+      TRACE(2,"zeroheat_blapprox");
+      // return 2*kappa/pow(rh,2);
+      return 0;
+    }
+    d zeroheat_inviscid(d dummy,d dummy2){
+      TRACE(2,"zeroheat_inviscid");
+      return 0;
+    }
+  }
+  namespace Q{
+    d zeroheat_vert(d kappa,d rh){
+      return 3*kappa/pow(rh,2);
+    }
+    d zeroheat_circ(d kappa,d rh){
+      return 2*kappa/pow(rh,2);
+    }
+    d zeroheat_blapprox(d kappa,d rh){
+      TRACE(2,"zeroheat_blapprox");
+      // return 2*kappa/pow(rh,2);
+      return 0;
+    }
+    d zeroheat_inviscid(d dummy,d dummy2){
+      TRACE(2,"zeroheat_inviscid");
+      return 0;
+    }
+
+
+  }
+
+  
+  
   using rottfuncs::RottFuncs;
   HopkinsHeatSource::HopkinsHeatSource(const Tube& t):
     cshape(t.geom.shape),
@@ -61,14 +83,22 @@ namespace tube{
   }
   void HopkinsHeatSource::setZeroFreq(const string& shape){
     TRACE(10,"HopkinsHeatSource::setZeroFreq()");
-    if(shape.compare("vert")==0)
+    if(shape.compare("vert")==0){
       zeroheatH_funptr=&H::zeroheat_vert;
-    else if(shape.compare("circ")==0)
+      zeroheatQ=0.2;      
+    }
+    else if(shape.compare("circ")==0){
       zeroheatH_funptr=&H::zeroheat_circ;
-    else if(shape.compare("blapprox")==0)
+      zeroheatQ=1/3;      
+    }
+    else if(shape.compare("blapprox")==0){
       zeroheatH_funptr=&H::zeroheat_blapprox;
-    else if(shape.compare("inviscid")==0)
+      zeroheatQ=0;
+    }
+    else if(shape.compare("inviscid")==0){
       zeroheatH_funptr=&H::zeroheat_inviscid;
+      zeroheatQ=0;
+    }
     else
       {
         WARN("Warning: tube.geom.shape unknown for ZeroHeatH. Aborting...");
@@ -123,6 +153,7 @@ namespace tube{
     d rho0=v.gc->gas.rho(T0,p0);
     d kappa0=v.gc->gas.kappa(T0);
     d mu0=v.gc->gas.mu(T0);
+    htcoefQ(0)=rho0*cp0*zeroheatQ*dTwdx;
     if(Nf>0){
       vd omgvec=v.gc->getomg()*linspace(1,Nf,Nf);
       vd deltak=sqrt(2*kappa0/(rho0*cp0*omgvec));

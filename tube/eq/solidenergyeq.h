@@ -1,9 +1,8 @@
 #pragma once
 #include "tubeequation.h"
-#include "geom.h"
 
 namespace tube{
-  using segment::Geom;
+
   class SolidTPrescribed:public TubeEquation
   {
   private:
