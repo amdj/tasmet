@@ -13,13 +13,26 @@ using namespace gases;
 
 inline us max(us x,us y){ return x>y?x:y;}
 
+class  Gp{
+  d gpfac,dx;
+public:
+  Gp(d gpfac,d dx):gpfac(gpfac),dx(dx){}
+  us operator()(d L){ return max(round(gpfac*L/dx),4);}
+};
 
-Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,int options)
+
+Solver* Atchley_Engine(d gpfac1,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,int options)
 {
   clearConsole();
   // #Some global params
   inittrace(loglevel);
 
+  // Baseline: 500 gridpoints spread over complete geometry
+  // gp: grid refinement factor
+  d Ltot=1.0;
+  d dx=Ltot/500;
+  Gp gp(gpfac1,dx);
+  
   // d p0=376e3;
   d T0=293.15;  
   Globalconf gc(Nf,freq,"helium",T0,p0,kappa);
@@ -28,14 +41,17 @@ Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,i
   // d R1tube=Rtube*1.2;
   d S0=number_pi*pow(Rtube,2);
   d rhtube=Rtube/2;
-  d Ltot=1.0;
+
   // ############################## Resonator
   d Lresendorig=87.97e-2;
   // d Lres=0.774;
   d Lres=Lresendorig;
   // WARN("Wrong length of resonator");
   // d Lres=87.97e-2*1.5;
-  us gpres=max(round(gp*Lres/Ltot),4);  
+
+
+  
+  us gpres=gp(Lres);  
   Geom resgeom=Geom::CylinderBlApprox(gpres,Lres,Rtube);
   // Geom resgeom=Geom::ConeBlApprox(gpres,Lres,R1tube,Rtube);
 
@@ -44,13 +60,13 @@ Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,i
   d y0chx=1.02e-3/2;
   d phichx=0.70;
   d Lchxgap=1.5e-3;
-  us gphx=60;  
+  us gphx=gp(Lchx);  
   Geom chxgeom=Geom::VertPlates(gphx,Lchx,S0,phichx,y0chx);
 
   // ############################## Stack
   d y0stk=0.77e-3/2;
   d Lstk=3.5e-2;
-  us gpstk=120;
+  us gpstk=gp(Lstk);
   d phistk=0.73;
   Geom stkgeom=Geom::VertPlates(gpstk,Lstk,S0,phistk,y0stk);
 
@@ -62,7 +78,7 @@ Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,i
 
   // ############################## Hot end
   d Lhotend=(5.5e-2)-Lhhx+Lresendorig-Lres;
-  us gphotend=150;
+  us gphotend=gp(Lhotend);
   Geom hotendgeom=Geom::CylinderBlApprox(gphotend,Lhotend,Rtube);
 
   

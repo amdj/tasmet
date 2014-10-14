@@ -89,7 +89,7 @@ cdef class pytubeBase:
 cdef extern from "models.h" namespace "":
     Solver* Fubini(us gp,us Nf,d freq,d L,vd p1,int loglevel,d kappa,int options)    
     Solver* ThreeTubes(us gp,us Nf,d freq,d p0,d L,d R1,d R2,vd p1,int loglevel,d kappa,d Tr,int options)
-    Solver* Atchley_Engine(us gp,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,int options) 
+    Solver* Atchley_Engine(d gpfac,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,int options) 
     Solver* SimpleTube(us gp,us Nf,d freq,d L,d r,d Tl,d Tr,vd p1,int loglevel,d kappa,int options,d r2)
 
 cdef class simpletube(pytubeBase):        
@@ -118,9 +118,9 @@ cdef class threetubes(pytubeBase):
         self.ntubes=3
 
 cdef class atchley(pytubeBase):
-    def __cinit__(self,gp,Nf,freq,p1,Tr\
+    def __cinit__(self,gpfac,Nf,freq,p1,Tr\
                   ,int loglevel,d kappa,d p0,options):
-        self.sol=Atchley_Engine(gp,Nf,freq,Tr,\
+        self.sol=Atchley_Engine(gpfac,Nf,freq,Tr,\
                                 loglevel,kappa,dndtovec(p1),p0,options)
         self.tube[0]=<Tube*> self.sol[0].sys().getSeg(0)
         self.tube[1]=<Tube*> self.sol[0].sys().getSeg(1)
