@@ -41,7 +41,7 @@ cdef extern from "solver.h" namespace "tasystem":
         void doIter(d dampfac)
         TaSystem& sys()
         void init()
-        void solve(us maxiter,d funtol,d reltol,d mindampfac,bool wait)
+        void solve(us maxiter,d funtol,d reltol,d mindampfac,d maxdampfac,bool wait)
         void stop()
 
 

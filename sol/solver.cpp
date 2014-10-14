@@ -58,7 +58,7 @@ namespace tasystem{
 
 
   // A solver always contains a valid system.
-  Solver::Solver(const TaSystem& sys):tasystem(sys.copy()),dampfac(1.0) {
+  Solver::Solver(const TaSystem& sys):tasystem(sys.copy()) {
     TRACE(15,"Solver(TaSystem&)");
   }
   Solver::Solver(const Solver& o): Solver(*o.tasystem.get()){}
@@ -77,10 +77,8 @@ namespace tasystem{
   }
 
   typedef tuple<d,d> dtuple;
-  void Solver::solve(us maxiter,d funtol,d reltol,d mindampfac,bool wait){
+  void Solver::solve(us maxiter,d funtol,d reltol,d mindampfac,d maxdampfac,bool wait){
     TRACE(20,"Solver started.");
-    this->mindampfac=mindampfac;
-    this->dampfac=1.0;
     if(maxiter==0)
       maxiter=SOLVER_MAXITER;
 
@@ -92,7 +90,7 @@ namespace tasystem{
     }
     
     if(!solverThread){
-      sc.reset(new SolverConfiguration(maxiter,funtol,reltol,dampfac));
+      sc.reset(new SolverConfiguration(maxiter,funtol,reltol,mindampfac,maxdampfac));
       // SolverInstance si(*this,*sc);
       solverThread.reset(new boost::thread(SolverInstance(*this,*sc)));
       // si();
@@ -114,13 +112,7 @@ namespace tasystem{
   }
   tuple<d,d> Solver::doIter(d dampfac1){
     TRACE(15,"Solver::doIter("<<dampfac1<<")");
-
-    // Do an iteration
-    if(dampfac1>0)
-      this->dampfac=dampfac1;
-
-
-    assert(dampfac>0 && dampfac<=1.0);
+    assert(dampfac1<=1.0);
 
     evd error=sys().error();
     assert(error.size()>0);
@@ -129,7 +121,11 @@ namespace tasystem{
 
     us Ndofs=error.size();
     TRACE(15,"Computing Jacobian...");
-    esdmat jac=sys().jac(dampfac);
+    esdmat jac;
+    if(sc)
+      jac=sys().jac(sc->dampfac);
+    else
+      jac=sys().jac(dampfac1);
     jac.makeCompressed();
 
     assert(jac.cols()==error.size());
@@ -149,19 +145,28 @@ namespace tasystem{
     evd newx(Ndofs);
     vd Newx=math_common::armaView(newx);
     reler=fulldx.norm();
-    do{
-      newx=oldx+dampfac*fulldx;
+    if(sc){
+      do{
+        newx=oldx+sc->dampfac*fulldx;
+        sys().setRes(Newx);
+        newfuner=sys().error().norm();
+        if((newfuner>oldfuner || !(newfuner>0)) && sc->dampfac>sc->mindampfac){
+          sc->dampfac=sc->dampfac*0.5;
+          cout << "Decreasing dampfac, new dampfac = " << sc->dampfac << "\n";
+        }
+      } while((newfuner>oldfuner || !(newfuner>0)) && sc->dampfac>sc->mindampfac);
+      if(newfuner<oldfuner && sc->dampfac<sc->maxdampfac){
+        cout << "Increasing dampfac, new dampfac = " << sc->dampfac << " . Max dampfac: "<< sc->maxdampfac << "\n";
+        sc->dampfac=sc->dampfac*2;
+      }
+    } // If sc
+    else{
+      newx=oldx+dampfac1*fulldx;
       sys().setRes(Newx);
       newfuner=sys().error().norm();
-      if((newfuner>oldfuner || !(newfuner>0)) && dampfac>mindampfac){
-        dampfac=dampfac*0.5;
-        cout << "Decreasing dampfac, new dampfac = " << dampfac << "\n";
-      }
-    } while((newfuner>oldfuner || !(newfuner>0)) && dampfac>mindampfac);
-    if(dampfac<=0.25 && newfuner<oldfuner)
-      dampfac=dampfac*4;
+    }
     
-    cout << "Current dampfac: " << dampfac << "\n";
+    cout << "Current dampfac: " << sc->dampfac << "\n";
     TRACE(10,"Iteration done...");
     return std::make_tuple(newfuner,reler);		// Return function error
 

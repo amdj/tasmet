@@ -32,8 +32,8 @@ namespace tube{
     }
     d zeroheat_blapprox(d kappa,d rh){
       TRACE(2,"zeroheat_blapprox");
-      // return 2*kappa/pow(rh,2);
-      return 0;
+      return 2*kappa/pow(rh,2);
+      // return 0;
     }
     d zeroheat_inviscid(d dummy,d dummy2){
       TRACE(2,"zeroheat_inviscid");

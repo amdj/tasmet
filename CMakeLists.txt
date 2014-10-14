@@ -29,7 +29,8 @@ set (nonlinear_SRC ${tubesources} ${varsources} ${segsources}
   ${modelssources}
   )
 
- # ${tubedrag}
+# ${tubedrag}
+link_directories(${link_directories} /usr/local/lib)
 include_directories(
   sol
   sys

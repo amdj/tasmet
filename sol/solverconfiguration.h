@@ -14,11 +14,23 @@ namespace tasystem{
     boost::atomic<d> funtol;
     boost::atomic<d> reltol;
     boost::atomic<d> dampfac;
-    SolverConfiguration(us maxiter,d funtol,d reltol,d dampfac):
-      maxiter(maxiter),funtol(funtol),reltol(reltol),dampfac(dampfac){
+    boost::atomic<d> mindampfac;
+    boost::atomic<d> maxdampfac;    
+    
+
+    SolverConfiguration(us maxiter,d funtol,d reltol,d mindampfac,d maxdampfac):
+      maxiter(maxiter),
+      funtol(funtol),
+      reltol(reltol),
+      dampfac(maxdampfac),
+      mindampfac(mindampfac),
+      maxdampfac(maxdampfac)
+    {
       cout << "Solver started. Max. iterations: " << maxiter << "\n"    \
            << "Funtol: " << funtol << "\n"                              \
-           << "Reltol: " << reltol << "\n";
+           << "Reltol: " << reltol << "\n"
+           << "Mindampfac: " << mindampfac << "\n"  \
+           << "Maxdampfac: " << maxdampfac << "\n";
     }
     
   };
