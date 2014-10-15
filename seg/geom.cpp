@@ -64,7 +64,7 @@ namespace segment{
   }
 
   Geom Geom::VertPlates(us gp,d L,d S,d phi,d y0){
-    Grid g={gp,L};
+    Grid g(gp,L);
     return VertPlates(g,S,phi,y0);
   }
   
@@ -90,7 +90,7 @@ namespace segment{
 
   Geom Geom::CylinderBlApprox(us gp,d L,d r){
     testgp(gp);
-    Grid g={gp,L};
+    Grid g(gp,L);
     return CylinderBlApprox(g,r);
   }
   Geom Geom::CylinderBlApprox(const Grid& g,d r){
@@ -101,7 +101,7 @@ namespace segment{
   }  
   Geom Geom::ConeBlApprox(us gp, d L,d r1,d r2){
     testgp(gp);
-    Grid g={gp,L};
+    Grid g(gp,L);
     return ConeBlApprox(g,r1,r2);
   }
   Geom Geom::ConeBlApprox(const Grid& g,d r1,d r2){
@@ -112,7 +112,7 @@ namespace segment{
 
   Geom Geom::Cone(us gp,d L,d r1,d r2){
     TRACE(15,"Geom::Cone()");
-    Grid g={gp,L};
+    Grid g(gp,L);
     return Cone(g,r1,r2);
   }
   Geom Geom::Cone(const Grid& g,d rleft,d rright){
@@ -144,7 +144,7 @@ namespace segment{
     assert(L>0);
     assert(S>0);
     assert(phi>0 && phi<1.0);
-    Grid g={gp,L};
+    Grid g(gp,L);
     return PrisVertStack(g,S,phi,rh);
   }
   Geom Geom::PrisVertStack(const Grid& g,d S,d phi,d rh){ // Prismatic vertical plates stack

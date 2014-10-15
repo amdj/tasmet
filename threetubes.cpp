@@ -15,6 +15,7 @@ int main(int argc,char* argv[]) {
     Nf=atoi(argv[2]);
   if(argc>3)
     gp=atoi(argv[3]);
+  inittrace(loglevel);
   cout << "gp:"<< gp<<"\n";
 
   d T0=293.15;
@@ -22,7 +23,7 @@ int main(int argc,char* argv[]) {
   int options=0;
   // options|=DRIVEN|ISENTROPIC;
   cout<< "Loglevel:"<<loglevel<<"\n";
-  inittrace(loglevel);
+
   vd p1(2*Nf+1,arma::fill::zeros);
   if(Nf>0)
     p1(1)=0.5e-2;

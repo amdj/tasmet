@@ -32,8 +32,8 @@ namespace segment {
     static Geom Cone(const Grid& g,d r1,d r2); // Return a cone
     static Geom Cone(us gp,d L,d r1,d r2); // Return a cone
 
-    static Geom ConeBlApprox(const Grid& g,d r1,d r2); // Return a cone    
-    static Geom ConeBlApprox(us gp,d L,d r1,d r2); // Return a cone    
+    static Geom ConeBlApprox(const Grid& g,d r1,d r2); // Return a cone    blapprox
+    static Geom ConeBlApprox(us gp,d L,d r1,d r2); // Return a cone    blapprox
 
     static Geom PrisVertStack(const Grid& g,d S,d phi,d rh); // Prismatic vertical plates stack
     static Geom PrisVertStack(us gp,d L,d S,d phi,d rh); // Prismatic vertical plates stack
