@@ -1,14 +1,16 @@
 #include "geom.h"
+#include "grid.h"
 #include <assert.h>
+
 namespace segment{
   void testgp(us gp){
     if(gp<4 || gp >MAXGP)
       {
-	WARN( "WARNING: Given number of gridpoints is "	\
+        WARN( "WARNING: Given number of gridpoints is "	\
 	     << gp<<", which is larger than MAXGP.\n"
-	      << "MAXGP is: " << MAXGP << ". Now exiting...");
-	exit(1);
-	  
+              << "MAXGP is: " << MAXGP << ". Now exiting...");
+        exit(1);
+    
       }
   }
 
@@ -61,70 +63,108 @@ namespace segment{
     second=Geom(sx,sS,sphi,srh,scshape);    
   }
 
+  Geom Geom::VertPlates(us gp,d L,d S,d phi,d y0){
+    Grid g={gp,L};
+    return VertPlates(g,S,phi,y0);
+  }
   
-  Geom Geom::VertPlates(us gp,d L,d S,d phi,d y0,Geom* left,Geom* right){
-    assert(gp>3);
+  Geom Geom::VertPlates(const Grid& g,d S,d phi,d y0){
     assert(y0>0);
     assert(0<phi && phi<=1.0);
     assert(L>0);
 
-    vd x=linspace(0,L,gp);      // Grid of the cell walls
+    us gp=g.getgp();
     vd phiv=phi*vd(gp,fillwith::ones);
     vd Sv=S*vd(gp,fillwith::ones);
     vd rh=y0*vd(gp,fillwith::ones);
-    return Geom(x,Sv,phiv,rh,"vert");
+    return Geom(g,Sv,phiv,rh,"vert");
   }
-  Geom Geom::Cylinder(us gp, d L,d r,Geom* left,Geom* right){
-    return Cone(gp,L,r,r,left,right);
-  }
-  Geom Geom::CylinderBlApprox(us gp, d L,d r,Geom* left,Geom* right){
-    Geom geom=Cone(gp,L,r,r,left,right);
-    geom.shape=string("blapprox");
-    return geom;
-  }
-  Geom Geom::ConeBlApprox(us gp, d L,d r1,d r2,Geom* left,Geom* right){
-    Geom geom=Cone(gp,L,r1,r2,left,right);
-    geom.shape=string("blapprox");
-    return geom;
-  }
-  Geom Geom::Cone(us gp,d L,d r1,d r2,Geom* left,Geom* right){
-    TRACE(10,"Geom::Cone()");
-    assert(gp>3);
-    assert(r1>0);
-    assert(r2>0);
-    assert(L>0);
-    d S1=number_pi*pow(r1,2);
-    d S2=number_pi*pow(r2,2);
-    vd r=linspace(r1,r2,gp);
-    vd x=linspace(0,L,gp);
-    vd phi(gp,fillwith::ones);
-    vd S=number_pi*pow(r,2);
-    vd rh=S/(2.0*number_pi*r);
 
-    Geom geom(x,S,phi,rh,"circ");
-    if(r1==r2)
+  
+  Geom Geom::Cylinder(us gp,d L,d r){
+    return Cone(gp,L,r,r);
+  }
+  Geom Geom::Cylinder(const Grid& g,d r){
+    return Cone(g,r,r);
+  }
+
+  Geom Geom::CylinderBlApprox(us gp,d L,d r){
+    testgp(gp);
+    Grid g={gp,L};
+    return CylinderBlApprox(g,r);
+  }
+  Geom Geom::CylinderBlApprox(const Grid& g,d r){
+    TRACE(10,"Geom::CylinderBlApprox()");
+    Geom geom=Cone(g,r,r);
+    geom.shape="blapprox";
+    return geom;
+  }  
+  Geom Geom::ConeBlApprox(us gp, d L,d r1,d r2){
+    testgp(gp);
+    Grid g={gp,L};
+    return ConeBlApprox(g,r1,r2);
+  }
+  Geom Geom::ConeBlApprox(const Grid& g,d r1,d r2){
+    Geom geom=Cone(g,r1,r2);
+    geom.shape="blapprox";
+    return geom;
+  }
+
+  Geom Geom::Cone(us gp,d L,d r1,d r2){
+    TRACE(15,"Geom::Cone()");
+    Grid g={gp,L};
+    return Cone(g,r1,r2);
+  }
+  Geom Geom::Cone(const Grid& g,d rleft,d rright){
+    TRACE(10,"Geom::Cone()");
+    assert(rleft>0);
+    assert(rright>0);
+    assert(L>0);
+    d S1=number_pi*pow(rleft,2);
+    d S2=number_pi*pow(rright,2);
+    const vd& x1=g.getx();
+    const d& L1=g.getL();
+    const us gp1=g.getgp();
+    TRACE(15,"SFSG");
+    vd r1=zeros<vd>(gp1);
+    for(us j=0;j<gp1;j++)
+      r1(j)=rleft+(rright-rleft)*x1(j)/L1;
+
+    vd phi(gp1,fillwith::ones);
+    vd S=number_pi*pow(r1,2);
+    vd rh1=r1/2;
+
+    Geom geom(g,S,phi,rh1,"circ");
+    if(rleft==rright)
       geom.setPrismatic(true);
     return geom;
   }
-  Geom Geom::PrisVertStack(us gp,d L,d S,d phi,d rh,Geom* left,Geom* right){ // Prismatic vertical plates stack
+  Geom Geom::PrisVertStack(us gp,d L,d S,d phi,d rh){ // Prismatic vertical plates stack
     assert(gp>3);
     assert(L>0);
     assert(S>0);
     assert(phi>0 && phi<1.0);
-
-    vd x=linspace(0,L,gp);
+    Grid g={gp,L};
+    return PrisVertStack(g,S,phi,rh);
+  }
+  Geom Geom::PrisVertStack(const Grid& g,d S,d phi,d rh){ // Prismatic vertical plates stack
+    assert(S>0);
+    assert(phi>0 && phi<1.0);
+    us gp=g.getgp();
     vd phix=phi*vd(gp,fillwith::ones);
     vd Sx=S*vd(gp,fillwith::ones);
     vd rhx=rh*vd(gp,fillwith::ones);
     
-    Geom g1(x,Sx,phix,rhx,"vert");
+    Geom g1(g,Sx,phix,rhx,"vert");
     g1.setPrismatic(true);
     return g1;
   }
+  
   d Geom::getFluidVolume() const {
     return arma::sum(vVf);
   }
-  Geom::Geom(vd& x,vd& S,vd& phi,vd& rh,string cshape){
+  Geom::Geom(const Grid& g,const vd& S,const vd& phi,const vd& rh,const string& cshape):Geom(g.getx(),S,phi,rh,cshape){}
+  Geom::Geom(const vd& x,const vd& S,const vd& phi,const vd& rh,const string& cshape){
     TRACE(10,"Geom constructor");
     // Sanity checks
     assert(max(phi)<=1.0);

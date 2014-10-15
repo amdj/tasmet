@@ -6,6 +6,7 @@
 #include "enginesystem.h"
 #include "solver.h"
 #include "bc.h"
+#include "grid.h"
 #include <limits>
 using namespace std;
 using namespace segment; 
@@ -19,19 +20,23 @@ int main(int argc,char* argv[]) {
   us gp=4;
   us Nf=0;
   us Ns=2*Nf+1;
-
+  inittrace(loglevel);
   cout << "Max value of int: " << std::numeric_limits<int>::max() << "\n";
   double f=100;
   double omg=2*number_pi*f;
   double T=1/f;
+  TRACE(14,"SFSG");
   if(argc>1)
     loglevel=atoi(argv[1]);
   if(argc>2)
     Nf=atoi(argv[2]);
   if(argc>3)
     gp=atoi(argv[3]);
+  TRACE(14,"SFSG");
   cout<< "Loglevel:"<<loglevel<<"\n";
-  inittrace(loglevel);
+  TRACE(14,"SFSG");
+
+  TRACE(14,"SFSG");
   d L=0.01;
 
   d S=1;
@@ -43,15 +48,21 @@ int main(int argc,char* argv[]) {
   d rh=S/PI;
   d p0=101325.0;
   d T0=293.15;
-  d griddx=L/gp;
+
   d S0=S;
 
+  TRACE(14,"SFSG");
+  segment::Grid grid(gp,L);
+  TRACE(14,"SFSG");
+  Geom geom1=Geom::CylinderBlApprox(grid,rtube);
 
+  return 0;
   d kappa=0.1;
   Globalconf air=Globalconf::airSTP(Nf,f);
   Globalconf gc=air;
-  Geom geom1=Geom::CylinderBlApprox(gp,L,rtube);
+
   // HopkinsLaminarDuct t1(geom1,gc.T0,gc.T0);
+
   IsentropicTube t1(geom1);
   var pL(gc,0);
   // pL.set(0,3.14);

@@ -11,19 +11,32 @@
 
 namespace segment {
   SPOILNAMESPACE
-
+  class Grid;
   void smoothEnds(Geom& first,int firstpos,Geom& second,int secondpos);
   class Geom{
 
   public:
     Geom(){}
-    Geom(vd& x,vd& S,vd& phi,vd& rh,string cshape);
-    static Geom VertPlates(us gp,d L,d S,d phi,d y0,Geom *left=NULL,Geom *right=NULL);
-    static Geom CylinderBlApprox(us gp,d L,d r,Geom *left=NULL,Geom *right=NULL);
-    static Geom Cylinder(us gp,d L,d r,Geom *left=NULL,Geom *right=NULL);
-    static Geom Cone(us gp,d L,d r1,d r2,Geom *left=NULL,Geom *right=NULL); // Return a cone
-    static Geom ConeBlApprox(us gp,d L,d r1,d r2,Geom *left=NULL,Geom *right=NULL); // Return a cone    
-    static Geom PrisVertStack(us gp,d L,d S,d phi,d rh,Geom *left=NULL,Geom *right=NULL); // Prismatic vertical plates stack
+    Geom(const vd& x,const vd& S,const vd& phi,const vd& rh,const string& cshape);
+    Geom(const Grid& g,const vd& S,const vd& phi,const vd& rh,const string& cshape);    
+
+    static Geom VertPlates(const Grid& g,d S,d phi,d y0);
+    static Geom VertPlates(us gp,d L,d S,d phi,d y0);
+    
+    static Geom CylinderBlApprox(const Grid& g,d r);
+    static Geom CylinderBlApprox(us gp,d L,d r);
+    
+    static Geom Cylinder(const Grid& g,d r);
+    static Geom Cylinder(us gp,d L,d r);
+    
+    static Geom Cone(const Grid& g,d r1,d r2); // Return a cone
+    static Geom Cone(us gp,d L,d r1,d r2); // Return a cone
+
+    static Geom ConeBlApprox(const Grid& g,d r1,d r2); // Return a cone    
+    static Geom ConeBlApprox(us gp,d L,d r1,d r2); // Return a cone    
+
+    static Geom PrisVertStack(const Grid& g,d S,d phi,d rh); // Prismatic vertical plates stack
+    static Geom PrisVertStack(us gp,d L,d S,d phi,d rh); // Prismatic vertical plates stack
 
     LocalGeom localGeom(us i) const;	// Get a local geometry for a certain vertex
     d getFluidVolume() const;
