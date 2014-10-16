@@ -1,5 +1,5 @@
 #include "models.h"
-
+#include "geomhelpers.h"
 #include "solver.h"
 #include "tasystem.h"
 #include "gas.h"
@@ -14,6 +14,7 @@ using namespace gases;
 
 Solver* ThreeTubes(us gp,us Nf,d freq,d p0,d L,d R1,d R2,vd p1,int loglevel,d kappa,d Tr,int options)
 {
+  clearConsole();
   inittrace(loglevel);
   TRACE(100,"L:"<<L);
   Globalconf gc=Globalconf::airSTP(Nf,freq,kappa);
@@ -33,8 +34,8 @@ Solver* ThreeTubes(us gp,us Nf,d freq,d p0,d L,d R1,d R2,vd p1,int loglevel,d ka
     geom2=Geom::Cylinder(gp,L,R2);  
     geom3=Geom::Cylinder(gp,L,R1);
   }
-  segment::smoothEnds(geom1,LAST,geom2,FIRST);
-  segment::smoothEnds(geom2,LAST,geom3,FIRST);
+  segment::smoothEnds(geom1,LAST,geom2,FIRST,5);
+  segment::smoothEnds(geom3,FIRST,geom2,LAST,5);
   IsentropicTube t1is(geom1);
   IsentropicTube t2is(geom2);  
   IsentropicTube t3is(geom3);

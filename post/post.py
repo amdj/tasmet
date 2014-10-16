@@ -40,6 +40,7 @@ class nonlinpost(nlpost):
         self.rho=[]
         self.U=[]
         self.x=tube.getx(nr)
+        self.Sf=tube.getSf(nr)
         self.L=tube.getL(nr)
         self.Ts.append(tube.getResVar('stemp',0,nr))
         self.T.append(tube.getResVar('temp',0,nr))
@@ -58,6 +59,8 @@ class nonlinpost(nlpost):
         # self.iDFT[:,0]=1.
     def getp(self,i):
         return self.p[i]
+    def getSf(self):
+        return self.Sf
     def getrho(self,i):
         return self.rho[i]
     def getT(self,i):
@@ -89,6 +92,13 @@ class combinedsys:
             L+=sys.L
 
         self.x=x
+    def getSf(self):
+        Sf=[]    
+        for sys in self.systems:
+            Sf=n.concatenate((Sf,sys.getSf()))
+        return Sf
+
+        
     def getp(self,i):
         p=[]
         for sys in self.systems:

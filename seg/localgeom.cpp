@@ -38,6 +38,8 @@ namespace segment{
   void LocalGeom::show() const {
     cout <<"Showing LocalGeom data..\n";
     cout <<"vSf   :" << vSf<<"\n";
+    cout <<"SfL   :" << SfL<<"\n";
+    cout <<"SfR   :" << SfR<<"\n";    
     cout <<"vVf   :" << vVf<<"\n";
     cout <<"vrh   :" << vrh<<"\n";
     cout <<"xl    :" << xl<<"\n";            

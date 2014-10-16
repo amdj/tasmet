@@ -1,3 +1,4 @@
+#define SMOOTHPERC (2)
 #include "models.h"
 #include "solver.h"
 #include "gas.h"
@@ -5,6 +6,7 @@
 #include "isentropictube.h"
 #include "hopkinslaminarduct.h"
 #include "enginesystem.h"
+#include "geomhelpers.h"
 using namespace segment;
 using namespace tasystem;
 using namespace tube;
@@ -83,10 +85,14 @@ Solver* Atchley_Engine(d gpfac1,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p
 
   
   // And blend togeter
-  smoothEnds(resgeom,LAST,chxgeom,FIRST);
-  smoothEnds(chxgeom,LAST,stkgeom,FIRST);
-  smoothEnds(stkgeom,LAST,hhxgeom,FIRST);
-  smoothEnds(hhxgeom,LAST,hotendgeom,FIRST);
+  cout << "Smoothing resonator to chx\n";
+  smoothEnds(resgeom,LAST,chxgeom,FIRST,SMOOTHPERC);
+  cout << "Smoothing chx to stk\n";
+  smoothEnds(chxgeom,LAST,stkgeom,FIRST,SMOOTHPERC);
+  cout << "Smoothing hhx to stk\n";  
+  smoothEnds(hhxgeom,FIRST,stkgeom,LAST,SMOOTHPERC);
+  cout << "Smoothing hotend to hhx\n";  
+  smoothEnds(hotendgeom,FIRST,hhxgeom,LAST,SMOOTHPERC);
   
   HopkinsLaminarDuct resonator(resgeom,gc.T0);
   HopkinsLaminarDuct chx(chxgeom,gc.T0);

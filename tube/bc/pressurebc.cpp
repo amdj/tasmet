@@ -54,7 +54,7 @@ namespace tube{
     LeftPressure(other.pLbc,other.TLbc)
   {
     TRACE(8,"LeftPressure copy constructor");
-    TRACE(15,"pLbc:"<<pLbc());
+    TRACE(5,"pLbc:"<<pLbc());
   }
   void LeftPressure::initTubeVertex(us i,const Tube& thisseg)
   {

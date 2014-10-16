@@ -5,8 +5,6 @@
 #include "localgeom.h"
 
 #define MAXGP 500
-#define LAST 0
-#define FIRST 1
 
 
 namespace segment {
@@ -14,12 +12,12 @@ namespace segment {
   class Grid;
   void smoothEnds(Geom& first,int firstpos,Geom& second,int secondpos);
   class Geom{
-
+    void createGeom(const vd& x,const vd& S,const vd& phi,const vd& rh,const string& cshape);
   public:
     Geom(){}
     Geom(const vd& x,const vd& S,const vd& phi,const vd& rh,const string& cshape);
     Geom(const Grid& g,const vd& S,const vd& phi,const vd& rh,const string& cshape);    
-
+    Geom& operator=(const Geom& other);
     static Geom VertPlates(const Grid& g,d S,d phi,d y0);
     static Geom VertPlates(us gp,d L,d S,d phi,d y0);
     

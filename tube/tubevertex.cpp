@@ -7,7 +7,7 @@ namespace tube{
   void TubeVertex::show() const{
     cout << "----------------- TubeVertex " << lg.i << "----\n";
     cout << "Showing weight functions for TubeVertex "<< i <<"\n";
-    // lg.show();
+    lg.show();
     // w.show();
     // cout << "cWddt    :"<<cWddt<<"\n";
     // cout << "cWim1    :"<<cWim1<<"\n";
@@ -39,34 +39,34 @@ namespace tube{
     // cout << "eWc3     :"<<eWc3<<"\n";
     // cout << "eWc4     :"<<eWc4<<"\n";
 
-    cout << "wLl   :"<<wLl<<"\n";
-    cout << "wLr   :"<<wLr<<"\n";
-    cout << "wRl   :"<<wRl<<"\n";
-    cout << "wRr   :"<<wRr<<"\n";
-    cout << "wL0   :"<<wL0<<"\n";
-    cout << "wL1   :"<<wL1<<"\n";
-    cout << "wRNm1 :"<<wRNm1<<"\n";
-    cout << "wRNm2 :"<<wRNm2<<"\n";
-    cout << "vSfL  :"<<vSfL<<"\n";
-    cout << "vSfR  :"<<vSfR<<"\n";
-    cout << "dxm   :"<<dxm<<"\n";
-    cout << "dxp   :"<<dxp<<"\n";
-    cout << "UsignL:"<<UsignL<<"\n";
-    cout << "UsignR:"<<UsignR<<"\n";
+    // cout << "wLl   :"<<wLl<<"\n";
+    // cout << "wLr   :"<<wLr<<"\n";
+    // cout << "wRl   :"<<wRl<<"\n";
+    // cout << "wRr   :"<<wRr<<"\n";
+    // cout << "wL0   :"<<wL0<<"\n";
+    // cout << "wL1   :"<<wL1<<"\n";
+    // cout << "wRNm1 :"<<wRNm1<<"\n";
+    // cout << "wRNm2 :"<<wRNm2<<"\n";
+    // cout << "vSfL  :"<<vSfL<<"\n";
+    // cout << "vSfR  :"<<vSfR<<"\n";
+    // cout << "dxm   :"<<dxm<<"\n";
+    // cout << "dxp   :"<<dxp<<"\n";
+    // cout << "UsignL:"<<UsignL<<"\n";
+    // cout << "UsignR:"<<UsignR<<"\n";
 
-    for(auto eq=eqs.begin();eq!=eqs.end();eq++)
-      (*eq)->show();
+    // for(auto eq=eqs.begin();eq!=eqs.end();eq++)
+      // (*eq)->show();
     
-    cout << "Number of eqs :" << getNEqs() << "\n";
-    cout << "Number of dofs:" << getNDofs() << "\n";    
-    cout << "Dofnr rho: " << rho.getDofNr() << "\n";
-    cout << "Dofnr U  : " << U.getDofNr() << "\n";
-    cout << "Dofnr p  : " << p.getDofNr() << "\n";
-    cout << "Dofnr T  : " << T.getDofNr() << "\n";
-    cout << "Dofnr Ts : " << Ts.getDofNr() << "\n";
-    cout << "TubeVertex on left  side:" << left <<"\n";
-    cout << "This TubeVertex         :" << this <<"\n";
-    cout << "TubeVertex on right side:" << right <<"\n"   ;
+    // cout << "Number of eqs :" << getNEqs() << "\n";
+    // cout << "Number of dofs:" << getNDofs() << "\n";    
+    // cout << "Dofnr rho: " << rho.getDofNr() << "\n";
+    // cout << "Dofnr U  : " << U.getDofNr() << "\n";
+    // cout << "Dofnr p  : " << p.getDofNr() << "\n";
+    // cout << "Dofnr T  : " << T.getDofNr() << "\n";
+    // cout << "Dofnr Ts : " << Ts.getDofNr() << "\n";
+    // cout << "TubeVertex on left  side:" << left <<"\n";
+    // cout << "This TubeVertex         :" << this <<"\n";
+    // cout << "TubeVertex on right side:" << right <<"\n"   ;
   }
   us TubeVertex::getNDofs() const{
     TRACE(5,"TubeVertex::getNDofs()");
@@ -136,9 +136,12 @@ namespace tube{
     eqs.push_back(&c);
     eqs.push_back(&m);
     eqs.push_back(&e);
+    // if(i>1 && i<nCells-1)
+      // eqs.push_back(&s);
+    // else
     eqs.push_back(&sL);
 
-
+    
     eqs.push_back(&se);    
     us eqnr_=0;
     for(auto eq=eqs.begin();eq!=eqs.end();eq++){

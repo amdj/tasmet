@@ -14,56 +14,9 @@ namespace segment{
       }
   }
 
-  void smoothEnds(Geom& first,int firstpos,Geom& second,int secondpos){
-    TRACE(3,"SmoothEnd()");
-
-    us i,j;
-    
-    if(firstpos==FIRST)      {
-        i=0;
-        TRACE(18,"Smoothing beginning of first Geom, i="<< i);
-      }
-    else{
-      i=first.nCells;
-      TRACE(18,"Smoothing end of first Geom, i="<< i);
-    }
-    if(secondpos==FIRST){
-      j=0; 
-      TRACE(18,"Smoothing beginning of second Geom, j="<< j);
-    }
-    else{
-      j=second.nCells;
-      TRACE(18,"Smoothing end of second Geom, j=" << j);
-    }
-
-    vd fx=first.x;
-    vd fS=first.S;
-    vd fphi=first.phi;
-    vd frh=first.rh;
-    string fcshape=first.shape;
-
-    vd sx=second.x;
-    vd sS=second.S;
-    TRACE(1,"Second S:"<< sS);
-    vd sphi=second.phi;
-    vd srh=second.rh;
-    string scshape=second.shape;
-
-    
-    // Now adjusting it
-    fS(i)=0.5*(first.S(i)+second.S(j));
-    sS(j)=0.5*(first.S(i)+second.S(j));
-
-    TRACE(1,"Second S:"<< sS);
-    
-    fphi(i)=0.5*(first.phi(i)+second.phi(j));
-    sphi(j)=0.5*(first.phi(i)+second.phi(j));
-    
-    first=Geom(fx,fS,fphi,frh,fcshape);
-    second=Geom(sx,sS,sphi,srh,scshape);    
-  }
 
   Geom Geom::VertPlates(us gp,d L,d S,d phi,d y0){
+    testgp(gp);
     Grid g(gp,L);
     return VertPlates(g,S,phi,y0);
   }
@@ -164,8 +117,20 @@ namespace segment{
     return arma::sum(vVf);
   }
   Geom::Geom(const Grid& g,const vd& S,const vd& phi,const vd& rh,const string& cshape):Geom(g.getx(),S,phi,rh,cshape){}
+
   Geom::Geom(const vd& x,const vd& S,const vd& phi,const vd& rh,const string& cshape){
     TRACE(10,"Geom constructor");
+    createGeom(x,S,phi,rh,cshape);
+  }
+  Geom& Geom::operator=(const Geom& other){
+    TRACE(10,"Geom::operator=()");
+    createGeom(other.x,other.S,other.phi,other.rh,other.shape);
+    return *this;
+  }
+  void Geom::createGeom(const vd& x,const vd& S,const vd& phi,const vd& rh,const string& cshape){
+    TRACE(10,"Geom::createGeom()");
+    
+
     // Sanity checks
     assert(max(phi)<=1.0);
     assert(min(phi)>=0);
@@ -185,7 +150,6 @@ namespace segment{
     this->L=x(x.size()-1);
     gp=x.size();
     nCells=gp-1;
-    
     xv=vd(nCells);
     vS=vd(nCells);
     vSf=vd(nCells);
@@ -204,6 +168,9 @@ namespace segment{
       vVf(j)=vSf(j)*(x(j+1)-x(j));
       vVs(j)=vSs(j)*(x(j+1)-x(j));
     }
+    // cout << "vSf:" << vSf << "\n";
+    // cout << "Sf:" << Sf << "\n";
+
     TRACE(-1,"Celldata xv:"<<xv);
   }
   void Geom::show() const {
