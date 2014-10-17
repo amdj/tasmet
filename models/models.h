@@ -11,7 +11,7 @@ SPOILNAMESPACE
 #define BLAPPROX 2
 #define DRIVEN 4
 #define ISOTWALL 8
-
+#define BLAYER 16
 
 
 Solver* SimpleTube(us gp,us Nf,d freq,d L,d r,d Tl,d Tr,vd p1,int loglevel,d kappa,int options,d r2=-1);

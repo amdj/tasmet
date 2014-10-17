@@ -1,4 +1,6 @@
-#define SMOOTHPERC (2)
+#define SMOOTHPERC (1)
+
+
 #include "models.h"
 #include "solver.h"
 #include "gas.h"
@@ -7,6 +9,7 @@
 #include "hopkinslaminarduct.h"
 #include "enginesystem.h"
 #include "geomhelpers.h"
+#include "grid.h"
 using namespace segment;
 using namespace tasystem;
 using namespace tube;
@@ -23,7 +26,7 @@ public:
 };
 
 
-Solver* Atchley_Engine(d gpfac1,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,int options)
+Solver* Atchley_Engine(d gpfac,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,int options)
 {
   clearConsole();
   // #Some global params
@@ -33,7 +36,7 @@ Solver* Atchley_Engine(d gpfac1,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p
   // gp: grid refinement factor
   d Ltot=1.0;
   d dx=Ltot/500;
-  Gp gp(gpfac1,dx);
+  Gp gp(gpfac,dx);
   
   // d p0=376e3;
   d T0=293.15;  
@@ -52,9 +55,14 @@ Solver* Atchley_Engine(d gpfac1,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p
   // d Lres=87.97e-2*1.5;
 
 
-  
-  us gpres=gp(Lres);  
-  Geom resgeom=Geom::CylinderBlApprox(gpres,Lres,Rtube);
+  Grid resgrid(gp(Lres),Lres);
+  // ############################## Cold HX's
+
+  // ############################## Resonator again
+  d dxb=1e-5;
+  resgrid.setLeftBl(1e-7,1,55*gpfac);
+  resgrid.setRightBl(dxb,1,20*gpfac);  
+  Geom resgeom=Geom::CylinderBlApprox(resgrid,Rtube);
   // Geom resgeom=Geom::ConeBlApprox(gpres,Lres,R1tube,Rtube);
 
   // ############################## Cold HX's
@@ -62,26 +70,35 @@ Solver* Atchley_Engine(d gpfac1,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p
   d y0chx=1.02e-3/2;
   d phichx=0.70;
   d Lchxgap=1.5e-3;
-  us gphx=gp(Lchx);  
-  Geom chxgeom=Geom::VertPlates(gphx,Lchx,S0,phichx,y0chx);
+
+  Grid chxgrid(gp(Lchx)*10,Lchx);
+  chxgrid.setLeftBl(dxb,10,30*gpfac);
+  chxgrid.setRightBl(dxb,10,30*gpfac);  
+  Geom chxgeom=Geom::VertPlates(chxgrid,S0,phichx,y0chx);
 
   // ############################## Stack
   d y0stk=0.77e-3/2;
   d Lstk=3.5e-2;
-  us gpstk=gp(Lstk);
   d phistk=0.73;
-  Geom stkgeom=Geom::VertPlates(gpstk,Lstk,S0,phistk,y0stk);
+  
+  Grid stkgrid(gp(Lstk)*10,Lstk);
+  stkgrid.setLeftBl(dxb,10,20*gpfac);
+  stkgrid.setRightBl(dxb,10,20*gpfac);  
+  Geom stkgeom=Geom::VertPlates(stkgrid,S0,phistk,y0stk);
 
   // ############################## Hot HX
   d y0hhx=y0chx;
   d Lhhx=7.62e-3;
   d phihhx=0.70;
-  Geom hhxgeom=Geom::VertPlates(gphx,Lhhx,S0,phihhx,y0hhx);
+  Geom hhxgeom=Geom::VertPlates(chxgrid,S0,phihhx,y0hhx);
 
   // ############################## Hot end
+
   d Lhotend=(5.5e-2)-Lhhx+Lresendorig-Lres;
-  us gphotend=gp(Lhotend);
-  Geom hotendgeom=Geom::CylinderBlApprox(gphotend,Lhotend,Rtube);
+  Grid hotendgrid(gp(Lhotend)*10,Lhotend);
+  hotendgrid.setLeftBl(dxb,25,20*gpfac);
+  hotendgrid.setRightBl(1e-7,10,55*gpfac);
+  Geom hotendgeom=Geom::CylinderBlApprox(hotendgrid,Rtube);
 
   
   // And blend togeter
