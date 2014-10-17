@@ -24,8 +24,8 @@ namespace segment{
   Geom Geom::VertPlates(const Grid& g,d S,d phi,d y0){
     assert(y0>0);
     assert(0<phi && phi<=1.0);
-
-    us gp=g.getgp();
+    vd x=g.getx();
+    us gp=x.size();
     vd phiv=phi*vd(gp,fillwith::ones);
     vd Sv=S*vd(gp,fillwith::ones);
     vd rh=y0*vd(gp,fillwith::ones);
@@ -75,7 +75,7 @@ namespace segment{
     d S2=number_pi*pow(rright,2);
     const vd& x1=g.getx();
     const d& L1=g.getL();
-    const us gp1=g.getgp();
+    const us gp1=x1.size();
 
     vd r1=zeros<vd>(gp1);
     for(us j=0;j<gp1;j++)
@@ -101,7 +101,8 @@ namespace segment{
   Geom Geom::PrisVertStack(const Grid& g,d S,d phi,d rh){ // Prismatic vertical plates stack
     assert(S>0);
     assert(phi>0 && phi<1.0);
-    us gp=g.getgp();
+    vd x=g.getx();
+    us gp=x.size();
     vd phix=phi*vd(gp,fillwith::ones);
     vd Sx=S*vd(gp,fillwith::ones);
     vd rhx=rh*vd(gp,fillwith::ones);
