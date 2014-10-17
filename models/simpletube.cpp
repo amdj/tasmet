@@ -3,11 +3,13 @@
 #include "enginesystem.h"
 #include "isentropictube.h"
 #include "hopkinslaminarduct.h"
+#include "grid.h"
 SPOILNAMESPACE
 using namespace tasystem;
 using namespace tube;
 
 Solver* SimpleTube(us gp,us Nf,d freq,d L,d r,d Tl,d Tr,vd p1,int loglevel,d kappa,int options,d r2){
+  clearConsole();
   d S=1;
   cout << "Simpletube called. Options are:\n   ISENTROPIC\n   BLAPPROX\n   DRIVEN\n";
   cout << "Chosen options:\n";
@@ -20,18 +22,24 @@ Solver* SimpleTube(us gp,us Nf,d freq,d L,d r,d Tl,d Tr,vd p1,int loglevel,d kap
 
   inittrace(loglevel);
   Globalconf air=Globalconf::airSTP(Nf,freq);
+
+  Grid grid(gp,L);
+  grid.setLeftBl(1e-4,5,20);
+  grid.setRightBl(1e-4,5,20);  
+  d dxmin=1e-3;
+  // grid.setLeftBl(dxmin,10,10);
   Geom geom1;
   if(r2<0){
     if(options & BLAPPROX)
-      geom1=Geom::CylinderBlApprox(gp,L,r);
+      geom1=Geom::CylinderBlApprox(grid,r);
     else
-      geom1=Geom::Cylinder(gp,L,r);
+      geom1=Geom::Cylinder(grid,r);
   }
   else{
     if(options & BLAPPROX)
-      geom1=Geom::ConeBlApprox(gp,L,r,r2);
+      geom1=Geom::ConeBlApprox(grid,r,r2);
     else
-      geom1=Geom::Cone(gp,L,r,r2);
+      geom1=Geom::Cone(grid,r,r2);
   }
   var pL(air,0);
   pL.set(p1);

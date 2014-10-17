@@ -24,7 +24,6 @@ namespace segment{
   Geom Geom::VertPlates(const Grid& g,d S,d phi,d y0){
     assert(y0>0);
     assert(0<phi && phi<=1.0);
-    assert(L>0);
 
     us gp=g.getgp();
     vd phiv=phi*vd(gp,fillwith::ones);
@@ -72,13 +71,12 @@ namespace segment{
     TRACE(10,"Geom::Cone()");
     assert(rleft>0);
     assert(rright>0);
-    assert(L>0);
     d S1=number_pi*pow(rleft,2);
     d S2=number_pi*pow(rright,2);
     const vd& x1=g.getx();
     const d& L1=g.getL();
     const us gp1=g.getgp();
-    TRACE(15,"SFSG");
+
     vd r1=zeros<vd>(gp1);
     for(us j=0;j<gp1;j++)
       r1(j)=rleft+(rright-rleft)*x1(j)/L1;

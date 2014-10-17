@@ -40,6 +40,7 @@ include_directories(
   ../common
   ../common/gas
   ../common/bessel
+  ../common/fsolve  
   ../common/solid
   ../common/rottfuncs
   models

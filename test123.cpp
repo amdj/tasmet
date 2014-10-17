@@ -15,6 +15,7 @@ using namespace tube;
 
 TRACETHIS
 int main(int argc,char* argv[]) {
+  clearConsole();
   cout <<  "Running test..." << endl;
   int loglevel=25;
   us gp=4;
@@ -34,10 +35,10 @@ int main(int argc,char* argv[]) {
   if(argc>3)
     gp=atoi(argv[3]);
   inittrace(loglevel);
-  cout << "SFSG\n";
+
   cout<< "Loglevel:"<<loglevel<<"\n";
 
-  d L=0.01;
+  d L=1;
   d S=1;
   d rtube=sqrt(S/number_pi);
   d phi=1.0;
@@ -45,13 +46,13 @@ int main(int argc,char* argv[]) {
   d rh=S/PI;
   d p0=101325.0;
   d T0=293.15;
-  cout << "SFSG\n";
   d S0=S;
 
-  cout << "SFSG\n";
+
   segment::Grid grid(gp,L);
-  cout << "SFSG56\n";
-  Geom geom1=Geom::CylinderBlApprox(gp,L,rtube);
+  grid.setLeftBl(1e-5,5,40);
+  grid.setRightBl(1e-5,5,40);  
+  // Geom geom1=Geom::CylinderBlApprox(gp,L,rtube);
 
 
   // d kappa=0.1;
