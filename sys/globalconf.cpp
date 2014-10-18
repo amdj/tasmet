@@ -5,8 +5,10 @@ namespace tasystem{
   Globalconf Globalconf::airSTP(us Nf__,d freq,d kappa){
     return Globalconf(Nf__,freq,"air",293.15,101325,kappa);
   }
-  Globalconf::Globalconf(us Nf__,d freq,string gas,d T0,d p0,d kappa,bool driven):
-    driven(driven),gas(gas)
+  Globalconf::Globalconf(us Nf__,d freq,const string& gasstring,d T0,d p0    \
+                         ,d kappa,bool driven):
+    driven(driven),
+    gas(gasstring)
   {
     // Sanity checks
     assert(2*number_pi*freq>MINOMG && 2*number_pi*freq<MAXOMG);
@@ -17,12 +19,8 @@ namespace tasystem{
     assert(kappa>0);
     // End sanity checks
 
-    this->Gastype=gas;
     this->p0=p0;
     this->T0=T0;
-    this->rho0=this->gas.rho(T0,p0);
-
-    this->c0=this->gas.cm(T0);
     this->kappa=kappa;
 
     // Initialize FFT matri
@@ -30,17 +28,17 @@ namespace tasystem{
     TRACE(10,"Globalconf constructor done");
     
   }
+  
   void Globalconf::show() const {
-    cout << "------- Globalconf configuration ------ \n"			\
-	 << "------- Nf             : "<< Nf__ <<"\n"				\
-	 << "------- Base frequency : " << omg/2/number_pi << " Hz\n"			\
-	 << "------- Gas            : " << Gastype << "\n"			\
-	 << "------- p0             : " << p0 << " [Pa] \n"			\
-	 << "------- T0             : " << T0 << " [K] \n"			\
-	 << "------- rho0           : " << rho0 << " [kg/m^3] \n"		\
-	 << "------- kappa:         : " << kappa << "\n"			\
-	 << "------- c0:            : " << c0 << "\n" ;
-    
+    cout << "------- Globalconf configuration ------ \n"        \
+         << "------- Nf             : "<< Nf__ <<"\n"                       \
+         << "------- Base frequency : " << omg/2/number_pi << " Hz\n"       \
+         << "------- Gas            : " << getGas() << "\n"                 \
+         << "------- p0             : " << p0 << " [Pa] \n"                 \
+         << "------- T0             : " << T0 << " [K] \n"                  \
+         << "------- rho0           : " << rho0() << " [kg/m^3] \n"         \
+         << "------- kappa:         : " << kappa << "\n"                    \
+         << "------- c0:            : " << c0() << "\n" ;
 
   }
   void Globalconf::setNf(us Nf){

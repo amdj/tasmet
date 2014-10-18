@@ -57,8 +57,8 @@ namespace tasystem{
       mass+=segs[i]->geom.getFluidVolume();
     } // for loop
     TRACE(20,"Volume of device: "<< mass<<" [m^3].");
-    mass*=gc.rho0;
-    TRACE(20,"Initial mass as computed from rho0="<<gc.rho0<<" [kg/m^3],\n and volume of device: "<< mass << " [kg].");
+    mass=mass*gc.rho0();
+    // TRACE(20,"Initial mass as computed from rho0="<<gc.rho0<<" [kg/m^3],\n and volume of device: "<< mass << " [kg].");
     return mass;
   }
   us EngineSystem::getNVertex() const{

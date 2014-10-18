@@ -162,7 +162,7 @@ namespace tube{
     // Initialize density and temperatures
     T.set(0,gc->T0);
     Ts.set(0,gc->T0);
-    rho.set(0,gc->rho0);    
+    rho.set(0,gc->rho0());    
 
     // Update weight factors
     TRACE(10,"Now running updateW()");

@@ -16,6 +16,7 @@ AUX_SOURCE_DIRECTORY(var varsources)
 AUX_SOURCE_DIRECTORY(seg segsources)
 AUX_SOURCE_DIRECTORy(sys syssources)
 AUX_SOURCE_DIRECTORy(sol solsources)
+AUX_SOURCE_DIRECTORy(gui guisources)
 AUX_SOURCE_DIRECTORy(models modelssources)
 AUX_SOURCE_DIRECTORy(tube/eq tubeeq)
 AUX_SOURCE_DIRECTORy(tube/drag tubedrag)
@@ -37,6 +38,7 @@ include_directories(
   seg
   var
   tube
+  gui
   ../common
   ../common/gas
   ../common/bessel
@@ -52,6 +54,7 @@ include_directories(
   )
 
 add_library(eq ${tubeeq})
+add_library(gui ${guisources})
 add_library(nonlin ${nonlinear_SRC})
 target_link_libraries(nonlin boost_thread boost_system)
 # add_executable(multitube multitube.cpp)
@@ -63,10 +66,13 @@ set_source_files_properties(
   #  ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/src/pi_calculator.pyx
   pytube.pyx doubletube.pyx
   PROPERTIES CYTHON_IS_CXX TRUE )
+find_package(wxWidgets COMPONENTS core base REQUIRED)
+include("${wxWidgets_USE_FILE}")
 
 set(CYTHON_CXX_EXTENSION cpp)
 set(CYTHON_FLAGS -I/usr/local/include --timestamps)
 add_executable(test123 test123.cpp)
+add_executable(gui_test gui_test.cpp)
 add_executable(enginetest enginetest.cpp)
 add_executable(threetubes threetubes.cpp)
 cython_add_module(pytube pytube.pyx)
@@ -75,7 +81,8 @@ set_target_properties(pytube PROPERTIES COMPILE_FLAGS "-Wno-cpp  -Wno-strict-ali
 
 
 # target_link_libraries(doubletube nonlin math_common armadillo)
-target_link_libraries(test123 nonlin math_common blas lapack)
+target_link_libraries(gui_test gui ${wxWidgets_LIBRARIES} nonlin math_common blas lapack)
+target_link_libraries(test123 nonlin math_common blas lapack boost_iostreams boost_serialization)
 target_link_libraries(enginetest nonlin math_common blas lapack)
 target_link_libraries(threetubes nonlin math_common blas lapack)
 target_link_libraries(pytube nonlin math_common blas lapack)

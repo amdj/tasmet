@@ -61,9 +61,9 @@ namespace tasystem{
   Solver::Solver(const TaSystem& sys):tasystem(sys.copy()) {
     TRACE(15,"Solver(TaSystem&)");
   }
-  Solver::Solver(const Solver& o): Solver(*o.tasystem.get()){}
+  Solver::Solver(const Solver& o): Solver(*o.tasystem){}
   Solver& Solver::operator=(const Solver& other){
-    tasystem.reset(other.tasystem->copy());
+    tasystem=other.tasystem->copy();
     return *this;
   }
   void Solver::stop() {
@@ -174,5 +174,7 @@ namespace tasystem{
 
   Solver::~Solver()  {
     stop();
+    if(tasystem)
+      delete tasystem;
   }
 } // namespace tasystem

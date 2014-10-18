@@ -8,12 +8,14 @@
 #include "bc.h"
 #include "grid.h"
 #include <limits>
+#include <boost/archive/text_oarchive.hpp>
+
 using namespace std;
 using namespace segment; 
 using namespace tasystem;
 using namespace tube;
 
-TRACETHIS
+
 int main(int argc,char* argv[]) {
   clearConsole();
   cout <<  "Running test..." << endl;
@@ -54,10 +56,15 @@ int main(int argc,char* argv[]) {
   grid.setRightBl(1e-5,5,40);  
   // Geom geom1=Geom::CylinderBlApprox(gp,L,rtube);
 
-
   // d kappa=0.1;
-  // Globalconf air=Globalconf::airSTP(Nf,f);
-  // Globalconf gc=air;
+  Globalconf air=Globalconf::airSTP(Nf,f);
+  {
+    std::ofstream ofs("filename.txt");
+    boost::archive::text_oarchive oa(ofs);
+    oa << air;
+  }
+
+  Globalconf gc=air;
 
   // // HopkinsLaminarDuct t1(geom1,gc.T0,gc.T0);
 

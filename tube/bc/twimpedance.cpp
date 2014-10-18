@@ -168,7 +168,7 @@ namespace tube{
     d T0=v.gc->T0;
     d c0=v.gc->gas.cm(T0);
     d p0=v.gc->p0;
-    d rho0=v.gc->rho0;
+    d rho0=v.gc->rho0();
     d gamma=v.gc->gas.gamma(T0);
     d z0=rho0*c0;
 

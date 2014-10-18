@@ -31,7 +31,7 @@ namespace tube{
       return d_l(v);
     else {
       dmat Dr(Ns,Ns,fillwith::zeros);
-      d rj=v.gc->c0;
+      d rj=v.gc->c0();
       vd eps1=eps(nu(v),v.gc->kappa);
       Dr.diag()=rj*eps1;
       return Dr;
@@ -46,7 +46,7 @@ namespace tube{
       return d_r(v);
     else{
       dmat Dl(Ns,Ns,fillwith::zeros);
-      d rj=v.gc->c0;
+      d rj=v.gc->c0();
       vd eps1=eps(nu(v),v.gc->kappa);
       Dl.diag()=rj*eps1;
       return Dl;

@@ -19,7 +19,7 @@ Solver* ThreeTubes(us gp,us Nf,d freq,d p0,d L,d R1,d R2,vd p1,int loglevel,d ka
   inittrace(loglevel);
   TRACE(100,"L:"<<L);
   Globalconf gc=Globalconf::airSTP(Nf,freq,kappa);
-  gc.setp0(p0);
+  gc.p0=p0;
   gc.show();
 
   d Sf1=number_pi*pow(R1,2);

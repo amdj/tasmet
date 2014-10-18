@@ -12,13 +12,13 @@ namespace tasystem{
   class TaSystem;
   class Solver
   {
-    std::unique_ptr<TaSystem> tasystem;
+    TaSystem* tasystem=NULL;
     std::unique_ptr<boost::thread> solverThread;
     std::unique_ptr<SolverConfiguration> sc;
 
   public:
     Solver(const TaSystem& tasys);
-    TaSystem& sys() { return *tasystem.get();}
+    TaSystem& sys() { return *tasystem;}
     Solver(const Solver& other);
     Solver& operator=(const Solver& other);
     void stop();
