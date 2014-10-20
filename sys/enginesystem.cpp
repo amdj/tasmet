@@ -64,7 +64,7 @@ namespace tasystem{
   us EngineSystem::getNVertex() const{
     us nvertex=0;
     for(auto seg=segs.begin();seg!=segs.end();++seg)
-      nvertex+=seg->get()->getNVertex();
+      nvertex+=(*seg)->getNVertex();
     return nvertex;
   }
   vd EngineSystem::dmtotdx() const{

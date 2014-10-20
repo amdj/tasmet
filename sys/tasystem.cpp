@@ -15,17 +15,18 @@ namespace tasystem{
     TRACE(14,"TaSystem::TaSystem(TaSystem&)");
     copyTaSystem(o);
   }
+
   void TaSystem::copyTaSystem(const TaSystem& o){
     TRACE(14,"TaSystem::copyTaSystem()");
-    gc=Globalconf(o.gc);
+    cleanup();
+    gc=o.gc;
     assert(getNSegs()==0);
-    for(us i=0;i<o.getNSegs();i++)
-      {
-	TRACE(14,"Copying segment "<<i << "...");
-	assert(o.getSeg(i)!=NULL);
-	addSeg(*o.getSeg(i));
-	assert(getNSegs()==i+1);
-      }
+    for(us i=0;i<o.getNSegs();i++) {
+      TRACE(14,"Copying segment "<<i << "...");
+      assert(o.getSeg(i)!=NULL);
+      addSeg(*o.getSeg(i));
+      assert(getNSegs()==i+1);
+    }
     segConnections=o.segConnections;
     hasInit=false;
 
@@ -37,6 +38,9 @@ namespace tasystem{
     return *this;
   }
   void TaSystem::cleanup(){
+    for (us i=0; i < segs.size(); ++i) {
+      delete segs[i];
+    }
     segs.clear();
     segConnections.clear();
     hasInit=false;
@@ -52,7 +56,7 @@ namespace tasystem{
   SegBase* TaSystem::operator[](us i) const {
     us nSegs=getNSegs();
     if(i<nSegs)
-      return segs[i].get();
+      return segs[i];
     else
       return NULL;
   }
@@ -142,8 +146,8 @@ namespace tasystem{
     // Basic check if nothing is wrong
     if(max(seg1,seg2)>=getNSegs())
       {
-	WARN("Segment number is higher than available number of segments. ");
-	return;
+        WARN("Segment number is higher than available number of segments. ");
+        return;
       }
     segConnections.push_back(SegConnection(seg1,seg2,sc));
     hasInit=false;
@@ -172,7 +176,7 @@ namespace tasystem{
     us Nsegs=getNSegs();
     for(us j=0;j<getNSegs();j++){
       TRACE(14,"System loop, segment " << j);
-      segment::SegBase& curseg=*segs[j].get();
+      segment::SegBase& curseg=*segs[j];
       curseg.jac(jnew);
       TRACE(10,"Creation of Jacobian for segment "<< j << "done."<<endl);
     } // end for loop
@@ -253,7 +257,7 @@ namespace tasystem{
   void TaSystem::resetHarmonics(){
     assert(!segs.empty());
     for(auto seg=segs.begin();seg!=segs.end();seg++)
-      seg->get()->resetHarmonics();
+      (*seg)->resetHarmonics();
   }
   void TaSystem::setRes(const evd& res){
     TRACE(15,"EngineSystem::setRes()");

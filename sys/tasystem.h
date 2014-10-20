@@ -35,7 +35,7 @@ namespace tasystem{
     vector<SegConnection> segConnections;
     bool hasInit=false;
   protected:
-    vector<std::unique_ptr<SegBase> > segs;		
+    vector<SegBase *> segs;		
   public:
     Globalconf gc;    
   protected:

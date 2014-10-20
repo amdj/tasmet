@@ -63,6 +63,7 @@ namespace tasystem{
   }
   Solver::Solver(const Solver& o): Solver(*o.tasystem){}
   Solver& Solver::operator=(const Solver& other){
+    delete tasystem;
     tasystem=other.tasystem->copy();
     return *this;
   }
@@ -174,7 +175,6 @@ namespace tasystem{
 
   Solver::~Solver()  {
     stop();
-    if(tasystem)
-      delete tasystem;
+    delete tasystem;
   }
 } // namespace tasystem
