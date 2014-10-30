@@ -32,7 +32,7 @@ namespace segment{
 
     vd bl(n);
     bl(0)=0;
-    for(int i=1;i<n;i++)
+    for(us i=1;i<n;i++)
       bl(i)=bl(i-1)+dxb*pow(alpha,i-1);
     return bl;
   }
