@@ -14,6 +14,7 @@ namespace segment{
   using variable::var;
   using tasystem::Globalconf;
   using tasystem::Jacobian;  
+  using geom::LocalGeom;
 
   class Vertex{
   public:

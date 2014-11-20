@@ -35,7 +35,7 @@ namespace tube{
   protected: 
     d wLl=0,wRr=0,wLr=0,wRl=0;		// Basic weight functions
     d wL0=0,wL1=0,wRNm1=0,wRNm2=0;    	// Special boundary weight functions
-    d xvim1=0,xvi=0,xvip1=0;
+    d vxim1=0,vxi=0,vxip1=0;
     d dxm=0,dxp=0;
     d vSfR=0,vSfL=0;		// Cross sectional area at x-position
     // of vertex.

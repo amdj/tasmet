@@ -24,7 +24,7 @@ namespace segment{
     cout << "Showing segment of type " << getType() <<" with number "<<getNumber()<< ".\n";
     cout << "Number: "<< getNumber() << ".\n";
     cout << "Geometry: \n";
-    geom.show();
+    geom().show();
     assert(vvertex.size()!=0);
     for(auto s=getLeft().begin();s!=getLeft().end();s++)
 	cout << "Left segment:" << *s << "\n";

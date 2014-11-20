@@ -10,7 +10,7 @@ namespace segment{
     this->i=i;
     this->gc=seg.gc;
     // TRACE(25,"Address gc:" <<gc);
-    lg=seg.geom.localGeom(i);
+    lg=seg.geom().localGeom(i);
   }
   // void Vertex::setLeft(const Vertex& v) { vleft.push_back(&v);}
   // void Vertex::setRight(const Vertex& v) {vright.push_back(&v);}

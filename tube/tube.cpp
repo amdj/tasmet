@@ -176,13 +176,13 @@ namespace tube {
       TRACE(13,"Filling vertices. Current size:"<<vvertex.size());
       // Left *probable* boundary condition
       vvertex.emplace_back(leftTubeVertex());
-      for(us i=1;i<geom.nCells-1;i++)
+      for(us i=1;i<geom().nCells()-1;i++)
     	vvertex.emplace_back(new TubeVertex());
       // Right *probable* boundary condition
       vvertex.emplace_back(rightTubeVertex());
 
       us nVertex=vvertex.size();    
-      assert(nVertex==geom.nCells);
+      assert(nVertex==geom().nCells());
 
       for(us i=0;i<vvertex.size();i++){
         vvertex.at(i)->initVertex(i,*this);
@@ -210,11 +210,11 @@ namespace tube {
     }
     return mass;
   }
-
   
   vd Tube::getResAt(us varnr,us freqnr) const{
-    TRACE(8,"Tube::getResAt("<<varnr<<","<<freqnr<<")");
-    const us& nCells=geom.nCells;
+    TRACE(15,"Tube::getResAt("<<varnr<<","<<freqnr<<")");
+    const us nCells=geom().nCells();
+    // VARTRACE(15,nCells);
     vd res(nCells);
     assert(varnr<getNDofs());
     
@@ -244,7 +244,7 @@ namespace tube {
     return res;
   }
   vd Tube::getErrorAt(us eqnr,us freqnr) const{
-    const us& nCells=geom.nCells;
+    const us& nCells=getNCells();
     vd er(nCells,fillwith::zeros);
     assert(eqnr<getNDofs());
     for(us i=0;i<nCells;i++){

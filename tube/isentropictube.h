@@ -23,7 +23,7 @@ namespace tube{
     HeatSource noheat;
     
   public:
-    IsentropicTube(Geom geom);
+    IsentropicTube(const Geom& geom);
     IsentropicTube(const IsentropicTube&);
     IsentropicTube& operator=(const IsentropicTube&);
     virtual const DragResistance& getDragResistance() const {return nodrag;}

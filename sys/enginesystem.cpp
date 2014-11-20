@@ -54,7 +54,7 @@ namespace tasystem{
     d mass=0;
     us nsegs=segs.size();
     for(us i=0;i<nsegs;i++){
-      mass+=segs[i]->geom.getFluidVolume();
+      mass+=segs[i]->geom().getFluidVolume();
     } // for loop
     TRACE(20,"Volume of device: "<< mass<<" [m^3].");
     mass=mass*gc.rho0();

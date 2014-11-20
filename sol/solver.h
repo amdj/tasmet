@@ -23,7 +23,7 @@ namespace tasystem{
     Solver& operator=(const Solver& other);
     void stop();
     void solve(us maxiter=0,d funer=1e-8,d reler=1e-6,d mindampfac=1e-2,d maxdampfac=1,bool wait=true);
-    tuple<d,d> doIter(d dampfac=-1.0);
+    tuple<d,d> doIter(d dampfac=1.0);
     ~Solver();
   };
 

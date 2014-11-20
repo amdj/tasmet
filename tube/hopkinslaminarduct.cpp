@@ -30,11 +30,13 @@ namespace tube{
     LaminarDuct::init(gc);
     // Set time-avg data to make solving bit easier
     assert(vvertex.size()>0);
-    vd& xv=geom.xv;
-    d& L=geom.L;
+    vd vx(geom().nCells());
+    for(us i=0;i<vx.size();i++)
+      vx(i)=geom().vx(i);
+    const d& L=geom().L();
     // Tmirror=Tl+(Tr-Tl)*math_common::skewsine(xv/L);
-    Tmirror=Tl+(Tr-Tl)*xv/L;
-    dTwdx=math_common::ddx_central(Tmirror,geom.xv);
+    Tmirror=Tl+(Tr-Tl)*vx/L;
+    dTwdx=math_common::ddx_central(Tmirror,vx);
     // WARN("ToBECANGED!!")
     d T;
     for(us i=0;i<vvertex.size();i++){
@@ -43,7 +45,7 @@ namespace tube{
       cvertex.Ts.set(0,T);
       cvertex.T.set(0,T);
     }
-    hopkinsheat.setdTwdx(geom,dTwdx);
+    hopkinsheat.setdTwdx(geom(),dTwdx);
   }
   
 }

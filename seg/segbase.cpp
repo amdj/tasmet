@@ -2,13 +2,14 @@
 
 namespace segment{
 
-  SegBase::SegBase(const Geom& geom):geom(geom)
+  SegBase::SegBase(const Geom& geom):geom_(geom.copy())
   {
     TRACE(10,"SegBase::SegBase(geom)");
   }
-  SegBase::SegBase(const SegBase& o): SegBase(o.geom){}
+  SegBase::SegBase(const SegBase& o): SegBase(o.geom()){}
   SegBase& SegBase::operator=(const SegBase& o){
-    geom=o.geom;
+    delete geom_;
+    geom_=o.geom().copy();
     return *this;
   }
   void SegBase::init(const Globalconf& gc1){this->gc=&gc1;}  
@@ -22,7 +23,9 @@ namespace segment{
     right.push_back(&Right);
   }
   
-
+  SegBase::~SegBase(){
+    delete geom_;
+  }
   bool SegBase::operator==(const SegBase& other) const {return (this->number==other.number);}
 
 

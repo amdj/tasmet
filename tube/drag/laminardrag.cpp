@@ -22,7 +22,7 @@ namespace tube{
   LaminarDragResistance::LaminarDragResistance(const Tube& t):zfd(t){
     TRACE(10,"LaminarDragResistanc::LaminarDragResistance()");
     TRACE(11,"Entering redefinition of Rottfuncs");
-    rf=rottfuncs::RottFuncs(t.geom.shape); // Reinitialize thermoviscous functions with right shape
+    rf=rottfuncs::RottFuncs(t.geom().shape()); // Reinitialize thermoviscous functions with right shape
     TRACE(11,"Exiting redefinition of Rottfuncs");
   }
 
@@ -66,13 +66,13 @@ namespace tube{
     
     ZeroFreqDrag::ZeroFreqDrag(const Tube& t){
       TRACE(0,"ZeroFreqDrag::ZeroFreqDrag()");
-      if(t.geom.shape.compare("vert")==0)
+      if(t.geom().shape().compare("vert")==0)
 	zerodrag_funptr=&zerodrag_vert;
-      else if(t.geom.shape.compare("circ")==0)
+      else if(t.geom().shape().compare("circ")==0)
 	zerodrag_funptr=&zerodrag_circ;
-      else if(t.geom.shape.compare("blapprox")==0)
+      else if(t.geom().shape().compare("blapprox")==0)
 	zerodrag_funptr=&zerodrag_blapprox;
-      else if(t.geom.shape.compare("inviscid")==0)
+      else if(t.geom().shape().compare("inviscid")==0)
 	zerodrag_funptr=&zerodrag_inviscid;
       else
 	{

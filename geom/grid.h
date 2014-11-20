@@ -5,7 +5,7 @@
 #include "vtypes.h"
 #include <assert.h>
 
-namespace segment{
+namespace geom{
   SPOILNAMESPACE
 
   class Grid{
@@ -14,12 +14,15 @@ namespace segment{
     d percL,percR;
     d dxbL,dxbR;
     us nL,nR;
-    us gp;
-    d L;
-    void makeLeftBl(vd& x) const;
-    void makeRightBl(vd& x) const;
+    us gp;                      // Only changeable by constructor
+    d L;                        // Only changeable by constructor
+    vd x;
+    void makeLeftBl();
+    void makeRightBl();
+    void makex();
   public:
     Grid(us gp,d L);
+    // Copy constructor can just copy all
     ~Grid(){}
     void setLeftBl(d dxmin,d percentage,us n); // Exponential growing
     // left boundary
@@ -27,12 +30,12 @@ namespace segment{
     bool isLeftBl() const {return blleft;}
     bool isRightBl() const { return blright;}
     void setRightBl(d dxmin,d percentage,us n); // Exponential growing
-                                                // right boundary
-    const d& getL() const {return L;}
-    vd getx() const;
+    // right boundary
+    d getL() const {return L;}
+    const vd& getx() const{return x;}
    };
 
- }
+ } // namespace geom
 
 #endif /* _GRID_H_ */
 

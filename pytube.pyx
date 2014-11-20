@@ -19,7 +19,7 @@ cdef class pytubeBase:
         return self.sol[0].sys().gc.Nf()
     cpdef getL(self,nr):
         assert(nr<self.ntubes)
-        return self.tube[nr].geom.L
+        return self.tube[nr].geom().L()
     cpdef nTubes(self):
         return self.ntubes
     cpdef setNf(self,Nf):
@@ -39,10 +39,10 @@ cdef class pytubeBase:
         return self.gp
     cpdef getx(self,i=0):
         assert(i<self.ntubes)
-        return dvectond(self.tube[i].geom.xv)
+        return dvectond(self.tube[i].geom().vx_vec())
     cpdef getSf(self,i=0):
         assert(i<self.ntubes)
-        return dvectond(self.tube[i].geom.vSf)
+        return dvectond(self.tube[i].geom().vSf_vec())
     cpdef error(self):
         return eigentond(self.sol[0].sys().error())
     cpdef getRes(self):
@@ -86,46 +86,28 @@ cdef class pytubeBase:
         self.sol[0].sys().showJac()
 
         
-cdef extern from "models.h" namespace "":
-    Solver* Fubini(us gp,us Nf,d freq,d L,vd p1,int loglevel,d kappa,int options)    
-    Solver* ThreeTubes(us gp,us Nf,d freq,d p0,d L,d R1,d R2,vd p1,int loglevel,d kappa,d Tr,int options)
-    Solver* Atchley_Engine(d gpfac,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,int options) 
-    Solver* SimpleTube(us gp,us Nf,d freq,d L,d r,d Tl,d Tr,vd p1,int loglevel,d kappa,int options,d r2)
+# cdef extern from "models.h" namespace "":
+#     Solver* Fubini(us gp,us Nf,d freq,d L,vd p1,int loglevel,d kappa,int options)    
+#     Solver* ThreeTubes(us gp,us Nf,d freq,d p0,d L,d R1,d R2,vd p1,int loglevel,d kappa,d Tr,int options)
+#     Solver* Atchley_Engine(d gpfac,us Nf,d freq,d Tr,int loglevel,d kappa,vd p1,d p0,int options) 
+#     Solver* SimpleTube(us gp,us Nf,d freq,d L,d r,d Tl,d Tr,vd p1,int loglevel,d kappa,int options,d r2)
 
-cdef class simpletube(pytubeBase):        
-    def __cinit__(self,us gp,us Nf,d freq,d L,d r,d Tl,d Tr
-                  ,n.ndarray[n.float64_t,ndim=1] p1,\
-                  int loglevel,d kappa,int options,r2=-1):
-        self.sol=SimpleTube(gp,Nf,freq,L,r,Tl,Tr,dndtovec(p1),loglevel,kappa,options,r2)
-        self.tube[0]=<Tube*> self.sol[0].sys().getSeg(0)
-        self.ntubes=1
+# cdef class simpletube(pytubeBase):        
+#     def __cinit__(self,us gp,us Nf,d freq,d L,d r,d Tl,d Tr
+#                   ,n.ndarray[n.float64_t,ndim=1] p1,\
+#                   int loglevel,d kappa,int options,r2=-1):
+#         self.sol=SimpleTube(gp,Nf,freq,L,r,Tl,Tr,dndtovec(p1),loglevel,kappa,options,r2)
+#         self.tube[0]=<Tube*> self.sol[0].sys().getSeg(0)
+#         self.ntubes=1
 
     
-cdef class fubini(pytubeBase):        
-    def __cinit__(self,us gp,us Nf,d freq,d L\
-                  ,n.ndarray[n.float64_t,ndim=1] p1,int loglevel,d kappa,int options):
-        self.sol=Fubini(gp,Nf,freq,L,dndtovec(p1),loglevel,kappa,options)
-        self.tube[0]=<Tube*> self.sol[0].sys().getSeg(0)
-        self.ntubes=1
 
-cdef class threetubes(pytubeBase):        
-    def __cinit__(self,us gp,us Nf,d freq,d p0,d L,d R1,d R2\
-                  ,n.ndarray[n.float64_t,ndim=1] p1,int loglevel,d kappa,d Tr,int options):
-        self.sol=ThreeTubes(gp,Nf,freq,p0,L,R1,R2,dndtovec(p1),loglevel,kappa,Tr,options)
-        self.tube[0]=<Tube*> self.sol[0].sys().getSeg(0)
-        self.tube[1]=<Tube*> self.sol[0].sys().getSeg(1)
-        self.tube[2]=<Tube*> self.sol[0].sys().getSeg(2)
-        self.ntubes=3
-
-cdef class atchley(pytubeBase):
-    def __cinit__(self,gpfac,Nf,freq,p1,Tr\
-                  ,int loglevel,d kappa,d p0,options):
-        self.sol=Atchley_Engine(gpfac,Nf,freq,Tr,\
-                                loglevel,kappa,dndtovec(p1),p0,options)
-        self.tube[0]=<Tube*> self.sol[0].sys().getSeg(0)
-        self.tube[1]=<Tube*> self.sol[0].sys().getSeg(1)
-        self.tube[2]=<Tube*> self.sol[0].sys().getSeg(2)
-        self.tube[3]=<Tube*> self.sol[0].sys().getSeg(3)
-        self.tube[4]=<Tube*> self.sol[0].sys().getSeg(4)
-        self.ntubes=5
+# cdef class threetubes(pytubeBase):        
+#     def __cinit__(self,us gp,us Nf,d freq,d p0,d L,d R1,d R2\
+#                   ,n.ndarray[n.float64_t,ndim=1] p1,int loglevel,d kappa,d Tr,int options):
+#         self.sol=ThreeTubes(gp,Nf,freq,p0,L,R1,R2,dndtovec(p1),loglevel,kappa,Tr,options)
+#         self.tube[0]=<Tube*> self.sol[0].sys().getSeg(0)
+#         self.tube[1]=<Tube*> self.sol[0].sys().getSeg(1)
+#         self.tube[2]=<Tube*> self.sol[0].sys().getSeg(2)
+#         self.ntubes=3
 

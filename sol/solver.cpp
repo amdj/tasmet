@@ -123,10 +123,10 @@ namespace tasystem{
     us Ndofs=error.size();
     TRACE(15,"Computing Jacobian...");
     esdmat jac;
-    if(sc)
-      jac=sys().jac(sc->dampfac);
-    else
-      jac=sys().jac(dampfac1);
+    if(!sc)
+      sc.reset(new SolverConfiguration(1,1,1,dampfac1,dampfac1));
+
+    jac=sys().jac(sc->dampfac);
     jac.makeCompressed();
 
     assert(jac.cols()==error.size());
@@ -140,11 +140,12 @@ namespace tasystem{
     catch(int e){
       throw e;
     }
-
+    TRACE(15,"SFSG");
     d newfuner;
     d reler;
     evd newx(Ndofs);
     vd Newx=math_common::armaView(newx);
+    TRACE(15,"SFSG");
     reler=fulldx.norm();
     if(sc){
       do{

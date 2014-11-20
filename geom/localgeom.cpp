@@ -2,20 +2,20 @@
 #include "geom.h"
 #include "assert.h"
 
-namespace segment{
+namespace geom{
 
   LocalGeom Geom::localGeom(us i) const{
-    assert(i<nCells);
+    assert(i<nCells());
     return LocalGeom(*this,i);
   }
 
   LocalGeom::LocalGeom(const Geom& geom,us i)
   {
     this->geom=&geom; 		// Save a pointer to the geometry instance
-    const vd& xv=geom.xv;
+
     this->i=i;
-    nCells=geom.nCells;
-    xvi=xv(i);
+    nCells=geom.nCells();
+    vxi=geom.vx(i);
     // initialize distances to next node to zero
 
     SfL=geom.Sf(i);
@@ -31,8 +31,8 @@ namespace segment{
     vVf=geom.vVf(i);
     vVs=geom.vVs(i);
     vrh=geom.vrh(i);
-    xr=xR-xvi;
-    xl=xvi-xL;
+    xr=xR-vxi;
+    xl=vxi-xL;
     assert(xl>0); assert(xr>0);
   }
   void LocalGeom::show() const {

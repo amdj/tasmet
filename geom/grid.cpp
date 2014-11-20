@@ -1,7 +1,20 @@
 #include "grid.h"
 #include "fsolve.h"
-namespace segment{
 
+#define MAXGP 500
+
+namespace geom{
+
+  void testgp(us gp){
+    if(gp<4 || gp >MAXGP)
+      {
+        WARN( "WARNING: Given number of gridpoints is "	\
+	     << gp<<", which is larger than MAXGP.\n"
+              << "MAXGP is: " << MAXGP << ". Now exiting...");
+        exit(1);
+    
+      }
+  }
 
   class err_alpha{
   public:
@@ -39,8 +52,9 @@ namespace segment{
 
   Grid::Grid(us gp,d L):gp(gp),L(L) {
     TRACE(15,"Grid::Grid()");
-    assert(gp>3);
+    testgp(gp);
     assert(L>0);
+    makex();
   }
 
   void Grid::setLeftBl(d dxb,d percentage,us n){
@@ -50,7 +64,7 @@ namespace segment{
     percL=percentage;
     nL=n;
     blleft=true;
-    
+    makex();
   }
   void Grid::setRightBl(d dxb,d percentage,us n){
     TRACE(15,"Grid::setLeftBl()");
@@ -59,17 +73,17 @@ namespace segment{
     percR=percentage;
     nR=n;
     blright=true;
+    makex();
   }  
-  vd Grid::getx() const{
-    vd x=linspace(0,L,gp);
+  void Grid::makex() {
+    x=linspace(0,L,gp);
     if(blleft)
-      makeLeftBl(x);
+      makeLeftBl();
     if(blright)
-      makeRightBl(x);
-    return x;
+      makeRightBl();
   }
   
-  void Grid::makeLeftBl(vd& x) const {
+  void Grid::makeLeftBl() {
     d dxorig=x(1)-x(0);
     if(dxorig<dxbL){
       WARN("Boundary layer spacing wider than grid. Doing nothing");
@@ -98,7 +112,7 @@ namespace segment{
   }
   
  
-  void Grid::makeRightBl(vd& x) const {
+  void Grid::makeRightBl() {
     TRACE(10,"Grid::setRightBl()");
 
     const d L=x(x.size()-1);
@@ -133,4 +147,4 @@ namespace segment{
     x=newx;
   }
 
-}
+} // namespace geom

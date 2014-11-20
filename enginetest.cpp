@@ -1,6 +1,7 @@
 /* enginetest.cpp */
 
 #include "tube.h"
+#include "conetube.h"
 #include "isentropictube.h"
 #include "hopkinslaminarduct.h"
 #include "enginesystem.h"
@@ -8,7 +9,8 @@
 #include "bc.h"
 
 using namespace std;
-using namespace segment; 
+using namespace segment;
+using namespace geom;
 using namespace tasystem;
 using namespace tube;
 
@@ -42,8 +44,9 @@ Solver drivenres(int argc,char* argv[]){
   d S0=S;
   d kappa=0.1;
   Globalconf gc=Globalconf::airSTP(Nf,f);
-  Geom geom1=Geom::CylinderBlApprox(gp,L,rtube);
-  HopkinsLaminarDuct t1(geom1,T0,Tr);
+  Grid grid(gp,L);
+  CylindricalTube ct(grid,rtube,true);
+  HopkinsLaminarDuct t1(ct,T0,Tr);
   // IsentropicTube t1(geom1);
   var pL(gc,0);
   // pL.set(0,3.14);
@@ -84,9 +87,9 @@ int main(int argc,char* argv[]) {
   gc.setDriven(false);
 
 
-  Geom geom1=drivensol.sys().getSeg(0)->geom;
+  Geom* geom1=drivensol.sys().getSeg(0)->geom().copy();
   // IsentropicTube t1(geom1);
-  HopkinsLaminarDuct t1(geom1,gc.T0);
+  HopkinsLaminarDuct t1(*geom1,gc.T0);
   t1.addBc(LeftAdiabaticWall());
   // t1.addBc(LeftEnginePressure(1));
   t1.addBc(RightIsoTWall(gc.T0+10));

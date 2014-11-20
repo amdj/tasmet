@@ -48,11 +48,10 @@ cdef extern from "solver.h" namespace "tasystem":
 cdef extern from "geom.h" namespace "tube":
     cdef cppclass Geom:
         Geom(us gp,d L,d S,d phi,d rh,string cshape) except +
-        vd xv
-        vd vSf
-        vd vSs
-        vd x
-        d L
+        vd vSf_vec()
+        vd x()
+        vd vx_vec()
+        d L()
 
 cdef extern from "var.h" namespace "variable":
     cdef cppclass var:
@@ -67,7 +66,7 @@ cdef extern from "tube.h" namespace "tube":
         Tube(Geom g)
         Seg(Geom g)    
         void init(d T0,d p0)
-        Geom geom
+        Geom geom()
         Globalconf& gc
         vd error()
         vd getRes()

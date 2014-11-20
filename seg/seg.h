@@ -27,7 +27,6 @@ namespace segment{
     virtual void init(const tasystem::Globalconf&);			   // Initializer method. Different for each segment type
     void cleanup();
     void show(us showVertices=0) const;
-    const us& getNCells() const {return geom.nCells;}
     virtual us getNVertex() const {return vvertex.size();}    
     void domg(vd&) const;
     vd error() const;			// Return error vector for this segment

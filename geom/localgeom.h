@@ -3,7 +3,7 @@
 #define _LOCALGEOM_H_
 #include "vtypes.h"
 
-namespace segment {
+namespace geom {
   SPOILNAMESPACE
 
   class Geom;
@@ -36,7 +36,7 @@ namespace segment {
     d dxp;			// Distance to nearby right node
     d dxm;			// Distance to nearby left node
 
-    d xvi;
+    d vxi;
     // right vertex.
 
     void show() const;
@@ -46,6 +46,6 @@ namespace segment {
   };				// class LocalGeom
 
   
-}                               // namespace segment
+} // namespace geom
 
 #endif /* _LOCALGEOM_H_ */

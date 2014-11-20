@@ -131,7 +131,7 @@ namespace tube{
     leneq.Wkini=wRl/pow(lg.vSf,2)-wL0/pow(lg.SfL,2);    
     leneq.Wkinip1=wRr/pow(rlg.vSf,2)-wL1/pow(lg.SfL,2);    
 
-    d x0=xvi;
+    d x0=vxi;
 
     leneq.Wc1=0;
     leneq.Wc2=lg.SfL/x0;
@@ -156,7 +156,7 @@ namespace tube{
     
     vd kappaL=leneq.kappaL(*this);
 
-    d x0=lg.xvi;
+    d x0=lg.vxi;
 
     esource+=-1.0*lg.SfL*fDFT*(kappaL%TLbct)/x0;
     TRACE(12,"esource:"<<esource);

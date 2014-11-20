@@ -64,7 +64,7 @@ namespace tube{
   
   using rottfuncs::RottFuncs;
   HopkinsHeatSource::HopkinsHeatSource(const Tube& t):
-    cshape(t.geom.shape),
+    cshape(t.geom().shape()),
     rf(cshape)
   {
     TRACE(10,"HopkinsHeatSource::HopKinsHeatSource()");

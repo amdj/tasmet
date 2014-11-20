@@ -8,18 +8,20 @@
 
 
 namespace segment{
+  SPOILNAMESPACE;
   class SegBase;
   using tasystem::Globalconf;
   using tasystem::Jacobian;
-  
-  typedef vector<const SegBase*> SegBaseVec;
+  using std::string;
+  using geom::Geom;
+  typedef std::vector<const SegBase*> SegBaseVec;
 
   class SegBase{
   private:
     us number=0;		// Required for TaSystem. Not used in
-				// any segment code
+    // any segment code
   public:
-    Geom geom;			// The geometry    
+    Geom* geom_;			// The geometry    
     const Globalconf* gc=NULL;	// Global configuration of the system
   protected:
     SegBaseVec left,right;
@@ -30,11 +32,13 @@ namespace segment{
     virtual us getNDofs() const=0;
     virtual us getNEqs() const=0;    
     virtual us getNVertex() const=0;
-    virtual ~SegBase(){}
+    virtual ~SegBase();
 
-
+    const Geom& geom() const {return *geom_;}
     const SegBaseVec& getRight() const {return right;}
     const SegBaseVec& getLeft() const {return left;}
+    us getNCells() const {return geom().nCells();}
+
     void setRight(const SegBase&);	   // Couple segment to some segment on left side
     void setLeft(const SegBase&);		   // Couple segment
 						   // to some segment

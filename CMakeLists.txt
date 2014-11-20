@@ -15,23 +15,23 @@ AUX_SOURCE_DIRECTORY(tube tubesources)
 AUX_SOURCE_DIRECTORY(var varsources)
 AUX_SOURCE_DIRECTORY(seg segsources)
 AUX_SOURCE_DIRECTORy(sys syssources)
+AUX_SOURCE_DIRECTORy(geom geomsources)
 AUX_SOURCE_DIRECTORy(sol solsources)
 AUX_SOURCE_DIRECTORy(gui guisources)
-AUX_SOURCE_DIRECTORy(models modelssources)
+
 AUX_SOURCE_DIRECTORy(tube/eq tubeeq)
 AUX_SOURCE_DIRECTORy(tube/drag tubedrag)
 AUX_SOURCE_DIRECTORy(tube/heat tubeheat)
 AUX_SOURCE_DIRECTORy(tube/bc tubebc)
 AUX_SOURCE_DIRECTORy(common commonsources)
 set (nonlinear_SRC ${tubesources} ${varsources} ${segsources}
-  ${syssources} ${solsources}
+  ${syssources}  ${geomsources} ${solsources}
   ${varsources} ${commonsources}
   ${tubeeq} ${tubeheat} ${tubebc} ${tubedrag}
-  ${modelssources}
   )
 
 # ${tubedrag}
-link_directories(${link_directories} /usr/local/lib)
+
 include_directories(
   sol
   sys
@@ -46,17 +46,18 @@ include_directories(
   ../common/solid
   ../common/rottfuncs
   models
+  geom
   tube/drag
   tube/bc
   tube/eq
   tube/heat
   /usr/include/umfpack
   )
-
-add_library(eq ${tubeeq})
+AUX_SOURCE_DIRECTORY(models models_sources)
 add_library(gui ${guisources})
-add_library(nonlin ${nonlinear_SRC})
-target_link_libraries(nonlin boost_thread boost_system)
+add_library(nonlin SHARED ${nonlinear_SRC})
+
+target_link_libraries(nonlin math_common boost_thread boost_system blas lapack boost_iostreams boost_serialization)
 # add_executable(multitube multitube.cpp)
 # target_link_libraries(multitube nonlin math_common armadillo)
 
@@ -72,20 +73,20 @@ include("${wxWidgets_USE_FILE}")
 set(CYTHON_CXX_EXTENSION cpp)
 set(CYTHON_FLAGS -I/usr/local/include --timestamps)
 add_executable(test123 test123.cpp)
-add_executable(gui_test gui_test.cpp)
-add_executable(enginetest enginetest.cpp)
-add_executable(threetubes threetubes.cpp)
-cython_add_module(pytube pytube.pyx)
+# add_executable(gui_test gui_test.cpp)
+# add_executable(enginetest enginetest.cpp)
+# add_executable(threetubes threetubes.cpp)
+# cython_add_module(pytube pytube.pyx)
 # cython_add_module(doubletube doubletube.pyx)
-set_target_properties(pytube PROPERTIES COMPILE_FLAGS "-Wno-cpp  -Wno-strict-aliasing")
+# set_target_properties(pytube PROPERTIES COMPILE_FLAGS "-Wno-cpp  -Wno-strict-aliasing")
 
 
 # target_link_libraries(doubletube nonlin math_common armadillo)
-target_link_libraries(gui_test gui ${wxWidgets_LIBRARIES} nonlin math_common blas lapack)
+# target_link_libraries(gui_test gui ${wxWidgets_LIBRARIES} nonlin math_common blas lapack)
 target_link_libraries(test123 nonlin math_common blas lapack boost_iostreams boost_serialization)
-target_link_libraries(enginetest nonlin math_common blas lapack)
-target_link_libraries(threetubes nonlin math_common blas lapack)
-target_link_libraries(pytube nonlin math_common blas lapack)
+# target_link_libraries(enginetest nonlin  math_common blas lapack)
+# target_link_libraries(threetubes nonlin math_common blas lapack)
+# target_link_libraries(pytube models nonlin math_common blas lapack)
 
 
 # To execute the test directly

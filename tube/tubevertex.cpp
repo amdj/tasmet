@@ -149,7 +149,7 @@ namespace tube{
     }
 
     // For compatibility, we store these params in the TubeVertex class.
-    nCells=thistube.geom.nCells;
+    nCells=thistube.geom().nCells();
 
     // Intialize the variables for the right number of harmonics.
     // TRACE(25,"Address gc:" <<gc);    
@@ -177,36 +177,36 @@ namespace tube{
   void TubeVertex::updateW(const Tube& thistube){
     TRACE(8,"TubeVertex::updateW()");
 
-    const Geom& geom=thistube.geom;
+    const Geom& geom=thistube.geom();
 
-    xvi=lg.xvi;
+    vxi=lg.vxi;
     if(i>0) {   
       const LocalGeom& llg=left->lg;
-      xvim1=llg.xvi;
-      dxm=xvi-xvim1;
-      wLl=(lg.xvi-lg.xL)/(lg.xvi-llg.xvi);
-      wLr=(lg.xL-llg.xvi)/(lg.xvi-llg.xvi);
+      vxim1=llg.vxi;
+      dxm=vxi-vxim1;
+      wLl=(lg.vxi-lg.xL)/(lg.vxi-llg.vxi);
+      wLr=(lg.xL-llg.vxi)/(lg.vxi-llg.vxi);
       vSfL=llg.vSf;
     }
     if(i==0){
       const LocalGeom& rlg=right->lg;
       vSfL=lg.SfL;
-      wL0=rlg.xvi/(rlg.xvi-lg.xvi);
-      wL1=-lg.xvi/(rlg.xvi-lg.xvi);
+      wL0=rlg.vxi/(rlg.vxi-lg.vxi);
+      wL1=-lg.vxi/(rlg.vxi-lg.vxi);
     }
     
     if(i<nCells-1){
       const LocalGeom& rlg=right->lg;
-      xvip1=rlg.xvi;
-      dxp=xvip1-xvi;      
+      vxip1=rlg.vxi;
+      dxp=vxip1-vxi;      
       vSfR=rlg.vSf;
-      wRr=(lg.xR-lg.xvi)/(rlg.xvi-lg.xvi);
-      wRl=(rlg.xvi-lg.xR)/(rlg.xvi-lg.xvi);
+      wRr=(lg.xR-lg.vxi)/(rlg.vxi-lg.vxi);
+      wRl=(rlg.vxi-lg.xR)/(rlg.vxi-lg.vxi);
     }
     if(i==nCells-1){
       const LocalGeom& llg=left->lg;
-      wRNm1=(llg.xvi-lg.xR)/(llg.xvi-lg.xvi);
-      wRNm2=(lg.xR-lg.xvi)/(llg.xvi-lg.xvi);
+      wRNm1=(llg.vxi-lg.xR)/(llg.vxi-lg.vxi);
+      wRNm2=(lg.xR-lg.vxi)/(llg.vxi-lg.vxi);
       vSfR=lg.SfR;
     }    
 
@@ -438,8 +438,8 @@ namespace tube{
       lefttube_nonconst.init(*thistube.gc);
     }
 
-    const us& leftnCells=left.geom.nCells;
-    d xvim1;
+    const us& leftnCells=left.geom().nCells();
+    d vxim1;
     if(left.getRight()[0]->getNumber()==thistube.getNumber()){
       TRACE(8,"Segment " << thistube.getNumber()<< " connected with "	\
             << "head to tail of segment"<< left.getNumber() << ".");
@@ -447,20 +447,20 @@ namespace tube{
       // CREATED. So we initialize the segment from here, if it has
       // not been already.
       this->left=static_cast<const TubeVertex*>(lefttube.vvertex.at(leftnCells-1).get());
-      const d& Lleft=left.geom.L;
-      xvim1=left.geom.xv(leftnCells-1)-Lleft;
-      vSfL=left.geom.vSf(leftnCells-1);
+      const d& Lleft=left.geom().L();
+      vxim1=left.geom().vx(leftnCells-1)-Lleft;
+      vSfL=left.geom().vSf(leftnCells-1);
     }
     else{
       TRACE(8,"Segment " << thistube.getNumber()<< " connected with "	\
             << "head to head of segment"<< left.getNumber() << ".");
       this->left=static_cast<const TubeVertex*>(lefttube.vvertex.at(0).get());
-      xvim1=-left.geom.xv(0);
+      vxim1=-left.geom().vx(0);
       UsignL=-1;
-      vSfL=left.geom.vSf(0);	
+      vSfL=left.geom().vSf(0);	
     }
-    dxm=lg.xvi-xvim1;      
-    wLl=(lg.xvi)/(lg.xvi-xvim1);	
+    dxm=lg.vxi-vxim1;      
+    wLl=(lg.vxi)/(lg.vxi-vxim1);	
     wLr=1-wLl;
   } // connectTubeLeft()
   void TubeVertex::connectTubeRight(const Tube& thistube){
@@ -481,26 +481,26 @@ namespace tube{
       righttube_nonconst.init(*thistube.gc);
     }
     
-    d xvip1;
-    const us& rightnCells=right.geom.nCells;    
+    d vxip1;
+    const us& rightnCells=right.geom().nCells();    
     if(right.getLeft()[0]->getNumber()==thistube.getNumber()){
       TRACE(8,"Connected current tail to right segment's head");
-      //   	  d L=geom.L;
+      //   	  d L=geom().L();
       this->right=static_cast<const TubeVertex*>(righttube.vvertex.at(0).get());
-      xvip1=right.geom.xv(0)+thistube.geom.L;
-      vSfR=right.geom.vSf(0);
+      vxip1=right.geom().vx(0)+thistube.geom().L();
+      vSfR=right.geom().vSf(0);
     }
     else{
       TRACE(8,"Connected current tail to right segment's tail");
       this->right=static_cast<const TubeVertex*>(righttube.vvertex.at(rightnCells-1).get());
-      const d& Lright=right.geom.L;
-      xvip1=Lright-right.geom.xv(rightnCells-1)+thistube.geom.L;
+      const d& Lright=right.geom().L();
+      vxip1=Lright-right.geom().vx(rightnCells-1)+thistube.geom().L();
       UsignR=-1;
-      vSfR=right.geom.vSf(rightnCells-1);
+      vSfR=right.geom().vSf(rightnCells-1);
     }
-    dxp=xvip1-lg.xvi;
-    wRr=(lg.xR-lg.xvi)/(xvip1-lg.xvi);
-    wRl=(xvip1-lg.xR)/(xvip1-lg.xvi);
+    dxp=vxip1-lg.vxi;
+    wRr=(lg.xR-lg.vxi)/(vxip1-lg.vxi);
+    wRl=(vxip1-lg.xR)/(vxip1-lg.vxi);
   } // connectTubeRight()    
     
   
@@ -513,7 +513,7 @@ namespace tube{
   {
     TRACE(4,"TubeVertex::error() for TubeVertex "<< i << ".");
     // TRACE(4,"Check for position i>0 && i<gp-1...");
-    // assert(i>0 && i<seg.geom.gp-1);
+    // assert(i>0 && i<seg.geom().gp-1);
     const us& Ns=gc->Ns();
     TRACE(4,"Assignment of Ns survived:"<< Ns);
     us Neq=eqs.size();

@@ -19,7 +19,7 @@
   // precisely, in the final solution the continuity, momentum, energy
   // and a suitable equation of state should hold.
 namespace tube {
-  IsentropicTube::IsentropicTube(Geom geom):Tube(geom){
+  IsentropicTube::IsentropicTube(const Geom& geom):Tube(geom){
     // Fill vector of gridpoints with data:
     TRACE(13,"IsentropicTube constructor()...");
   }
