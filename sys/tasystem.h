@@ -66,6 +66,7 @@ namespace tasystem{
     void addSeg(const SegBase& s);	// Add a segment to the
 					// system. It creates a copy
 					// and ads it to segs by emplace_back.
+    void addSeg(const std::vector<SegBase*>&);
     void resetHarmonics();
     // ############################## ACCESS METHODS
 

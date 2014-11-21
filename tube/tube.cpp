@@ -214,7 +214,7 @@ namespace tube {
   vd Tube::getResAt(us varnr,us freqnr) const{
     TRACE(15,"Tube::getResAt("<<varnr<<","<<freqnr<<")");
     const us nCells=geom().nCells();
-    // VARTRACE(15,nCells);
+    // VARTRACE(15,getNDofs());
     vd res(nCells);
     assert(varnr<getNDofs());
     

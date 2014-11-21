@@ -9,7 +9,9 @@
 
 namespace geom {
   SPOILNAMESPACE;
-  void smoothEnds(Geom& first,int firstpos,Geom& second,int secondpos);
+
+  enum pos{left=0,right=1};
+
   class Geom{
     Grid grid_;
 
@@ -44,7 +46,12 @@ namespace geom {
     d x(us i) const {return x()(i);}
     d L() const {return grid_.getL();}
     us gp() const {return x().size();}
-
+    d Sleft() const {return S(0);}
+    d Sright() const {return S(nCells());}
+    d phileft() const {return phi(0);}
+    d phiright() const {return phi(nCells());}
+    d rhleft() const {return rh(0);}
+    d rhright() const {return rh(nCells());}
 
     d vx(us i) const;		 // Vertex positions    
     vd vSf_vec() const;

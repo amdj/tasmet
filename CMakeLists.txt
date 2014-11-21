@@ -41,7 +41,7 @@ include_directories(
   gui
   ../common
   ../common/gas
-  ../common/bessel
+  ../common/special
   ../common/fsolve  
   ../common/solid
   ../common/rottfuncs

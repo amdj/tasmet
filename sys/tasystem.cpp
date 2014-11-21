@@ -45,6 +45,13 @@ namespace tasystem{
     segConnections.clear();
     hasInit=false;
   }
+  void TaSystem::addSeg(const std::vector<SegBase*>& segs){
+    TRACE(14,"TaSystem::addSeg()");
+    for(auto seg=segs.begin();seg!=segs.end();seg++){
+      if(*seg!=NULL) 
+        addSeg(**seg);
+    }
+  }
   void TaSystem::addSeg(const SegBase& seg){
     TRACE(14,"TaSystem::addseg()");
     hasInit=false;

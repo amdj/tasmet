@@ -1,7 +1,7 @@
 #include "grid.h"
 #include "fsolve.h"
 
-#define MAXGP 500
+#define MAXGP 50000
 
 namespace geom{
 

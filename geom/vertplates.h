@@ -20,6 +20,7 @@ namespace geom{
                   const Geom& tothisone,int tothisonepos,int perc);
   
   class VertPlates:public Geom{
+  protected:
     d S_=-1,phi_=1,rh_=-1;
   public:
     VertPlates(const Grid& g,d S,d phi,d y0,bool blapprox=false);
@@ -33,6 +34,29 @@ namespace geom{
     virtual ~VertPlates(){}
   };
 
+  class Transition{
+    pos position;
+    d perc;
+  public:
+    Transition(pos position,d perc);
+    pos Position() const {return position;}
+    d percd_other(d x_ov_L) const;    // (Decimal) percentage of transition
+  };
+
+  
+  class TransitionVertPlates:public VertPlates{
+    Transition transition;
+    d S_other,phi_other,perc;
+  public:
+    TransitionVertPlates(const Grid&,d S,d phi,d y0,pos TransitionSide,\
+                         const Geom& other,pos sideofremote,d perc=10,\
+                         bool blapprox=false);
+    virtual Geom* copy() const {return new TransitionVertPlates(*this);}
+    virtual void show() const;
+    virtual ~TransitionVertPlates(){}
+    virtual d S(us i) const;		 // Cross sectional area as a function of x
+    virtual d phi(us i) const;		 // Volume porosity at position of cell walls
+  };
 
  
 

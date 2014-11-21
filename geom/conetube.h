@@ -3,7 +3,7 @@
 #define _CONETUBE_H_
 
 #include "geom.h"
-
+#include "vertplates.h"
 namespace geom{
 
 
@@ -29,6 +29,31 @@ namespace geom{
     virtual Geom* copy() const {return new CylindricalTube(*this);}
     virtual void show() const;
   };
+
+  
+
+  class TransitionCylindricalTube:public Geom{
+    Transition transition;
+    d r_,perc,S_;
+    d S_other,phi_other;
+  public:
+    TransitionCylindricalTube(const Grid& g,d r,\
+                              pos TransitionSide,const Geom& other,\
+                              pos sideofremote,d perc=10,bool blapprox=true);
+    // Copy constructor only needs to copy all params, so default will
+    // suffice.
+    virtual ~TransitionCylindricalTube(){}
+    virtual d S(us i) const;
+    virtual d phi(us i) const;
+    virtual d rh(us i ) const {return r_/2;}; // Indeed, we keep old
+                                              // hydraulic radius to
+                                              // do not mess up Rott functions
+    virtual string shape() const { return "circ";}
+    virtual Geom* copy() const {return new TransitionCylindricalTube(*this);}
+    virtual void show() const;
+
+  };
+
 
 } // namespace geom
 
