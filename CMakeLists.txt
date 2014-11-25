@@ -16,6 +16,7 @@ AUX_SOURCE_DIRECTORY(var varsources)
 AUX_SOURCE_DIRECTORY(seg segsources)
 AUX_SOURCE_DIRECTORy(sys syssources)
 AUX_SOURCE_DIRECTORy(geom geomsources)
+AUX_SOURCE_DIRECTORy(geom/grid gridsources)
 AUX_SOURCE_DIRECTORy(sol solsources)
 AUX_SOURCE_DIRECTORy(gui guisources)
 
@@ -27,7 +28,7 @@ AUX_SOURCE_DIRECTORy(common commonsources)
 set (nonlinear_SRC ${tubesources} ${varsources} ${segsources}
   ${syssources}  ${geomsources} ${solsources}
   ${varsources} ${commonsources}
-  ${tubeeq} ${tubeheat} ${tubebc} ${tubedrag}
+  ${tubeeq} ${tubeheat} ${tubebc} ${tubedrag} ${gridsources}
   )
 
 # ${tubedrag}
@@ -47,6 +48,7 @@ include_directories(
   ../common/rottfuncs
   models
   geom
+  geom/grid
   tube/drag
   tube/bc
   tube/eq

@@ -46,6 +46,7 @@ namespace tasystem{
 				// deltax of volume
     d kappa;			// Artificial viscosity tuning factor,
     // typically between 0.25 and 0.75
+
     gases::Gas gas;
   public:
     Globalconf(){}
@@ -62,6 +63,7 @@ namespace tasystem{
     d getfreq() const {return omg/2/number_pi;}
     d c0() const {return gas.cm(T0);}
     d rho0() const {return gas.rho(T0,p0);}
+    d deltanu0() const{ return sqrt(2*gas.mu(T0)/(rho0()*omg));}
     vd omgvec;    
     void setNf(us);
     void set(us Nf,d freq);	// Set data for new frequency and
