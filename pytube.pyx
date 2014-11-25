@@ -40,6 +40,15 @@ cdef class pytubeBase:
     cpdef getx(self,i=0):
         assert(i<self.ntubes)
         return dvectond(self.tube[i].geom().vx_vec())
+    cpdef getS(self,i=0):
+        assert(i<self.ntubes)
+        return dvectond(self.tube[i].geom().vS_vec())
+    cpdef getphi(self,i=0):
+        assert(i<self.ntubes)
+        return dvectond(self.tube[i].geom().vphi_vec())
+    cpdef getrh(self,i=0):
+        assert(i<self.ntubes)
+        return dvectond(self.tube[i].geom().vrh_vec())
     cpdef getSf(self,i=0):
         assert(i<self.ntubes)
         return dvectond(self.tube[i].geom().vSf_vec())

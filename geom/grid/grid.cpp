@@ -58,7 +58,13 @@ namespace geom{
     bR=b.copy();
     makex();
   }
-
+  void Smooth(vd& x){
+    TRACE(15,"Smooth()");
+    us size=x.size();
+    if(x.size()>1)
+      for(us i=1;i<size-1;i++)
+        x(i)=0.5*(x(i+1)+x(i-1));
+  }
   void Grid::makex() {
     TRACE(15,"Grid::makex()");
     x=linspace(0,L,gp);
@@ -66,7 +72,9 @@ namespace geom{
       makeLeftBl();
     if(bR)
       makeRightBl();
+    Smooth(x);
   }
+
   void truncate(vd& x,d L){
     TRACE(15,"truncate()");
     // Truncate a vector till last element is still smaller than L

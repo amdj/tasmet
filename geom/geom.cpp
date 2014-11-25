@@ -45,6 +45,25 @@ namespace geom{
       vSf(i)=this->vSf(i);
     return vSf;
   }
+  vd Geom::vS_vec() const{
+    vd vS(nCells());
+    for(us i=0;i<nCells();i++)
+      vS(i)=this->vS(i);
+    return vS;
+  }
+  vd Geom::vrh_vec() const{
+    vd vrh(nCells());
+    for(us i=0;i<nCells();i++)
+      vrh(i)=this->vrh(i);
+    return vrh;
+  }
+  vd Geom::vphi_vec() const{
+    vd vphi(nCells());
+    for(us i=0;i<nCells();i++)
+      vphi(i)=this->vphi(i);
+    return vphi;
+  }
+  
   vd Geom::vx_vec() const{
     TRACE(30,"Geom::vx_vec()");
     VARTRACE(30,nCells());

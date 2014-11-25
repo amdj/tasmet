@@ -55,6 +55,9 @@ namespace geom {
 
     d vx(us i) const;		 // Vertex positions    
     vd vSf_vec() const;
+    vd vS_vec() const;
+    vd vphi_vec() const;
+    vd vrh_vec() const;    
     vd vx_vec() const;
     d Sf(us i) const {return S(i)*phi(i);}		 // Fluid-occupied cross-sectional area of cell-wall    
     d Ss(us i) const {return (1-phi(i))*S(i);}		 // Solid-occupied cross-sectional area

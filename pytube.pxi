@@ -49,6 +49,9 @@ cdef extern from "geom.h" namespace "tube":
     cdef cppclass Geom:
         Geom(us gp,d L,d S,d phi,d rh,string cshape) except +
         vd vSf_vec()
+        vd vrh_vec()
+        vd vS_vec()
+        vd vphi_vec()        
         vd x()
         vd vx_vec()
         d L()

@@ -33,14 +33,18 @@ class nonlinpost(nlpost):
     def __init__(self,tube,nr=0):
         nlpost.__init__(self,tube.getFreq(),tube.getNf())
         self.ntubes=tube.nTubes()
+        self.x=tube.getx(nr)
+        self.Sf=tube.getSf(nr)
+        self.S=tube.getS(nr)
+        self.phi=tube.getphi(nr)
+        self.rh=tube.getrh(nr)                
+
         self.rhoi=[]
         self.p=[]
         self.T=[]
         self.Ts=[]
         self.rho=[]
         self.U=[]
-        self.x=tube.getx(nr)
-        self.Sf=tube.getSf(nr)
         self.L=tube.getL(nr)
         self.Ts.append(tube.getResVar('stemp',0,nr))
         self.T.append(tube.getResVar('temp',0,nr))
@@ -60,7 +64,13 @@ class nonlinpost(nlpost):
     def getp(self,i):
         return self.p[i]
     def getSf(self):
-        return self.Sf
+        return self.Sf 
+    def getS(self):
+        return self.S
+    def getphi(self):
+        return self.phi
+    def getrh(self):
+        return self.rh
     def getrho(self,i):
         return self.rho[i]
     def getT(self,i):
@@ -97,7 +107,21 @@ class combinedsys:
         for sys in self.systems:
             Sf=n.concatenate((Sf,sys.getSf()))
         return Sf
-
+    def getS(self):
+        S=[]    
+        for sys in self.systems:
+            S=n.concatenate((S,sys.getS()))
+        return S
+    def getrh(self):
+        rh=[]    
+        for sys in self.systems:
+            rh=n.concatenate((rh,sys.getrh()))
+        return rh
+    def getphi(self):
+        phi=[]    
+        for sys in self.systems:
+            phi=n.concatenate((phi,sys.getphi()))
+        return phi
         
     def getp(self,i):
         p=[]

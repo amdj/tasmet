@@ -44,8 +44,12 @@ namespace tube {
     // Necessary to let it work
     assert(vvertex.size()==other.vvertex.size());
     assert(gc->Ns()==other.gc->Ns());
-    auto otherv=other.vvertex.begin();
 
+    
+  } // setRes
+  void Tube::setRes_samegp(const Tube& other){
+    TRACE(20,"Tube::setRes_samegp()");
+    auto otherv=other.vvertex.begin();    
     for(auto v=vvertex.begin();v!=vvertex.end();v++){
       TubeVertex& thisvertex=*static_cast<TubeVertex*>(v->get());
       TubeVertex& othervertex=*static_cast<TubeVertex*>(otherv->get());

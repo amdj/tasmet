@@ -57,7 +57,7 @@ namespace geom{
     }
   } // Constructor
   d TransitionCylindricalTube::S(us i) const{
-    TRACE(15,"TransitionCylindricalTube::S()");
+    TRACE(5,"TransitionCylindricalTube::S()");
     d xi=x(i);
     d L=this->L();
     assert(i<gp());
@@ -66,7 +66,7 @@ namespace geom{
   }
 
   d TransitionCylindricalTube::phi(us i) const {
-    TRACE(15,"TransitionCylindricalTube::phi()");
+    TRACE(5,"TransitionCylindricalTube::phi()");
     d xi=x(i);
     d L=this->L();
     d phi_=1.0;

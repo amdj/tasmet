@@ -83,7 +83,7 @@ namespace geom{
   }
 
   d TransitionVertPlates::S(us i) const{
-    TRACE(14,"TransitionVertPlates::S()");
+    TRACE(5,"TransitionVertPlates::S()");
     d xi=x(i);
     d L=this->L();
     using math_common::skewsine;
@@ -92,7 +92,7 @@ namespace geom{
     return (1-percd)*S_+percd*S_other;
   }
   d TransitionVertPlates::phi(us i) const{
-    TRACE(14,"TransitionVertPlates::phi()");
+    TRACE(5,"TransitionVertPlates::phi()");
     d xi=x(i);
     d L=this->L();
     using math_common::skewsine;
