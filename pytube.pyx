@@ -77,20 +77,23 @@ cdef class pytubeBase:
         assert(i<self.ntubes)
         return dvectond(self.tube[i].Htot())
     cpdef getResVar(self,_type,freqnr,tubenr=0):
+    # Unfortunately, this is hard-coded
         i=tubenr
         assert(i<self.ntubes)
-        if _type=='pres':
-            return dvectond(self.tube[i].getResAt(2,freqnr))
-        elif _type=='rho':
-            return dvectond(self.tube[i].getResAt(0,freqnr))
-        elif _type=='temp':
-            return dvectond(self.tube[i].getResAt(3,freqnr))
+        j=0
+        if _type=='rho':
+            j=0
         elif _type=='volu':
-            return dvectond(self.tube[i].getResAt(1,freqnr))
+            j=1
+        elif _type=='temp':
+            j=2
+        elif _type=='pres':
+            j=3
         elif _type=='stemp':
-            return dvectond(self.tube[i].getResAt(4,freqnr))
+            j=4
         else:
             return None
+        return dvectond(self.tube[i].getResAt(j,freqnr))
     cpdef showJac(self):
         self.sol[0].sys().showJac()
 

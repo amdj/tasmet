@@ -58,10 +58,27 @@ namespace variable {
     return *this;
   }
   var var::operator+(const var& other) const{
+    TRACE(25,"var::operator+()");
+    VARTRACE(25,this->gc__);
     var result(*this->gc__);
+    TRACE(25,"var::operator+()");    
     result.set(this->operator()()+other());
+
+    TRACE(25,"var::operator+()");
     return result;
   }
+  var var::operator-(const var& other) const{
+    var result(*this->gc__);
+    result.set(this->operator()()-other());
+    return result;
+  }
+  var var::operator*(d scalar) const {	// Post-multiplication with scalar
+    assert(this->gc__!=NULL);
+    vd thisadata=this->tdata();
+    return var(*(this->gc__),scalar*thisadata);
+  }
+  
+
   void var::updateNf(){
     TRACE(5,"var::updateNf(), this Ns:"<< Ns << ", new Ns:" << gc__->Ns() << ". Adress gc__: " << gc__);
     if(this->Ns!=gc__->Ns()){
@@ -89,12 +106,6 @@ namespace variable {
     result.settdata(tdata);
     return result;
   }
-  var var::operator*(const d& scalar) const {	// Post-multiplication with scalar
-    assert(this->gc__!=NULL);
-    vd thisadata=this->tdata();
-    return var(*(this->gc__),scalar*thisadata);
-  }
-  
   // Get methods (which require implementation)
   const d& var::operator()(us i) const {//Extract result at specific frequency
     TRACE(-2,"var::operator()("<<i<<"), Ns: "<< Ns);
@@ -144,10 +155,13 @@ namespace variable {
     }
     idft();
   }
-  void var::set(const vd val) {
+  d min(us a,us b){return a<=b?a:b;}
+  void var::set(const vd& val) {
     TRACE(0,"var::set(const vd& val)");
-    assert(val.size()==amplitudedata.size());
-    amplitudedata=val;
+    amplitudedata.zeros();
+    us minsize=min(val.size(),amplitudedata.size());
+    for(us i=0;i<minsize;i++)
+      amplitudedata(i)=val(i);
     idft();
   }
   void var::settdata(double val) {

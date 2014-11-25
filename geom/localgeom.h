@@ -36,7 +36,7 @@ namespace geom {
     d dxp;			// Distance to nearby right node
     d dxm;			// Distance to nearby left node
 
-    d vxi;
+    d vx;
     // right vertex.
 
     void show() const;

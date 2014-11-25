@@ -53,7 +53,7 @@ namespace variable {
     dmat diag() const {return diagmat(amplitudedata);}    
     //Set methods
     void set(us freq,double val); //Set result vector at specific frequency
-    void set(const vd values); //Set result vector to these values
+    void set(const vd& values); //Set result vector to these values
     void set(const vc& values); //Set result vector to these values, complex numbers
     void setResfluc(vd& values); //Set result vector for only unsteady Fourier components
     // Specific methods to the result using time domain data
@@ -65,13 +65,11 @@ namespace variable {
     // Operations
     var ddt() const;			  // Time derivative of this variable
     var operator/(const var& var2) const; // Time-domain division operator
-    var operator-(const var& var2) const; //Not yet implemented
-    var operator*(d scalar);			   // post-multiplication
     var operator*(const var& variable);		   // Multiply two variables in time domain
-    var operator*(const d& scalar) const;   // Multiply a variable with a scalar. This operation is possible for both
+    var operator*(d scalar) const;   // Multiply a variable with a scalar. This operation is possible for both
 				      // frequency and time domain data
     var operator+(const var& other) const;  // add two variables
-
+    var operator-(const var& var2) const; //Subtract two variables
     // with Note multiplication is defined outside of the class
 
     // If we need to multiply two numbers in frequency domain, this

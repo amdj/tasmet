@@ -15,11 +15,15 @@
 #include "isentropiceq.h"
 #include "var.h"
 
+#include "varnr.h"
+
 namespace segment{class SegBase;}
 
 
 
 namespace tube{    
+
+
   SPOILNAMESPACE
   using segment::SegBase;
   using segment::LocalGeom;
@@ -35,7 +39,7 @@ namespace tube{
   protected: 
     d wLl=0,wRr=0,wLr=0,wRl=0;		// Basic weight functions
     d wL0=0,wL1=0,wRNm1=0,wRNm2=0;    	// Special boundary weight functions
-    d vxim1=0,vxi=0,vxip1=0;
+    d vxm1=0,vx=0,vxp1=0;
     d dxm=0,dxp=0;
     d vSfR=0,vSfL=0;		// Cross sectional area at x-position
     // of vertex.
@@ -97,7 +101,11 @@ namespace tube{
     virtual void jac(Jacobian& tofill) const;		       // Fill complete Jacobian for this node
     virtual void setRes(vd res);			  // Set result vector to res
     virtual void domg(vd& ) const;
-    virtual vd getRes() const;			  // Extract current result vector
+    void setRes(varnr,const variable::var& res);
+    virtual vd getRes() const;			  // Extract current result
+                                          // vector
+    d getRes(varnr,us freqnr) const;
+    variable::var getRes(varnr) const;
     virtual void updateNf();
     // Convenience function, we need a lot of static (background
     // pressure) addings in the equations.

@@ -42,6 +42,7 @@ include_directories(
   gui
   ../common
   ../common/gas
+  ../common/interpolate
   ../common/special
   ../common/fsolve  
   ../common/solid

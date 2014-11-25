@@ -118,12 +118,12 @@ namespace tube{
   {
     TRACE(8,"TubeVertex::initTubeVertex(gc,geom), vertex "<< i << ".");
 
-    vars.clear();               // Might be unnessesary
-    vars.push_back(&rho);
-    vars.push_back(&U);
-    vars.push_back(&p);
-    vars.push_back(&T);
-    vars.push_back(&Ts);    
+    vars.resize(5);
+    vars.at(RHONR)=&rho;
+    vars.at(UNR)=&U;
+    vars.at(TNR)=&p;
+    vars.at(PNR)=&T;
+    vars.at(TSNR)=&Ts;    
     
 
     // assert(gc!=NULL);
@@ -179,34 +179,34 @@ namespace tube{
 
     const Geom& geom=thistube.geom();
 
-    vxi=lg.vxi;
+    vx=lg.vx;
     if(i>0) {   
       const LocalGeom& llg=left->lg;
-      vxim1=llg.vxi;
-      dxm=vxi-vxim1;
-      wLl=(lg.vxi-lg.xL)/(lg.vxi-llg.vxi);
-      wLr=(lg.xL-llg.vxi)/(lg.vxi-llg.vxi);
+      vxm1=llg.vx;
+      dxm=vx-vxm1;
+      wLl=(lg.vx-lg.xL)/(lg.vx-llg.vx);
+      wLr=(lg.xL-llg.vx)/(lg.vx-llg.vx);
       vSfL=llg.vSf;
     }
     if(i==0){
       const LocalGeom& rlg=right->lg;
       vSfL=lg.SfL;
-      wL0=rlg.vxi/(rlg.vxi-lg.vxi);
-      wL1=-lg.vxi/(rlg.vxi-lg.vxi);
+      wL0=rlg.vx/(rlg.vx-lg.vx);
+      wL1=-lg.vx/(rlg.vx-lg.vx);
     }
     
     if(i<nCells-1){
       const LocalGeom& rlg=right->lg;
-      vxip1=rlg.vxi;
-      dxp=vxip1-vxi;      
+      vxp1=rlg.vx;
+      dxp=vxp1-vx;      
       vSfR=rlg.vSf;
-      wRr=(lg.xR-lg.vxi)/(rlg.vxi-lg.vxi);
-      wRl=(rlg.vxi-lg.xR)/(rlg.vxi-lg.vxi);
+      wRr=(lg.xR-lg.vx)/(rlg.vx-lg.vx);
+      wRl=(rlg.vx-lg.xR)/(rlg.vx-lg.vx);
     }
     if(i==nCells-1){
       const LocalGeom& llg=left->lg;
-      wRNm1=(llg.vxi-lg.xR)/(llg.vxi-lg.vxi);
-      wRNm2=(lg.xR-lg.vxi)/(llg.vxi-lg.vxi);
+      wRNm1=(llg.vx-lg.xR)/(llg.vx-lg.vx);
+      wRNm2=(lg.xR-lg.vx)/(llg.vx-lg.vx);
       vSfR=lg.SfR;
     }    
 
@@ -439,7 +439,7 @@ namespace tube{
     }
 
     const us& leftnCells=left.geom().nCells();
-    d vxim1;
+    d vxm1;
     if(left.getRight()[0]->getNumber()==thistube.getNumber()){
       TRACE(8,"Segment " << thistube.getNumber()<< " connected with "	\
             << "head to tail of segment"<< left.getNumber() << ".");
@@ -448,19 +448,19 @@ namespace tube{
       // not been already.
       this->left=static_cast<const TubeVertex*>(lefttube.vvertex.at(leftnCells-1).get());
       const d& Lleft=left.geom().L();
-      vxim1=left.geom().vx(leftnCells-1)-Lleft;
+      vxm1=left.geom().vx(leftnCells-1)-Lleft;
       vSfL=left.geom().vSf(leftnCells-1);
     }
     else{
       TRACE(8,"Segment " << thistube.getNumber()<< " connected with "	\
             << "head to head of segment"<< left.getNumber() << ".");
       this->left=static_cast<const TubeVertex*>(lefttube.vvertex.at(0).get());
-      vxim1=-left.geom().vx(0);
+      vxm1=-left.geom().vx(0);
       UsignL=-1;
       vSfL=left.geom().vSf(0);	
     }
-    dxm=lg.vxi-vxim1;      
-    wLl=(lg.vxi)/(lg.vxi-vxim1);	
+    dxm=lg.vx-vxm1;      
+    wLl=(lg.vx)/(lg.vx-vxm1);	
     wLr=1-wLl;
   } // connectTubeLeft()
   void TubeVertex::connectTubeRight(const Tube& thistube){
@@ -481,26 +481,26 @@ namespace tube{
       righttube_nonconst.init(*thistube.gc);
     }
     
-    d vxip1;
+    d vxp1;
     const us& rightnCells=right.geom().nCells();    
     if(right.getLeft()[0]->getNumber()==thistube.getNumber()){
       TRACE(8,"Connected current tail to right segment's head");
       //   	  d L=geom().L();
       this->right=static_cast<const TubeVertex*>(righttube.vvertex.at(0).get());
-      vxip1=right.geom().vx(0)+thistube.geom().L();
+      vxp1=right.geom().vx(0)+thistube.geom().L();
       vSfR=right.geom().vSf(0);
     }
     else{
       TRACE(8,"Connected current tail to right segment's tail");
       this->right=static_cast<const TubeVertex*>(righttube.vvertex.at(rightnCells-1).get());
       const d& Lright=right.geom().L();
-      vxip1=Lright-right.geom().vx(rightnCells-1)+thistube.geom().L();
+      vxp1=Lright-right.geom().vx(rightnCells-1)+thistube.geom().L();
       UsignR=-1;
       vSfR=right.geom().vSf(rightnCells-1);
     }
-    dxp=vxip1-lg.vxi;
-    wRr=(lg.xR-lg.vxi)/(vxip1-lg.vxi);
-    wRl=(vxip1-lg.xR)/(vxip1-lg.vxi);
+    dxp=vxp1-lg.vx;
+    wRr=(lg.xR-lg.vx)/(vxp1-lg.vx);
+    wRl=(vxp1-lg.xR)/(vxp1-lg.vx);
   } // connectTubeRight()    
     
   
@@ -547,6 +547,75 @@ namespace tube{
     }
     return res;
   }
+  d TubeVertex::getRes(varnr v,us freqnr) const{
+    TRACE(4,"TubeVertex::getRes()");
+    TRACE(4,"TubeVertex::getRes()");
+    switch(v) {
+    case varnr::rho: // Density
+      return rho(freqnr);
+      break;
+    case varnr::U:                 // Volume flown
+      return U(freqnr);
+      break;
+    case varnr::p:                   // Pressure
+      return 0.5*(pL()(freqnr)+pR()(freqnr));
+      break;
+    case varnr::T:                 // Temp
+      return T()(freqnr);
+      break;
+    case varnr::Ts:                 // Temp
+      return Ts()(freqnr);
+      break;
+    default:
+      return 0;
+    }
+  }
+  void TubeVertex::setRes(varnr v,const variable::var& res){
+    TRACE(4,"TubeVertex::getRes(varnr,var)");
+    switch(v) {
+    case varnr::rho: // Density
+      rho=res;
+      break;
+    case varnr::U:                 // Volume flown
+      U=res;
+      break;
+    case varnr::p:                   // Pressure
+      p=res;
+      break;
+    case varnr::T:                 // Temp
+      T=res;
+      break;
+    case varnr::Ts:                 // Temp
+      Ts=res;
+      break;
+    }
+  }
+
+
+  var TubeVertex::getRes(varnr v) const{
+    TRACE(4,"TubeVertex::getRes()");
+    TRACE(4,"TubeVertex::getRes()");
+      switch(v) {
+      case varnr::rho: // Density
+          return rho;
+          break;
+      case varnr::U:                 // Volume flown
+          return U;
+          break;
+      case varnr::p:                   // Pressure
+          return 0.5*(pL()+pR());
+          break;
+      case varnr::T:                 // Temp
+          return T;
+          break;
+      case varnr::Ts:                 // Temp
+          return Ts;
+          break;
+      default:
+        return 0;
+      }
+  }
+
   void TubeVertex::updateNf(){
     TRACE(10,"TubeVertex::setNf()");
     for(auto var=vars.begin();var!=vars.end();var++)

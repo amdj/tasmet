@@ -8,7 +8,7 @@
 
 #include "tube.h"
 #include "tubebcvertex.h"
-
+#include "interpolate.h"
 // Tried to keep the method definition a bit in order in which a
   // tube is created, including all its components. First a tube is
   // created, which has a geometry and a global
@@ -30,45 +30,6 @@ namespace tube {
     bcLeft.reset();
     bcRight.reset();
     vvertex.clear();
-  }
-  void Tube::updateNf(){
-    for(auto v=vvertex.begin();v!=vvertex.end();v++){
-      (*v)->updateNf();
-    }
-  }
-  void Tube::setRes(const SegBase& otherseg){
-    TRACE(20,"Tube::setRes(othertube)");
-    const Tube& other=asTube_const(otherseg);
-    // Sanity checks
-    assert(vvertex.size()!=0);
-    // Necessary to let it work
-    assert(vvertex.size()==other.vvertex.size());
-    assert(gc->Ns()==other.gc->Ns());
-
-    
-  } // setRes
-  void Tube::setRes_samegp(const Tube& other){
-    TRACE(20,"Tube::setRes_samegp()");
-    auto otherv=other.vvertex.begin();    
-    for(auto v=vvertex.begin();v!=vvertex.end();v++){
-      TubeVertex& thisvertex=*static_cast<TubeVertex*>(v->get());
-      TubeVertex& othervertex=*static_cast<TubeVertex*>(otherv->get());
-      thisvertex.rho=othervertex.rho;
-      // TRACE(15,"Other rho:"<< othervertex.rho(0));
-      thisvertex.U=othervertex.U;
-      thisvertex.T=othervertex.T;      
-      thisvertex.Ts=othervertex.Ts;
-      if(thisvertex.p.getDofNr()!=-1) // Then its invalid
-        thisvertex.p=othervertex.pL();
-      if(v==(vvertex.end()-1)){
-        if(bcRight){
-          thisvertex.setpR(othervertex.pR());
-          TRACE(25,"Copying pR");          
-        }
-      }
-      otherv++;
-    } // for
-    
   }
   Tube::Tube(const Tube& other):Seg(other){
     copyTube(other);
@@ -214,36 +175,105 @@ namespace tube {
     }
     return mass;
   }
+  void Tube::updateNf(){
+    for(auto v=vvertex.begin();v!=vvertex.end();v++){
+      (*v)->updateNf();
+    }
+  }
+  void Tube::setRes(const SegBase& otherseg){
+    TRACE(20,"Tube::setRes(othertube)");
+    const Tube& other=asTube_const(otherseg);
+    // Sanity checks
+    assert(vvertex.size()!=0);
+    // Necessary to let it work
+    assert(gc->Ns()==other.gc->Ns());
+
   
-  vd Tube::getResAt(us varnr,us freqnr) const{
-    TRACE(15,"Tube::getResAt("<<varnr<<","<<freqnr<<")");
+    for(auto v=vvertex.begin();v!=vvertex.end();v++){
+      TubeVertex& thisvertex=*static_cast<TubeVertex*>(v->get());
+      d vx=thisvertex.lg.vx;
+      d xL=thisvertex.lg.xL;
+      thisvertex.rho.set(other.interpolateResMid(varnr::rho,vx));
+      thisvertex.U.set(other.interpolateResMid(varnr::U,vx));
+      thisvertex.T.set(other.interpolateResMid(varnr::T,vx));
+      thisvertex.Ts.set(other.interpolateResMid(varnr::Ts,vx));
+      thisvertex.p.set(other.interpolateResStaggered(varnr::p,xL));
+
+      if(v==(vvertex.end()-1)){
+        if(bcRight){
+          TubeVertex& othervertex=*static_cast<TubeVertex*>((other.vvertex.end()-1)->get());          
+          thisvertex.setpR(othervertex.pR());
+          TRACE(25,"Copying pR");          
+        }
+      }
+    } // for
+
+  }
+  vd Tube::interpolateResStaggered(varnr v,d x) const{
+    TRACE(20,"Tube::interpolateResStaggered("<<v<<","<<x<<")");
+    us leftpos=0;
+    assert(x>=0);
+    us iright=0,ileft;
+    while(geom().x(iright)<=x && iright<geom().nCells()-1)
+      iright++;
+    VARTRACE(25,iright);
+    if(iright>0)
+      ileft=iright-1;
+    else{
+      ileft=0;
+      iright=1;
+    }
+    VARTRACE(25,ileft);
+    VARTRACE(25,iright);
+    const TubeVertex& leftvertex=*static_cast<TubeVertex*>(vvertex[ileft].get());
+    const TubeVertex& rightvertex=*static_cast<TubeVertex*>(vvertex[iright].get());
+    vd left=leftvertex.getRes(v)();
+    vd right=rightvertex.getRes(v)();
+    d xleft=leftvertex.lg.xL;
+    d xright=rightvertex.lg.xL;
+    d relpos=(x-xleft)/(xright-xleft);
+    VARTRACE(25,relpos);
+    return math_common::linearInterpolate(left,right,relpos);
+  }
+
+  vd Tube::interpolateResMid(varnr v,d x) const{
+    TRACE(20,"Tube::interpolateResMid("<<v<<","<<x<<")");
+    us leftpos=0;
+    assert(x>=0);
+    us iright=0,ileft;
+    while(geom().vx(iright)<=x && iright<geom().nCells()-1)
+      iright++;
+    VARTRACE(25,iright);
+    if(iright>0)
+      ileft=iright-1;
+    else{
+      ileft=0;
+      iright=1;
+    }
+    VARTRACE(25,ileft);
+    VARTRACE(25,iright);
+    const TubeVertex& leftvertex=*static_cast<TubeVertex*>(vvertex[ileft].get());
+    const TubeVertex& rightvertex=*static_cast<TubeVertex*>(vvertex[iright].get());
+    vd left=leftvertex.getRes(v)();
+    vd right=rightvertex.getRes(v)();
+    d xleft=leftvertex.lg.vx;
+    d xright=rightvertex.lg.vx;
+    d relpos=(x-xleft)/(xright-xleft);
+    VARTRACE(25,relpos);
+    return math_common::linearInterpolate(left,right,relpos);
+  }
+  vd Tube::getResAt(us varNr,us freqnr) const{
+    assert(varNr<NVARS);
+    return getResAt((varnr) varNr,freqnr);
+  }
+  vd Tube::getResAt(varnr v,us freqnr) const{
+    TRACE(10,"Tube::getResAt("<<(int)v<<","<<freqnr<<")");
     const us nCells=geom().nCells();
     // VARTRACE(15,getNDofs());
     vd res(nCells);
-    assert(varnr<getNDofs());
-    
     for(us i=0;i<nCells;i++){
-      TubeVertex* cvertex=static_cast<TubeVertex*>(vvertex[i].get());
-      switch(varnr) {
-        case 0: // Density
-          res(i)=cvertex->rho(freqnr);
-          break;
-        case 1:                 // Volume flown
-          res(i)=cvertex->U(freqnr);
-          break;
-        case 2:                   // Pressure
-          res(i)=0.5*(cvertex->pL()(freqnr)+cvertex->pR()(freqnr));
-          break;
-        case 3:                 // Temp
-          res(i)=cvertex->T()(freqnr);
-          break;
-        case 4:                 // Temp
-          res(i)=cvertex->Ts()(freqnr);
-          break;
-        default:
-          res(i)=0;
-      }
-
+      TubeVertex& cvertex=*static_cast<TubeVertex*>(vvertex[i].get());
+      res(i)=cvertex.getRes(v,freqnr);
     }
     return res;
   }

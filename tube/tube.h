@@ -9,7 +9,7 @@
 #ifndef TUBE_H_
 #define TUBE_H_
 #include "seg.h"
-
+#include "varnr.h"
 
 #include "drag.h"
 #include "heat.h"
@@ -46,15 +46,21 @@ namespace tube{
     virtual d getCurrentMass() const;	// Obtain current mass in system
     virtual void dmtotdx(vd&) const; // Derivative of current mass in
 				    // system to all dofs.
-    virtual void resetHarmonics();
+    virtual void resetHarmonics();             // Set all higher
+                                               // harmonic amplitudes
+                                               // to zero
     virtual void setRes(const SegBase& other); // To copy from a
     virtual void updateNf();    
     // *similar* segment
-    vd getResAt(us varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
-    vd getErrorAt(us varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
+    vd getResAt(us,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
+    vd getResAt(varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
+    vd getErrorAt(us eqnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
     friend class TubeVertex;
     vd Htot() const;
     vd mtot() const;
+
+    vd interpolateResMid(varnr v,d x) const; // Amplitude data vectors
+    vd interpolateResStaggered(varnr v,d x) const; // Amplitude data!!
   protected:
     void cleanup();
   private:

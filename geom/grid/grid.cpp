@@ -59,11 +59,15 @@ namespace geom{
     makex();
   }
   void Smooth(vd& x){
-    TRACE(15,"Smooth()");
+    TRACE(35,"Smooth()");
+    WARN("Make this function better!");
+    // Do something like take every odd point and put it in the middle
     us size=x.size();
     if(x.size()>1)
-      for(us i=1;i<size-1;i++)
+      for(us i=1;i<size-1;i++){
         x(i)=0.5*(x(i+1)+x(i-1));
+        i++;
+      }
   }
   void Grid::makex() {
     TRACE(15,"Grid::makex()");

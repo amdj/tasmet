@@ -15,7 +15,7 @@ namespace geom{
 
     this->i=i;
     nCells=geom.nCells();
-    vxi=geom.vx(i);
+    vx=geom.vx(i);
     // initialize distances to next node to zero
 
     SfL=geom.Sf(i);
@@ -31,8 +31,8 @@ namespace geom{
     vVf=geom.vVf(i);
     vVs=geom.vVs(i);
     vrh=geom.vrh(i);
-    xr=xR-vxi;
-    xl=vxi-xL;
+    xr=xR-vx;
+    xl=vx-xL;
     assert(xl>0); assert(xr>0);
   }
   void LocalGeom::show() const {
