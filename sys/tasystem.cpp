@@ -15,7 +15,11 @@ namespace tasystem{
     TRACE(14,"TaSystem::TaSystem(TaSystem&)");
     copyTaSystem(o);
   }
-
+  void TaSystem::setGc(const Globalconf& gc){
+    TRACE(14,"TaSystem::setGc()");
+    this->gc=gc;
+    hasInit=false;
+  }
   void TaSystem::copyTaSystem(const TaSystem& o){
     TRACE(14,"TaSystem::copyTaSystem()");
     cleanup();
@@ -171,11 +175,6 @@ namespace tasystem{
       TRACE(13,"Showing segment "<<i <<"..");
       segs[i]->show(showvertices);
     }
-  }
-  void TaSystem::setGc(const Globalconf& gc){
-    TRACE(14,"TaSystem::setGc()");
-    this->gc=gc;
-    hasInit=false;
   }
   void TaSystem::jacTriplets(TripletList& trips){
     TRACE(14,"TaSystem::jacTriplets()");

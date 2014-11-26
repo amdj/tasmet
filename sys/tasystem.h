@@ -13,7 +13,7 @@
 #define MAXNDOFS 600000
 #include <memory>
 #include "vtypes.h"
-
+#include <boost/archive/text_oarchive.hpp>
 #include "globalconf.h"
 #include "segconnection.h"
 #include "segbase.h"
@@ -42,10 +42,15 @@ namespace tasystem{
     us getNDofs() const;	// Compute DOFS in system, set     
     us getNEqs() const;    
   public:
+    TaSystem(){}
     TaSystem(const Globalconf& g);
     TaSystem(const TaSystem& o);
     TaSystem& operator=(const TaSystem& other);
     virtual ~TaSystem();
+    template <typename Archive>
+    void serialize(Archive& ar,const unsigned int version){
+      ar & gc;
+    }
     void showJac(bool force=false);
     virtual TaSystem* copy() const {return new TaSystem(*this);}
     virtual void show(us showvertices);

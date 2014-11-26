@@ -49,8 +49,7 @@ namespace tasystem{
 
     gases::Gas gas;
   public:
-    Globalconf(){}
-    Globalconf(us Nf,d freq,const string& gasstring="air",d T0=293.15,d p0=101325.0,d kappa=1.0,bool driven=true);
+    Globalconf(us Nf=0,d freq=100,const string& gasstring="air",d T0=293.15,d p0=101325.0,d kappa=1.0,bool driven=true);
     const us& Nf() const {return Nf__;}
     const us& Ns() const {return Ns__;}    
     static Globalconf airSTP(us Nf,d freq,d kappa=1.0);
