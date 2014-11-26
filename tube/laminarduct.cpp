@@ -47,7 +47,6 @@ namespace tube {
     cleanup();
   }
   void LaminarDuct::cleanup(){ Tube::cleanup();}
-
   
 } /* namespace tube */
 

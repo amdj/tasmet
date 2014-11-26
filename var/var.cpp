@@ -58,13 +58,9 @@ namespace variable {
     return *this;
   }
   var var::operator+(const var& other) const{
-    TRACE(25,"var::operator+()");
-    VARTRACE(25,this->gc__);
+    TRACE(4,"var::operator+()");
     var result(*this->gc__);
-    TRACE(25,"var::operator+()");    
     result.set(this->operator()()+other());
-
-    TRACE(25,"var::operator+()");
     return result;
   }
   var var::operator-(const var& other) const{

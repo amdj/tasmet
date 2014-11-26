@@ -18,7 +18,6 @@ namespace tube{
     resistance.set(CResistance);
     return resistance.freqMultiplyMat();
   }
-
   LaminarDragResistance::LaminarDragResistance(const Tube& t):zfd(t){
     TRACE(10,"LaminarDragResistanc::LaminarDragResistance()");
     TRACE(11,"Entering redefinition of Rottfuncs");

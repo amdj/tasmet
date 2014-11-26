@@ -24,6 +24,7 @@ namespace tube{
   {
   public:
     LaminarDragResistance(const Tube& t);
+    d fnu(us i) const;
     virtual vd drag(const TubeVertex& vertex) const;
     virtual dmat dUi(const TubeVertex&) const;		// Derivative of drag resistance to volume flow
   private:
