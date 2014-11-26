@@ -38,7 +38,7 @@ namespace tube{
     // wide tubes for arbitrary cross-sectional geometries.
     void cleanup();
     virtual ~LaminarDuct();
-    vd fnu(us freqnr=1) const;
+    virtual vd dragCoefVec(us freqnr=1) const;
   };
 
   

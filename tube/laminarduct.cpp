@@ -46,6 +46,17 @@ namespace tube {
     TRACE(15,"~LaminarDuct()");
     cleanup();
   }
+  vd LaminarDuct::dragCoefVec(us freqnr) const{
+    TRACE(15,"LaminarDuct::drag_vec()");
+    vd dragcoef(geom().nCells());
+    var drag_varcoef(gc);
+    for(us i=0;i<dragcoef.size();i++){
+      const TubeVertex& vertex=getTubeVertex(i);
+      drag_varcoef.set(laminardrag.ComplexResistancecoef(vertex));
+      dragcoef(i)=drag_varcoef(freqnr);
+    }
+    return dragcoef;
+  }
   void LaminarDuct::cleanup(){ Tube::cleanup();}
   
 } /* namespace tube */

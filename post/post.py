@@ -32,55 +32,42 @@ class nlpost(object):
 class nonlinpost(nlpost):
     def __init__(self,tube,nr=0):
         nlpost.__init__(self,tube.getFreq(),tube.getNf())
-        self.ntubes=tube.nTubes()
-        self.x=tube.getx(nr)
-        self.Sf=tube.getSf(nr)
-        self.S=tube.getS(nr)
-        self.phi=tube.getphi(nr)
-        self.rh=tube.getrh(nr)                
-
-        self.rhoi=[]
-        self.p=[]
-        self.T=[]
-        self.Ts=[]
-        self.rho=[]
-        self.U=[]
-        self.L=tube.getL(nr)
-        self.Ts.append(tube.getResVar('stemp',0,nr))
-        self.T.append(tube.getResVar('temp',0,nr))
-        self.p.append(tube.getResVar('pres',0,nr))
-        self.rho.append(tube.getResVar('rho',0,nr))
-        self.U.append(tube.getResVar('volu',0,nr))
-        #Compute Fubini solution
-        self.Htot=tube.getHtot(nr)
-        Nf=self.Nf
-        for i in range(1,Nf+1):
-            self.rho.append(tube.getResVar("rho",2*i-1,nr)+1j*tube.getResVar("rho",2*i,nr))
-            self.p.append(tube.getResVar("pres",2*i-1,nr)+1j*tube.getResVar("pres",2*i,nr))
-            self.T.append(tube.getResVar("temp",2*i-1,nr)+1j*tube.getResVar("temp",2*i,nr))
-            self.U.append(tube.getResVar("volu",2*i-1,nr)+1j*tube.getResVar("volu",2*i,nr))
-            self.Ts.append(tube.getResVar("stemp",2*i-1,nr)+1j*tube.getResVar("stemp",2*i,nr))
-        # self.iDFT[:,0]=1.
-    def getp(self,i):
-        return self.p[i]
+        self.tube=tube
+        self.nr=nr
+    def getx(self):
+        return self.tube.getx(self.nr)
+    def L(self):
+        return self.getx()[-1]
     def getSf(self):
-        return self.Sf 
+        return self.tube.getSf(self.nr)
     def getS(self):
-        return self.S
+        return self.tube.getS(self.nr)
     def getphi(self):
-        return self.phi
+        return self.tube.getphi(self.nr)
     def getrh(self):
-        return self.rh
+        return self.tube.getrh(self.nr)
+    def dragCoef(self,freqnr):
+        if(freqnr==0):
+            return self.tube.dragCoef(0,self.nr)
+        else:
+            return self.tube.dragCoef(2*freqnr-1,self.nr)+1j*self.tube.dragCoef(2*freqnr,self.nr)
+    def getvar(self,i,name):
+        if(i==0):
+            return self.tube.getResVar(name,i,self.nr)
+        else: 
+            return self.tube.getResVar(name,2*i-1,self.nr)+1j*self.tube.getResVar(name,2*i,self.nr)       
+    def getp(self,i):
+        return self.getvar(i,"pres")
     def getrho(self,i):
-        return self.rho[i]
+        return self.getvar(i,"rho")
     def getT(self,i):
-        return self.T[i]
+        return self.getvar(i,"temp")
     def getTs(self,i):
-        return self.Ts[i]
+        return self.getvar(i,"stemp")
     def getU(self,i):
-        return self.U[i]
+        return self.getvar(i,"volu")
     def getHtot(self):
-        return self.Htot            
+        return self.tube.getHtot(self.nr)
     def pressureprofile(self,pos,Nperiods=2,ns=100):
         p=[]
         for k in range(self.Nf+1):
@@ -98,10 +85,15 @@ class combinedsys:
         L=0
         self.systems=systems
         for sys in systems:
-            x=n.concatenate((x,sys.x+L))
-            L+=sys.L
+            x=n.concatenate((x,sys.getx()+L))
+            L+=sys.L()
 
         self.x=x
+    def dragCoef(self,freqnr):
+        dc=[]    
+        for sys in self.systems:
+            dc=n.concatenate((dc,sys.dragCoef(freqnr)))
+        return dc
     def getSf(self):
         Sf=[]    
         for sys in self.systems:

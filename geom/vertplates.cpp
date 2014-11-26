@@ -75,10 +75,14 @@ namespace geom{
     if(sideofremote==left)    {
       S_other=other.Sleft();
       phi_other=other.phileft();
+      WARN("rh interpolated as well!");
+      rh_other=other.rhleft();
     }
     else {
       S_other=other.Sright();
       phi_other=other.phiright();
+      WARN("rh interpolated as well!");
+      rh_other=other.rhright();
     }
   }
 
@@ -99,6 +103,15 @@ namespace geom{
     assert(i<gp());
     d percd=transition.percd_other(xi/L);
     return (1-percd)*phi_+percd*phi_other;
+  }
+  d TransitionVertPlates::rh(us i) const{
+    TRACE(5,"TransitionVertPlates::rh()");
+    d xi=x(i);
+    d L=this->L();
+    using math_common::skewsine;
+    assert(i<gp());
+    d percd=transition.percd_other(xi/L);
+    return (1-percd)*rh_+percd*rh_other;
   }
 
 

@@ -77,6 +77,7 @@ cdef extern from "tube.h" namespace "tube":
         vd getResAt(us varnr,us freqnr)
         vd getErrorAt(us eqnr,us freqnr)
         vd Htot()
+        vd dragCoefVec(us freqnr)
         
 cdef extern from "vertex.h":
     cdef cppclass Vertex:

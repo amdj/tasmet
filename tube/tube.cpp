@@ -42,6 +42,11 @@ namespace tube {
     copyTube(other);
     return *this;
   }
+  const TubeVertex& Tube::getTubeVertex(us i) const{
+    assert(vvertex.size()>0);
+    assert(i<vvertex.size());
+    return *static_cast<const TubeVertex*>(vvertex.at(i));
+  }
   void Tube::show(us showvertices) const {
     TRACE(18,"Tube::show()");
     cout << "++++++++++++Tube name: "<< getName() << " ++++++++++++++++\n";
@@ -53,6 +58,9 @@ namespace tube {
     }
     Seg::show(showvertices);
     cout << "********************************************************************************\n";
+  }
+  vd Tube::dragCoefVec(us i) const {
+    return zeros<vd>(geom().nCells());
   }
   void Tube::copyTube(const Tube& other){
     TRACE(13,"Tube::copyTube()");

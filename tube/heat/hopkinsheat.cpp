@@ -67,15 +67,17 @@ namespace tube{
     cshape(t.geom().shape()),
     rf(cshape)
   {
-    TRACE(10,"HopkinsHeatSource::HopKinsHeatSource()");
+    TRACE(10,"HopkinsHeatSource::HopKinsHeatSource(Tube)");
     setZeroFreq(cshape);
   }
   HopkinsHeatSource::HopkinsHeatSource(const HopkinsHeatSource& o){
+    TRACE(10,"HopkinsHeatSource::HopKinsHeatSource()");
     cshape=o.cshape;
     rf=RottFuncs(cshape);
     setZeroFreq(cshape);
   }
   HopkinsHeatSource& HopkinsHeatSource::operator=(const HopkinsHeatSource& o){
+    TRACE(10,"HopkinsHeatSource::operator=()");
     cshape=o.cshape;
     rf=RottFuncs(cshape);
     setZeroFreq(cshape);

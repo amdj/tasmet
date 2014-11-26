@@ -46,7 +46,7 @@ namespace geom{
   
   class TransitionVertPlates:public VertPlates{
     Transition transition;
-    d S_other,phi_other,perc;
+    d S_other,phi_other,rh_other,perc;
   public:
     TransitionVertPlates(const Grid&,d S,d phi,d y0,pos TransitionSide,\
                          const Geom& other,pos sideofremote,d perc=10,\
@@ -55,7 +55,10 @@ namespace geom{
     virtual void show() const;
     virtual ~TransitionVertPlates(){}
     virtual d S(us i) const;		 // Cross sectional area as a function of x
-    virtual d phi(us i) const;		 // Volume porosity at position of cell walls
+    virtual d phi(us i) const;		 // Volume porosity at position of
+                                     // cell walls
+    // TEST!!!!!!!!!!!!!!!!!!!
+    virtual d rh(us i) const;		 // Volume porosity at position of cell walls
   };
 
  

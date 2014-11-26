@@ -58,9 +58,10 @@ namespace tube{
     friend class TubeVertex;
     vd Htot() const;
     vd mtot() const;
-
+    const TubeVertex& getTubeVertex(us i) const;
     vd interpolateResMid(varnr v,d x) const; // Amplitude data vectors
     vd interpolateResStaggered(varnr v,d x) const; // Amplitude data!!
+    virtual vd dragCoefVec(us) const;              // return drag coefficient
   protected:
     void cleanup();
   private:

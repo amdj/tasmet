@@ -35,7 +35,7 @@ namespace geom{
   class TransitionCylindricalTube:public Geom{
     Transition transition;
     d r_,perc,S_;
-    d S_other,phi_other;
+    d S_other,phi_other,rh_other;
   public:
     TransitionCylindricalTube(const Grid& g,d r,\
                               pos TransitionSide,const Geom& other,\
@@ -45,9 +45,7 @@ namespace geom{
     virtual ~TransitionCylindricalTube(){}
     virtual d S(us i) const;
     virtual d phi(us i) const;
-    virtual d rh(us i ) const {return r_/2;}; // Indeed, we keep old
-                                              // hydraulic radius to
-                                              // do not mess up Rott functions
+    virtual d rh(us i ) const;
     virtual string shape() const { return "circ";}
     virtual Geom* copy() const {return new TransitionCylindricalTube(*this);}
     virtual void show() const;

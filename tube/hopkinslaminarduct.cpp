@@ -4,9 +4,14 @@
 #include "tubevertex.h"
 
 namespace tube{
-  HopkinsLaminarDuct::HopkinsLaminarDuct(const Geom& geom,d Tl):HopkinsLaminarDuct(geom,Tl,Tl){}
+  HopkinsLaminarDuct::HopkinsLaminarDuct(const Geom& geom,d Tl):
+    HopkinsLaminarDuct(geom,Tl,Tl){
+    TRACE(15,"HopkinsLaminarDuct::HopkinsLaminarDuct()");
+  }
 
-  HopkinsLaminarDuct::HopkinsLaminarDuct(const Geom& geom,d Tl,d Tr):LaminarDuct(geom),hopkinsheat(*this){
+  HopkinsLaminarDuct::HopkinsLaminarDuct(const Geom& geom,d Tl,d Tr):
+    LaminarDuct(geom),hopkinsheat(*this){
+    TRACE(15,"HopkinsLaminarDuct::HopkinsLaminarDuct(Geom,Tl,Tr)");
     this->Tl=Tl;
     this->Tr=Tr;
   }  
@@ -14,7 +19,10 @@ namespace tube{
 										hopkinsheat(o.hopkinsheat),
 										Tl(o.Tl),
 										Tr(o.Tr)
-  {  }
+  {
+    TRACE(15,"HopkinsLaminarDuct::HopkinsLaminarDuct(other)");
+
+  }
   HopkinsLaminarDuct& HopkinsLaminarDuct::operator=(const HopkinsLaminarDuct& o)
   {
     LaminarDuct::operator=(o);

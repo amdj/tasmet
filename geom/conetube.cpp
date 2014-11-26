@@ -37,7 +37,7 @@ namespace geom{
   TransitionCylindricalTube::TransitionCylindricalTube(const Grid& g,d r,\
                                                        pos transitionside,\
                                                        const Geom& other, \
-                                                       pos connectionsideother,\
+                                                       pos sideofremote,\
                                                        d perc,bool blapprox):
     Geom(g,blapprox),
     transition(transitionside,perc),
@@ -47,13 +47,17 @@ namespace geom{
 
     setPrismatic(false);
     S_=number_pi*pow(r,2);
-    if(connectionsideother==left)    {
+    if(sideofremote==left)    {
       S_other=other.Sleft();
       phi_other=other.phileft();
+      WARN("rh interpolated as well!");
+      rh_other=other.rhleft();
     }
     else {
       S_other=other.Sright();
       phi_other=other.phiright();
+      WARN("rh interpolated as well!");
+      rh_other=other.rhright();
     }
   } // Constructor
   d TransitionCylindricalTube::S(us i) const{
@@ -64,7 +68,6 @@ namespace geom{
     d percd=transition.percd_other(xi/L);
     return (1-percd)*S_+percd*S_other;
   }
-
   d TransitionCylindricalTube::phi(us i) const {
     TRACE(5,"TransitionCylindricalTube::phi()");
     d xi=x(i);
@@ -74,6 +77,17 @@ namespace geom{
     d percd=transition.percd_other(xi/L);
     return (1-percd)*phi_+percd*phi_other;
   }
+  d TransitionCylindricalTube::rh(us i) const {
+    TRACE(5,"TransitionCylindricalTube::rh()");
+    d xi=x(i);
+    d L=this->L();
+    assert(i<gp());
+    d rh_=r_/2;
+    d percd=transition.percd_other(xi/L);
+    return (1-percd)*rh_+percd*rh_other;
+  }
+
+
   void TransitionCylindricalTube::show() const{
     cout << "Type: TransitionCylindricalTube\n";
     cout << "Number of cells        : " << nCells() << "\n";

@@ -24,7 +24,6 @@ cdef class pytubeBase:
         return self.ntubes
     cpdef setNf(self,Nf):
         self.sol.sys().setNf(Nf)
-        
     cpdef getFreq(self):
         return self.sol[0].sys().gc.getfreq()
     cpdef setFreq(self,d freq):
@@ -35,8 +34,6 @@ cdef class pytubeBase:
         self.sol[0].stop()    
     cpdef cls(self):
         clearConsole()
-    cpdef getgp(self):
-        return self.gp
     cpdef getx(self,i=0):
         assert(i<self.ntubes)
         return dvectond(self.tube[i].geom().vx_vec())
@@ -60,7 +57,6 @@ cdef class pytubeBase:
         self.sol[0].doIter(relaxfac)
     cpdef setRes(self,res):
         self.sol[0].sys().setRes(dndtovec(res))
-
     cpdef setResPt(self, pytubeBase other):
         self.sol[0].sys().setRes(other.sol[0].sys())
     cpdef resetHarmonics(self):
@@ -76,6 +72,8 @@ cdef class pytubeBase:
         i=tubenr
         assert(i<self.ntubes)
         return dvectond(self.tube[i].Htot())
+    cpdef dragCoef(self,freqnr,tubenr=0):
+        return dvectond(self.tube[tubenr].dragCoefVec(freqnr))
     cpdef getResVar(self,_type,freqnr,tubenr=0):
     # Unfortunately, this is hard-coded
         i=tubenr
