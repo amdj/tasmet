@@ -446,7 +446,7 @@ namespace tube{
       // WE NEED TO BE SURE THAT ALL VERTICES ALREADY HAVE BEEN
       // CREATED. So we initialize the segment from here, if it has
       // not been already.
-      this->left=static_cast<const TubeVertex*>(lefttube.vvertex.at(leftnCells-1).get());
+      this->left=static_cast<const TubeVertex*>(lefttube.vvertex.at(leftnCells-1));
       const d& Lleft=left.geom().L();
       vxm1=left.geom().vx(leftnCells-1)-Lleft;
       vSfL=left.geom().vSf(leftnCells-1);
@@ -454,7 +454,7 @@ namespace tube{
     else{
       TRACE(8,"Segment " << thistube.getNumber()<< " connected with "	\
             << "head to head of segment"<< left.getNumber() << ".");
-      this->left=static_cast<const TubeVertex*>(lefttube.vvertex.at(0).get());
+      this->left=static_cast<const TubeVertex*>(lefttube.vvertex.at(0));
       vxm1=-left.geom().vx(0);
       UsignL=-1;
       vSfL=left.geom().vSf(0);	
@@ -486,13 +486,13 @@ namespace tube{
     if(right.getLeft()[0]->getNumber()==thistube.getNumber()){
       TRACE(8,"Connected current tail to right segment's head");
       //   	  d L=geom().L();
-      this->right=static_cast<const TubeVertex*>(righttube.vvertex.at(0).get());
+      this->right=static_cast<const TubeVertex*>(righttube.vvertex.at(0));
       vxp1=right.geom().vx(0)+thistube.geom().L();
       vSfR=right.geom().vSf(0);
     }
     else{
       TRACE(8,"Connected current tail to right segment's tail");
-      this->right=static_cast<const TubeVertex*>(righttube.vvertex.at(rightnCells-1).get());
+      this->right=static_cast<const TubeVertex*>(righttube.vvertex.at(rightnCells-1));
       const d& Lright=right.geom().L();
       vxp1=Lright-right.geom().vx(rightnCells-1)+thistube.geom().L();
       UsignR=-1;

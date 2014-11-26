@@ -36,7 +36,7 @@ namespace tube {
   void IsentropicTube::init(const Globalconf& gc){
     Tube::init(gc);
     for(auto vertex=vvertex.begin();vertex!=vvertex.end();vertex++){
-      TubeVertex& cvertex=*static_cast<TubeVertex*>((*vertex).get());
+      TubeVertex& cvertex=*static_cast<TubeVertex*>(*vertex);
       cvertex.setIsentropic();
     }
   }

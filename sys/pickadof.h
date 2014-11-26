@@ -4,6 +4,7 @@
 #include "vtypes.h"
 #include "tasystem.h"
 #include "seg.h"
+#include "vertex.h"
 namespace tasystem{
   SPOILNAMESPACE
   class PickADof{

@@ -32,7 +32,7 @@ namespace tube{
     Tube(const Geom& geom);
     Tube(const Tube& othertube); // Copy constructor copies everything!
     Tube& operator=(const Tube& othertube); // And again, we copy everything.
-    ~Tube();
+    virtual ~Tube();
     void show(us showvertices=0) const;
     void addBc(const TubeBcVertex& vertex);
     virtual us getNDofs() const;

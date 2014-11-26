@@ -3,19 +3,17 @@
 #define _SEG_H_
 #include "segbase.h"
 #include <memory>
-#include "vertex.h"
 
 
 namespace segment{
   SPOILNAMESPACE
-  typedef std::unique_ptr<Vertex> vertexptr;
-  
+  class Vertex;  
   class Seg:public SegBase{
   public:
     // This vector is common in each derived segment. It is controlled
     // by the derived segment as well. The segment itself does do
     // nothing with it.
-    std::vector<vertexptr> vvertex;
+    std::vector<Vertex*> vvertex;
 
   public:    
     Seg(const Geom& geom);

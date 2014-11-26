@@ -20,7 +20,6 @@
   // and a suitable equation of state should hold.
 namespace tube {
 
-  
   Tube::Tube(const Geom& geom):Seg(geom){
     // Fill vector of gridpoints with data:
     TRACE(13,"Tube constructor()...");
@@ -29,6 +28,8 @@ namespace tube {
     TRACE(13,"Tube::cleanup()");
     bcLeft.reset();
     bcRight.reset();
+    for(auto v=vvertex.begin();v!=vvertex.end();v++)
+      delete *v;
     vvertex.clear();
   }
   Tube::Tube(const Tube& other):Seg(other){
@@ -67,7 +68,7 @@ namespace tube {
     TRACE(13,"Tube::setDofNrs()");
     assert(vvertex.size()>0);
     for(auto vertex=vvertex.begin();vertex!=vvertex.end();vertex++){
-      TubeVertex& v=*static_cast<TubeVertex*>(vertex->get());
+      TubeVertex& v=*static_cast<TubeVertex*>(*vertex);
       v.setDofNrs(firstdof);
       firstdof+=v.getNDofs();
     }
@@ -76,7 +77,7 @@ namespace tube {
     TRACE(13,"Tube::setDofNrs()");
     assert(vvertex.size()>0);
     for(auto vertex=vvertex.begin();vertex!=vvertex.end();vertex++){
-      TubeVertex& v=*static_cast<TubeVertex*>(vertex->get());
+      TubeVertex& v=*static_cast<TubeVertex*>(*vertex);
       v.setEqNrs(firstdof);
       firstdof+=v.getNEqs();
     }
@@ -105,14 +106,14 @@ namespace tube {
     TRACE(10,"Tube::getNDofs()");
     us ndofs=0;
     for(auto v=vvertex.begin();v!=vvertex.end();v++)
-      ndofs+=(v->get())->getNDofs();
+      ndofs+=(*v)->getNDofs();
     return ndofs;
   }
   us Tube::getNEqs() const {
     TRACE(10,"Tube::getNEqs()");
     us ndofs=0;
     for(auto v=vvertex.begin();v!=vvertex.end();v++)
-      ndofs+=(v->get())->getNEqs();
+      ndofs+=(*v)->getNEqs();
     return ndofs;
   }  
   TubeVertex* Tube::leftTubeVertex() const{
@@ -154,10 +155,10 @@ namespace tube {
       }
       // And initialize again.
       for(us i=0;i<vvertex.size();i++){
-        TubeVertex* cvertex=static_cast<TubeVertex*>(vvertex[i].get());
+        TubeVertex* cvertex=static_cast<TubeVertex*>(vvertex[i]);
         TRACE(13,"Starting intialization of Vertex "<< i);
-        if(i<nVertex-1) cvertex->setRight(*vvertex[i+1].get());
-        if(i>0) cvertex->setLeft(*vvertex[i-1].get());
+        if(i<nVertex-1) cvertex->setRight(*vvertex[i+1]);
+        if(i>0) cvertex->setLeft(*vvertex[i-1]);
         cvertex->initTubeVertex(i,*this);
       } // for
     } // vertex.size==0
@@ -170,12 +171,14 @@ namespace tube {
     assert(vvertex.size()>0);
     d mass=0;
     for(auto vertex=vvertex.begin();vertex!=vvertex.end();vertex++){
-      TubeVertex& cvertex=*static_cast<TubeVertex*>(vertex->get());
+      TubeVertex& cvertex=*static_cast<TubeVertex*>(*vertex);
       mass+=cvertex.rho(0)*cvertex.lg.vVf;
     }
     return mass;
   }
   void Tube::updateNf(){
+    TRACE(18,"Tube::updateNf()");
+    assert(vvertex.size()>0);
     for(auto v=vvertex.begin();v!=vvertex.end();v++){
       (*v)->updateNf();
     }
@@ -190,7 +193,7 @@ namespace tube {
 
   
     for(auto v=vvertex.begin();v!=vvertex.end();v++){
-      TubeVertex& thisvertex=*static_cast<TubeVertex*>(v->get());
+      TubeVertex& thisvertex=*static_cast<TubeVertex*>(*v);
       d vx=thisvertex.lg.vx;
       d xL=thisvertex.lg.xL;
       thisvertex.rho.set(other.interpolateResMid(varnr::rho,vx));
@@ -201,7 +204,7 @@ namespace tube {
 
       if(v==(vvertex.end()-1)){
         if(bcRight){
-          TubeVertex& othervertex=*static_cast<TubeVertex*>((other.vvertex.end()-1)->get());          
+          TubeVertex& othervertex=*static_cast<TubeVertex*>(*(other.vvertex.end()-1));          
           thisvertex.setpR(othervertex.pR());
           TRACE(25,"Copying pR");          
         }
@@ -225,8 +228,8 @@ namespace tube {
     }
     VARTRACE(25,ileft);
     VARTRACE(25,iright);
-    const TubeVertex& leftvertex=*static_cast<TubeVertex*>(vvertex[ileft].get());
-    const TubeVertex& rightvertex=*static_cast<TubeVertex*>(vvertex[iright].get());
+    const TubeVertex& leftvertex=*static_cast<TubeVertex*>(vvertex[ileft]);
+    const TubeVertex& rightvertex=*static_cast<TubeVertex*>(vvertex[iright]);
     vd left=leftvertex.getRes(v)();
     vd right=rightvertex.getRes(v)();
     d xleft=leftvertex.lg.xL;
@@ -252,8 +255,8 @@ namespace tube {
     }
     VARTRACE(25,ileft);
     VARTRACE(25,iright);
-    const TubeVertex& leftvertex=*static_cast<TubeVertex*>(vvertex[ileft].get());
-    const TubeVertex& rightvertex=*static_cast<TubeVertex*>(vvertex[iright].get());
+    const TubeVertex& leftvertex=*static_cast<TubeVertex*>(vvertex[ileft]);
+    const TubeVertex& rightvertex=*static_cast<TubeVertex*>(vvertex[iright]);
     vd left=leftvertex.getRes(v)();
     vd right=rightvertex.getRes(v)();
     d xleft=leftvertex.lg.vx;
@@ -272,7 +275,7 @@ namespace tube {
     // VARTRACE(15,getNDofs());
     vd res(nCells);
     for(us i=0;i<nCells;i++){
-      TubeVertex& cvertex=*static_cast<TubeVertex*>(vvertex[i].get());
+      TubeVertex& cvertex=*static_cast<TubeVertex*>(vvertex[i]);
       res(i)=cvertex.getRes(v,freqnr);
     }
     return res;
@@ -282,14 +285,14 @@ namespace tube {
     vd er(nCells,fillwith::zeros);
     assert(eqnr<getNDofs());
     for(us i=0;i<nCells;i++){
-      TubeVertex& cvertex=*static_cast<TubeVertex*>(vvertex[i].get());
+      TubeVertex& cvertex=*static_cast<TubeVertex*>(vvertex[i]);
       er(i)=(cvertex.eqs.at(eqnr)->error(cvertex))(freqnr);
     }
     return er;
   }
   void Tube::resetHarmonics(){
     for(auto v=vvertex.begin();v!=vvertex.end();v++){
-      auto &cvertex=*static_cast<TubeVertex*>(v->get());
+      auto &cvertex=*static_cast<TubeVertex*>(*v);
       cvertex.resetHarmonics();
     }
   }
@@ -298,7 +301,7 @@ namespace tube {
     us nvertex=vvertex.size(),Neq;
     us rhodof;
     for(auto v=vvertex.begin();v!=vvertex.end();v++){
-      auto &cvertex=*static_cast<TubeVertex*>(v->get());
+      auto &cvertex=*static_cast<TubeVertex*>(*v);
       rhodof=cvertex.rho.getDofNr();
       dmtotdx_(rhodof)=cvertex.lg.vVf;
     }
@@ -310,7 +313,7 @@ namespace tube {
     us nvertex=vvertex.size();
     vd Htot(nvertex);
     for(us i=0;i<nvertex;i++){
-      auto &cvertex=*static_cast<TubeVertex*>(vvertex.at(i).get());
+      auto &cvertex=*static_cast<TubeVertex*>(vvertex.at(i));
       Htot(i)=cvertex.e.Htot(cvertex);
     }
     return Htot;

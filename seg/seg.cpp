@@ -1,5 +1,5 @@
 #include "seg.h"
-
+#include "vertex.h"
 namespace segment{
    
 
