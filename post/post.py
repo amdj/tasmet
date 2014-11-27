@@ -82,13 +82,16 @@ class nonlinpost(nlpost):
 class combinedsys:
     def __init__(self,systems):
         x=[]
-        L=0
         self.systems=systems
-        for sys in systems:
+    def getx(self):
+        x=[]
+        L=0
+        for sys in self.systems:
             x=n.concatenate((x,sys.getx()+L))
             L+=sys.L()
-
         self.x=x
+        return x
+        
     def dragCoef(self,freqnr):
         dc=[]    
         for sys in self.systems:
@@ -120,11 +123,8 @@ class combinedsys:
         for sys in self.systems:
             p=n.concatenate((p,sys.getp(i)))
         return p
-    def getp(self,i):
-        p=[]
-        for sys in self.systems:
-            p=n.concatenate((p,sys.getp(i)))
-        return p
+    def Edot(self,i):
+        return (0.5*self.getp(i)*self.getU(i).conjugate()).real
     def getrho(self,i):
         rho=[]
         for sys in self.systems:

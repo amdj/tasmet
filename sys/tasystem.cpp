@@ -258,6 +258,7 @@ namespace tasystem{
     for(us i=0;i<nsegs;i++) {
       getSeg(i)->setRes(*other.getSeg(i));
     }
+    gc=other.gc;
     
   }
   void TaSystem::resetHarmonics(){
