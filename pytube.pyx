@@ -28,7 +28,7 @@ cdef class pytubeBase:
         return self.sol[0].sys().gc.getfreq()
     cpdef setFreq(self,d freq):
         self.sol[0].sys().gc.setfreq(freq)
-    cpdef solve(self,us maxiter=100,d mindampfac=1.0e-2,d maxdampfac=1.0,d funtol=1e-9,d reltol=1e-6,wait=True):
+    cpdef solve(self,us maxiter=4000,d mindampfac=0.1,d maxdampfac=1.0,d funtol=1e-9,d reltol=1e-6,wait=True):
         self.sol[0].solve(maxiter,funtol,reltol,mindampfac,maxdampfac,wait)
     cpdef stop(self):
         self.sol[0].stop()    

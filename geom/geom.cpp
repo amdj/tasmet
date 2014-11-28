@@ -65,8 +65,8 @@ namespace geom{
   }
   
   vd Geom::vx_vec() const{
-    TRACE(30,"Geom::vx_vec()");
-    VARTRACE(30,nCells());
+    TRACE(10,"Geom::vx_vec()");
+    VARTRACE(5,nCells());
     vd vx(nCells());
     for(us i=0;i<nCells();i++)
       vx(i)=this->vx(i);
