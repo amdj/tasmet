@@ -23,18 +23,24 @@ class Particle(object):
             
         
 class ParticleTracker(object):
-    def __init__(self,n_particles,sys,steps=50,nperiods=50):
+    def __init__(self,n_particles,sys,steps=50,nperiods=1):
         self.particles=[]
+        self.sys=sys
         self.L=sys.getx()[-1]
         self.freq=sys.getFreq()
+        dx=self.L/(n_particles)
+        x=dx/2.
         for i in range(n_particles):
-            self.particles.append(Particle(i/(n_particles-1)*self.L,self.freq,steps,nperiods))
-
-    def getpos(self):
+            self.particles.append(Particle(x,self.freq,steps,nperiods))
+            print("Integrating particle %g..." %i)
+            self.particles[i].integrate(self.u)
+            x+=dx
+        self.t=self.particles[0].t
+    def getpos(self,ti=0):
         pos=np.zeros(len(self.particles))
         for i,particle in enumerate(self.particles):
-            pos[i]=particle.pos[0]
+            pos[i]=particle.pos[ti]
         return pos
             
-    def u(t,x):
-        return sys.quantityAtTimeAndPlaceInterp(t,x,"velo")
+    def u(self,t,x):
+        return self.sys.quantityAtTimeAndPlaceInterp(t,x,"velo")

@@ -1,7 +1,8 @@
 #!/usr/bin/python
 
 import numpy as n
-
+from scipy.interpolate import interp1d
+ 
 class nlpost(object):
     def __init__(self,freq,Nf):
         self.Nf=Nf
@@ -50,6 +51,7 @@ class nonlinpost(nlpost):
         return self.tube.getphi(self.nr)
     def getrh(self):
         return self.tube.getrh(self.nr)
+
     def dragCoef(self,freqnr):
         if(freqnr==0):
             return self.tube.dragCoef(0,self.nr)
@@ -84,8 +86,6 @@ class nonlinpost(nlpost):
         return (t,pt)
                 
                 
-    
-    
 class combinedsys:
     def __init__(self,segs):
         self.segs=segs
@@ -107,61 +107,44 @@ class combinedsys:
     def getFreq(self):
         return self.segs[0].getFreq()
     def quantityAtTimeAndPlaceInterp(self,t,x,quant="pres"):
-        self.getx()
-        assert(x>0 and x<self.L())
-        iR=0
-        while self.x[iR]<x:
-            iR+=1
-        iL=iR-1
-        xL=self.x[iL]
-        xR=self.x[iR]        
-        relL=(x-xL)/(xR-xL)
-        return self.quantityAtTimeAndPlace(t,iL,quant)*relL+(1-relL)*self.quantityAtTimeAndPlace(t,iR,quant)            
-        
-    def quantityAtTimeAndPlace(self,t,i,quant="pres"):
-
-        timeval=0.0
+        u=self.quantityAtTime(t,quant)
+        f=interp1d(self.getx(),u)
+        return f(x)
+    def quantityAtTime(self,t,quant="pres"):
+        fouriercoefs=self.fouriercoefs(quant)
+        result=n.zeros(self.getx().size)
         omg=2*n.pi*self.getFreq()
-        for j in range(self.getNf()+1):
-            timeval+=(fouriercoefs[j]*n.exp(j*1j*omg*t)).real
-        return timeval
+        for freqnr in range(self.getNf()+1):
+            result+=(fouriercoefs[freqnr]*n.exp(1j*freqnr*omg*t)).real
+        return result
 
     def fouriercoefs(self,quant):
         if quant=="pres":
             try:
                 return self.prescoefs
-            else:
-                self.prescoefs=fouriercoefs(quant)
+            except:
+                self.prescoefs=self.getfouriercoefs(quant)
                 return self.prescoefs
         elif quant=="velo":
             try:
                 return self.velocoefs
-            else:
-                self.velocoefs=fouriercoefs(quant)
+            except:
+                self.velocoefs=self.getfouriercoefs(quant)
                 return self.velocoefs
         elif quant=="volu":
             try:
                 return self.volucoefs
-            else:
-                self.volucoefs=fouriercoefs(quant)
+            except:
+                self.volucoefs=self.getfouriercoefs(quant)
                 return self.volucoefs
         
             
     def getfouriercoefs(self,quant):
         fouriercoefs=[]
         for freqnr in range(self.getNf()+1):
-            fouriercoefs.append(self.getvar(freqnr,quant)[i])
+            fouriercoefs.append(self.getvar(freqnr,quant))
         return fouriercoefs
 
-    def quantityAtTime(self,t,quant="pres"):
-        fouriercoefs=[]
-        result=n.zeros(self.getx().size)
-        omg=2*n.pi*self.getFreq()
-        for freqnr in range(self.getNf()+1):
-            fouriercoefs.append(self.getvar(freqnr,quant))
-        for freqnr in range(self.getNf()+1):
-            result+=(fouriercoefs[freqnr]*n.exp(1j*freqnr*omg*t)).real
-        return result
     def dragCoef(self,freqnr):
         dc=[]    
         for seg in self.segs:
@@ -170,6 +153,8 @@ class combinedsys:
     def getvar(self,freqnr,name="pres"):
         if name=="volu":
             return self.getU(freqnr)
+        elif name=="velo":
+            return self.getu(freqnr)
         var=[]
         for seg in self.segs:
             var=n.concatenate((var,seg.getvar(freqnr,name)))
@@ -224,7 +209,6 @@ class combinedsys:
         try:
             return self.U[i]
         except:
-            print("Making first U")
             self.U=[]
             for i in range(self.getNf()+1):
                 self.U.append([])
@@ -232,3 +216,11 @@ class combinedsys:
                     self.U[i]=n.concatenate((self.U[i],seg.getU(i)))
         return self.U[i]
     def getu(self,i):
+        try:
+            return self.u[i]
+        except:
+            self.u=[]
+            for i in range(self.getNf()+1):
+                self.u.append(self.getU(i)/self.getSf())
+            return self.u[i]
+

@@ -214,28 +214,28 @@ namespace tube {
         if(bcRight){
           TubeVertex& othervertex=*static_cast<TubeVertex*>(*(other.vvertex.end()-1));          
           thisvertex.setpR(othervertex.pR());
-          TRACE(25,"Copying pR");          
+          TRACE(5,"Copying pR");          
         }
       }
     } // for
 
   }
   vd Tube::interpolateResStaggered(varnr v,d x) const{
-    TRACE(20,"Tube::interpolateResStaggered("<<v<<","<<x<<")");
+    TRACE(2,"Tube::interpolateResStaggered("<<v<<","<<x<<")");
     us leftpos=0;
     assert(x>=0);
     us iright=0,ileft;
     while(geom().x(iright)<=x && iright<geom().nCells()-1)
       iright++;
-    VARTRACE(25,iright);
+    VARTRACE(5,iright);
     if(iright>0)
       ileft=iright-1;
     else{
       ileft=0;
       iright=1;
     }
-    VARTRACE(25,ileft);
-    VARTRACE(25,iright);
+    VARTRACE(2,ileft);
+    VARTRACE(2,iright);
     const TubeVertex& leftvertex=*static_cast<TubeVertex*>(vvertex[ileft]);
     const TubeVertex& rightvertex=*static_cast<TubeVertex*>(vvertex[iright]);
     vd left=leftvertex.getRes(v)();
@@ -243,26 +243,26 @@ namespace tube {
     d xleft=leftvertex.lg.xL;
     d xright=rightvertex.lg.xL;
     d relpos=(x-xleft)/(xright-xleft);
-    VARTRACE(25,relpos);
+    VARTRACE(5,relpos);
     return math_common::linearInterpolate(left,right,relpos);
   }
 
   vd Tube::interpolateResMid(varnr v,d x) const{
-    TRACE(20,"Tube::interpolateResMid("<<v<<","<<x<<")");
+    TRACE(2,"Tube::interpolateResMid("<<v<<","<<x<<")");
     us leftpos=0;
     assert(x>=0);
     us iright=0,ileft;
     while(geom().vx(iright)<=x && iright<geom().nCells()-1)
       iright++;
-    VARTRACE(25,iright);
+    VARTRACE(5,iright);
     if(iright>0)
       ileft=iright-1;
     else{
       ileft=0;
       iright=1;
     }
-    VARTRACE(25,ileft);
-    VARTRACE(25,iright);
+    VARTRACE(2,ileft);
+    VARTRACE(2,iright);
     const TubeVertex& leftvertex=*static_cast<TubeVertex*>(vvertex[ileft]);
     const TubeVertex& rightvertex=*static_cast<TubeVertex*>(vvertex[iright]);
     vd left=leftvertex.getRes(v)();
@@ -270,7 +270,7 @@ namespace tube {
     d xleft=leftvertex.lg.vx;
     d xright=rightvertex.lg.vx;
     d relpos=(x-xleft)/(xright-xleft);
-    VARTRACE(25,relpos);
+    VARTRACE(5,relpos);
     return math_common::linearInterpolate(left,right,relpos);
   }
   vd Tube::getResAt(us varNr,us freqnr) const{
