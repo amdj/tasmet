@@ -3,7 +3,7 @@
 #define _LOCALGEOM_H_
 #include "vtypes.h"
 
-namespace geom {
+namespace tube {
   SPOILNAMESPACE
 
   class Geom;
@@ -46,6 +46,6 @@ namespace geom {
   };				// class LocalGeom
 
   
-} // namespace geom
+} // namespace tube
 
 #endif /* _LOCALGEOM_H_ */

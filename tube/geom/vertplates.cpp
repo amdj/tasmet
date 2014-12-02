@@ -5,7 +5,7 @@
 #include "bessel.h"
 #include "skewsine.h"
 
-namespace geom{
+namespace tube{
 
   VertPlates::VertPlates(const Grid& g,d S,d phi,d y0,bool blapprox):
     Geom(g,blapprox,true),
@@ -115,7 +115,7 @@ namespace geom{
   }
 
 
-} // namespace geom
+} // namespace tube
 
 
 

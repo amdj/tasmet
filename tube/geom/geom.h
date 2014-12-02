@@ -7,7 +7,7 @@
 #include "grid.h"
 
 
-namespace geom {
+namespace tube {
   SPOILNAMESPACE;
 
   enum pos{left=0,right=1};
@@ -78,6 +78,6 @@ namespace geom {
   
 
   
-} // namespace geom
+} // namespace tube
 
 #endif /* _GEOM_H_ */

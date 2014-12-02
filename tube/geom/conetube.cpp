@@ -1,7 +1,7 @@
 #include "conetube.h"
 
 
-namespace geom{
+namespace tube{
 
   ConeTube::ConeTube(const Grid& g,d r1,d r2,bool blapprox):Geom(g,blapprox),rL(r1),rR(r2){
     TRACE(15,"ConeTube::ConeTube()");
@@ -105,6 +105,6 @@ namespace geom{
 
 
 
-} // namespace geom
+} // namespace tube
 
 

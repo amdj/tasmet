@@ -8,12 +8,12 @@
 
 
 
-namespace geom{class Geom;}
+
 namespace tube{
   SPOILNAMESPACE
   class TubeVertex;
   class Tube;
-  using geom::Geom;
+  class Geom;
   
   class HopkinsHeatSource:public HeatSource{
     string cshape;

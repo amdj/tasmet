@@ -4,7 +4,10 @@
 #include "vtypes.h"
 #include "tasystem.h"
 #include "seg.h"
-#include "vertex.h"
+#include "tubevertex.h"
+
+using segment::Seg;
+
 namespace tasystem{
   SPOILNAMESPACE
   class PickADof{
@@ -21,6 +24,9 @@ namespace tasystem{
     d value(const TaSystem& sys) const {
       TRACE(15,"PickADof::error()");
       us Ns=sys.gc.Ns();
+      i=0;
+      while()
+      Seg* seg=sys.getSeg()[i];
       return static_cast<segment::Seg*>(sys.getSeg(segnr))->vvertex.at(vertexnr)->getRes()(varnr*Ns+freqnr);
     }
     us dofnr(const TaSystem& sys) const {

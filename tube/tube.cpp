@@ -9,6 +9,9 @@
 #include "tube.h"
 #include "tubebcvertex.h"
 #include "interpolate.h"
+#include "globalconf.h"
+#include "geom.h"
+
 // Tried to keep the method definition a bit in order in which a
   // tube is created, including all its components. First a tube is
   // created, which has a geometry and a global
@@ -18,60 +21,25 @@
   // solution. Moreover, we have equations in each gridpoint. More
   // precisely, in the final solution the continuity, momentum, energy
   // and a suitable equation of state should hold.
+using tasystem::Globalconf;
+using tasystem::Jacobian;
+
 namespace tube {
 
-  Tube::Tube(const Geom& geom):Seg(geom){
-    // Fill vector of gridpoints with data:
+  Tube::Tube(const Geom& geom):Seg(),geom_(geom.copy()){
     TRACE(13,"Tube constructor()...");
   }
-  void Tube::cleanup(){
-    TRACE(13,"Tube::cleanup()");
-    bcLeft.reset();
-    bcRight.reset();
-    for(auto v=vvertex.begin();v!=vvertex.end();v++)
-      delete *v;
-    vvertex.clear();
-  }
-  Tube::Tube(const Tube& other):Seg(other){
-    copyTube(other);
-  }
-  Tube& Tube::operator=(const Tube& other){
-    TRACE(13,"Tube copy assignment");
-    cleanup();
-    Seg::operator=(other);
-    copyTube(other);
-    return *this;
-  }
+  Tube::Tube(const Tube& other):Seg(other){}
   const TubeVertex& Tube::getTubeVertex(us i) const{
     assert(vvertex.size()>0);
     assert(i<vvertex.size());
     return *static_cast<const TubeVertex*>(vvertex.at(i));
   }
-  void Tube::show(us showvertices) const {
-    TRACE(18,"Tube::show()");
-    cout << "++++++++++++Tube name: "<< getName() << " ++++++++++++++++\n";
-    if(bcLeft){
-      cout << "Left side contains internal boundary condition of type " << bcLeft->getType() << ".\n";
-    }
-    if(bcRight){
-      cout << "Right side contains internal boundary condition of type " << bcRight->getType() << ".\n";
-    }
-    Seg::show(showvertices);
-    cout << "********************************************************************************\n";
-  }
   vd Tube::dragCoefVec(us i) const {
     return zeros<vd>(geom().nCells());
   }
-  void Tube::copyTube(const Tube& other){
-    TRACE(13,"Tube::copyTube()");
-    cleanup();
-    if(other.bcLeft){
-      TRACE(12,"Other has bc connected left side");
-      bcLeft.reset(other.bcLeft->copy());
-    }
-    if(other.bcRight)
-      bcRight.reset(other.bcRight->copy());
-  }
+  us Tube::getNCells() const {return geom().nCells();}
+  const Geom& Tube::geom() const {return *geom_;}
   void Tube::setDofNrs(us firstdof){
     TRACE(13,"Tube::setDofNrs()");
     assert(vvertex.size()>0);
@@ -91,25 +59,6 @@ namespace tube {
     }
   }
   
-  void Tube::addBc(const TubeBcVertex& bc){
-    TRACE(14,"Tube::addBc(bc)");
-    if(bc.connectPos()==connectpos::left)
-      {
-	TRACE(12,"Bc connected left side");
-	bcLeft.reset(bc.copy());
-	if(bcLeft)
-	  TRACE(12,"bcLeft is now "<< bool(bcLeft));
-      }
-    else if(bc.connectPos()==connectpos::right)
-      {
-	TRACE(12,"Bc connected right side");
-	bcRight.reset(bc.copy());
-      }
-    else
-      {      
-	cout << "WARNING: bconnectbc(): Bc  not understood!\n";
-      }
-  }
   us Tube::getNDofs() const {
     TRACE(10,"Tube::getNDofs()");
     us ndofs=0;
@@ -124,24 +73,6 @@ namespace tube {
       ndofs+=(*v)->getNEqs();
     return ndofs;
   }  
-  TubeVertex* Tube::leftTubeVertex() const{
-    TRACE(13,"Tube::leftTubeVertex()");
-    if(bcLeft){
-      TRACE(13,"Tube::leftTubeVertex() returning a boundary vertex");
-      return static_cast<TubeVertex*>(bcLeft->copy());
-    }
-    else{
-      TRACE(13,"Tube::leftTubeVertex() returning an ordinary vertex");
-      return new TubeVertex();
-    }
-  }
-  TubeVertex* Tube::rightTubeVertex() const{
-    if(bcRight)
-      return static_cast<TubeVertex*>(bcRight->copy());
-    else
-      return new TubeVertex();
-  }
-
 
   void Tube::init(const tasystem::Globalconf& g){
     TRACE(13,"Tube::Init()");
@@ -150,7 +81,7 @@ namespace tube {
       TRACE(13,"Filling vertices. Current size:"<<vvertex.size());
       // Left *probable* boundary condition
       vvertex.emplace_back(leftTubeVertex());
-      for(us i=1;i<geom().nCells()-1;i++)
+      for(us i=1;i<getNCells()-1;i++)
     	vvertex.emplace_back(new TubeVertex());
       // Right *probable* boundary condition
       vvertex.emplace_back(rightTubeVertex());
@@ -159,21 +90,24 @@ namespace tube {
       assert(nVertex==geom().nCells());
 
       for(us i=0;i<vvertex.size();i++){
-        vvertex.at(i)->initVertex(i,*this);
+        vvertex.at(i)->init(i,*this);
       }
       // And initialize again.
       for(us i=0;i<vvertex.size();i++){
-        TubeVertex* cvertex=static_cast<TubeVertex*>(vvertex[i]);
+        TubeVertex* cvertex=vvertex[i];
         TRACE(13,"Starting intialization of Vertex "<< i);
         if(i<nVertex-1) cvertex->setRight(*vvertex[i+1]);
         if(i>0) cvertex->setLeft(*vvertex[i-1]);
-        cvertex->initTubeVertex(i,*this);
+        cvertex->init(i,*this);
       } // for
     } // vertex.size==0
     else{
       TRACE(13,"Tube already initialized!");
     }
   } // Tube::init(gc)
+  d Tube::getRes(us dofnr) const {
+    WARN("Not yet implemented!");
+  }
   d Tube::getCurrentMass() const{
     TRACE(8,"Tube::getCurrentMass()");
     assert(vvertex.size()>0);
@@ -326,13 +260,109 @@ namespace tube {
     }
     return Htot;
   }
+  const TubeVertex& operator[](us i) const{
+    if(!isInit()){
+      WARN("Tube not initialized!");
+      abort();
+    }
+    assert(i<vvertex.size());
+    return *vvertex[i];
+  }
+
+  void Tube::show(us showvertices) const {
+    cout << "++++++++++++Tube name: "<< getName() << " ++++++++++++++++\n";
+    cout << "Type: " << getType() <<" with number "<<getNumber()<< ".\n";
+    show(showvertices);
+    cout << "********************************************************************************\n";
+    cout << "Geometry: \n";
+    assert(vvertex.size()!=0);
+    geom().show();
+    if(showVertices==1)
+      this->showVertices();
+  }
+  void Tube::showVertices() const {
+    for(us i=0;i<vvertex.size();i++)
+      vvertex[i]->show();
+  }
+  void Tube::jac(Jacobian& tofill) const{			// Return Jacobian matrix of error operator
+    // sdmat Tube::Jac(){			// Return Jacobian matrix of error operator    
+    TRACE(8," Tube::Jac() for Tubement "<< getNumber() << ".");
+    const us& Ns=gc->Ns();
+    us nVertex=vvertex.size();
+
+    for(us j=0;j<nVertex;j++){			   // Fill the Jacobian
+      TRACE(3,"Obtaining vertex Jacobian...");
+      vvertex.at(j)->jac(tofill);
+    }	// end for
+    // cout <<"Segment" << getNumber() <<" Jacobian done. Jac is:\n"<< Jacobian;
+    // cout << "Number of colums in this jacobian" << Jacobian.n_cols<<"\n";
+    TRACE(8,"Tubement Jacobian done.");
+  }
+  vd Tube::getRes() const {
+    TRACE(8,"Tube::GetRes()");
+    assert(vvertex.size()!=0);
+    assert(gc!=NULL);
+    vd Result(getNDofs(),fillwith::zeros);
+    us nVertex=vvertex.size();    
+    us Ns=gc->Ns();
+    us vndofs,curpos=0;
+    for(us k=0; k<nVertex;k++) {
+      vndofs=vvertex.at(k)->getNDofs();
+      Result.subvec(curpos,curpos+vndofs-1)=vvertex[k]->getRes();
+      curpos+=vndofs;
+    }
+    return Result;
+  }
+
+  vd Tube::error() const{
+    TRACE(8,"Tube::Error()");
+    assert(vvertex.size()!=0);
+    assert(gc!=NULL);
+    vd error(getNEqs(),fillwith::zeros);
+    us nVertex=vvertex.size();    
+    us Ns=gc->Ns();
+    us vneqs,curpos=0;
+
+    for(us k=0; k<nVertex;k++) {
+      vneqs=vvertex.at(k)->getNEqs();
+      error.subvec(curpos,curpos+vneqs-1)=vvertex[k]->error();
+      curpos+=vneqs;
+    }
+    TRACE(10,"Filling error for seg nr " << getNumber() << " done." );
+    return error;
+  }
+  void Tube::domg(vd& domg_v) const{
+    TRACE(8,"Tube::Error()");
+    const us& Ns=gc->Ns();
+    us nVertex=vvertex.size();    
+    // vd domg(getNDofs(),fillwith::zeros);
+    us vndofs,curpos=0;
+    for(us k=0; k<nVertex;k++) {
+      vvertex[k]->domg(domg_v);
+    }
+  }
+
+  void Tube::setRes(vd res){
+    TRACE(8,"Tube::SetRes()");
+    assert(res.size()==getNDofs());
+    // const us& Neq=(vvertex[0]).Neq;
+    const us& Ns=gc->Ns();
+    us vertexdofs;
+    us firstdof=0;
+    for(us k=0; k<vvertex.size();k++) {
+      vertexdofs=vvertex.at(k)->getNDofs();
+      vvertex.at(k)->setRes(res.subvec(firstdof,firstdof+vertexdofs-1));
+      firstdof+=vertexdofs;
+    }
+  }
   
   Tube::~Tube(){
     TRACE(15,"~Tube()");
-    cleanup();
+    delete geom_;
+    for(auto v=vvertex.begin();v!=vvertex.end();v++)
+      delete *v;
+    vvertex.clear();
   }
-  
-
   
 } /* namespace tube */
 

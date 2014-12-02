@@ -2,7 +2,7 @@
 #include "geom.h"
 #include "assert.h"
 
-namespace geom{
+namespace tube{
 
   LocalGeom Geom::localGeom(us i) const{
     assert(i<nCells());
@@ -46,6 +46,6 @@ namespace geom{
     cout <<"xr    :" << xr<<"\n";
 
   }
-} // namespace segment
+} // namespace tube
 
 

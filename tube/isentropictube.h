@@ -15,22 +15,19 @@
 namespace tube{
   SPOILNAMESPACE
 
-  using namespace segment;
-
   class IsentropicTube:public Tube
   {
     DragResistance nodrag;
     HeatSource noheat;
-    
+    IsentropicTube& operator=(const IsentropicTube&);    
   public:
     IsentropicTube(const Geom& geom);
     IsentropicTube(const IsentropicTube&);
-    IsentropicTube& operator=(const IsentropicTube&);
     virtual const DragResistance& getDragResistance() const {return nodrag;}
     virtual const HeatSource& getHeatSource() const {return noheat;}
     virtual string getName() const {return string("IsentropicTube");}
-    virtual SegBase* copy() const {TRACE(10,"IsentropicTube copy()");return new IsentropicTube(*this);}
-    virtual void init(const Globalconf&);
+    virtual segment::Seg* copy() const {TRACE(10,"IsentropicTube copy()");return new IsentropicTube(*this);}
+    virtual void init(const tasystem::Globalconf&);
     void cleanup();
     virtual ~IsentropicTube();
   };

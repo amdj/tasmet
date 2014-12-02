@@ -15,20 +15,25 @@ AUX_SOURCE_DIRECTORY(tube tubesources)
 AUX_SOURCE_DIRECTORY(var varsources)
 AUX_SOURCE_DIRECTORY(seg segsources)
 AUX_SOURCE_DIRECTORy(sys syssources)
-AUX_SOURCE_DIRECTORy(geom geomsources)
-AUX_SOURCE_DIRECTORy(geom/grid gridsources)
+AUX_SOURCE_DIRECTORy(tube/geom/grid gridsources)
 AUX_SOURCE_DIRECTORy(sol solsources)
 AUX_SOURCE_DIRECTORy(gui guisources)
 
 AUX_SOURCE_DIRECTORy(tube/eq tubeeq)
+AUX_SOURCE_DIRECTORy(tube/geom geomsources)
 AUX_SOURCE_DIRECTORy(tube/drag tubedrag)
 AUX_SOURCE_DIRECTORy(tube/heat tubeheat)
 AUX_SOURCE_DIRECTORy(tube/bc tubebc)
 AUX_SOURCE_DIRECTORy(common commonsources)
-set (nonlinear_SRC ${tubesources} ${varsources} ${segsources}
-  ${syssources}  ${geomsources} ${solsources}
+# set (nonlinear_SRC ${tubesources} ${varsources} ${segsources}
+#   ${syssources}  ${geomsources} ${solsources}
+#   ${varsources} ${commonsources}
+#   ${tubeeq} ${tubeheat} ${tubebc} ${tubedrag} ${gridsources}
+#   )
+set (nonlinear_SRC ${varsources} ${segsources}
+  ${geomsources} 
   ${varsources} ${commonsources}
-  ${tubeeq} ${tubeheat} ${tubebc} ${tubedrag} ${gridsources}
+  ${gridsources}
   )
 
 # ${tubedrag}
@@ -48,8 +53,8 @@ include_directories(
   ../common/solid
   ../common/rottfuncs
   models
-  geom
-  geom/grid
+  tube/geom
+  tube/geom/grid
   tube/drag
   tube/bc
   tube/eq

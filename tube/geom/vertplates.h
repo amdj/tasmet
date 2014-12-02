@@ -11,7 +11,7 @@ inline double max(double x,double y)  {
 }
 
 
-namespace geom{
+namespace tube{
   const int FIRST=0;
   const int LAST=1;
   // Smooth geometries of segments together. The percentage is a
@@ -63,6 +63,6 @@ namespace geom{
 
  
 
-} // namespace segment
+} // namespace tube
 
 #endif /* _GEOMHELPERS_H_ */

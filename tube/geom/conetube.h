@@ -4,7 +4,7 @@
 
 #include "geom.h"
 #include "vertplates.h"
-namespace geom{
+namespace tube{
 
 
  class ConeTube: public Geom{
@@ -53,7 +53,7 @@ namespace geom{
   };
 
 
-} // namespace geom
+} // namespace tube
 
 
 #endif /* _CONETUBE_H_ */

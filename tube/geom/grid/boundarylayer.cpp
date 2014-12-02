@@ -3,7 +3,7 @@
 #include "grid.h"
 #include <cassert>
 
-namespace geom{
+namespace tube{
 
   class err_alpha{
   public:
@@ -67,6 +67,6 @@ namespace geom{
     VARTRACE(35,n);
   }
 
-} // namespace geom
+} // namespace tube
 
 

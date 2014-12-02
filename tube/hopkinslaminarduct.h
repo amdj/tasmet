@@ -18,15 +18,15 @@ namespace tube{
     d Tl,Tr;
     vd dTwdx;
     bool Tset=false;
+    HopkinsLaminarDuct& operator=(const HopkinsLaminarDuct&);
   public:
     vd Tmirror;
     HopkinsLaminarDuct(const Geom& geom,d Tl);
     HopkinsLaminarDuct(const Geom& geom,d Tl,d Tr);
     HopkinsLaminarDuct(const HopkinsLaminarDuct& o);
-    HopkinsLaminarDuct& operator=(const HopkinsLaminarDuct&);
-    virtual void init(const Globalconf& gc);
+    virtual void init(const tasystem::Globalconf& gc);
     virtual const HeatSource& getHeatSource() const { return hopkinsheat;}
-    virtual SegBase* copy() const{return new HopkinsLaminarDuct(*this);}
+    virtual segment::Seg* copy() const{return new HopkinsLaminarDuct(*this);}
     virtual string getName() const {return string("HopkinsLaminarDuct");}
   };
 

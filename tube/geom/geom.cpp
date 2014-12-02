@@ -2,7 +2,7 @@
 #include "grid.h"
 #include <assert.h>
 
-namespace geom{
+namespace tube{
 
   
   Geom::Geom(const Grid& grid,bool blapprox,bool prismatic):
@@ -98,7 +98,7 @@ namespace geom{
   }
 
 
-} // namespace geom
+} // namespace tube
 
 
 

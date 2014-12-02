@@ -2,7 +2,7 @@
 #include "boundarylayer.h"
 #define MAXGP 50000
 
-namespace geom{
+namespace tube{
 
   void testgp(us gp){
     if(gp<4 || gp >MAXGP)
@@ -138,4 +138,4 @@ namespace geom{
     x=newx;
   }
 
-} // namespace geom
+} // namespace tube

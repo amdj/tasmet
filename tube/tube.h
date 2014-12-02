@@ -15,38 +15,39 @@
 #include "heat.h"
 
 
+namespace tasystem{
+  class Globalconf;
+  class Jacobian;
+}
 namespace tube{
   SPOILNAMESPACE
-  using namespace segment;
-  class TubeBcVertex;
   class DragResistance;
   class HeatSource;
-  
-  class Tube:public Seg {
-    std::vector<TubeVertex*> vvertex;
+  class TubeBcVertex;
+  class Geom;
+
+  class Tube:public segment::Seg {
     void showVertices() const ;   
-     Geom* geom_;			// The geometry    
+    Geom* geom_;			// The geometry    
+    Tube& operator=(const Tube&); // no copies allowed
+  protected:
+    std::vector<TubeVertex*> vvertex;
   public:
-      
     Tube(const Geom& geom);
-    Tube(const Tube& othertube); // Copy constructor copies everything!
-    Tube& operator=(const Tube& othertube); // And again, we copy
-                                            // everything.
-    us getNCells() const {return geom().nCells();}
+    Tube(const Tube& other); // Copy constructor copies everything!
+    us getNCells() const;
 						   // to some segment
 						   // on right side
-
+    virtual void init(const tasystem::Globalconf& gc);
     virtual ~Tube();
     void show(us showvertices=0) const;
-    void addBc(const TubeBcVertex& vertex);
+    const Geom& geom() const;
     virtual us getNDofs() const;
     virtual us getNEqs() const;    
-    virtual void init(const tasystem::Globalconf&);			   // Initializer method. Different for each segment type
     us getNVertex() const {return vvertex.size();}    
     virtual const DragResistance& getDragResistance() const=0;
     virtual const HeatSource& getHeatSource() const=0;
-    virtual string getType() const final {return string("Tube");}
-    virtual void init(const Globalconf& gc);
+    virtual string getType() const final {return "Tube";}
     virtual void setDofNrs(us firstdofnr);
     virtual void setEqNrs(us firstdofnr);    
     virtual d getCurrentMass() const;	// Obtain current mass in system
@@ -55,8 +56,14 @@ namespace tube{
     virtual void resetHarmonics();             // Set all higher
                                                // harmonic amplitudes
                                                // to zero
-    virtual void setRes(const SegBase& other); // To copy from a
+
+    virtual void setRes(const Tube& other); // To copy from a
+    virtual vd error() const;
+    virtual void jac(tasystem::Jacobian& tofill) const;
+    virtual vd getRes() const;
+    virtual d getRes(us dofnr) const;
     virtual void updateNf();    
+
     // *similar* segment
     vd getResAt(us,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
     vd getResAt(varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
@@ -67,19 +74,16 @@ namespace tube{
     const TubeVertex& getTubeVertex(us i) const;
     vd interpolateResMid(varnr v,d x) const; // Amplitude data vectors
     vd interpolateResStaggered(varnr v,d x) const; // Amplitude data!!
-    virtual vd dragCoefVec(us) const;              // return drag coefficient
-  protected:
-    void cleanup();
-  private:
-    void copyTube(const Tube&);
-    TubeVertex* leftTubeVertex() const;
-    TubeVertex* rightTubeVertex() const;    
+    virtual vd dragCoefVec(us) const;              // return drag
+                                                   // coefficient
+    const TubeVertex& operator[](us i) const;
+    const TubeBcVertex& leftVertex() const;
+    const TubeBcVertex& rightVertex() const;
   };				// Tube class
 
   
-  
-  inline Tube& asTube(SegBase& s){return dynamic_cast<Tube&>(s);}
-  inline const Tube& asTube_const(const SegBase& s){return dynamic_cast<const Tube&>(s);}  
+  inline Tube& asTube(segment::Seg& s){return dynamic_cast<Tube&>(s);}
+  inline const Tube& asTube_const(const segment::Seg& s){return dynamic_cast<const Tube&>(s);}  
 } /* namespace tube */
 
 #endif /* TUBE_H_ */

@@ -1,7 +1,7 @@
 #include "hopkinsheat.h"
 #include "tubevertex.h"
 #include "tube.h"
-
+#include "geom.h"
 
 /* For obtaining time-averaged heat transfer, we have to find the
    time-average of the following parameter:

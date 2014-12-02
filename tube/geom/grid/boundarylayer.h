@@ -3,7 +3,7 @@
 #define _BOUNDARYLAYER_H_
 #include "vtypes.h"
 
-namespace geom{
+namespace tube{
   SPOILNAMESPACE;
   class BoundaryLayer{
   protected:
@@ -29,7 +29,7 @@ namespace geom{
 };
 
 
-} // namespace geom
+} // namespace tube
 
 
 #endif /* _BOUNDARYLAYER_H_ */

@@ -9,6 +9,9 @@
 #include "laminarduct.h"
 #include "tubevertex.h"
 #include "tube.h"
+#include "globalconf.h"
+#include "geom.h"
+#include "var.h"
 // Tried to keep the method definition a bit in order in which a
   // tube is created, including all its components. First a tube is
   // created, which has a geometry and a global
@@ -18,6 +21,9 @@
   // solution. Moreover, we have equations in each gridpoint. More
   // precisely, in the final solution the continuity, momentum, energy
   // and a suitable equation of state should hold.
+using tasystem::Globalconf;
+using variable::var;
+
 namespace tube {
 
   LaminarDuct::LaminarDuct(const Geom& geom):Tube(geom),laminardrag(*this){
@@ -30,25 +36,16 @@ namespace tube {
   {
     TRACE(13,"LaminarDuct copy constructor()...");
   }
-  LaminarDuct& LaminarDuct::operator=(const LaminarDuct& o){
-    TRACE(13,"LaminarDuct copy assignment");
-    Tube::operator=(o);
-    // drag(geom);
-    cleanup();
-    laminardrag=o.laminardrag;
-    heat=o.heat;    
-    return *this;
-  }  
+
   void LaminarDuct::init(const Globalconf& gc){
     Tube::init(gc);
   }
   LaminarDuct::~LaminarDuct(){
     TRACE(15,"~LaminarDuct()");
-    cleanup();
   }
   vd LaminarDuct::dragCoefVec(us freqnr) const{
     TRACE(15,"LaminarDuct::drag_vec()");
-    vd dragcoef(geom().nCells());
+    vd dragcoef(getNCells());
     var drag_varcoef(gc);
     for(us i=0;i<dragcoef.size();i++){
       const TubeVertex& vertex=getTubeVertex(i);
@@ -57,7 +54,6 @@ namespace tube {
     }
     return dragcoef;
   }
-  void LaminarDuct::cleanup(){ Tube::cleanup();}
   
 } /* namespace tube */
 

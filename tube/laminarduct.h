@@ -16,20 +16,15 @@
 namespace tube{
   SPOILNAMESPACE
 
-
-  using namespace segment;
-
   class LaminarDuct:public Tube
   {
-  private:
     LaminarDragResistance laminardrag;
     HeatSource heat;
-
+    LaminarDuct& operator=(const LaminarDuct&);
   public:
     LaminarDuct(const Geom& geom);
     LaminarDuct(const LaminarDuct&);
-    LaminarDuct& operator=(const LaminarDuct&);
-    virtual void init(const Globalconf&);
+    virtual void init(const tasystem::Globalconf&);
     virtual const DragResistance& getDragResistance() const {return laminardrag;}
     virtual const HeatSource& getHeatSource() const=0; // Yup,
     // abstract class. HopkinsLaminarTube implements  one version of

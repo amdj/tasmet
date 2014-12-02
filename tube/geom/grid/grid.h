@@ -5,7 +5,7 @@
 #include "vtypes.h"
 #include <assert.h>
 
-namespace geom{
+namespace tube{
   SPOILNAMESPACE
 
 
@@ -39,7 +39,7 @@ namespace geom{
     us getgp() const {return gp;}
    };
 
- } // namespace geom
+ } // namespace tube
 
 #endif /* _GRID_H_ */
 

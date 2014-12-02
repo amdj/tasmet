@@ -1,6 +1,6 @@
-#include "tubevertex.h"
-#include "tubeequation.h"
 #include "tube.h"
+#include "tubevertex.h"
+#include "globalconf.h"
 
 namespace tube{
 
@@ -97,13 +97,13 @@ namespace tube{
     for(auto var=vars.begin();var!=vars.end();var++)
       (*var)->resetHarmonics();
   }
-  void TubeVertex::setLeft(const Vertex& v){
+  void TubeVertex::setLeft(const TubeVertex& v){
     TRACE(8,"TubeVertex::setLeft(vertex)");
-    this->left=&static_cast<const TubeVertex&>(v);
+    this->left=&v;
   }
-  void TubeVertex::setRight(const Vertex& v){
+  void TubeVertex::setRight(const TubeVertex& v){
     TRACE(8,"TubeVertex::setRight(vertex)");
-    this->right=&static_cast<const TubeVertex&>(v);
+    this->right=&v;
   }
   const variable::var& TubeVertex::pL() const{
     TRACE(6,"TubeVertex::pL()");
@@ -114,8 +114,14 @@ namespace tube{
     assert(right);
     return right->p;
   }
-  void TubeVertex::initTubeVertex(us i,const Tube& thistube)
+  void TubeVertex::init(us i,const Tube& thistube)
   {
+    this->i=i;
+    this->gc=seg.gc;
+    this->tube=&thistube;
+    // TRACE(25,"Address gc:" <<gc);
+    lg=tube.geom().localGeom(i);
+
     TRACE(8,"TubeVertex::initTubeVertex(gc,geom), vertex "<< i << ".");
 
     vars.resize(5);
@@ -608,7 +614,7 @@ namespace tube{
       case varnr::T:                 // Temp
           return T;
           break;
-      case varnr::Ts:                 // Temp
+      case varnr::Ts:                 // Tempc
           return Ts;
           break;
       default:
@@ -640,7 +646,6 @@ namespace tube{
     }
     
   }  
-
   
   vd TubeVertex::csource() const {
     TRACE(4,"TubeVertex::csource()");
