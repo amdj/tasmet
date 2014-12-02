@@ -7,38 +7,56 @@
 
 namespace segment{
   SPOILNAMESPACE
-  class Vertex;  
-  class Seg:public SegBase{
-  public:
-    // This vector is common in each derived segment. It is controlled
-    // by the derived segment as well. The segment itself does do
-    // nothing with it.
-    std::vector<Vertex*> vvertex;
 
-  public:    
-    Seg(const Geom& geom);
-    Seg(const Seg&);		       // Copy constructor, really copies everything
-    Seg& operator=(const Seg&);
+  using std::string;
 
-    // Coupling of segments
-    // Initialized method (after adding to a system)
-    virtual void init(const tasystem::Globalconf&);			   // Initializer method. Different for each segment type
-    void cleanup();
-    void show(us showVertices=0) const;
-    virtual us getNVertex() const {return vvertex.size();}    
-    void domg(vd&) const;
-    vd error() const;			// Return error vector for this segment
-    vd getRes() const;		// Return result vector for this segment
-    void jac(Jacobian&) const;			// Return Jacobian matrix
-    void setRes(vd res);
-    // void setnodes(us n1,us n2){ nL=n1; nR=n2;}
-    virtual ~Seg(){TRACE(-5,"~Seg()");}
+  namespace geom{
+    class Geom;
+  }
+  namespace tasystem{
+    class Jacobian;
+    class Globalconf;
+  }
+
+  class Seg{
   private:
-    void showVertices() const ;    
+    us number=0;		// Required for TaSystem. Not used in
+    // any segment code
+    Seg& operator=(const Seg&);
+  public:
+    const Globalconf* gc=NULL;	// Global configuration of the system
+  public:
+    Seg(){}
+    Seg(const Seg& o);
+    const us& getNumber() const {return number;}
+    void setNumber(us number) {this->number=number;} 
+    bool operator==(const Seg& other) const {return (this==&other);}
+    virtual Seg* copy() const=0;
+    virtual void resetHarmonics()=0;
+    virtual void init(const Globalconf&); // Implementation updates gc
+    virtual us getNDofs() const=0;
+    virtual us getNEqs() const=0;    
+    virtual ~Seg(){}            // We do not own the gc instance
+    const Geom& geom() const {return *geom_;}
+    virtual string getType() const=0;		   // This param is
+    virtual d getCurrentMass() const=0;    
+    // important for connecting the segments
+    virtual string getName() const=0; // This one is jus the name
+    // ------------------------------
+    // ptr of this instance.
+    virtual void setDofNrs(us firstdofnr)=0;
+    virtual void setEqNrs(us firstdofnr)=0;    
+    virtual vd error() const=0;
+    virtual void show(us) const=0;
+    virtual void jac(Jacobian&) const=0;
+    virtual void domg(vd&) const=0;	// Derivative of error w.r.t. base frequency.
+    virtual void dmtotdx(vd&) const=0; // Derivative of current fluid mass in
+    // system to all dofs.
+    virtual void setRes(vd res)=0;
+    virtual void updateNf()=0;
+    virtual void setRes(const Seg&)=0;    
+    virtual vd   getRes() const=0;
   };
-  
-
-
   
 } // Namespace segment
 

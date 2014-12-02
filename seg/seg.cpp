@@ -11,10 +11,6 @@ namespace segment{
     // us& Ns=gc.Ns;
   }
   Seg::Seg(const Seg& other): SegBase(other){}
-  Seg& Seg::operator=(const Seg& o){
-    SegBase::operator=(o);
-    return *this;
-  }
   void Seg::init(const tasystem::Globalconf& gc){
     TRACE(13,"Seg::init()");
     SegBase::init(gc);

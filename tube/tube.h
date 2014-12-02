@@ -23,20 +23,26 @@ namespace tube{
   class HeatSource;
   
   class Tube:public Seg {
-
-    // unique_ptrs can be checked if they have content by if(uniq_ptr).
-    std::unique_ptr<TubeBcVertex> bcLeft; 
-    std::unique_ptr<TubeBcVertex> bcRight;   
+    std::vector<TubeVertex*> vvertex;
+    void showVertices() const ;   
+     Geom* geom_;			// The geometry    
   public:
       
     Tube(const Geom& geom);
     Tube(const Tube& othertube); // Copy constructor copies everything!
-    Tube& operator=(const Tube& othertube); // And again, we copy everything.
+    Tube& operator=(const Tube& othertube); // And again, we copy
+                                            // everything.
+    us getNCells() const {return geom().nCells();}
+						   // to some segment
+						   // on right side
+
     virtual ~Tube();
     void show(us showvertices=0) const;
     void addBc(const TubeBcVertex& vertex);
     virtual us getNDofs() const;
     virtual us getNEqs() const;    
+    virtual void init(const tasystem::Globalconf&);			   // Initializer method. Different for each segment type
+    us getNVertex() const {return vvertex.size();}    
     virtual const DragResistance& getDragResistance() const=0;
     virtual const HeatSource& getHeatSource() const=0;
     virtual string getType() const final {return string("Tube");}
