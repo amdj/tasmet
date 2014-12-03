@@ -3,16 +3,14 @@
 
 namespace tube{
 
-
   class Continuity:public TubeEquation{	// Tube continuity equation 
-  public:
     d Wddt=0,Wim1=0,Wi=0,Wip1=0;
     // Continuity artificial viscosity weight factor
     d Wart1=0,Wart2=0,Wart3=0,Wart4=0;		       
-
+  public:
     virtual enum EqType getType() const { return EqType::Con;}
     virtual void show() const;
-    virtual void init(const Tube& t);
+    virtual void init(const WeightFactors&,const Tube& t);
     virtual JacRow jac(const TubeVertex&) const;
     virtual vd error(const TubeVertex&) const;			// Error in this equation at this node
     virtual void domg(const TubeVertex&,vd&) const;

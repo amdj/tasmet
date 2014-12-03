@@ -15,7 +15,7 @@ namespace tube{
     d Wddt=0,Wuim1=0,Wui=0,Wuip1=0;
     d WpL=0,WpR=0;
     
-    virtual void init(const Tube& t);
+    virtual void init(const WeightFactors&,const Tube& t);
     virtual JacRow jac(const TubeVertex& v) const;
     virtual enum EqType getType() const { return EqType::Mom;}    
     virtual vd error(const TubeVertex&) const;			// Error in momentum equation at node i

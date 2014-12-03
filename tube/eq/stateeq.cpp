@@ -65,6 +65,21 @@ namespace tube{
       error+=v.gc->gas.Rs()*(v.gc->fDFT*(WLip1*v.right->rho.tdata()%v.right->T.tdata()));      
     return STATE_SCALE*error;
   }
+  void StateL::init(const WeightFactors& w,const Tube& t) {
+
+    if(left){
+      sL.WLi=-wLr;
+      sL.WLim1=-wLl;
+      sL.WLip1=0;
+    }
+    else{
+      sL.WLi=-wL0;
+      sL.WLim1=0;
+      sL.WLip1=-wL1;
+    }
+
+  }
+
   JacRow StateL::jac(const TubeVertex& v) const{
     TRACE(6,"StateL::jac()");
     JacRow jac(dofnr,5);

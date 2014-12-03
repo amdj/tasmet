@@ -9,6 +9,7 @@ namespace tube{
   class State:public TubeEquation
   {
   public:
+    virtual void init(const WeightFactors&,const Tube&);
     JacRow jac(const TubeVertex&) const;
     vd error(const TubeVertex&) const;			// Error in momentum equation at node i
   private:
@@ -20,9 +21,9 @@ namespace tube{
 
   class StateL:public TubeEquation
   {
+    d WLi=0,WLip1=0,WLim1=0; 
   public:
-    d WLi=0,WLip1=0,WLim1=0;
-    
+    virtual void init(const WeightFactors&,const Tube&);   
     JacRow jac(const TubeVertex&) const;
     vd error(const TubeVertex&) const;			// Error in momentum equation at node i
   private:

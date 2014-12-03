@@ -11,20 +11,23 @@
 
 
 #include "tubevertex.h"
-
+namespace tasystem{
+  class Globalconf;
+}
 
 namespace tube{
   enum connectpos{ left,right};	// Where to connect the boundary condition.
   
-  class TubeBcVertex:public TubeVertex
-  {
+  class LeftTubeVertex:public TubeVertex{
   public:
-    virtual string getType() const=0;
-    virtual enum connectpos connectPos() const=0;
-    virtual TubeBcVertex* copy() const=0; // Return a copy casted as class
-    // TubeBcVertex. Used when init(gc) is run.
-  };
-  
+    LeftTubeVertex(us i,const tasystem::Globalconf& g);
+    virtual ~LeftTubeVertex();
+};  
+  class RightTubeVertex:public TubeVertex{
+  public:
+    RightTubeVertex(us i,const tasystem::Globalconf& g);
+    virtual ~RightTubeVertex();
+};  
 
 } // namespace tube
 

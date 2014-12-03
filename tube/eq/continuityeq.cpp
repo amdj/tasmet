@@ -1,6 +1,6 @@
 #include "continuityeq.h"
 #include "tubevertex.h"
-
+#include "weightfactors.h"
 #include "artvisco.h"
 #include "jacobian.h"
 
@@ -21,8 +21,16 @@ namespace tube{
     #endif
     
   }
-  void Continuity::init(const Tube& t){
+  void Continuity::init(const WeightFactors& w,const Tube& t){
     TRACE(8,"Continuity::init(tube)");
+    Wddt=w.vVf;
+
+    if(v.left()&&v.right()){
+      Wim1=-w.wLl;
+      Wi=wRl-w.wLr;
+      Wip1=w.wRr;
+    }
+
   }
 
   JacRow Continuity::jac(const TubeVertex& v) const{
@@ -31,11 +39,11 @@ namespace tube{
     TRACE(0,"Continuity, dofnr jac:"<< dofnr);
     jac.addCol(drhoi(v));
     jac.addCol(dUi(v));
-    if(v.left){
+    if(v.left()){
       jac.addCol(drhoim1(v));    
       jac.addCol(dUim1(v));
     }
-    if(v.right){
+    if(v.right()){
       jac.addCol(drhoip1(v));
       jac.addCol(dUip1(v));
     }
@@ -50,25 +58,25 @@ namespace tube{
     TRACE(10,"Ns:"<<v.gc->Ns());
     error+=Wddt*v.gc->DDTfd*v.rho();
     error+=Wi*v.gc->fDFT*(v.rho.tdata()%v.U.tdata());
-    if(v.left!=NULL){
+    if(v.left()){
       // Standard implementation of a no-slip (wall) boundary
       // condition
-      const vd& rhoim1=v.left->rho.tdata();
-      const vd& Uim1=v.left->U.tdata();
+      const vd& rhoim1=v.left()->rho.tdata();
+      const vd& Uim1=v.left()->U.tdata();
       error+=Wim1*v.gc->fDFT*(rhoim1%Uim1);
     }
-    // TRACE(10,"Right:,"<<v.right);    
-    if(v.right!=NULL ){
+    // TRACE(10,"Right:,"<<v.right());    
+    if(v.right()!=NULL ){
       // Standard implementation of a no-slip (wall) boundary
       // condition
-      const vd& rhoip1=v.right->rho.tdata();
-      const vd& Uip1=v.right->U.tdata();
+      const vd& rhoip1=v.right()->rho.tdata();
+      const vd& Uip1=v.right()->U.tdata();
       error+=Wip1*v.gc->fDFT*(rhoip1%Uip1);
     }
     #ifdef CONT_VISCOSITY
-    if(v.left!=NULL && v.right!=NULL){
-      error+=d_l(v)*(Wart2*v.rho()+Wart1*v.left->rho() );
-      error+=d_r(v)*(Wart3*v.rho()+Wart4*v.right->rho() );
+    if(v.left()!=NULL && v.right()!=NULL){
+      error+=d_l(v)*(Wart2*v.rho()+Wart1*v.left()->rho() );
+      error+=d_r(v)*(Wart3*v.rho()+Wart4*v.right()->rho() );
     }
     #endif
     // (Boundary) source term
@@ -88,7 +96,7 @@ namespace tube{
 
     // Artificial viscosity terms
     #ifdef CONT_VISCOSITY
-    if(v.left!=NULL && v.right!=NULL){
+    if(v.left()!=NULL && v.right()!=NULL){
       drhoi+=(d_l(v)*Wart2+d_r(v)*Wart3);	// Middle vertex
     }
     #endif
@@ -102,20 +110,20 @@ namespace tube{
   }
   JacCol Continuity::dUip1(const TubeVertex& v) const {
     TRACE(0,"Continuity::dUip1()");
-    JacCol dUip1(v.right->U,Wip1*v.gc->fDFT*v.right->rho.diagt()*v.gc->iDFT);
+    JacCol dUip1(v.right()->U,Wip1*v.gc->fDFT*v.right()->rho.diagt()*v.gc->iDFT);
     return dUip1;
   }
   JacCol Continuity::dUim1(const TubeVertex& v) const {
     TRACE(0,"Continuity::dUim1()");
-    JacCol dUim1(v.left->U,Wim1*v.gc->fDFT*v.left->rho.diagt()*v.gc->iDFT);
+    JacCol dUim1(v.left()->U,Wim1*v.gc->fDFT*v.left()->rho.diagt()*v.gc->iDFT);
     return dUim1;
   }
   JacCol Continuity::drhoip1(const TubeVertex& v) const {
     TRACE(0,"Continuity::drhoip1()");
-    JacCol drhoip1(v.right->rho,Wip1*v.gc->fDFT*v.right->U.diagt()*v.gc->iDFT);
+    JacCol drhoip1(v.right()->rho,Wip1*v.gc->fDFT*v.right()->U.diagt()*v.gc->iDFT);
     // Artificial viscosity terms
     #ifdef CONT_VISCOSITY
-    if(v.left!=NULL && v.right!=NULL)
+    if(v.left()!=NULL && v.right()!=NULL)
       drhoip1+=d_r(v)*Wart4;
     #endif
     return drhoip1;
@@ -123,10 +131,10 @@ namespace tube{
   JacCol Continuity::drhoim1(const TubeVertex& v) const {
     TRACE(0,"Continuity::drhoim1()");
 
-    JacCol drhoim1(v.left->rho,Wim1*v.gc->fDFT*v.left->U.diagt()*v.gc->iDFT);
+    JacCol drhoim1(v.left()->rho,Wim1*v.gc->fDFT*v.left()->U.diagt()*v.gc->iDFT);
     // Artificial viscosity terms
     #ifdef CONT_VISCOSITY
-    if(v.left!=NULL && v.right!=NULL)
+    if(v.left()!=NULL && v.right()!=NULL)
       drhoim1+=d_l(v)*Wart1;
     #endif
     return drhoim1;

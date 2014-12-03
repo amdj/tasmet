@@ -10,6 +10,7 @@
 
 #include "energyeq.h"
 #include "tubevertex.h"
+#include "weightfactors.h"
 #include "tube.h"
 
 #include "artvisco.h"
@@ -24,10 +25,65 @@ namespace tube{
     #else
     cout << "Artificial viscosity turned OFF for energy equation\n";
     #endif
+    cout << "eWddt    :"<<eWddt<<"\n";
+    cout << "eWgim1   :"<<eWgim1<<"\n";
+    cout << "eWgim    :"<<eWgim<<"\n";
+    cout << "eWgip    :"<<eWgip<<"\n";
+    cout << "eWgip1   :"<<eWgip1<<"\n";
+    cout << "eWgUip1pL:"<<eWgUip1pL<<"\n";
+    cout << "eWgUim1pR:"<<eWgUim1pR<<"\n";   
+    cout << "eWkinim1 :"<<eWkinim1<<"\n";
+    cout << "eWkini   :"<<eWkini<<"\n";
+    cout << "eWkinip1 :"<<eWkinip1<<"\n";
+    cout << "eWc1     :"<<eWc1<<"\n";
+    cout << "eWc2     :"<<eWc2<<"\n";
+    cout << "eWc3     :"<<eWc3<<"\n";
+    cout << "eWc4     :"<<eWc4<<"\n";
+
+
   }
-  void Energy::init(const Tube& t){
+  void Energy::init(const WeightFactors& w,const Tube& t){
     TRACE(8,"Energy::init(tube)");
     heat=&t.getHeatSource();
+
+    d& SfL=lg.SfL;
+    d& SfR=lg.SfR;
+    d SfLsq=pow(SfL,2);
+    d SfRsq=pow(SfR,2);
+
+    const d& vSfR=rlg.vSf;
+    const d& vSfL=llg.vSf;
+    d vSfLsq=pow(vSfL,2);
+    d vSfRsq=pow(vSfR,2);
+    d vSfsq=pow(lg.vSf,2);
+    // d vSfLav=0.5*(lg.vSf+llg.vSf);
+    // d vSfRav=0.5*(lg.vSf+rlg.vSf);
+
+
+    e.Wddt=lg.vVf;
+    e.Wddtkin=0.5*e.Wddt/pow(lg.vSf,2);
+
+    e.Wgim1=-wLl;
+    e.Wgim =-wLr;
+    e.Wgip = wRl;
+    e.Wgip1= wRr;
+
+    // e.Wkinim1=-0.5*wLl/vSfLsq;
+    // e.Wkini=0.5*(wRl/vSfsq-wLr/vSfsq);
+    // e.Wkinip1=0.5*wRr/vSfRsq;
+
+    e.Wkinim1=-0.5*wLl/SfLsq;
+    e.Wkini=0.5*(wRl/SfRsq-wLr/SfLsq);
+    e.Wkinip1=0.5*wRr/SfRsq;
+    
+
+    // TRACE(1,"dxm:"<< dxm);
+    // TRACE(1,"dxp:"<< dxp);
+    e.Wc1=-SfL/dxm;
+    e.Wc2= SfL/dxm;
+    e.Wc3= SfR/dxp;
+    e.Wc4=-SfR/dxp;
+
   }
   JacRow Energy::jac(const TubeVertex& v) const{
     TRACE(6,"Energy::jac()");

@@ -6,7 +6,6 @@
 #include "jacobian.h"
 
 namespace tube{
-  using namespace tasystem;
   
   enum EqType{
     Con,			// Continuity
@@ -19,15 +18,17 @@ namespace tube{
   };
   
   SPOILNAMESPACE  
-  class Tube;
   class TubeVertex;
+  class Tube;
+  class WeightFactors;
+  
   class TubeEquation{
   protected:
     us dofnr;
   public:
     void setDofNr(us Dofnr){dofnr=Dofnr;}
     us getDofNr(){return dofnr;}    
-    virtual void init(const Tube&) {}
+    virtual void init(const WeightFactors& w,const Tube& t)=0;
     virtual enum EqType getType() const { return EqType::Non;}
 
     virtual JacRow jac(const TubeVertex& v) const=0;		// Returns the local Jacobian of this equation

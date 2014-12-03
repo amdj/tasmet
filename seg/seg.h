@@ -17,14 +17,13 @@ namespace segment{
   using std::string;
 
   class Seg{
-  private:
     us number=0;		// Required for TaSystem. Not used in
     // any segment code
     Seg& operator=(const Seg&);
-  public:
-    const tasystem::Globalconf* gc=NULL;	// Global configuration of the system
     bool init_=false;
   public:
+    const tasystem::Globalconf* gc=NULL;	// Global configuration of the system
+
     Seg();
     Seg(const Seg& o);
     virtual ~Seg(){}            // We do not own the gc instance

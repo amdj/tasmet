@@ -24,7 +24,7 @@ namespace tube{
     d Wkini=0,Wkinim1=0,Wkinip1=0;
   public:
     d Htot(const TubeVertex&) const;             // Total enthalpy flow through this node
-    virtual void init(const Tube&);
+    virtual void init(const WeightFactors&);
     virtual JacRow jac(const TubeVertex&) const;
     virtual enum EqType getType() const { return EqType::Ene;}
     void show() const; 

@@ -7,7 +7,7 @@
  */
 
 #include "tube.h"
-#include "tubebcvertex.h"
+#include "tubebvertex.h"
 #include "interpolate.h"
 #include "globalconf.h"
 #include "geom.h"
@@ -80,25 +80,25 @@ namespace tube {
     if(vvertex.size()==0){
       TRACE(13,"Filling vertices. Current size:"<<vvertex.size());
       // Left *probable* boundary condition
-      vvertex.emplace_back(leftTubeVertex());
+      vvertex.emplace_back(new LeftTubeVertex(0,g));
       for(us i=1;i<getNCells()-1;i++)
-    	vvertex.emplace_back(new TubeVertex());
+    	vvertex.emplace_back(new TubeVertex(i,g));
       // Right *probable* boundary condition
-      vvertex.emplace_back(rightTubeVertex());
+      vvertex.emplace_back(new rightTubeVertex(++i,g));
 
       us nVertex=vvertex.size();    
-      assert(nVertex==geom().nCells());
-
-      for(us i=0;i<vvertex.size();i++){
-        vvertex.at(i)->init(i,*this);
-      }
+      assert(nVertex==getNCells());
       // And initialize again.
       for(us i=0;i<vvertex.size();i++){
-        TubeVertex* cvertex=vvertex[i];
         TRACE(13,"Starting intialization of Vertex "<< i);
-        if(i<nVertex-1) cvertex->setRight(*vvertex[i+1]);
-        if(i>0) cvertex->setLeft(*vvertex[i-1]);
-        cvertex->init(i,*this);
+        TubeVertex* thisvertex=vvertex[i];
+        TubeVertex* left=NULL;
+        TubeVertex* right=NULL;
+        if(i<nVertex-1)
+          right=vvertex[i+1];
+        if(i>0)
+          left=vvertex[i-1];
+        thisvertex->init(left,right);
       } // for
     } // vertex.size==0
     else{
