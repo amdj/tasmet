@@ -4,19 +4,19 @@
 #include "conetube.h"
 #include "isentropictube.h"
 #include "hopkinslaminarduct.h"
-#include "enginesystem.h"
+#include "var.h"
+// #include "enginesystem.h"
+#include "tasystem.h"
 #include "solver.h"
-#include "bc.h"
 #include "grid.h"
 #include <limits>
 #include <boost/archive/text_oarchive.hpp>
 
 using namespace std;
 using namespace segment;
-using namespace geom;
 using namespace tasystem;
 using namespace tube;
-
+TRACETHIS;
 
 int main(int argc,char* argv[]) {
   clearConsole();
@@ -72,32 +72,32 @@ int main(int argc,char* argv[]) {
   // HopkinsLaminarDuct t1(geom1,gc.T0,gc.T0);
 
   IsentropicTube t1(geom1);
-  var pL(gc,0);
+  variable::var pL(gc,0);
   pL.set(0,3.14);
   if(Nf>0)
     pL.set(1,1.0);
-  tube::LeftPressure bcleft(pL);
+  // tube::LeftPressure bcleft(pL);
   // tube::LeftAdiabaticWall bcleft;
-  tube::RightAdiabaticWall bcright;
+  // tube::RightAdiabaticWall bcright;
   // tube::TwImpedance bcright;  
   // tube::RightIsoTWall bcright(T0);
   // TRACE(100,"Add bc to tube...");
-  t1.addBc(bcleft);
-  t1.addBc(bcright);
+  // t1.addBc(bcleft);
+  // t1.addBc(bcright);
 
 
   // EngineSystem sys(air);
   // sys.setTimingConstraint(0,0,3,2);
   // sys.setAmplitudeDof(0,0,3,1);
   // EngineSystem sys(air);
-  TaSystem sys(air);
-  sys.addSeg(t1); 
-  sys.getSeg(0)->geom().show();
-  sys.init();
+  // TaSystem sys(air);
+  // sys.addSeg(t1); 
+  // sys.getSeg(0)->geom().show();
+  // sys.init();
 
-  Solver sol(sys);
+  // Solver sol(sys);
 
-  sol.sys().show(true);
+  // sol.sys().show(true);
   // sol.sys().showJac();
 
   // // vd domg(15,fillwith::zeros);

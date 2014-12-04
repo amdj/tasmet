@@ -19,6 +19,8 @@
 #define MAXSEGS 30
 #include "arma_eigen.h"
 
+namespace segment{class Seg;}
+
 namespace tasystem{
   SPOILNAMESPACE
 
@@ -30,7 +32,7 @@ namespace tasystem{
 
   class TaSystem{
   private:
-    vector<SegConnection> segConnections;
+    // vector<SegConnection> segConnections;
     bool hasInit=false;
   protected:
     vector<Seg*> segs;		

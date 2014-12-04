@@ -1,36 +1,47 @@
 #include "tube.h"
 #include "tubevertex.h"
 #include "globalconf.h"
+#include "weightfactors.h"
+#include "jacobian.h"
 
 namespace tube{
+  using variable::var;
+  using tasystem::Jacobian;
 
   TubeVertex::TubeVertex(us i,const Tube& tube):
     i(i),
-    tube(&tube),
     lg(tube.geom(),i),
-    gc(tube->gc)
+    tube(&tube),
+    gc(tube.gc),
+    c(*this),
+    m(*this),
+    e(*this),
+    sL(*this),
+    // s(*this),
+    se(*this),
+    is(*this)
   {
     vars.resize(5);
     assert(gc!=NULL);
 
     // Intialize the variables for the right number of harmonics.
-    rho=var(*gc);
-    U=var(*gc);
-    T=var(*gc);
-    p=var(*gc);
-    Ts=var(*gc);
+    rho_=var(*gc);
+    U_=var(*gc);
+    T_=var(*gc);
+    p_=var(*gc);
+    Ts_=var(*gc);
 
     // Initialize temperature and density variables to something sane
-    T.set(0,gc->T0);
-    Ts.set(0,gc->T0);
-    rho.set(0,gc->rho0());    
+    T_.set(0,gc->T0);
+    Ts_.set(0,gc->T0);
+    rho_.set(0,gc->rho0());    
 
     // Fill vars vector
-    vars.at(RHONR)=&rho;
-    vars.at(UNR)=&U;
-    vars.at(TNR)=&p;
-    vars.at(PNR)=&T;
-    vars.at(TSNR)=&Ts;    
+    vars.at(RHONR)=&rho_;
+    vars.at(UNR)=&U_;
+    vars.at(TNR)=&p_;
+    vars.at(PNR)=&T_;
+    vars.at(TSNR)=&Ts_;    
 
     // Fill eqs vector
     // eqs.resize(5);
@@ -43,11 +54,11 @@ namespace tube{
     // else
     eqs.push_back(&sL);
     eqs.push_back(&se);    
-    for(auto eq=eqs.begin();eq!=eqs.end();eq++){
-      (*eq)->init(thistube);
-    }
-  }
 
+  }
+  d TubeVertex::getCurrentMass() const{
+    return rho_(0)*lg.vVf;
+  }
   void TubeVertex::init(const TubeVertex* left,const TubeVertex* right) {
     TRACE(8,"TubeVertex::init(left,right), vertex "<< i << ".");
     // TRACE(25,"Address gc:" <<gc);
@@ -58,6 +69,7 @@ namespace tube{
     c.init(w,*tube);
     m.init(w,*tube);
     e.init(w,*tube);
+    // s.init(w,*tube);
     sL.init(w,*tube);
     is.init(w,*tube);    
 
@@ -91,14 +103,10 @@ namespace tube{
     for(auto var=vars.begin();var!=vars.end();var++)
       (*var)->resetHarmonics();
   }
-  const variable::var& TubeVertex::pL() const{
-    TRACE(6,"TubeVertex::pL()");
-    return p;
-  }
   const variable::var& TubeVertex::pR() const {
     TRACE(6,"TubeVertex::pR()");
     assert(right);
-    return right->p;
+    return right_->pL();
   }
   void TubeVertex::setIsentropic(){
     TRACE(15,"TubeVertex::setIsentropic()");
@@ -110,6 +118,11 @@ namespace tube{
     TRACE(0,"TubeEquation::getp0t()");
     return gc->p0*vd(gc->Ns(),fillwith::ones);
   }    
+  vd TubeVertex::errorAt(us eqnr) const{
+    TRACE(10,"TubeVertex::errorAt()");
+    assert(eqnr<eqs.size());
+    return eqs.at(eqnr)->error(*this);
+  }
   vd TubeVertex::error() const
   {
     TRACE(4,"TubeVertex::error() for TubeVertex "<< i << ".");
@@ -121,7 +134,7 @@ namespace tube{
     us Neqfull=getNEqs();
     vd error(Neqfull);
     for(us k=0;k<Neq;k++){
-      error.subvec(k*Ns,(k+1)*Ns-1)=eqs[k]->error(*this);
+      error.subvec(k*Ns,(k+1)*Ns-1)=errorAt(k);
     }
     TRACE(4,"TubeVertex::error() i="<<i<<" done.");
     return error;
@@ -153,10 +166,10 @@ namespace tube{
     TRACE(4,"TubeVertex::getRes()");
     switch(v) {
     case varnr::rho: // Density
-      return rho(freqnr);
+      return rho()(freqnr);
       break;
     case varnr::U:                 // Volume flown
-      return U(freqnr);
+      return U()(freqnr);
       break;
     case varnr::p:                   // Pressure
       return 0.5*(pL()(freqnr)+pR()(freqnr));
@@ -171,47 +184,51 @@ namespace tube{
       return 0;
     }
   }
-  void TubeVertex::setRes(varnr v,const variable::var& res){
-    TRACE(4,"TubeVertex::getRes(varnr,var)");
+  void TubeVertex::setResVar(varnr v,const vd& res){
+    TRACE(4,"TubeVertex::setResVar(varnr,vd)");
     switch(v) {
     case varnr::rho: // Density
-      rho=res;
+      rho_.set(res);
       break;
     case varnr::U:                 // Volume flown
-      U=res;
+      U_.set(res);
       break;
     case varnr::p:                   // Pressure
-      p=res;
+      p_.set(res);
       break;
     case varnr::T:                 // Temp
-      T=res;
+      T_.set(res);
       break;
     case varnr::Ts:                 // Temp
-      Ts=res;
+      Ts_.set(res);
       break;
     }
+  }
+  void TubeVertex::setResVar(varnr v,const variable::var& res){
+      TRACE(4,"TubeVertex::setResVar(varnr,var)");
+      setResVar(v,res());
   }
   var TubeVertex::getRes(varnr v) const{
     TRACE(4,"TubeVertex::getRes()");
     TRACE(4,"TubeVertex::getRes()");
       switch(v) {
       case varnr::rho: // Density
-          return rho;
+        return rho();
           break;
       case varnr::U:                 // Volume flown
-          return U;
+        return U();
           break;
       case varnr::p:                   // Pressure
           return 0.5*(pL()+pR());
           break;
       case varnr::T:                 // Temp
-          return T;
+        return T();
           break;
       case varnr::Ts:                 // Tempc
-          return Ts;
+        return Ts();
           break;
       default:
-        return 0;
+        return rho();
       }
   }
 
@@ -220,7 +237,7 @@ namespace tube{
     for(auto var=vars.begin();var!=vars.end();var++)
       (*var)->updateNf();
   }
-  void TubeVertex::setRes(vd res){
+  void TubeVertex::setRes(const vd& res){
     TRACE(10,"TubeVertex::setRes(), i="<< i);
     const us& Ns=gc->Ns();
     us nvars=vars.size();        // Only put in for number of equations
@@ -275,3 +292,5 @@ namespace tube{
   }
 
 } // namespace tube
+
+

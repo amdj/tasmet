@@ -1,10 +1,14 @@
 #include "isentropiceq.h"
 #include "tubevertex.h"
-
+#include "jacobian.h"
 
 
 namespace tube{
-  void Isentropic::init(const Tube& t) {
+  using tasystem::Jacobian;
+  using tasystem::JacRow;
+  using tasystem::JacCol;
+
+  void Isentropic::init(const WeightFactors&,const Tube&) {
     TRACE(6,"Isentropic::init(t)");
   }
   JacRow Isentropic::jac(const TubeVertex& v) const{
@@ -31,7 +35,7 @@ namespace tube{
     // err+=-v.eWisrho*v.gc->fDFT*pow(v.rho.tdata()/rho0,gamma);
 
     err+=(p0vec_freqdomain+0.5*(v.pL()()+v.pR()()))/p0;
-    err+=-v.gc->fDFT*pow(v.rho.tdata()/rho0,gamma);
+    err+=-v.gc->fDFT*pow(v.rho().tdata()/rho0,gamma);
 
     
     TRACE(6,"Isentropic::Error() done");
@@ -57,7 +61,7 @@ namespace tube{
   }
   JacCol Isentropic::drhoi(const TubeVertex& v) const {
     TRACE(1,"Isentropic::drhoi()"); 
-    JacCol drhoi(v.rho);
+    JacCol drhoi(v.rho());
     d T0=v.gc->T0;
     d p0=v.gc->p0;
     d rho0=v.gc->gas.rho(T0,p0);
@@ -66,7 +70,7 @@ namespace tube{
     // drhoi+=-1.0*v.eWisrho*(gamma/rho0)*v.gc->fDFT*
       // diagmat(pow(v.rho.tdata()/rho0,(gamma-1.0)))*v.gc->iDFT;
     drhoi+=-1.0*(gamma/rho0)*v.gc->fDFT*
-      diagmat(pow(v.rho.tdata()/rho0,(gamma-1.0)))*v.gc->iDFT;
+      diagmat(pow(v.rho().tdata()/rho0,(gamma-1.0)))*v.gc->iDFT;
     return drhoi;
   }
 

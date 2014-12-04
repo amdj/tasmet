@@ -9,8 +9,12 @@
 #include "tubevertex.h"
 #include "weightfactors.h"
 #include "artvisco.h"
+#include "jacobian.h"
 
 namespace tube{
+  using tasystem::Jacobian;
+  using tasystem::JacRow;
+  using tasystem::JacCol;
 
   void Momentum::show() const{
     cout << "----------------- Momentum equation\n";
@@ -21,12 +25,6 @@ namespace tube{
     cout << "WpL    : " << WpL << "\n";
     cout << "WpR    : " << WpR << "\n";    
     
-    #ifdef MOM_VISCOSITY
-    cout << "Artificial viscosity turned ON for momentum equation\n";
-    #else
-    cout << "Artificial viscosity turned OFF for momentum equation\n";
-    #endif
-    
   }
   void Momentum::init(const WeightFactors& w,const Tube& t)
   {
@@ -34,18 +32,18 @@ namespace tube{
     drag=&t.getDragResistance();
 
     // Always the same
-    m.WpL=-lg.vSf;
-    m.WpR= lg.vSf;
+    WpL=-w.vSf;
+    WpR= w.vSf;
 
-    m.Wddt=lg.vVf/lg.vSf;
+    Wddt=w.vVf/w.vSf;
     // This one should be correct
-    m.Wuim1=-wLl/SfL;
-    m.Wui=(wRl/SfR-wLr/SfL);
-    m.Wuip1=wRr/SfR;
+    Wuim1=-w.wLl/w.SfL;
+    Wui=(w.wRl/w.SfR-w.wLr/w.SfL);
+    Wuip1=w.wRr/w.SfR;
 
     // But this is also possible
     // m.Wuim1=-wLl/vSfL;
-    // m.Wui=(wRl/lg.vSf-wLr/lg.vSf);
+    // m.Wui=(wRl/w.vSf-wLr/w.vSf);
     // m.Wuip1=wRr/vSfR;
       
   }
@@ -56,8 +54,8 @@ namespace tube{
     vd error(v.gc->Ns(),fillwith::zeros);
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;
-    const vd& rhoti=v.rho.tdata();
-    const vd& Uti=v.U.tdata();
+    const vd& rhoti=v.rho().tdata();
+    const vd& Uti=v.U().tdata();
     error+=Wddt*v.gc->DDTfd*v.gc->fDFT*(Uti%rhoti);
     error+=Wui*v.gc->fDFT*(rhoti%Uti%Uti);
     
@@ -66,24 +64,16 @@ namespace tube{
     error+=WpR*v.pR()();    
 
     if(v.left()!=NULL){
-      const vd& rhotim1=v.left()->rho.tdata();
-      const vd& Utim1=v.left()->U.tdata();
+      const vd& rhotim1=v.rhoL().tdata();
+      const vd& Utim1=v.UL().tdata();
       error+=Wuim1*v.gc->fDFT*(rhotim1%Utim1%Utim1);
       // Pressure term
     }
     if(v.right()!=NULL){
-      const vd& Utip1=v.right()->U.tdata();
-      const vd& rhotip1=v.right()->rho.tdata();
+      const vd& Utip1=v.UR().tdata();
+      const vd& rhotip1=v.rhoR().tdata();
       error+=Wuip1*v.gc->fDFT*(rhotip1%Utip1%Utip1);
     }
-
-    // Artificial viscosity ter
-    #ifdef MOM_VISCOSITY
-    if(v.left()!=NULL && v.right()!=NULL){
-      error+=d_l(v)*fDFT*(art2*v.rho.tdata()%v.U.tdata()+art1*v.left()->rho.tdata()%v.left()->U.tdata());
-      error+=d_r(v)*fDFT*(art3*v.rho.tdata()%v.U.tdata()+art4*v.right()->rho.tdata()%v.right()->U.tdata());
-    }
-    #endif
 
     // Drag term
     assert(drag!=NULL);
@@ -121,7 +111,7 @@ namespace tube{
     const dmat& DDTfd=v.gc->DDTfd;
     const dmat& fDFT=v.gc->fDFT;
     const us& Ns=v.gc->Ns();
-    vd domg_full=v.gc->DDTfd*Wddt*fDFT*(v.rho.tdata()%v.U.tdata())/v.gc->getomg();
+    vd domg_full=v.gc->DDTfd*Wddt*fDFT*(v.rho().tdata()%v.U().tdata())/v.gc->getomg();
     // domg_.subvec(dofnr+1,dofnr+2)=domg_full.subvec(1,2);
     domg_.subvec(dofnr,dofnr+v.gc->Ns()-1)=domg_full;
     TRACE(0,"Momentum::domg() done");
@@ -131,46 +121,28 @@ namespace tube{
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;
 
-    JacCol dUi(v.U);
+    JacCol dUi(v.U());
     // dUi+=vVf*tube.drag.dUi(i)/vSf;		       // Drag term
-    dUi+=Wddt*v.gc->DDTfd*v.gc->fDFT*v.rho.diagt()*v.gc->iDFT; // Time-derivative term
-    dUi+=2.0*Wui*v.gc->fDFT*(v.rho.diagt()*v.U.diagt())*v.gc->iDFT;
+    dUi+=Wddt*v.gc->DDTfd*v.gc->fDFT*v.rho().diagt()*v.gc->iDFT; // Time-derivative term
+    dUi+=2.0*Wui*v.gc->fDFT*(v.rho().diagt()*v.U().diagt())*v.gc->iDFT;
     // Artificial viscosity terms
-    #ifdef MOM_VISCOSITY
-    if(v.left()!=NULL && v.right()!=NULL)
-      dUi+=(art2*d_l(v)+art2*d_r(v))*fDFT*v.rho.diagt()*iDFT;
-    #endif
-    assert(drag!=NULL);
-    #ifndef NODRAG
-    dUi+=Wddt*drag->dUi(v);
-    #endif
     return dUi;
   }
   JacCol Momentum::drhoi(const TubeVertex& v) const {
     TRACE(0,"Momentum::drhoi()");
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;
-    JacCol drhoi(v.rho);
-    drhoi+=Wddt*v.gc->DDTfd*v.gc->fDFT*v.U.diagt()*v.gc->iDFT;
-    drhoi+=Wui*v.gc->fDFT*v.U.diagt()*v.U.diagt()*v.gc->iDFT;
-    #ifdef MOM_VISCOSITY
-    if(v.left()!=NULL && v.right()!=NULL)
-      drhoi+=(art2*d_l(v)+art3*d_r(v))*fDFT*v.U.diagt()*iDFT;
-    #endif
-
+    JacCol drhoi(v.rho());
+    drhoi+=Wddt*v.gc->DDTfd*v.gc->fDFT*v.U().diagt()*v.gc->iDFT;
+    drhoi+=Wui*v.gc->fDFT*v.U().diagt()*v.U().diagt()*v.gc->iDFT;
     return drhoi;
   }
   JacCol Momentum::drhoim1(const TubeVertex& v) const {
     TRACE(0,"Momentum::drhoim1()");
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;
-    JacCol drhoim1(v.left()->rho);
-    drhoim1+=Wuim1*v.gc->fDFT*v.left()->U.diagt()*v.left()->U.diagt()*v.gc->iDFT;
-    #ifdef MOM_VISCOSITY
-    if(v.left()!=NULL && v.right()!=NULL)
-      drhoim1+=art1*d_l(v)*fDFT*v.left()->U.diagt()*iDFT;
-    #endif
-
+    JacCol drhoim1(v.rhoL());
+    drhoim1+=Wuim1*v.gc->fDFT*v.UL().diagt()*v.UL().diagt()*v.gc->iDFT;
     return drhoim1;
   }
   JacCol Momentum::dUim1(const TubeVertex& v) const {
@@ -178,14 +150,9 @@ namespace tube{
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;
 
-    JacCol dUim1(v.left()->U);
-    dUim1+=2.0*Wuim1*v.gc->fDFT*v.left()->rho.diagt()*v.left()->U.diagt()*v.gc->iDFT;
+    JacCol dUim1(v.UL());
+    dUim1+=2.0*Wuim1*v.gc->fDFT*v.rhoL().diagt()*v.UL().diagt()*v.gc->iDFT;
     // Artificial viscosity terms
-    #ifdef MOM_VISCOSITY
-    if(v.left()!=NULL && v.right()!=NULL){
-      dUim1+=art1*d_l(v)*fDFT*v.left()->rho.diagt()*iDFT;
-    }
-    #endif
     
     return dUim1;
   }
@@ -193,15 +160,8 @@ namespace tube{
     TRACE(0,"Momentum::dhoip1()");    // Todo: add this term!;
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;
-    JacCol drhoip1(v.right()->rho);
-    drhoip1+=Wuip1*v.gc->fDFT*v.right()->U.diagt()*v.right()->U.diagt()*v.gc->iDFT;
-    #ifdef MOM_VISCOSITY
-    // Artificial viscosity terms
-    if(v.left()!=NULL && v.right()!=NULL){
-      drhoip1+=art4*d_r(v)*fDFT*v.right()->U.diagt()*iDFT;
-    }
-    #endif
-
+    JacCol drhoip1(v.rhoR());
+    drhoip1+=Wuip1*v.gc->fDFT*v.UR().diagt()*v.UR().diagt()*v.gc->iDFT;
     return drhoip1;
   }
   JacCol Momentum::dUip1(const TubeVertex& v) const {
@@ -209,14 +169,8 @@ namespace tube{
     const dmat& fDFT=v.gc->fDFT;
     const dmat& iDFT=v.gc->iDFT;
 
-    JacCol dUip1(v.right()->U);
-    dUip1+=2.0*Wuip1*v.gc->fDFT*v.right()->rho.diagt()*v.right()->U.diagt()*v.gc->iDFT;
-    #ifdef MOM_VISCOSITY
-    // Artificial viscosity terms
-    if(v.left()!=NULL && v.right()!=NULL){
-      dUip1+=art4*d_r(v)*fDFT*v.right()->rho.diagt()*iDFT;
-    }
-    #endif
+    JacCol dUip1(v.UR());
+    dUip1+=2.0*Wuip1*v.gc->fDFT*v.rhoR().diagt()*v.UR().diagt()*v.gc->iDFT;
     return dUip1;
   }
   JacCol Momentum::dpR(const TubeVertex& v) const {

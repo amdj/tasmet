@@ -1,18 +1,23 @@
 #include "solidenergyeq.h"
 #include "tubevertex.h"
 #include "hopkinslaminarduct.h"
+#include "jacobian.h"
+
 namespace tube{
+  using tasystem::Jacobian;
+  using tasystem::JacRow;
+  using tasystem::JacCol;
 
-  SolidTPrescribed::SolidTPrescribed(){
-    // Tset is false
 
-  }
-  void SolidTPrescribed::init(const Tube& t) {
+  void SolidTPrescribed::init(const WeightFactors& w,const Tube& t) {
     TRACE(6,"SolidTPrescribed::init(t)");
     if(t.getName().compare("HopkinsLaminarDuct")==0){
       const HopkinsLaminarDuct& d=dynamic_cast<const HopkinsLaminarDuct&>(t);
       Tsmirror=&d.Tmirror;
     }
+
+    // Nope, we do nothing with weight functions
+    
   }
   JacRow SolidTPrescribed::jac(const TubeVertex& v) const{
     TRACE(6,"SolidTPrescribed::jac()");
@@ -25,9 +30,9 @@ namespace tube{
     TRACE(6,"SolidTPrescribed::Error()");
     vd error(v.gc->Ns(),fillwith::zeros);
     assert(v.gc!=NULL);
-    error=v.Ts();
+    error=v.Ts()();
     if(Tsmirror){
-      error(0)-=(*Tsmirror)(v.i);
+      error(0)-=(*Tsmirror)(v.geti());
     }
     else
       error(0)-=v.gc->T0;
@@ -36,7 +41,7 @@ namespace tube{
   JacCol SolidTPrescribed::dTsi(const TubeVertex& v) const {
     TRACE(0,"SolidTPrescribed:dTsi()");
     // Set solid temperature to zero
-    return JacCol(v.Ts,arma::eye(v.gc->Ns(),v.gc->Ns()));
+    return JacCol(v.Ts(),arma::eye(v.gc->Ns(),v.gc->Ns()));
   }
 
 } // namespace tube

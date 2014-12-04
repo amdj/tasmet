@@ -14,7 +14,6 @@ namespace tube{
     this->geom=&geom; 		// Save a pointer to the geometry instance
 
     this->i=i;
-    nCells=geom.nCells();
     vx=geom.vx(i);
     // initialize distances to next node to zero
 
@@ -35,6 +34,7 @@ namespace tube{
     xl=vx-xL;
     assert(xl>0); assert(xr>0);
   }
+  us LocalGeom::nCells() const{return geom->nCells();}	
   void LocalGeom::show() const {
     cout <<"Showing LocalGeom data..\n";
     cout <<"vSf   :" << vSf<<"\n";

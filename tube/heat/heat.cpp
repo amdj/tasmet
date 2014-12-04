@@ -1,7 +1,5 @@
-#include "tube.h"
-#include "drag.h"
 #include "tubevertex.h"
-#include "segbase.h"
+
 namespace tube{
 
   vd HeatSource::heat(const TubeVertex& v) const {return vd(v.gc->Ns(),fillwith::zeros);}

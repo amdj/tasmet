@@ -16,7 +16,6 @@ namespace tasystem{
     PickADof tc;		    // Timing constraint
     PickADof av;		    // Reference amplitude value
     d getInitialMassFromGc() const; //
-    us getNVertex() const;
   private:
     TripletList Ljac(d dampfac);
     TripletList Mjac(d dampfac);    

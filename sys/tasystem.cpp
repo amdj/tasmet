@@ -1,9 +1,12 @@
 #include "tasystem.h"
 #include "triplets.h"
+#include "jacobian.h"
+#include "seg.h"
 
 namespace tasystem{
-  using segment::SegBase;
+  using segment::Seg;
   using math_common::armaView;
+
   inline us max(us s,us t){  return s? s>=t : t;}
 
   TaSystem::TaSystem(const Globalconf& gc):gc(gc){
@@ -31,7 +34,8 @@ namespace tasystem{
       addSeg(*o.getSeg(i));
       assert(getNSegs()==i+1);
     }
-    segConnections=o.segConnections;
+    WARN("No seg connections");
+    // segConnections=o.segConnections;
     hasInit=false;
 
   }
@@ -46,25 +50,26 @@ namespace tasystem{
       delete segs[i];
     }
     segs.clear();
-    segConnections.clear();
+    WARN("No seg connections");
+    // segConnections.clear();
     hasInit=false;
   }
-  void TaSystem::addSeg(const std::vector<SegBase*>& segs){
+  void TaSystem::addSeg(const std::vector<Seg*>& segs){
     TRACE(14,"TaSystem::addSeg()");
     for(auto seg=segs.begin();seg!=segs.end();seg++){
       if(*seg!=NULL) 
         addSeg(**seg);
     }
   }
-  void TaSystem::addSeg(const SegBase& seg){
+  void TaSystem::addSeg(const Seg& seg){
     TRACE(14,"TaSystem::addseg()");
     hasInit=false;
     segs.emplace_back(seg.copy());
     segs[getNSegs()-1]->setNumber(getNSegs()-1);
   }
-  SegBase* TaSystem::getSeg(us i) const { return (*this)[i];}
+  Seg* TaSystem::getSeg(us i) const { return (*this)[i];}
   
-  SegBase* TaSystem::operator[](us i) const {
+  Seg* TaSystem::operator[](us i) const {
     us nSegs=getNSegs();
     if(i<nSegs)
       return segs[i];
@@ -97,11 +102,12 @@ namespace tasystem{
     us Nsegs=getNSegs();
     TRACE(25,"Address gc:" <<&gc);
     us i=0;
-    for(auto v=segConnections.begin();v!=segConnections.end();++v){
-      TRACE(90,"Connecting segment connection " << i << "...");
-      coupleSegs(*v,*this);
-      i++;
-    }
+    WARN("No seg connections");
+    // for(auto v=segConnections.begin();v!=segConnections.end();++v){
+    //   TRACE(90,"Connecting segment connection " << i << "...");
+    //   coupleSegs(*v,*this);
+    //   i++;
+    // }
 
     for(auto seg=segs.begin();seg!=segs.end();seg++)      {
       (*seg)->init(gc);
@@ -160,7 +166,8 @@ namespace tasystem{
         WARN("Segment number is higher than available number of segments. ");
         return;
       }
-    segConnections.push_back(SegConnection(seg1,seg2,sc));
+    WARN("No seg connections!");
+    // segConnections.push_back(SegConnection(seg1,seg2,sc));
     hasInit=false;
   }
 
@@ -182,7 +189,7 @@ namespace tasystem{
     us Nsegs=getNSegs();
     for(us j=0;j<getNSegs();j++){
       TRACE(14,"System loop, segment " << j);
-      segment::SegBase& curseg=*segs[j];
+      segment::Seg& curseg=*segs[j];
       curseg.jac(jnew);
       TRACE(10,"Creation of Jacobian for segment "<< j << "done."<<endl);
     } // end for loop
@@ -255,6 +262,7 @@ namespace tasystem{
     checkInit();
     us nsegs=getNSegs();
     assert(other.getNSegs()==nsegs);
+    WARN("Not yet available, testing should be done in ")
     for(us i=0;i<nsegs;i++) {
       getSeg(i)->setRes(*other.getSeg(i));
     }

@@ -5,7 +5,7 @@
 #include "tubevertex.h"
 
 namespace tube{
-  enum connectpos{ left,right};	// Where to connect the boundary condition.
+  // enum connectpos{ left,right};	// Where to connect the boundary condition.
   
   class LeftTubeVertex:public TubeVertex{
   public:

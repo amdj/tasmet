@@ -80,11 +80,12 @@ namespace tube {
     if(vvertex.size()==0){
       TRACE(13,"Filling vertices. Current size:"<<vvertex.size());
       // Left *probable* boundary condition
-      vvertex.emplace_back(new LeftTubeVertex(0,g));
+      // vvertex.emplace_back(new LeftTubeVertex(0,g));
+      WARN("Lot wrong here");
       for(us i=1;i<getNCells()-1;i++)
-    	vvertex.emplace_back(new TubeVertex(i,g));
+    	vvertex.emplace_back(new TubeVertex(i,*this));
       // Right *probable* boundary condition
-      vvertex.emplace_back(new rightTubeVertex(++i,g));
+      // vvertex.emplace_back(new rightTubeVertex(++i,g));
 
       us nVertex=vvertex.size();    
       assert(nVertex==getNCells());
@@ -114,7 +115,7 @@ namespace tube {
     d mass=0;
     for(auto vertex=vvertex.begin();vertex!=vvertex.end();vertex++){
       TubeVertex& cvertex=*static_cast<TubeVertex*>(*vertex);
-      mass+=cvertex.rho(0)*cvertex.lg.vVf;
+      mass+=cvertex.getCurrentMass();
     }
     return mass;
   }
@@ -125,7 +126,7 @@ namespace tube {
       (*v)->updateNf();
     }
   }
-  void Tube::setRes(const SegBase& otherseg){
+  void Tube::setRes(const Seg& otherseg){
     TRACE(20,"Tube::setRes(othertube)");
     const Tube& other=asTube_const(otherseg);
     // Sanity checks
@@ -136,21 +137,21 @@ namespace tube {
   
     for(auto v=vvertex.begin();v!=vvertex.end();v++){
       TubeVertex& thisvertex=*static_cast<TubeVertex*>(*v);
-      d vx=thisvertex.lg.vx;
-      d xL=thisvertex.lg.xL;
-      thisvertex.rho.set(other.interpolateResMid(varnr::rho,vx));
-      thisvertex.U.set(other.interpolateResMid(varnr::U,vx));
-      thisvertex.T.set(other.interpolateResMid(varnr::T,vx));
-      thisvertex.Ts.set(other.interpolateResMid(varnr::Ts,vx));
-      thisvertex.p.set(other.interpolateResStaggered(varnr::p,xL));
-
-      if(v==(vvertex.end()-1)){
-        if(bcRight){
-          TubeVertex& othervertex=*static_cast<TubeVertex*>(*(other.vvertex.end()-1));          
-          thisvertex.setpR(othervertex.pR());
-          TRACE(5,"Copying pR");          
-        }
-      }
+      d vx=thisvertex.localGeom().vx;
+      d xL=thisvertex.localGeom().xL;
+      thisvertex.setResVar(varnr::rho,other.interpolateResMid(varnr::rho,vx));
+      thisvertex.setResVar(varnr::U,other.interpolateResMid(varnr::U,vx));
+      thisvertex.setResVar(varnr::T,other.interpolateResMid(varnr::T,vx));
+      thisvertex.setResVar(varnr::Ts,other.interpolateResMid(varnr::Ts,vx));
+      thisvertex.setResVar(varnr::p,other.interpolateResStaggered(varnr::p,xL));
+      WARN("boundaries todo");
+      // if(v==(vvertex.end()-1)){
+      //   if(bcRight){
+      //     TubeVertex& othervertex=*static_cast<TubeVertex*>(*(other.vvertex.end()-1));          
+      //     thisvertex.setpR(othervertex.pR());
+      //     TRACE(5,"Copying pR");          
+      //   }
+      // }
     } // for
 
   }
@@ -174,8 +175,8 @@ namespace tube {
     const TubeVertex& rightvertex=*static_cast<TubeVertex*>(vvertex[iright]);
     vd left=leftvertex.getRes(v)();
     vd right=rightvertex.getRes(v)();
-    d xleft=leftvertex.lg.xL;
-    d xright=rightvertex.lg.xL;
+    d xleft=leftvertex.localGeom().xL;
+    d xright=rightvertex.localGeom().xL;
     d relpos=(x-xleft)/(xright-xleft);
     VARTRACE(5,relpos);
     return math_common::linearInterpolate(left,right,relpos);
@@ -201,8 +202,8 @@ namespace tube {
     const TubeVertex& rightvertex=*static_cast<TubeVertex*>(vvertex[iright]);
     vd left=leftvertex.getRes(v)();
     vd right=rightvertex.getRes(v)();
-    d xleft=leftvertex.lg.vx;
-    d xright=rightvertex.lg.vx;
+    d xleft=leftvertex.localGeom().vx;
+    d xright=rightvertex.localGeom().vx;
     d relpos=(x-xleft)/(xright-xleft);
     VARTRACE(5,relpos);
     return math_common::linearInterpolate(left,right,relpos);
@@ -227,15 +228,13 @@ namespace tube {
     vd er(nCells,fillwith::zeros);
     assert(eqnr<getNDofs());
     for(us i=0;i<nCells;i++){
-      TubeVertex& cvertex=*static_cast<TubeVertex*>(vvertex[i]);
-      er(i)=(cvertex.eqs.at(eqnr)->error(cvertex))(freqnr);
+      er(i)=(vvertex[i]->errorAt(eqnr))(eqnr);
     }
     return er;
   }
   void Tube::resetHarmonics(){
     for(auto v=vvertex.begin();v!=vvertex.end();v++){
-      auto &cvertex=*static_cast<TubeVertex*>(*v);
-      cvertex.resetHarmonics();
+      (*v)->resetHarmonics();
     }
   }
   void Tube::dmtotdx(vd& dmtotdx_) const{
@@ -244,8 +243,8 @@ namespace tube {
     us rhodof;
     for(auto v=vvertex.begin();v!=vvertex.end();v++){
       auto &cvertex=*static_cast<TubeVertex*>(*v);
-      rhodof=cvertex.rho.getDofNr();
-      dmtotdx_(rhodof)=cvertex.lg.vVf;
+      rhodof=cvertex.rho().getDofNr();
+      dmtotdx_(rhodof)=cvertex.localGeom().vVf;
     }
   }
 
@@ -255,12 +254,11 @@ namespace tube {
     us nvertex=vvertex.size();
     vd Htot(nvertex);
     for(us i=0;i<nvertex;i++){
-      auto &cvertex=*static_cast<TubeVertex*>(vvertex.at(i));
-      Htot(i)=cvertex.e.Htot(cvertex);
+      Htot(i)=vvertex[i]->Htot();
     }
     return Htot;
   }
-  const TubeVertex& operator[](us i) const{
+  const TubeVertex& Tube::operator[](us i) const{
     if(!isInit()){
       WARN("Tube not initialized!");
       abort();
@@ -277,7 +275,7 @@ namespace tube {
     cout << "Geometry: \n";
     assert(vvertex.size()!=0);
     geom().show();
-    if(showVertices==1)
+    if(showvertices==1)
       this->showVertices();
   }
   void Tube::showVertices() const {
@@ -342,7 +340,7 @@ namespace tube {
     }
   }
 
-  void Tube::setRes(vd res){
+  void Tube::setRes(const vd& res){
     TRACE(8,"Tube::SetRes()");
     assert(res.size()==getNDofs());
     // const us& Neq=(vvertex[0]).Neq;
@@ -355,7 +353,6 @@ namespace tube {
       firstdof+=vertexdofs;
     }
   }
-  
   Tube::~Tube(){
     TRACE(15,"~Tube()");
     delete geom_;

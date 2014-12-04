@@ -1,13 +1,13 @@
 #include "tube.h"
 #include "tubevertex.h"
 #include "laminardrag.h"
-
+#include "geom.h"
 namespace tube{
   
 
   vd LaminarDragResistance::drag(const TubeVertex& v) const {
     TRACE(10,"LaminarDragResistance::drag(v)");
-    vd drag=dUi(v)*v.U();
+    vd drag=dUi(v)*v.U()();
     // VERY IMPORTANT: NOM
     return drag; 		// No momentum scale here, since this is already done in dUi!!!!
   }
@@ -28,13 +28,13 @@ namespace tube{
   vc LaminarDragResistance::ComplexResistancecoef(const TubeVertex& v) const {
     TRACE(0,"LaminarDragResistance::ComplexResistancecoef()");
     const us& Nf=v.gc->Nf();
-    const us& i=v.i;
-    d T0=v.T(0);	// Time-averaged temperature
+    const us& i=v.geti();
+    d T0=v.T()(0);	// Time-averaged temperature
     d mu0=v.gc->gas.mu(T0);
-    d p0=v.p(0)+v.gc->p0;
+    d p0=v.p()(0)+v.gc->p0;
     d rho0=v.gc->gas.rho(T0,p0);
 
-    const d& rh=v.lg.vrh;
+    const d& rh=v.localGeom().vrh;
     d omg=v.gc->getomg();
     vc rescoef(Nf+1);
     rescoef(0)=zfd(mu0,rh);	// Zero frequency drag divided by zero-frequency velocity

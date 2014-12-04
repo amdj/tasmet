@@ -8,14 +8,14 @@ namespace tube{
   private:
     const vd* Tsmirror=NULL;
   public:
-    SolidTPrescribed();
-    void init(const Tube& t);
+    SolidTPrescribed(const TubeVertex& v):TubeEquation(v){}
+    void init(const WeightFactors&,const Tube&);
     virtual enum EqType getType() const { return EqType::Sol;}
-    JacRow jac(const TubeVertex&) const;
+    tasystem::JacRow jac(const TubeVertex&) const;
     
     vd error(const TubeVertex&) const;			// Error in Solidenergy equation at node i
   private:
-    JacCol dTsi(const TubeVertex&) const;
+    tasystem::JacCol dTsi(const TubeVertex&) const;
     
   };
 }

@@ -120,8 +120,8 @@ namespace tube{
     // TRACE(100,"TminTs:\n"<<v.T()-v.Ts());
     // if(v.i==0)
       // TRACE(25,"H freqmultiplymat:"<< htcoefQ.freqMultiplyMat());
-    heat+=htcoefH.freqMultiplyMat()*(v.T()-v.Ts());
-    heat+=htcoefQ.freqMultiplyMat()*(v.U()/v.lg.vSf);    
+    heat+=htcoefH.freqMultiplyMat()*(v.T()()-v.Ts()());
+    heat+=htcoefQ.freqMultiplyMat()*(v.U()()/v.localGeom().vSf);    
     return heat;    
   }
   dmat HopkinsHeatSource::dTi(const TubeVertex& v) const{
@@ -137,7 +137,7 @@ namespace tube{
     variable::var htcoefQ(v.gc);
     htcoefQ.set(HeatTransferCoefQ(v));
     dmat dUi(v.gc->Ns(),v.gc->Ns(),fillwith::zeros);
-    dUi=htcoefQ.freqMultiplyMat()/v.lg.vSf;
+    dUi=htcoefQ.freqMultiplyMat()/v.localGeom().vSf;
     return dUi;
   }  
   vc HopkinsHeatSource::HeatTransferCoefQ(const TubeVertex& v) const{
@@ -145,13 +145,13 @@ namespace tube{
     vc htcoefQ(Nf+1,fillwith::zeros);
 
     // Obtain dTwdx
-    d dTwdx=(*(this->dTwdx))(v.i);
+    d dTwdx=(*(this->dTwdx))(v.geti());
     // TRACE(100,"dTwdx:"<<dTwdx);
-    const d& rh=v.lg.vrh;    
-    d T0=v.T(0);
+    const d& rh=v.localGeom().vrh;    
+    d T0=v.T()(0);
     d Pr0=v.gc->gas.pr(T0);
     d cp0=v.gc->gas.cp(T0);    
-    d p0=v.p(0)+v.gc->p0;
+    d p0=v.p()(0)+v.gc->p0;
     d rho0=v.gc->gas.rho(T0,p0);
     d kappa0=v.gc->gas.kappa(T0);
     d mu0=v.gc->gas.mu(T0);
@@ -170,12 +170,12 @@ namespace tube{
   vc HopkinsHeatSource::HeatTransferCoefH(const TubeVertex& v) const{
     TRACE(8,"HopkinsHeatSource::HeatTransferCoefH()");
     const us& Nf=v.gc->Nf();
-    d T0=v.T(0);	// Time-averaged temperature
+    d T0=v.T()(0);	// Time-averaged temperature
     d kappa0=v.gc->gas.kappa(T0);
-    d p0=v.p(0)+v.gc->p0;
+    d p0=v.p()(0)+v.gc->p0;
     d rho0=v.gc->gas.rho(T0,p0);
     d cp0=v.gc->gas.cp(T0);
-    const d& rh=v.lg.vrh;
+    const d& rh=v.localGeom().vrh;
 
     d omg=v.gc->getomg();
     vc htcoefH(Nf+1,fillwith::zeros);

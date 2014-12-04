@@ -125,11 +125,23 @@ class combinedsys:
             except:
                 self.prescoefs=self.getfouriercoefs(quant)
                 return self.prescoefs
+        elif quant=="temp":
+            try:
+                return self.tempcoefs
+            except:
+                self.tempcoefs=self.getfouriercoefs(quant)
+                return self.tempcoefs
+        elif quant=="stemp":
+            try:
+                return self.stempcoefs
+            except:
+                self.tempcoefs=self.getfouriercoefs(quant)
+                return self.stempcoefs
         elif quant=="velo":
             try:
                 return self.velocoefs
             except:
-                self.velocoefs=self.getfouriercoefs(quant)
+                self.velocoefs=self.getfouriercoefs("volu")/self.getSf()
                 return self.velocoefs
         elif quant=="volu":
             try:
@@ -150,11 +162,7 @@ class combinedsys:
         for seg in self.segs:
             dc=n.concatenate((dc,seg.dragCoef(freqnr)))
         return dc
-    def getvar(self,freqnr,name="pres"):
-        if name=="volu":
-            return self.getU(freqnr)
-        elif name=="velo":
-            return self.getu(freqnr)
+    def getvar(self,freqnr,name):
         var=[]
         for seg in self.segs:
             var=n.concatenate((var,seg.getvar(freqnr,name)))
@@ -181,46 +189,20 @@ class combinedsys:
         return phi
         
     def getp(self,i):
-        return self.getvar(i,"pres")
+        return self.fouriercoefs("pres")[i]
+    def getU(self,i):
+        return self.fouriercoefs("volu")[i]
     def Edot(self,i):
         return (0.5*self.getp(i)*self.getU(i).conjugate()).real
     def getrho(self,i):
-        rho=[]
-        for seg in self.segs:
-            rho=n.concatenate((rho,seg.getrho(i)))
-        return rho
+        return self.fouriercoefs("rho")[i]
     def getT(self,i):
-        T=[]
-        for seg in self.segs:
-            T=n.concatenate((T,seg.getT(i)))
-        return T
+        return self.fouriercoefs("temp")[i]
     def getTs(self,i):
-        Ts=[]
-        for seg in self.segs:
-            Ts=n.concatenate((Ts,seg.getTs(i)))
-        return Ts
+        return self.fouriercoefs("stemp")[i]
     def getHtot(self):
         Htot=[]
         for seg in self.segs:
             Htot=n.concatenate((Htot,seg.getHtot()))
         return Htot
-
-    def getU(self,i):
-        try:
-            return self.U[i]
-        except:
-            self.U=[]
-            for i in range(self.getNf()+1):
-                self.U.append([])
-                for seg in self.segs:
-                    self.U[i]=n.concatenate((self.U[i],seg.getU(i)))
-        return self.U[i]
-    def getu(self,i):
-        try:
-            return self.u[i]
-        except:
-            self.u=[]
-            for i in range(self.getNf()+1):
-                self.u.append(self.getU(i)/self.getSf())
-            return self.u[i]
 

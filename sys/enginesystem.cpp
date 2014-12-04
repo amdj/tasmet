@@ -54,18 +54,12 @@ namespace tasystem{
     d mass=0;
     us nsegs=segs.size();
     for(us i=0;i<nsegs;i++){
-      mass+=segs[i]->geom().getFluidVolume();
+      mass+=segs[i]->getCurrentMass();
     } // for loop
     TRACE(20,"Volume of device: "<< mass<<" [m^3].");
     mass=mass*gc.rho0();
     // TRACE(20,"Initial mass as computed from rho0="<<gc.rho0<<" [kg/m^3],\n and volume of device: "<< mass << " [kg].");
     return mass;
-  }
-  us EngineSystem::getNVertex() const{
-    us nvertex=0;
-    for(auto seg=segs.begin();seg!=segs.end();++seg)
-      nvertex+=(*seg)->getNVertex();
-    return nvertex;
   }
   vd EngineSystem::dmtotdx() const{
     TRACE(15,"EngineSystem::dmtotdx()");
@@ -133,7 +127,7 @@ namespace tasystem{
     vd dmtotdx=this->dmtotdx();
     // cout << "dmtotdx:" <<dmtotdx;
     us dmtotdxsize=dmtotdx.size();
-    us extraspace=getNVertex();
+    us extraspace=0;
     #ifdef TIMINGCONSTRAINT
     if(gc.Nf()>0){
 

@@ -28,12 +28,12 @@ AUX_SOURCE_DIRECTORy(common commonsources)
 # set (nonlinear_SRC ${tubesources} ${varsources} ${segsources}
 #   ${syssources}  ${geomsources} ${solsources}
 #   ${varsources} ${commonsources}
-#   ${tubeeq} ${tubeheat} ${tubebc} ${tubedrag} ${gridsources}
+#   ${tubeeq}  ${tubebc} ${tubedrag} ${gridsources}
 #   )
-set (nonlinear_SRC ${varsources} ${segsources}
-  ${geomsources} 
-  ${varsources} ${commonsources}
-  ${gridsources}
+set (nonlinear_SRC ${varsources} ${segsources} ${tubeeq}
+  ${geomsources} ${syssources} ${tubeheat} ${tubedrag}
+  ${varsources} ${commonsources} ${gridsources}
+  ${gridsources} ${tubesources}
   )
 
 # ${tubedrag}

@@ -1,7 +1,8 @@
 #include "weightfactors.h"
+#include "tubevertex.h"
+#include "tube.h"
 
 namespace tube{
-
 
 
   WeightFactors::WeightFactors(const TubeVertex& v):
@@ -23,10 +24,10 @@ namespace tube{
       const LocalGeom& rlg=right->localGeom();
       vSfL=SfL;
       wL0=rlg.vx/(rlg.vx-vx);
-      wL1=-lg.vx/(rlg.vx-vx);
+      wL1=-vx/(rlg.vx-vx);
     }
     if(right){
-      const LocalGeom& rlg=right->lg;
+      const LocalGeom& rlg=right->localGeom();
       vxp1=rlg.vx;
       dxp=vxp1-vx;      
       vSfR=rlg.vSf;
@@ -34,10 +35,10 @@ namespace tube{
       wRl=(rlg.vx-xR)/(rlg.vx-vx);
     }
     else{
-      const LocalGeom& llg=left->lg;
-      wRNm1=(llg.vx-xR)/(llg.vx-vx);
-      wRNm2=(lg.xR-vx)/(llg.vx-vx);
+      const LocalGeom& llg=left->localGeom();
       vSfR=SfR;
+      wRNm1=(llg.vx-xR)/(llg.vx-vx);
+      wRNm2=(xR-vx)/(llg.vx-vx);
     }    
 
   } // WeightFactors()

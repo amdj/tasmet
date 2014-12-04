@@ -3,8 +3,11 @@
 #ifndef _TUBEEQUATION_H_
 #define _TUBEEQUATION_H_
 #include "vtypes.h"
-#include "jacobian.h"
 
+namespace tasystem{
+  class JacRow;
+  class JacCol;
+}
 namespace tube{
   
   enum EqType{
@@ -24,14 +27,16 @@ namespace tube{
   
   class TubeEquation{
   protected:
+    const TubeVertex& v;
     us dofnr;
   public:
+    TubeEquation(const TubeVertex& v):v(v){}
     void setDofNr(us Dofnr){dofnr=Dofnr;}
     us getDofNr(){return dofnr;}    
     virtual void init(const WeightFactors& w,const Tube& t)=0;
     virtual enum EqType getType() const { return EqType::Non;}
 
-    virtual JacRow jac(const TubeVertex& v) const=0;		// Returns the local Jacobian of this equation
+    virtual tasystem::JacRow jac(const TubeVertex& v) const=0;		// Returns the local Jacobian of this equation
     virtual vd error(const TubeVertex&) const=0;
     virtual void show() const { cout << "Empty equation description. From equation.h.\n";}
     virtual void domg(const TubeVertex&,vd&) const {/* Placeholder */}

@@ -23,22 +23,26 @@ namespace tasystem{
     }
     d value(const TaSystem& sys) const {
       TRACE(15,"PickADof::error()");
-      us Ns=sys.gc.Ns();
-      i=0;
-      while()
-      Seg* seg=sys.getSeg()[i];
-      return static_cast<segment::Seg*>(sys.getSeg(segnr))->vvertex.at(vertexnr)->getRes()(varnr*Ns+freqnr);
+      WARN("Not working anymore");
+// us Ns=sys.gc.Ns();
+      // us i=0;
+      // while()
+      // Seg* seg=sys.getSeg()[i];
+      // return static_cast<segment::Seg*>(sys.getSeg(segnr))->vvertex.at(vertexnr)->getRes()(varnr*Ns+freqnr);
+      return 0;
     }
     us dofnr(const TaSystem& sys) const {
       TRACE(15,"PickADof::dofnr()");
       us dofnr=0;
-      for(us i=0;i<segnr;i++)
-        dofnr+=sys.getSeg(i)->getNDofs();
-      for(us i=0;i<vertexnr;i++)
-        dofnr+=static_cast<segment::Seg*>(sys.getSeg(segnr))->vvertex.at(i)->getNDofs();
-      dofnr+=varnr*sys.gc.Ns();
-      dofnr+=freqnr;
-      return dofnr;
+      WARN("Not working anymore");
+      // for(us i=0;i<segnr;i++)
+      //   dofnr+=sys.getSeg(i)->getNDofs();
+      // for(us i=0;i<vertexnr;i++)
+      //   dofnr+=static_cast<segment::Seg*>(sys.getSeg(segnr))->vvertex.at(i)->getNDofs();
+      // dofnr+=varnr*sys.gc.Ns();
+      // dofnr+=freqnr;
+      // return dofnr;
+      return 0;
     }
   };
 

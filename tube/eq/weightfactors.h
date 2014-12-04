@@ -5,7 +5,7 @@
 
 
 namespace tube{
-
+  class TubeVertex;
   class WeightFactors:public LocalGeom{
   public:
     d wLl=0,wRr=0,wLr=0,wRl=0;		// Basic weight functions

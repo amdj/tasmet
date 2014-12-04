@@ -3,7 +3,7 @@
 #include "bessel.h"
 #include "geom.h"
 #include "tubevertex.h"
-
+#include "varnr.h"
 namespace tube{
   using tasystem::Globalconf;
   HopkinsLaminarDuct::HopkinsLaminarDuct(const Geom& geom,d Tl):
@@ -42,9 +42,11 @@ namespace tube{
     d T;
     for(us i=0;i<vvertex.size();i++){
       T=Tmirror(i);
-      TubeVertex& cvertex=*static_cast<TubeVertex*>(vvertex[i]);
-      cvertex.Ts.set(0,T);
-      cvertex.T.set(0,T);
+      TubeVertex& cvertex=*vvertex[i];
+      variable::var Tvar(gc);
+      Tvar.set(0,T);
+      cvertex.setResVar(varnr::T,Tvar);
+      cvertex.setResVar(varnr::Ts,Tvar);
     }
     hopkinsheat.setdTwdx(geom(),dTwdx);
   }

@@ -1,7 +1,6 @@
-#include "tube.h"
 #include "drag.h"
 #include "tubevertex.h"
-#include "segbase.h"
+
 namespace tube{
 
   vd DragResistance::drag(const TubeVertex& v) const {return vd(v.gc->Ns(),fillwith::zeros);}

@@ -14,7 +14,7 @@ namespace tube {
     virtual ~LocalGeom(){}
     const Geom* geom=NULL;	// Pointer to global Geometry
     us i;			// Vertex number
-    us nCells() const{return geom->nCells();}	
+us nCells() const;
 
     d vSf=0;			// Vertex fluid cross-sectional area
     d vSs=0;			// Vertex solid cross-sectional area
