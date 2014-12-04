@@ -19,9 +19,7 @@ namespace tasystem{class Jacobian;}
 namespace tube {    
 
   SPOILNAMESPACE;
-
   class Tube;
-
   // Abstract base class Vertex contains:
   // i: vertex nr
   // gc: pointer to Globalconf
@@ -59,7 +57,6 @@ namespace tube {
     // State s;
     SolidTPrescribed se;
     Isentropic is;              // Do we really need this burden?
-
 
   public:
 
@@ -125,7 +122,7 @@ namespace tube {
 
     // Convenience function, we need a lot of static (background
     // pressure) addings in the equations.
-    d Htot() const { return e.Htot(*this);}
+    d Htot() const { return e.Htot();}
     vd getp0t() const;
     d getCurrentMass() const;
     // These virtual functions are required such that boundary

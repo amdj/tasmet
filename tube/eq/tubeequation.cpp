@@ -24,7 +24,7 @@ namespace tube{
   //   return eps;
   // }
 
-  // dmat TubeEquation::d_r(const TubeVertex& v) const {
+  // dmat TubeEquation::d_r() const {
   //   TRACE(3,"TubeEquation::d_r()");
   //   const us Ns=v.gc->Ns();
   //   if(!v.right())
@@ -39,7 +39,7 @@ namespace tube{
   // }
 
   
-  // dmat TubeEquation::d_l(const TubeVertex& v) const {
+  // dmat TubeEquation::d_l() const {
   //   TRACE(3,"TubeEquation::d_l()");
   //   const us Ns=v.gc->Ns();
   //   if(!v.left)
@@ -52,7 +52,7 @@ namespace tube{
   //     return Dl;
   //   }
   // }
-  // vd TubeEquation::nu(const TubeVertex& v) const {
+  // vd TubeEquation::nu() const {
   //   TRACE(3,"TubeEquation::nu()");
   //   const d& Ns=v.gc->Ns();
   //   TRACE(3,"SFSG"<<Ns);    

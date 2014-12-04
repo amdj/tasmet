@@ -16,22 +16,22 @@ namespace tube{
     d WpL=0,WpR=0;
     Momentum(const TubeVertex& v):TubeEquation(v){}
     virtual void init(const WeightFactors&,const Tube& t);
-    virtual tasystem::JacRow jac(const TubeVertex& v) const;
+    virtual tasystem::JacRow jac() const;
     virtual enum EqType getType() const { return EqType::Mom;}    
-    virtual vd error(const TubeVertex&) const;			// Error in momentum equation at node i
+    virtual vd error() const;			// Error in momentum equation at node i
     virtual void show() const;
-    virtual void domg(const TubeVertex&,vd& domg) const;
+    virtual void domg(vd& domg) const;
   protected:
-    tasystem::JacCol drhoim1(const TubeVertex& v) const;
-    tasystem::JacCol drhoi(const TubeVertex& v) const;
-    tasystem::JacCol drhoip1(const TubeVertex& v) const;    
+    tasystem::JacCol drhoim1() const;
+    tasystem::JacCol drhoi() const;
+    tasystem::JacCol drhoip1() const;    
 
-    virtual tasystem::JacCol dUim1(const TubeVertex&) const; // Are virtual for bc
-    virtual tasystem::JacCol dUi(const TubeVertex&) const;
-    virtual tasystem::JacCol dUip1(const TubeVertex&) const;
+    virtual tasystem::JacCol dUim1() const; // Are virtual for bc
+    virtual tasystem::JacCol dUi() const;
+    virtual tasystem::JacCol dUip1() const;
 
-    virtual tasystem::JacCol dpL(const TubeVertex&) const;
-    virtual tasystem::JacCol dpR(const TubeVertex&) const;
+    virtual tasystem::JacCol dpL() const;
+    virtual tasystem::JacCol dpR() const;
     
     // These two are virtual for the impedance bc's
 
@@ -39,11 +39,11 @@ namespace tube{
 
 
 
-    // virtual JacCol dUim2(const TubeVertex&) const;
-    // virtual JacCol dUip2(const TubeVertex&) const;
+    // virtual JacCol dUim2() const;
+    // virtual JacCol dUip2() const;
     
-    d muR(const TubeVertex&) const;
-    d muL(const TubeVertex&) const;
+    d muR() const;
+    d muL() const;
     
   };
 }

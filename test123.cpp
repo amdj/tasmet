@@ -19,10 +19,10 @@ using namespace tube;
 TRACETHIS;
 
 int main(int argc,char* argv[]) {
-  clearConsole();
+  // clearConsole();
   cout <<  "Running test..." << endl;
   int loglevel=1;
-  us gp=40;
+  us gp=4;
   us Nf=0;
   us Ns=2*Nf+1;
   cout << "Max value of int: " << std::numeric_limits<int>::max() << "\n";
@@ -76,6 +76,8 @@ int main(int argc,char* argv[]) {
   pL.set(0,3.14);
   if(Nf>0)
     pL.set(1,1.0);
+  // t1.init(gc);
+  // t1.show(1);
   // tube::LeftPressure bcleft(pL);
   // tube::LeftAdiabaticWall bcleft;
   // tube::RightAdiabaticWall bcright;
@@ -89,15 +91,15 @@ int main(int argc,char* argv[]) {
   // EngineSystem sys(air);
   // sys.setTimingConstraint(0,0,3,2);
   // sys.setAmplitudeDof(0,0,3,1);
-  // EngineSystem sys(air);
-  // TaSystem sys(air);
-  // sys.addSeg(t1); 
-  // sys.getSeg(0)->geom().show();
-  // sys.init();
+  TaSystem sys(air);
+  sys.addSeg(t1); 
+  TRACE(25,"SFSG");
+  static_cast<Tube*>(sys.getSeg(0))->geom().show();
+  sys.init();
 
   // Solver sol(sys);
 
-  // sol.sys().show(true);
+  sys.show(true);
   // sol.sys().showJac();
 
   // // vd domg(15,fillwith::zeros);

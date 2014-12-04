@@ -21,6 +21,8 @@ namespace tube{
     se(*this),
     is(*this)
   {
+    TRACE(15,"TubeVertex::TubeVertex(i,tube)");
+
     vars.resize(5);
     assert(gc!=NULL);
 
@@ -121,7 +123,7 @@ namespace tube{
   vd TubeVertex::errorAt(us eqnr) const{
     TRACE(10,"TubeVertex::errorAt()");
     assert(eqnr<eqs.size());
-    return eqs.at(eqnr)->error(*this);
+    return eqs.at(eqnr)->error();
   }
   vd TubeVertex::error() const
   {
@@ -147,7 +149,7 @@ namespace tube{
     us neqs=eqs.size();
 
     for(us k=0;k<neqs;k++) {
-      eqs[k]->domg(*this,domg_);
+      eqs[k]->domg(domg_);
     }
   }
   vd TubeVertex::getRes() const {			// Get current result vector
@@ -251,7 +253,7 @@ namespace tube{
     TRACE(5,"TubeVertex::Jac() for vertex "<< i<< ".");
     us neqs=eqs.size();    
     for(us k=0;k<neqs;k++){
-      tofill+=eqs[k]->jac(*this);
+      tofill+=eqs[k]->jac();
       TRACE(5,"Equation "<< k <<"... succesfully obtained Jacobian");
     }
   }  

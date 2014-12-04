@@ -29,7 +29,11 @@ namespace tube {
   Tube::Tube(const Geom& geom):Seg(),geom_(geom.copy()){
     TRACE(13,"Tube constructor()...");
   }
-  Tube::Tube(const Tube& other):Seg(other){}
+  Tube::Tube(const Tube& other):
+    Seg(other),
+    geom_(other.geom().copy()){
+    
+  }
   const TubeVertex& Tube::getTubeVertex(us i) const{
     assert(vvertex.size()>0);
     assert(i<vvertex.size());
@@ -77,34 +81,34 @@ namespace tube {
   void Tube::init(const tasystem::Globalconf& g){
     TRACE(13,"Tube::Init()");
     Seg::init(g);
-    if(vvertex.size()==0){
-      TRACE(13,"Filling vertices. Current size:"<<vvertex.size());
+    cleanup_vvertex();
+    TRACE(13,"Filling vertices. Current size:"<<vvertex.size());
       // Left *probable* boundary condition
       // vvertex.emplace_back(new LeftTubeVertex(0,g));
-      WARN("Lot wrong here");
-      for(us i=1;i<getNCells()-1;i++)
-    	vvertex.emplace_back(new TubeVertex(i,*this));
-      // Right *probable* boundary condition
-      // vvertex.emplace_back(new rightTubeVertex(++i,g));
+    WARN("Lot wrong here");
+    vvertex.emplace_back(new LeftTubeVertex(0,*this));
+    TRACE(20,"Done making TubeVertices");
+    us i;
+    for(i=1;i<getNCells()-1;i++)
+      vvertex.emplace_back(new TubeVertex(i,*this));
+    vvertex.emplace_back(new RightTubeVertex(getNCells()-1,*this));
+    TRACE(20,"Done making TubeVertices");
+    us nVertex=vvertex.size();    
+    assert(nVertex==getNCells());
+    // And initialize again.
+    for(i=0;i<vvertex.size();i++){
+      TRACE(13,"Starting intialization of Vertex "<< i);
+      TubeVertex* thisvertex=vvertex[i];
+      TubeVertex* left=NULL;
+      TubeVertex* right=NULL;
+      if(i<nVertex-1)
+        right=vvertex[i+1];
+      if(i>0)
+        left=vvertex[i-1];
+      TRACE(15,"Initializing tube");
+      thisvertex->init(left,right);
+    } // for
 
-      us nVertex=vvertex.size();    
-      assert(nVertex==getNCells());
-      // And initialize again.
-      for(us i=0;i<vvertex.size();i++){
-        TRACE(13,"Starting intialization of Vertex "<< i);
-        TubeVertex* thisvertex=vvertex[i];
-        TubeVertex* left=NULL;
-        TubeVertex* right=NULL;
-        if(i<nVertex-1)
-          right=vvertex[i+1];
-        if(i>0)
-          left=vvertex[i-1];
-        thisvertex->init(left,right);
-      } // for
-    } // vertex.size==0
-    else{
-      TRACE(13,"Tube already initialized!");
-    }
   } // Tube::init(gc)
   d Tube::getRes(us dofnr) const {
     WARN("Not yet implemented!");
@@ -270,7 +274,6 @@ namespace tube {
   void Tube::show(us showvertices) const {
     cout << "++++++++++++Tube name: "<< getName() << " ++++++++++++++++\n";
     cout << "Type: " << getType() <<" with number "<<getNumber()<< ".\n";
-    show(showvertices);
     cout << "********************************************************************************\n";
     cout << "Geometry: \n";
     assert(vvertex.size()!=0);
@@ -356,11 +359,14 @@ namespace tube {
   Tube::~Tube(){
     TRACE(15,"~Tube()");
     delete geom_;
+    cleanup_vvertex();
+  }
+  void Tube::cleanup_vvertex(){
+    TRACE(15,"Tube::cleanup_vvertex()");
     for(auto v=vvertex.begin();v!=vvertex.end();v++)
       delete *v;
     vvertex.clear();
   }
-  
 } /* namespace tube */
 
 

@@ -11,8 +11,10 @@ namespace tube{
 
   LocalGeom::LocalGeom(const Geom& geom,us i)
   {
-    this->geom=&geom; 		// Save a pointer to the geometry instance
+    TRACE(15,"LocalGeom::LocalGeom()");
 
+    this->geom=&geom; 		// Save a pointer to the geometry instance
+    assert(this->geom);
     this->i=i;
     vx=geom.vx(i);
     // initialize distances to next node to zero
@@ -37,6 +39,8 @@ namespace tube{
   us LocalGeom::nCells() const{return geom->nCells();}	
   void LocalGeom::show() const {
     cout <<"Showing LocalGeom data..\n";
+    cout <<"i     :" << i<<"\n";
+    cout <<"vx    :" << vx<<"\n";
     cout <<"vSf   :" << vSf<<"\n";
     cout <<"SfL   :" << SfL<<"\n";
     cout <<"SfR   :" << SfR<<"\n";    
@@ -44,6 +48,8 @@ namespace tube{
     cout <<"vrh   :" << vrh<<"\n";
     cout <<"xl    :" << xl<<"\n";            
     cout <<"xr    :" << xr<<"\n";
+    cout <<"xL    :" << xL<<"\n";            
+    cout <<"xR    :" << xR<<"\n";
 
   }
 } // namespace tube

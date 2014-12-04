@@ -19,14 +19,14 @@ namespace tube{
     // Nope, we do nothing with weight functions
     
   }
-  JacRow SolidTPrescribed::jac(const TubeVertex& v) const{
+  JacRow SolidTPrescribed::jac() const{
     TRACE(6,"SolidTPrescribed::jac()");
     JacRow jac(dofnr,1);
     TRACE(0,"Dofnr jac:"<< dofnr);
-    jac+=dTsi(v);
+    jac+=dTsi();
     return jac;
   }
-  vd SolidTPrescribed::error(const TubeVertex& v) const {		// Error in momentum equation
+  vd SolidTPrescribed::error() const {		// Error in momentum equation
     TRACE(6,"SolidTPrescribed::Error()");
     vd error(v.gc->Ns(),fillwith::zeros);
     assert(v.gc!=NULL);
@@ -38,7 +38,7 @@ namespace tube{
       error(0)-=v.gc->T0;
     return error;
   }
-  JacCol SolidTPrescribed::dTsi(const TubeVertex& v) const {
+  JacCol SolidTPrescribed::dTsi() const {
     TRACE(0,"SolidTPrescribed:dTsi()");
     // Set solid temperature to zero
     return JacCol(v.Ts(),arma::eye(v.gc->Ns(),v.gc->Ns()));

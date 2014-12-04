@@ -27,34 +27,34 @@ namespace tube{
 
   public:
     Energy(const TubeVertex& v):TubeEquation(v){}
-    d Htot(const TubeVertex&) const;             // Total enthalpy flow through this node
+    d Htot() const;             // Total enthalpy flow through this node
     virtual void init(const WeightFactors&,const Tube&);
-    virtual tasystem::JacRow jac(const TubeVertex&) const;
+    virtual tasystem::JacRow jac() const;
     virtual enum EqType getType() const { return EqType::Ene;}
     void show() const; 
-    vd error(const TubeVertex&) const;			// Error in Energy equation at node i
-    virtual void domg(const TubeVertex&,vd&) const;
+    vd error() const;			// Error in Energy equation at node i
+    virtual void domg(vd&) const;
 
-    tasystem::JacCol dUi(const TubeVertex&) const;
-    tasystem::JacCol dTi(const TubeVertex&) const;
-    tasystem::JacCol drhoi(const TubeVertex&) const;
+    tasystem::JacCol dUi() const;
+    tasystem::JacCol dTi() const;
+    tasystem::JacCol drhoi() const;
 
-    virtual tasystem::JacCol dpR(const TubeVertex&) const;
-    virtual tasystem::JacCol dpL(const TubeVertex&) const;
+    tasystem::JacCol dpR() const;
+    tasystem::JacCol dpL() const;
     
-    tasystem::JacCol drhoip1(const TubeVertex&) const;
-    tasystem::JacCol dUip1(const TubeVertex&) const;
-    tasystem::JacCol dTip1(const TubeVertex&) const;
+    tasystem::JacCol drhoip1() const;
+    tasystem::JacCol dUip1() const;
+    tasystem::JacCol dTip1() const;
 
-    tasystem::JacCol drhoim1(const TubeVertex&) const;
-    tasystem::JacCol dUim1(const TubeVertex&) const;
-    tasystem::JacCol dTim1(const TubeVertex&) const;
+    tasystem::JacCol drhoim1() const;
+    tasystem::JacCol dUim1() const;
+    tasystem::JacCol dTim1() const;
     
-    vd kappaL(const TubeVertex&) const;		// Thermal conducticity at the left
+    vd kappaL() const;		// Thermal conducticity at the left
 				// boundary of the vertex
-    vd kappaR(const TubeVertex&) const;		// Thermal conductivity at the right
+    vd kappaR() const;		// Thermal conductivity at the right
 				// boundary of the vertex
-    d gamma(const TubeVertex&) const;			// Time-avg ratio of specific heats
+    d gamma() const;			// Time-avg ratio of specific heats
   };
 }      // namespace tube
 #endif /* _ENERGYEQ_H_ */

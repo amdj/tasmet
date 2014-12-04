@@ -82,9 +82,10 @@ namespace tube{
     virtual void updateNf();    
 
     // *similar* segment
-    friend class TubeVertex;
     virtual vd dragCoefVec(us) const;              // return drag
                                                    // coefficient
+  private:
+    void cleanup_vvertex();
   };				// Tube class
 
   

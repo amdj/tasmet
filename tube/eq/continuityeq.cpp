@@ -35,28 +35,35 @@ namespace tube{
       // Leftmost vertex
       Wi=w.wRl;
       Wip1=w.wRr;
-
+      Wim1=-1;
     }
+    else if(v.right()){
+      // Leftmost vertex
+      Wi=-w.wLr;
+      Wip1=1;
+      Wim1=-w.wLl;
+    }
+
   } // init
 
-  JacRow Continuity::jac(const TubeVertex& v) const{
+  JacRow Continuity::jac() const{
     TRACE(6,"Continuity::jac()");
     JacRow jac(dofnr,6);
     TRACE(0,"Continuity, dofnr jac:"<< dofnr);
-    jac.addCol(drhoi(v));
-    jac.addCol(dUi(v));
+    jac.addCol(drhoi());
+    jac.addCol(dUi());
     if(v.left()){
-      jac.addCol(drhoim1(v));    
-      jac.addCol(dUim1(v));
+      jac.addCol(drhoim1());    
+      jac.addCol(dUim1());
     }
     if(v.right()){
-      jac.addCol(drhoip1(v));
-      jac.addCol(dUip1(v));
+      jac.addCol(drhoip1());
+      jac.addCol(dUip1());
     }
     return jac;
   }
   
-  vd Continuity::error(const TubeVertex& v) const {	
+  vd Continuity::error() const {	
     TRACE(6,"Continuity::Error()");
     vd error(v.gc->Ns(),fillwith::zeros);
     error+=Wddt*v.gc->DDTfd*v.rho()();
@@ -78,39 +85,39 @@ namespace tube{
     error+=v.csource();
     return error;
   }
-  void Continuity::domg(const TubeVertex& v,vd& domg_) const{
+  void Continuity::domg(vd& domg_) const{
     TRACE(0,"Continuity::domg()");
     vd domg_full=Wddt*v.gc->DDTfd*v.rho()()/v.gc->getomg();
     // domg_.subvec(dofnr+1,dofnr+2)=domg_full.subvec(1,2); 
     domg_.subvec(dofnr,dofnr+v.gc->Ns()-1)=domg_full;     
   }
-  JacCol Continuity::drhoi(const TubeVertex& v) const {
+  JacCol Continuity::drhoi() const {
     TRACE(0,"Continuity::drhoi()");
     JacCol drhoi(v.rho(),Wddt*v.gc->DDTfd);		// Initialize and add first term
     drhoi+=Wi*v.gc->fDFT*v.U().diagt()*v.gc->iDFT;
     return drhoi;
   }
-  JacCol Continuity::dUi(const TubeVertex& v) const {
+  JacCol Continuity::dUi() const {
     TRACE(0,"Continuity::dUi()");
     JacCol dUi(v.U(),Wi*v.gc->fDFT*v.rho().diagt()*v.gc->iDFT);
     return dUi;
   }
-  JacCol Continuity::dUip1(const TubeVertex& v) const {
+  JacCol Continuity::dUip1() const {
     TRACE(0,"Continuity::dUip1()");
     JacCol dUip1(v.UR(),Wip1*v.gc->fDFT*v.rhoR().diagt()*v.gc->iDFT);
     return dUip1;
   }
-  JacCol Continuity::dUim1(const TubeVertex& v) const {
+  JacCol Continuity::dUim1() const {
     TRACE(0,"Continuity::dUim1()");
     JacCol dUim1(v.UL(),Wim1*v.gc->fDFT*v.rhoL().diagt()*v.gc->iDFT);
     return dUim1;
   }
-  JacCol Continuity::drhoip1(const TubeVertex& v) const {
+  JacCol Continuity::drhoip1() const {
     TRACE(0,"Continuity::drhoip1()");
     JacCol drhoip1(v.rhoR(),Wip1*v.gc->fDFT*v.UR().diagt()*v.gc->iDFT);
     return drhoip1;
   }
-  JacCol Continuity::drhoim1(const TubeVertex& v) const {
+  JacCol Continuity::drhoim1() const {
     TRACE(0,"Continuity::drhoim1()");
 
     JacCol drhoim1(v.rhoL(),Wim1*v.gc->fDFT*v.UL().diagt()*v.gc->iDFT);

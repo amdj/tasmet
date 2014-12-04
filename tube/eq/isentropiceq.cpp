@@ -11,16 +11,16 @@ namespace tube{
   void Isentropic::init(const WeightFactors&,const Tube&) {
     TRACE(6,"Isentropic::init(t)");
   }
-  JacRow Isentropic::jac(const TubeVertex& v) const{
+  JacRow Isentropic::jac() const{
     TRACE(6,"Isentropic::jac()");
     JacRow jac(dofnr,2);
     TRACE(0,"Isentropic, dofnr jac:"<< dofnr);
-    jac+=dpL(v);
-    jac+=dpR(v);    
-    jac+=drhoi(v);
+    jac+=dpL();
+    jac+=dpR();    
+    jac+=drhoi();
     return jac;
   }
-  vd Isentropic::error(const TubeVertex& v) const {
+  vd Isentropic::error() const {
     TRACE(6,"Isentropic::Error()");
     vd err(v.gc->Ns(),fillwith::zeros);
     d T0=v.gc->T0;
@@ -41,7 +41,7 @@ namespace tube{
     TRACE(6,"Isentropic::Error() done");
     return err;
   }
-  JacCol Isentropic::dpL(const TubeVertex& v) const {
+  JacCol Isentropic::dpL() const {
     TRACE(1,"Isentropic::dpi()");
     JacCol dpL(v.pL(),arma::eye(v.gc->Ns(),v.gc->Ns()));
     d p0=v.gc->p0;    
@@ -50,7 +50,7 @@ namespace tube{
     dpL.data()*=0.5/p0;
     return dpL;
   }
-  JacCol Isentropic::dpR(const TubeVertex& v) const {
+  JacCol Isentropic::dpR() const {
     TRACE(1,"Isentropic::dpi()");
     JacCol dpR(v.pR(),arma::eye(v.gc->Ns(),v.gc->Ns()));
     d p0=v.gc->p0;    
@@ -59,7 +59,7 @@ namespace tube{
     dpR.data()*=0.5/p0;
     return dpR;
   }
-  JacCol Isentropic::drhoi(const TubeVertex& v) const {
+  JacCol Isentropic::drhoi() const {
     TRACE(1,"Isentropic::drhoi()"); 
     JacCol drhoi(v.rho());
     d T0=v.gc->T0;
