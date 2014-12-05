@@ -20,9 +20,9 @@ namespace tube{
     // Initialize left wall variables
 
   }
-  void LeftTubeVertex::show() const{
+  void LeftTubeVertex::show(us detailnr) const{
     cout << "------------- LeftTubeVertex ----------\n";
-    TubeVertex::show();
+    TubeVertex::show(detailnr);
   }
 
   RightTubeVertex::RightTubeVertex(us i,const Tube& t):
@@ -44,9 +44,9 @@ namespace tube{
     TubeVertex::init(left,right);
 
   }
-  void RightTubeVertex::show() const{
+  void RightTubeVertex::show(us detailnr) const{
     cout << "------------- RightTubeVertex ---------\n";
-    TubeVertex::show();
+    TubeVertex::show(detailnr);
   }
 }                // namespace tube
 

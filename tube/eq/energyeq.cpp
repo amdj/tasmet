@@ -82,10 +82,10 @@ namespace tube{
 
     // TRACE(1,"dxm:"<< dxm);
     // TRACE(1,"dxp:"<< dxp);
-    Wc1=-w.SfL/w.dxm;
-    Wc2= w.SfL/w.dxm;
-    Wc3= w.SfR/w.dxp;
-    Wc4=-w.SfR/w.dxp;
+    Wc1=-w.SfL/(w.vx-w.vxm1);
+    Wc2= w.SfL/(w.vx-w.vxm1);
+    Wc3= w.SfR/(w.vxp1-w.vx);
+    Wc4=-w.SfR/(w.vxp1-w.vx);
 
   }
   JacRow Energy::jac() const{

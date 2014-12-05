@@ -27,7 +27,7 @@ namespace tube{
   class Geom;
 
   class Tube:public segment::Seg {
-    void showVertices() const ;   
+    void showVertices(us detailnr) const ;   
     Geom* geom_;			// The geometry    
     Tube& operator=(const Tube&); // no copies allowed
   protected:

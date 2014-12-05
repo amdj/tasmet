@@ -33,13 +33,11 @@ namespace tasystem{
     av=sys.av;
     return *this;
   }
-  void EngineSystem::show(bool showvertices) {
+  void EngineSystem::show(us detailnr) {
     checkInit();
     cout << "########################## Showing EngineSystem...\n";
     cout << "Target system mass: " << gc.getMass() << "\n";
-
-    TaSystem::show(showvertices);
-
+    TaSystem::show(detailnr);
   }
   void  EngineSystem::init(){
     TRACE(15,"EngineSystem::init()");

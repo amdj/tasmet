@@ -7,8 +7,6 @@
 namespace tube{
   SPOILNAMESPACE
 
-
-  
   
   class Energy:public TubeEquation
   {

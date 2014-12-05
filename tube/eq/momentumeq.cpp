@@ -37,21 +37,28 @@ namespace tube{
 
     Wddt=w.vVf/w.vSf;
 
-    if(v.left()&&v.right());
-    // This one should be correct
-    Wuim1=-w.wLl/w.SfL;
-    Wui=(w.wRl/w.SfR-w.wLr/w.SfL);
-    Wuip1=w.wRr/w.SfR;
+    if(v.left()&&v.right()){
+      // For paper 2, we have used:
 
-    // But this is also possible
+      // Wuim1=-w.wLl/w.vSfL;
+      // Wui=(w.wRl/w.SfR-w.wLr/w.SfL);
+      // Wuip1=w.wRr/w.SfR;
 
-    // m.Wuim1=-wLl/vSfL;
-    // m.Wui=(wRl/w.vSf-wLr/w.vSf);
-    // m.Wuip1=wRr/vSfR;
-
-
-
-
+      // But this is also possible
+      Wuim1=-w.wLl/w.vSfL;
+      Wui=(w.wRl/w.vSf-w.wLr/w.vSf);
+      Wuip1=w.wRr/w.vSfR;
+    }
+    else if(v.left()){          // Rightmost vertex!
+      Wuim1=-w.wLl/w.vSfL;
+      Wui=  -w.wLr/w.vSf;
+      Wuip1=     1/w.SfR;
+    }
+    else if(v.right()){         // Leftmost vertex!
+      Wuim1=-1/w.SfL;
+      Wui=  w.wRl/w.vSf;
+      Wuip1=w.wRr/w.vSfR;
+    }
 
   }
   
@@ -70,13 +77,13 @@ namespace tube{
     error+=WpL*v.pL()();
     error+=WpR*v.pR()();    
 
-    if(v.left()!=NULL){
+    if(v.left()){
       const vd& rhotim1=v.rhoL().tdata();
       const vd& Utim1=v.UL().tdata();
       error+=Wuim1*v.gc->fDFT*(rhotim1%Utim1%Utim1);
       // Pressure term
     }
-    if(v.right()!=NULL){
+    if(v.right()){
       const vd& Utip1=v.UR().tdata();
       const vd& rhotip1=v.rhoR().tdata();
       error+=Wuip1*v.gc->fDFT*(rhotip1%Utip1%Utip1);
@@ -194,23 +201,5 @@ namespace tube{
     JacCol dpL(v.pL(),WpL*I);
     return dpL;
   }
-  // JacCol Momentum::dUip2() const {
-  //   TRACE(0,"Momentum:dUip2()");
-  //   // TRACE(50,"i:"<<i);
-  //   dmat dUip2=v.zero;
-  //   #ifdef MOM_VISCOSITY
-  //   // if(v.left==NULL)
-  //     // dUip2+=-v.gc->rho0*d_l();
-  //   #endif
-  //   return dUip2;
-  // }
-  // JacCol Momentum::dUim2() const {
-  //   dmat dUim2=v.zero;
-  //   #ifdef MOM_VISCOSITY
-  //   // if(v.right()==NULL )
-  //     // dUim2+=-v.gc->rho0*d_r();
-  //   #endif
-  //   return dUim2;
-  // }  
 
 } // namespace tube

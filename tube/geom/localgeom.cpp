@@ -32,9 +32,6 @@ namespace tube{
     vVf=geom.vVf(i);
     vVs=geom.vVs(i);
     vrh=geom.vrh(i);
-    xr=xR-vx;
-    xl=vx-xL;
-    assert(xl>0); assert(xr>0);
   }
   us LocalGeom::nCells() const{return geom->nCells();}	
   void LocalGeom::show() const {
@@ -46,8 +43,6 @@ namespace tube{
     cout <<"SfR   :" << SfR<<"\n";    
     cout <<"vVf   :" << vVf<<"\n";
     cout <<"vrh   :" << vrh<<"\n";
-    cout <<"xl    :" << xl<<"\n";            
-    cout <<"xr    :" << xr<<"\n";
     cout <<"xL    :" << xL<<"\n";            
     cout <<"xR    :" << xR<<"\n";
 

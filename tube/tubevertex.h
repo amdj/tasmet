@@ -105,7 +105,7 @@ namespace tube {
                                                   // to res
 
     // const methods
-    virtual void show() const;
+    virtual void show(us detailnr=1) const;
     vd error() const;		       // Compute error for this
                                            // gridpoint
     vd errorAt(us i) const;

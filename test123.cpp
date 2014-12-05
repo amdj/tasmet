@@ -99,7 +99,7 @@ int main(int argc,char* argv[]) {
 
   // Solver sol(sys);
 
-  sys.show(true);
+  sys.show(2);
   // sol.sys().showJac();
 
   // // vd domg(15,fillwith::zeros);

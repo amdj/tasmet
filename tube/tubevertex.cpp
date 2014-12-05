@@ -268,10 +268,24 @@ namespace tube{
     vd esource=zeros(gc->Ns());
     return esource;
   }    
-  void TubeVertex::show() const{
+  void TubeVertex::show(us detailnr) const{
     cout << "----------------- TubeVertex " << lg.i << "----\n";
-    cout << "Showing weight functions for TubeVertex "<< i <<"\n";
-    lg.show();
+    if(detailnr>=4){
+      cout << "Showing weight functions for TubeVertex "<< i <<"\n";
+      WeightFactors w(*this);
+      w.show();
+    }
+    else{
+      lg.show();
+    }
+    if(detailnr>=2){
+      cout << "Showing weight factors of equations...\n";
+      c.show();
+      m.show();
+      e.show();
+      sL.show();
+    }
+
     // w.show();
     // // cout << "cWarti    :"<<cWarti<<"\n";
 

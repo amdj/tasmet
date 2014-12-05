@@ -31,13 +31,13 @@ namespace tube{
       Wi=w.wRl-w.wLr;
       Wip1=w.wRr;
     }
-    else if(v.left()){
+    else if(v.right()){         // Leftmost vertex
       // Leftmost vertex
       Wi=w.wRl;
       Wip1=w.wRr;
       Wim1=-1;
     }
-    else if(v.right()){
+    else if(v.left()){          // Rightmost vertex
       // Leftmost vertex
       Wi=-w.wLr;
       Wip1=1;

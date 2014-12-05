@@ -278,12 +278,12 @@ namespace tube {
     cout << "Geometry: \n";
     assert(vvertex.size()!=0);
     geom().show();
-    if(showvertices==1)
-      this->showVertices();
+    if(showvertices>=1)
+      this->showVertices(showvertices);
   }
-  void Tube::showVertices() const {
+  void Tube::showVertices(us showvertices) const {
     for(us i=0;i<vvertex.size();i++)
-      vvertex[i]->show();
+      vvertex[i]->show(showvertices);
   }
   void Tube::jac(Jacobian& tofill) const{			// Return Jacobian matrix of error operator
     // sdmat Tube::Jac(){			// Return Jacobian matrix of error operator    

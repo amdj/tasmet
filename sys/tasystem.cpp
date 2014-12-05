@@ -171,16 +171,18 @@ namespace tasystem{
     hasInit=false;
   }
 
-  void TaSystem::show(us showvertices){
+  void TaSystem::show(us detailnr){
     checkInit();
     TRACE(14,"checkInit() done");
     cout << "########################## Showing TaSystem...\n";
     cout << "Showing Global configuration...\n";
     gc.show();
-    cout << "Now showing segments int TaSystem...\n";
-    for(us i=0;i<getNSegs();i++){
-      TRACE(13,"Showing segment "<<i <<"..");
-      segs[i]->show(showvertices);
+    if(detailnr>=0){
+      cout << "Now showing segments int TaSystem...\n";
+      for(us i=0;i<getNSegs();i++){
+        TRACE(13,"Showing segment "<<i <<"..");
+        segs[i]->show(detailnr);
+      }
     }
   }
   void TaSystem::jacTriplets(TripletList& trips){

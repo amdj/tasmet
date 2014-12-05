@@ -41,7 +41,7 @@ namespace tasystem{
     vd domg();
     
     virtual void init();
-    virtual void show(bool showvertices);
+    virtual void show(us detailnr=0);
     // If user decides to set a "custom mass" in the system, which does
     // not correspond to rho0*TotalFluidVolume
     void setInitialMass(d mass) {gc.setMass(mass);} // Check for

@@ -14,33 +14,27 @@ namespace tube{
 
     if(left) {   
       const LocalGeom& llg=left->localGeom();
-      vxm1=llg.vx;
-      dxm=vx-vxm1;
-      wLl=(vx-xL)/(vx-llg.vx);
-      wLr=(xL-llg.vx)/(vx-llg.vx);
+
+      wRNm1=(vxm1-xR)/(llg.vx-vx);
+      wRNm2=(xR-vx)/(llg.vx-vx);
+
       vSfL=llg.vSf;
-    }
-    else{
-      const LocalGeom& rlg=right->localGeom();
-      vSfL=SfL;
-      wL0=rlg.vx/(rlg.vx-vx);
-      wL1=-vx/(rlg.vx-vx);
+      vxm1=llg.vx;
+
+      wLl=(vx-xL)/(vx-vxm1);
+      wLr=1-wLl;
     }
     if(right){
       const LocalGeom& rlg=right->localGeom();
-      vxp1=rlg.vx;
-      dxp=vxp1-vx;      
-      vSfR=rlg.vSf;
-      wRr=(xR-vx)/(rlg.vx-vx);
-      wRl=(rlg.vx-xR)/(rlg.vx-vx);
-    }
-    else{
-      const LocalGeom& llg=left->localGeom();
-      vSfR=SfR;
-      wRNm1=(llg.vx-xR)/(llg.vx-vx);
-      wRNm2=(xR-vx)/(llg.vx-vx);
-    }    
 
+      wL0=vxp1/(vxp1-vx);
+      wL1=-vx/(rlg.vx-vx);
+
+      vxp1=rlg.vx;
+      vSfR=rlg.vSf;
+      wRr=(xR-vx)/(vxp1-vx);
+      wRl=1-wRr;
+    }
   } // WeightFactors()
   void WeightFactors::show() const {
     LocalGeom::show();
@@ -49,13 +43,14 @@ namespace tube{
     cout << "wLr   :"<<wLr<<"\n";
     cout << "wRl   :"<<wRl<<"\n";
     cout << "wRr   :"<<wRr<<"\n";
+    cout << "Special weight function:\n";
     cout << "wL0   :"<<wL0<<"\n";
     cout << "wL1   :"<<wL1<<"\n";
     cout << "wRNm1 :"<<wRNm1<<"\n";
     cout << "wRNm2 :"<<wRNm2<<"\n";
     cout << "vSfL  :"<<vSfL<<"\n";
     cout << "vSfR  :"<<vSfR<<"\n";
-    cout << "dxm   :"<<dxm<<"\n";
-    cout << "dxp   :"<<dxp<<"\n";
+    cout << "SfL   :"<<SfL<<"\n";
+    cout << "SfR   :"<<SfR<<"\n";
   }
 } // namespace tube

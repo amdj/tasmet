@@ -20,7 +20,7 @@ namespace tube{
     virtual const variable::var& pL() const {return pL_;}
     virtual const variable::var& TL() const {return TL_;}
     virtual const variable::var& TsL() const {return TsL_;}
-    virtual void show() const;
+    virtual void show(us detailnr=1) const;
 };  
   class RightTubeVertex:public TubeVertex{
     variable::var TR_,pR_,TsR_,UR_,rhoR_;
@@ -33,7 +33,7 @@ namespace tube{
     virtual const variable::var& pR() const {return pR_;}
     virtual const variable::var& TR() const {return TR_;}
     virtual const variable::var& TsR() const {return TsR_;}
-    virtual void show() const;
+    virtual void show(us detailnr=1) const;
 };  
 
 } // namespace tube

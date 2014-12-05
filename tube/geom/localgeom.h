@@ -14,7 +14,7 @@ namespace tube {
     virtual ~LocalGeom(){}
     const Geom* geom=NULL;	// Pointer to global Geometry
     us i;			// Vertex number
-us nCells() const;
+    us nCells() const;
 
     d vSf=0;			// Vertex fluid cross-sectional area
     d vSs=0;			// Vertex solid cross-sectional area
@@ -27,11 +27,6 @@ us nCells() const;
     d vrh=0;			// Current vertex hydraulic radius
     d xR=0;			// Absolute position of right cell wall
     d xL=0;			// Absolute position of left cell wall
-    d xr=0,xl=0;			// Postition of right and left wall
-    // relative to vertex position
-    
-    d dxp=0;			// Distance to nearby right node
-    d dxm;			// Distance to nearby left node
 
     d vx=0;
     // right vertex.

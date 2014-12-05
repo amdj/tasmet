@@ -49,7 +49,7 @@ namespace tasystem{
       ar & gc;
     }
     virtual TaSystem* copy() const {return new TaSystem(*this);}
-    virtual void show(us showvertices);
+    virtual void show(us detailnr=0);
     virtual evd error();			// Total error vector
     virtual evd getRes();			// Extract result vector
     virtual void setRes(const vd& resvec);	// Set result vector
