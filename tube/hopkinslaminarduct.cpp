@@ -26,9 +26,9 @@ namespace tube{
 
   }
   
-  void HopkinsLaminarDuct::init(const Globalconf& gc){
+  void HopkinsLaminarDuct::init(const TaSystem& sys){
     TRACE(15,"HopkinsLaminarDuct::init(gc)");
-    LaminarDuct::init(gc);
+    LaminarDuct::init(sys);
     // Set time-avg data to make solving bit easier
     assert(vvertex.size()>0);
     vd vx(geom().nCells());

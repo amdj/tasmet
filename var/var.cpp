@@ -93,7 +93,7 @@ namespace variable {
       idft();
     }
   }
-  var var::operator*(const var& var2) { // Multiply two
+  var var::operator*(const var& var2) const { // Multiply two
     // variables in time domain
     TRACE(0,"var::operator*(const var& var2) const");
     assert(this->Ns==var2.Ns);

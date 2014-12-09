@@ -24,7 +24,7 @@ namespace tube{
   public:
     LaminarDuct(const Geom& geom);
     LaminarDuct(const LaminarDuct&);
-    virtual void init(const tasystem::Globalconf&);
+    virtual void init(const tasystem::TaSystem&);
     virtual const DragResistance& getDragResistance() const {return laminardrag;}
     virtual const HeatSource& getHeatSource() const=0; // Yup,
     // abstract class. HopkinsLaminarTube implements  one version of

@@ -33,7 +33,8 @@ namespace tasystem{
                                 // invalid state
   public:
     vector<JacCol> jaccols;     // Column blocks
-    JacRow(us rowdofnr,us cols=6);
+    JacRow(int rowdofnr,us cols=6);
+    JacRow(us cols):JacRow(-1,cols){}
     JacRow(const variable::var&,us cols=6); // Pick rowdofnr from a variable
     void addCol(const JacCol& jaccol);
     JacRow& operator+=(const JacCol& jaccol){addCol(jaccol); return *this;}

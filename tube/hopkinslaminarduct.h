@@ -24,7 +24,7 @@ namespace tube{
     HopkinsLaminarDuct(const Geom& geom,d Tl);
     HopkinsLaminarDuct(const Geom& geom,d Tl,d Tr);
     HopkinsLaminarDuct(const HopkinsLaminarDuct& o);
-    virtual void init(const tasystem::Globalconf& gc);
+    virtual void init(const tasystem::TaSystem& gc);
     virtual const HeatSource& getHeatSource() const { return hopkinsheat;}
     virtual segment::Seg* copy() const{return new HopkinsLaminarDuct(*this);}
     virtual string getName() const {return string("HopkinsLaminarDuct");}

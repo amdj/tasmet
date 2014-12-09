@@ -13,7 +13,7 @@ namespace tube{
     virtual tasystem::JacRow jac() const;
     virtual vd error() const;			// Error in this equation at this node
     virtual void domg(vd&) const;
-    variable::var massFlow() const;
+    vd massFlow() const;
 
     vd extrapolateMassFlow() const;
     tasystem::JacRow dExtrapolateMassFlow() const;

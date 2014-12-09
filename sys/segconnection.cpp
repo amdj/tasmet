@@ -2,12 +2,13 @@
 #include "tasystem.h"
 #include "seg.h"
 namespace tasystem{
-
+  using segment::Seg;
+  
   void coupleSegs(const SegConnection& sc,TaSystem& sys){
     TRACE(14,"coupleSegs()");
-    Seg& seg1=*sys.getSeg(sc.firstseg);
-    Seg& seg2=*sys.getSeg(sc.secondseg);
-    SegCoupling coupling=sc.coupling;
+    // Seg& seg1=*sys.getSeg(sc.firstseg);
+    // Seg& seg2=*sys.getSeg(sc.secondseg);
+    // SegCoupling coupling=sc.coupling;
     WARN("No seg connections");
     // if (coupling==tailhead){
     //   // Seg1 is coupled with its tail to Seg2's head

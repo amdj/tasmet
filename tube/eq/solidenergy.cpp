@@ -1,7 +1,7 @@
-#include "solidenergyeq.h"
 #include "tubevertex.h"
 #include "hopkinslaminarduct.h"
 #include "jacobian.h"
+#include "solidenergy.h"
 
 namespace tube{
   using tasystem::Jacobian;

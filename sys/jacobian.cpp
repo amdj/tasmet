@@ -29,7 +29,7 @@ namespace tasystem{
   }
 
   JacRow::JacRow(const variable::var& vardof,us nrofcols):JacRow(vardof.getDofNr(),nrofcols){}
-  JacRow::JacRow(us rowdofnr,us nrofcols): __rowdof(rowdofnr){
+  JacRow::JacRow(int rowdofnr,us nrofcols): __rowdof(rowdofnr){
     jaccols.reserve(nrofcols);
   }  
   void JacRow::addCol(const JacCol& jaccol){
@@ -42,7 +42,7 @@ namespace tasystem{
       col->data()*=val;
     return *this;
   }
-  JacRow& operator+=(const JacRow& other){
+  JacRow& JacRow::operator+=(const JacRow& other){
     TRACE(2,"Jacobian::operator*=()");
     this->jaccols.reserve(this->jaccols.capacity()+other.jaccols.size()-this->jaccols.size());
     for(auto col=other.jaccols.begin();col!=other.jaccols.end();col++)

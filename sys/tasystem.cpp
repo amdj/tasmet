@@ -27,12 +27,12 @@ namespace tasystem{
     TRACE(14,"TaSystem::copyTaSystem()");
     cleanup();
     gc=o.gc;
-    assert(getNSegs()==0);
-    for(us i=0;i<o.getNSegs();i++) {
+    assert(nSegs()==0);
+    for(us i=0;i<o.nSegs();i++) {
       TRACE(14,"Copying segment "<<i << "...");
       assert(o.getSeg(i)!=NULL);
       addSeg(*o.getSeg(i));
-      assert(getNSegs()==i+1);
+      assert(nSegs()==i+1);
     }
     WARN("No seg connections");
     // segConnections=o.segConnections;
@@ -68,12 +68,12 @@ namespace tasystem{
     TRACE(14,"TaSystem::addseg()");
     hasInit=false;
     segs.emplace_back(seg.copy());
-    segs[getNSegs()-1]->setNumber(getNSegs()-1);
+    segs[nSegs()-1]->setNumber(nSegs()-1);
   }
   Seg* TaSystem::getSeg(us i) const { return (*this)[i];}
   
   Seg* TaSystem::operator[](us i) const {
-    us nSegs=getNSegs();
+    us nSegs=this->nSegs();
     if(i<nSegs)
       return segs[i];
     else
@@ -85,7 +85,7 @@ namespace tasystem{
     us Ndofs=0;
     us firstdof=0;
     us firsteq=0;
-    us Nsegs=getNSegs();
+    us Nsegs=nSegs();
     for(us i=0;i<Nsegs;i++)      {    
       // Set the dofnrs
       segs.at(i)->setDofNrs(firstdof);
@@ -102,7 +102,7 @@ namespace tasystem{
   }
   void TaSystem::init(){
     TRACE(14,"TaSystem::init()");
-    us Nsegs=getNSegs();
+    us Nsegs=nSegs();
     TRACE(25,"Address gc:" <<&gc);
     us i=0;
     WARN("No seg connections");
@@ -148,21 +148,21 @@ namespace tasystem{
   us TaSystem::getNDofs() const  {
     TRACE(14,"TaSystem::getNDofs()");
     us Ndofs=0;
-    for(us i=0;i<getNSegs();i++)
+    for(us i=0;i<nSegs();i++)
       Ndofs+=segs.at(i)->getNDofs();
     return Ndofs;
   }
   us TaSystem::getNEqs() const  {
     TRACE(14,"TaSystem::getNDofs()");
     us Neqs=0;
-    for(us i=0;i<getNSegs();i++)
+    for(us i=0;i<nSegs();i++)
       Neqs+=segs.at(i)->getNEqs();
     return Neqs;
   }
   void TaSystem::connectSegs(us seg1,us seg2,SegCoupling sc){
     TRACE(14,"TaSystem::ConnectSegs()");
     // Basic check if nothing is wrong
-    if(max(seg1,seg2)>=getNSegs())
+    if(max(seg1,seg2)>=nSegs())
       {
         WARN("Segment number is higher than available number of segments. ");
         return;
@@ -180,7 +180,7 @@ namespace tasystem{
     gc.show();
     if(detailnr>=0){
       cout << "Now showing segments int TaSystem...\n";
-      for(us i=0;i<getNSegs();i++){
+      for(us i=0;i<nSegs();i++){
         TRACE(13,"Showing segment "<<i <<"..");
         segs[i]->show(detailnr);
       }
@@ -189,8 +189,8 @@ namespace tasystem{
   void TaSystem::jacTriplets(TripletList& trips){
     TRACE(14,"TaSystem::jacTriplets()");
     Jacobian jnew;
-    us Nsegs=getNSegs();
-    for(us j=0;j<getNSegs();j++){
+    us Nsegs=nSegs();
+    for(us j=0;j<nSegs();j++){
       TRACE(14,"System loop, segment " << j);
       segment::Seg& curseg=*segs[j];
       curseg.jac(jnew);
@@ -227,7 +227,7 @@ namespace tasystem{
     evd error(Ndofs);
     vd Error(error.data(),Ndofs,false,false); // Globally, neqs=ndofs
     Error.zeros();
-    us Nsegs=getNSegs();
+    us Nsegs=nSegs();
     us segeqs;
     us starteq=0;
     TRACE(-1,"Nsegs:"<< Nsegs);
@@ -250,7 +250,7 @@ namespace tasystem{
 
     us segdofs;
     us startdof=0;
-    us Nsegs=getNSegs();
+    us Nsegs=nSegs();
     for(us i=0;i<Nsegs;i++){
       segdofs=segs[i]->getNDofs();
       Res.subvec(startdof,startdof+segdofs-1)=segs[i]->getRes();
@@ -263,8 +263,8 @@ namespace tasystem{
     TRACE(25,"TaSystem::setRes(TaSystem)");
     WARN("This only works for Tube segments so far");
     checkInit();
-    us nsegs=getNSegs();
-    assert(other.getNSegs()==nsegs);
+    us nsegs=nSegs();
+    assert(other.nSegs()==nsegs);
     WARN("Not yet available, testing should be done in ")
     for(us i=0;i<nsegs;i++) {
       getSeg(i)->setRes(*other.getSeg(i));
@@ -291,7 +291,7 @@ namespace tasystem{
     if(Res.size()==Ndofs){
       us segdofs;
       us startdof=0;
-      us Nsegs=getNSegs();
+      us Nsegs=nSegs();
       for(us i=0;i<Nsegs;i++){
         segdofs=segs[i]->getNDofs();
         segs[i]->setRes(Res.subvec(startdof,startdof+segdofs-1));

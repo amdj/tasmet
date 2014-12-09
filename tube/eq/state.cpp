@@ -1,8 +1,12 @@
-#include "stateeq.h"
 #include "tubevertex.h"
-#include "jacobian.h"
 #include "weightfactors.h"
+#include "jacobian.h"
+#include "state.h"
+
 #define STATE_SCALE (1/v.gc->p0)
+#define iDFT (v.gc->iDFT)
+#define fDFT (v.gc->fDFT)
+
 // #define STATE_SCALE (1)
 namespace tube{
   using tasystem::Jacobian;
@@ -18,7 +22,7 @@ namespace tube{
   //   error(0)+=v.gc->p0;	       // Add p0 part
   //   // TRACE(-1,"state error:"<<error);    
   //   // TRACE(-1,"T0:"<<vertex.gc->gas.Rs()*fDFT()*(vertex.T.tdata()%vertex.rho().tdata()));    
-  //   error+=-1.0*v.gc->gas.Rs()*v.gc->fDFT*(v.rho().tdata()%v.T().tdata());
+  //   error+=-1.0*v.gc->gas.Rs()*fDFT*(v.rho().tdata()%v.T().tdata());
   //   // TRACE(-1,"state error:"<<error);
   //   return STATE_SCALE*error;
   // }
@@ -44,15 +48,15 @@ namespace tube{
   //  const {
   //   TRACE(10,"State::dTi()");
   //   dmat rhotidiag=diagmat(v.rho().tdata());
-  //   // TRACE(15,"dTi value:"<< -1.0*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotidiag*v.gc->iDFT);
-  //   return JacCol(v.T(),-1.0*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotidiag*v.gc->iDFT);
+  //   // TRACE(15,"dTi value:"<< -1.0*STATE_SCALE*v.gc->gas.Rs()*fDFT*rhotidiag*iDFT);
+  //   return JacCol(v.T(),-1.0*STATE_SCALE*v.gc->gas.Rs()*fDFT*rhotidiag*iDFT);
   // }
   // JacCol State::drhoi()
   //  const {
   //   TRACE(10,"State::drhoi()");
   //   dmat Ttidiag=diagmat(v.T().tdata());
-  //   // TRACE(15,"dTi value:"<< -1.0*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttidiag*v.gc->iDFT);
-  //   return JacCol(v.rho(),-1.0*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttidiag*v.gc->iDFT);
+  //   // TRACE(15,"dTi value:"<< -1.0*STATE_SCALE*v.gc->gas.Rs()*fDFT*Ttidiag*iDFT);
+  //   return JacCol(v.rho(),-1.0*STATE_SCALE*v.gc->gas.Rs()*fDFT*Ttidiag*iDFT);
   // }
 
   vd StateL::error()
@@ -63,15 +67,15 @@ namespace tube{
     error+=v.pL()();
     error(0)+=v.gc->p0;	       // Add p0 part
     vd rhoTti=v.rho().tdata()%v.T().tdata();
-    error+=v.gc->gas.Rs()*(v.gc->fDFT*(WLi*rhoTti));
+    error+=v.gc->gas.Rs()*(fDFT*(WLi*rhoTti));
     if(v.left())  
-      error+=v.gc->gas.Rs()*(v.gc->fDFT*(WLim1*v.rhoL().tdata()%v.TL().tdata()));
+      error+=v.gc->gas.Rs()*(fDFT*(WLim1*v.rhoL().tdata()%v.TL().tdata()));
     else
-      error+=v.gc->gas.Rs()*(v.gc->fDFT*(WLip1*v.right()->rho().tdata()%v.TR().tdata()));      
+      error+=v.gc->gas.Rs()*(fDFT*(WLip1*v.right()->rho().tdata()%v.TR().tdata()));      
     return STATE_SCALE*error;
   }
   void StateL::init() {
-
+    const WeightFactors& w=v.weightFactors();
     if(v.left()){
       WLi=-w.wLr;
       WLim1=-w.wLl;
@@ -112,37 +116,37 @@ namespace tube{
    const {
     TRACE(0,"StateL::dTi()");
     dmat rhotidiag=diagmat(v.rho().tdata());
-    return  JacCol(v.T(),WLi*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotidiag*v.gc->iDFT);
+    return JacCol(v.T(),WLi*STATE_SCALE*v.gc->gas.Rs()*fDFT*rhotidiag*iDFT);
   }
   JacCol StateL::drhoi()
    const {
     TRACE(0,"StateL::drhoi()");
     dmat Ttidiag=diagmat(v.T().tdata());
-    return JacCol(v.rho(),WLi*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttidiag*v.gc->iDFT);
+    return JacCol(v.rho(),WLi*STATE_SCALE*v.gc->gas.Rs()*fDFT*Ttidiag*iDFT);
   }
   JacCol StateL::dTim1()
    const {
     TRACE(0,"StateL::dTim1()");
     dmat rhotim1diag=diagmat(v.rhoL().tdata());
-    return JacCol(v.TL(),WLim1*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotim1diag*v.gc->iDFT);
+    return JacCol(v.TL(),WLim1*STATE_SCALE*v.gc->gas.Rs()*fDFT*rhotim1diag*iDFT);
   }
   JacCol StateL::drhoim1()
    const {
     TRACE(0,"StateL::drhoim1()");
     dmat Ttim1diag=diagmat(v.TL().tdata());
-    return JacCol(v.rhoL(),WLim1*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttim1diag*v.gc->iDFT);
+    return JacCol(v.rhoL(),WLim1*STATE_SCALE*v.gc->gas.Rs()*fDFT*Ttim1diag*iDFT);
   }
   JacCol StateL::dTip1()
    const {
     TRACE(0,"StateL::dTip1()");
     dmat rhotip1diag=diagmat(v.right()->rho().tdata());
-    return JacCol(v.TR(),WLip1*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotip1diag*v.gc->iDFT);
+    return JacCol(v.TR(),WLip1*STATE_SCALE*v.gc->gas.Rs()*fDFT*rhotip1diag*iDFT);
   }
   JacCol StateL::drhoip1()
    const {
     TRACE(0,"StateL::drhoip1()");
     dmat Ttip1diag=diagmat(v.TR().tdata());
-    return JacCol(v.rhoR(),WLip1*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttip1diag*v.gc->iDFT);
+    return JacCol(v.rhoR(),WLip1*STATE_SCALE*v.gc->gas.Rs()*fDFT*Ttip1diag*iDFT);
   }
     
   // *********************************************** Now for pR,
@@ -157,9 +161,9 @@ namespace tube{
   //   error+=v.pR()();
   //   error(0)+=v.gc->p0;	       // Add p0 part
   //   vd rhoTti=v.rho().tdata()%v.T().tdata();
-  //   error+=-v.gc->gas.Rs()*(v.gc->fDFT*(wRNm1*rhoTti));
+  //   error+=-v.gc->gas.Rs()*(fDFT*(wRNm1*rhoTti));
   //   if(v.left())  
-  //     error+=-v.gc->gas.Rs()*(v.gc->fDFT*(wRNm2*v.rhoL().tdata()%v.T.tdataL()));
+  //     error+=-v.gc->gas.Rs()*(fDFT*(wRNm2*v.rhoL().tdata()%v.T.tdataL()));
   //   else{
   //     WARN("StateR equation not implemented correctly");
   //     exit(1);
@@ -192,26 +196,26 @@ namespace tube{
   //  const {
   //   TRACE(10,"StateR::dTi()");
   //   dmat rhotidiag=diagmat(v.rho().tdata());
-  //   return JacCol(v.T,-v.wRNm1*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotidiag*v.gc->iDFT);
+  //   return JacCol(v.T,-v.wRNm1*STATE_SCALE*v.gc->gas.Rs()*fDFT*rhotidiag*iDFT);
   // }    
   // JacCol StateR::drhoi()
   //  const {
   //   TRACE(10,"StateR::drhoi()");
   //   dmat Ttidiag=diagmat(v.T()tdata());
-  //   return JacCol(v.rho,-v.wRNm1*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttidiag*v.gc->iDFT);
+  //   return JacCol(v.rho,-v.wRNm1*STATE_SCALE*v.gc->gas.Rs()*fDFT*Ttidiag*iDFT);
   // }
 
   // JacCol StateR::dTim1()
   //  const {
   //   TRACE(10,"StateR::dTim1()");
   //   dmat rhotim1diag=diagmat(v.rhoL().tdata());
-  //   return JacCol(v.TL(),-v.wRNm2*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*rhotim1diag*v.gc->iDFT);
+  //   return JacCol(v.TL(),-v.wRNm2*STATE_SCALE*v.gc->gas.Rs()*fDFT*rhotim1diag*iDFT);
   // }
   // JacCol StateR::drhoim1()
   //  const {
   //   TRACE(10,"StateR::drhoim1()");
   //   dmat Ttim1diag=diagmat(v.left()->T.tdata());
-  //   return JacCol(v.rhoL(),-v.wRNm2*STATE_SCALE*v.gc->gas.Rs()*v.gc->fDFT*Ttim1diag*v.gc->iDFT);
+  //   return JacCol(v.rhoL(),-v.wRNm2*STATE_SCALE*v.gc->gas.Rs()*fDFT*Ttim1diag*iDFT);
   // }    
 } // namespace tube
 

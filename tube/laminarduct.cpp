@@ -22,6 +22,7 @@
   // precisely, in the final solution the continuity, momentum, energy
   // and a suitable equation of state should hold.
 using tasystem::Globalconf;
+using tasystem::TaSystem;
 using variable::var;
 
 namespace tube {
@@ -37,8 +38,8 @@ namespace tube {
     TRACE(13,"LaminarDuct copy constructor()...");
   }
 
-  void LaminarDuct::init(const Globalconf& gc){
-    Tube::init(gc);
+  void LaminarDuct::init(const TaSystem& sys){
+    Tube::init(sys);
   }
   LaminarDuct::~LaminarDuct(){
     TRACE(15,"~LaminarDuct()");

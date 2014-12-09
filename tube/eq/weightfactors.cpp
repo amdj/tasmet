@@ -18,25 +18,24 @@ namespace tube{
       vxm1=llg.vx;
       wLl=(vx-xL)/(vx-vxm1);
       wLr=1-wLl;
-    }
-    else{
-      vxm1=xL;
-      wL0=vxp1/(vxp1-vx);
-      wL1=-vx/(rlg.vx-vx);
-
-    }
+      if(!right){
+        vxp1=xR;
+        wRNm1=(vxm1-xR)/(llg.vx-vx);
+        wRNm2=(xR-vx)/(llg.vx-vx);
+      } // !right
+    }   // if left
     if(right){
       const LocalGeom& rlg=right->localGeom();
       vSfR=rlg.vSf;
       vxp1=rlg.vx;
       wRr=(xR-vx)/(vxp1-vx);
       wRl=1-wRr;
-    }
-    else{
-      vxp1=xR;
-      wRNm1=(vxm1-xR)/(llg.vx-vx);
-      wRNm2=(xR-vx)/(llg.vx-vx);
-    }
+      if(!left){
+        vxm1=xL;
+        wL0=vxp1/(vxp1-vx);
+        wL1=-vx/(rlg.vx-vx);
+      } // !left
+    }   // if right
   } // WeightFactors()
   void WeightFactors::show() const {
     LocalGeom::show();

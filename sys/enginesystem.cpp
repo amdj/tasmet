@@ -63,7 +63,7 @@ namespace tasystem{
     TRACE(15,"EngineSystem::dmtotdx()");
     // Should become a row vector, but anyway.
     vd dmtotdx(getNDofs(),fillwith::zeros);
-    us Nsegs=getNSegs();
+    us Nsegs=nSegs();
     for(us i=0;i<Nsegs;i++){
       segs[i]->dmtotdx(dmtotdx);
       // WARN("dmtotdx: Not done function");
@@ -267,7 +267,7 @@ namespace tasystem{
     vd domg(ndofs,fillwith::zeros);
     us segdofs;
     us startdof=0;
-    us Nsegs=getNSegs();
+    us Nsegs=nSegs();
     for(us i=0;i<Nsegs;i++){
       segs[i]->domg(domg);
     }

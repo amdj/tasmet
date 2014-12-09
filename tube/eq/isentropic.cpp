@@ -1,7 +1,9 @@
-#include "isentropiceq.h"
 #include "tubevertex.h"
 #include "jacobian.h"
+#include "isentropic.h"
 
+#define iDFT (v.gc->iDFT)
+#define fDFT (v.gc->fDFT)
 
 namespace tube{
   using tasystem::Jacobian;
@@ -32,10 +34,10 @@ namespace tube{
 
     // Integrated form
     // err+=(v.eWisrho*p0vec_freqdomain+(v.eWispL*v.pL()()+v.eWispR*v.pR()()))/p0;
-    // err+=-v.eWisrho*v.gc->fDFT*pow(v.rho.tdata()/rho0,gamma);
+    // err+=-v.eWisrho*fDFT*pow(v.rho.tdata()/rho0,gamma);
 
     err+=(p0vec_freqdomain+0.5*(v.pL()()+v.pR()()))/p0;
-    err+=-v.gc->fDFT*pow(v.rho().tdata()/rho0,gamma);
+    err+=-fDFT*pow(v.rho().tdata()/rho0,gamma);
     
     TRACE(6,"Isentropic::Error() done");
     return err;
@@ -66,10 +68,10 @@ namespace tube{
     d rho0=v.gc->gas.rho(T0,p0);
     d gamma=v.gc->gas.gamma(T0);
     // Integrated form
-    // drhoi+=-1.0*v.eWisrho*(gamma/rho0)*v.gc->fDFT*
-      // diagmat(pow(v.rho.tdata()/rho0,(gamma-1.0)))*v.gc->iDFT;
-    drhoi+=-1.0*(gamma/rho0)*v.gc->fDFT*
-      diagmat(pow(v.rho().tdata()/rho0,(gamma-1.0)))*v.gc->iDFT;
+    // drhoi+=-1.0*v.eWisrho*(gamma/rho0)*fDFT*
+      // diagmat(pow(v.rho.tdata()/rho0,(gamma-1.0)))*iDFT;
+    drhoi+=-1.0*(gamma/rho0)*fDFT*
+      diagmat(pow(v.rho().tdata()/rho0,(gamma-1.0)))*iDFT;
     return drhoi;
   }
 

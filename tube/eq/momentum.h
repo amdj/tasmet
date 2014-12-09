@@ -21,7 +21,7 @@ namespace tube{
     virtual void show() const;
     virtual void domg(vd& domg) const;
 
-    variable::var momentumFlow() const;
+    vd momentumFlow() const;
     vd extrapolateMomentumFlow() const;
     tasystem::JacRow dExtrapolateMomentumFlow() const;
   private:

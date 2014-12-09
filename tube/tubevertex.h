@@ -3,16 +3,16 @@
 #ifndef _TUBEVERTEX_H_
 #define _TUBEVERTEX_H_
 
-#include "tubeequation.h"
 #include "localgeom.h"
-
-#include "continuityeq.h"
-#include "momentumeq.h"
-#include "energyeq.h"
-#include "stateeq.h"
-#include "solidenergyeq.h"
-#include "isentropiceq.h"
 #include "var.h"
+#include "tubeequation.h"
+#include "continuity.h"
+#include "momentum.h"
+#include "energy.h"
+#include "state.h"
+#include "solidenergy.h"
+#include "isentropic.h"
+
 
 #include "varnr.h"
 namespace tasystem{class Jacobian;}
@@ -59,7 +59,9 @@ namespace tube {
     Isentropic is;              // Do we really need this burden?
 
   public:
-
+    const Continuity& continuity() const {return c;}
+    const Momentum& momentum() const {return m;}
+    const Energy& energy() const {return e;}
     TubeVertex(us i,const Tube&);
     virtual ~TubeVertex();     // Deletes weightfactors instance
 
