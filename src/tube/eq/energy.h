@@ -14,10 +14,8 @@ namespace tube{
 
   public:
     d Wddt=0,Wddtkin=0;
-    d WgRr=0,WgRl=0,WgLr=0,WgLl=0;
-    
+    d WRr=0,WRl=0,WLr=0,WLl=0;
     d WcLl=0,WcLr=0,WcRl=0,WcRr=0; // Conduction weight factors
-
     d WkinLl=0,WkinLr=0,WkinRl=0,WkinRr;
   public:
     Energy(const TubeVertex& v):TubeEquation(v){}
@@ -34,24 +32,15 @@ namespace tube{
     vd kappaR() const;		// Thermal conductivity at the right
     // boundary of the vertex
     d gamma() const;			// Time-avg ratio of specific heats
+
+    vd extrapolateEnergyFlow() const;
+    tasystem::JacRow dExtrapolateEnergyFlow() const;
+
   private:
-    // tasystem::JacRow dQR() const;
-    // tasystem::JacRow dQL() const;
-
-    tasystem::JacCol dUi() const;
-    tasystem::JacCol dTi() const;
-    tasystem::JacCol drhoi() const;
-
-    tasystem::JacCol dpR() const;
-    tasystem::JacCol dpL() const;
-    
-    tasystem::JacCol drhoR() const;
-    tasystem::JacCol dUR() const;
-    tasystem::JacCol dTR() const;
-
-    tasystem::JacCol drhoL() const;
-    tasystem::JacCol dUL() const;
-    tasystem::JacCol dTL() const;
+    vd ddtEtherm() const;
+    tasystem::JacRow dddtEtherm() const;
+    vd ddtEtot() const;
+    tasystem::JacRow dddtEtot() const;
 
     vd EkinR() const;
     vd EkinL() const;
@@ -69,8 +58,10 @@ namespace tube{
     tasystem::JacRow dHL() const;
     tasystem::JacRow dHR() const;
 
+    vd QL() const;              // Heat conduction trough left wall
     vd QR() const;              // Heat conduction trough right wall
-    vd QL() const;              // Heat conduction trough right wall
+    // tasystem::JacRow dQL() const;
+    // tasystem::JacRow dQR() const;
 
   };
 }      // namespace tube

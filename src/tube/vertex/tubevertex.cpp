@@ -68,7 +68,7 @@ namespace tube{
     return *w_;
   }
   d TubeVertex::getCurrentMass() const{
-    return rho_(0)*lg.vVf;
+    return rho_(0)*weightFactors().vVf;
   }
   void TubeVertex::init(const TubeVertex* left,const TubeVertex* right) {
     TRACE(8,"TubeVertex::init(left,right), vertex "<< i << ".");
@@ -76,15 +76,14 @@ namespace tube{
     this->left_=left;
     this->right_=right;
     assert(tube);               // *SHOULD* be a valid pointer
-    if(w_)
-      delete w_;
-    w_=new WeightFactors w(*this);
-    c.init(*tube);
-    m.init(*tube);
-    e.init(*tube);
+    delete w_;
+    w_=new WeightFactors(*this);
+    c.init();
+    m.init();
+    e.init();
     // s.init(w,*tube);
-    sL.init(*tube);
-    is.init(*tube);    
+    sL.init();
+    is.init();    
 
   }
   us TubeVertex::getNDofs() const{
@@ -115,11 +114,6 @@ namespace tube{
   void TubeVertex::resetHarmonics(){
     for(auto var=vars.begin();var!=vars.end();var++)
       (*var)->resetHarmonics();
-  }
-  const variable::var& TubeVertex::pR() const {
-    TRACE(6,"TubeVertex::pR()");
-    assert(right);
-    return right_->pL();
   }
   void TubeVertex::setIsentropic(){
     TRACE(15,"TubeVertex::setIsentropic()");
@@ -280,14 +274,11 @@ namespace tube{
     return esource;
   }    
   void TubeVertex::show(us detailnr) const{
-    cout << "----------------- TubeVertex " << lg.i << "----\n";
+    cout << "----------------- TubeVertex " << i << "----\n";
     if(detailnr>=4){
       cout << "Showing weight functions for TubeVertex "<< i <<"\n";
-      WeightFactors w(*this);
-      w.show();
-    }
-    else{
-      lg.show();
+      assert(w_);
+      w_->show();
     }
     if(detailnr>=2){
       cout << "Showing weight factors of equations...\n";

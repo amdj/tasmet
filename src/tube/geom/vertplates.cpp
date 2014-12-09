@@ -6,6 +6,7 @@
 #include "skewsine.h"
 
 namespace tube{
+  using segment::pos;
 
   VertPlates::VertPlates(const Grid& g,d S,d phi,d y0,bool blapprox):
     Geom(g,blapprox,true),
@@ -35,7 +36,7 @@ namespace tube{
     cout << "Porosity:          " << phi_<<"\n";
     cout << "Transition surface area: " << S_other << "\n";
     cout << "This Surface area      : " << S_ << "\n";
-    if(transition.Position()==left)
+    if(transition.Position()==pos::left)
       cout << "Smooth transition made on the left side\n";
     else
       cout << "Smooth transition made on the right side\n";
@@ -46,7 +47,7 @@ namespace tube{
   d Transition::percd_other(d x_ov_L) const {
     using math_common::skewsine;
     d percd=perc/100;           // percentage as decimal
-    if(position==left){
+    if(position==pos::left){
       if(x_ov_L<percd)
         return 1-skewsine(x_ov_L/percd);
       else
@@ -72,7 +73,7 @@ namespace tube{
   {
     TRACE(14,"TransitionVertPlates::TransitionVertPlates()");
     setPrismatic(false);
-    if(sideofremote==left)    {
+    if(sideofremote==pos::left)    {
       S_other=other.Sleft();
       phi_other=other.phileft();
       WARN("rh interpolated as well!");

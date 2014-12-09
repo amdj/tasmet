@@ -11,20 +11,20 @@ add_definitions(-DTRACERNAME=nltracer -DARMA_USE_BLAS -DARMA_USE_LAPACK)
 #           read from a pipe; but the GNU assembler has no troubl.
 
 
-AUX_SOURCE_DIRECTORY(tube tubesources)
-AUX_SOURCE_DIRECTORY(var varsources)
-AUX_SOURCE_DIRECTORY(seg segsources)
-AUX_SOURCE_DIRECTORy(sys syssources)
-AUX_SOURCE_DIRECTORy(tube/geom/grid gridsources)
-AUX_SOURCE_DIRECTORy(sol solsources)
-AUX_SOURCE_DIRECTORy(gui guisources)
+AUX_SOURCE_DIRECTORY(src/tube tubesources)
+AUX_SOURCE_DIRECTORY(src/var varsources)
+AUX_SOURCE_DIRECTORY(src/seg segsources)
+AUX_SOURCE_DIRECTORy(src/sys syssources)
+AUX_SOURCE_DIRECTORy(src/tube/geom/grid gridsources)
+AUX_SOURCE_DIRECTORy(src/sol solsources)
+AUX_SOURCE_DIRECTORy(src/gui guisources)
 
-AUX_SOURCE_DIRECTORy(tube/eq tubeeq)
-AUX_SOURCE_DIRECTORy(tube/geom geomsources)
-AUX_SOURCE_DIRECTORy(tube/drag tubedrag)
-AUX_SOURCE_DIRECTORy(tube/heat tubeheat)
-AUX_SOURCE_DIRECTORy(tube/bc tubebc)
-AUX_SOURCE_DIRECTORy(common commonsources)
+AUX_SOURCE_DIRECTORy(src/tube/eq tubeeq)
+AUX_SOURCE_DIRECTORy(src/tube/geom geomsources)
+AUX_SOURCE_DIRECTORy(src/tube/drag tubedrag)
+AUX_SOURCE_DIRECTORy(src/tube/heat tubeheat)
+AUX_SOURCE_DIRECTORy(src/tube/vertex tubeheat)
+AUX_SOURCE_DIRECTORy(src/tube/bc tubebc)
 # set (nonlinear_SRC ${tubesources} ${varsources} ${segsources}
 #   ${syssources}  ${geomsources} ${solsources}
 #   ${varsources} ${commonsources}
@@ -39,12 +39,20 @@ set (nonlinear_SRC ${varsources} ${segsources} ${tubeeq}
 # ${tubedrag}
 
 include_directories(
-  sol
-  sys
-  seg
-  var
-  tube
-  gui
+  include
+  src/sys
+  src/sol
+  src/seg
+  src/var
+  src/tube
+  src/gui
+  src/tube/geom
+  src/tube/geom/grid
+  src/tube/drag
+  src/tube/bc
+  src/tube/vertex
+  src/tube/eq
+  src/tube/heat
   ../common
   ../common/gas
   ../common/interpolate
@@ -52,16 +60,8 @@ include_directories(
   ../common/fsolve  
   ../common/solid
   ../common/rottfuncs
-  models
-  tube/geom
-  tube/geom/grid
-  tube/drag
-  tube/bc
-  tube/eq
-  tube/heat
   /usr/include/umfpack
   )
-AUX_SOURCE_DIRECTORY(models models_sources)
 add_library(gui ${guisources})
 add_library(nonlin SHARED ${nonlinear_SRC})
 

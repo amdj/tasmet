@@ -27,7 +27,7 @@ namespace tube{
     virtual const HeatSource& getHeatSource() const {return noheat;}
     virtual string getName() const {return string("IsentropicTube");}
     virtual segment::Seg* copy() const {TRACE(10,"IsentropicTube copy()");return new IsentropicTube(*this);}
-    virtual void init(const tasystem::Globalconf&);
+    virtual void init(const tasystem::TaSystem&);
     void cleanup();
     virtual ~IsentropicTube();
   };

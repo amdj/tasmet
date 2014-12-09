@@ -21,6 +21,7 @@
   // and a suitable equation of state should hold.
 namespace tube {
   using tasystem::Globalconf;
+  using tasystem::TaSystem;
 
   IsentropicTube::IsentropicTube(const Geom& geom):Tube(geom){
     // Fill vector of gridpoints with data:
@@ -29,8 +30,8 @@ namespace tube {
   IsentropicTube::IsentropicTube(const IsentropicTube& other):Tube(other){
     TRACE(13,"IsentropicTube copy cc");
   }
-  void IsentropicTube::init(const Globalconf& gc){
-    Tube::init(gc);
+  void IsentropicTube::init(const TaSystem& sys){
+    Tube::init(sys);
     for(auto vertex=vvertex.begin();vertex!=vvertex.end();vertex++){
       TubeVertex& cvertex=**vertex;
       cvertex.setIsentropic();

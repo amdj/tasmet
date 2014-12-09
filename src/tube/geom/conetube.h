@@ -4,6 +4,7 @@
 
 #include "geom.h"
 #include "vertplates.h"
+#include "pos.h"
 namespace tube{
 
 
@@ -38,8 +39,8 @@ namespace tube{
     d S_other,phi_other,rh_other;
   public:
     TransitionCylindricalTube(const Grid& g,d r,\
-                              pos TransitionSide,const Geom& other,\
-                              pos sideofremote,d perc=10,bool blapprox=true);
+                              segment::pos TransitionSide,const Geom& other,\
+                              segment::pos sideofremote,d perc=10,bool blapprox=true);
     // Copy constructor only needs to copy all params, so default will
     // suffice.
     virtual ~TransitionCylindricalTube(){}

@@ -5,12 +5,10 @@
 #include "vtypes.h"
 #include "localgeom.h"
 #include "grid.h"
-
+#include "pos.h"
 
 namespace tube {
   SPOILNAMESPACE;
-
-  enum pos{left=0,right=1};
 
   class Geom{
     Grid grid_;

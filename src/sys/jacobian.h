@@ -41,7 +41,7 @@ namespace tasystem{
     JacRow& operator+=(const JacRow& jacrow);
     JacRow& operator*=(const d& val); // Multiply all terms with constant value
 
-    const us& getRowDof() const {return __rowdof;}
+    const int& getRowDof() const {return __rowdof;}
     void setRowDof(us dofnr){__rowdof=dofnr;}
     void show() const;
   };

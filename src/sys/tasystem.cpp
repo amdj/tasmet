@@ -159,31 +159,16 @@ namespace tasystem{
       Neqs+=segs.at(i)->getNEqs();
     return Neqs;
   }
-  void TaSystem::connectSegs(us seg1,us seg2,SegCoupling sc){
-    TRACE(14,"TaSystem::ConnectSegs()");
-    // Basic check if nothing is wrong
-    if(max(seg1,seg2)>=nSegs())
-      {
-        WARN("Segment number is higher than available number of segments. ");
-        return;
-      }
-    WARN("No seg connections!");
-    // segConnections.push_back(SegConnection(seg1,seg2,sc));
-    hasInit=false;
-  }
-
   void TaSystem::show(us detailnr){
     checkInit();
     TRACE(14,"checkInit() done");
     cout << "########################## Showing TaSystem...\n";
     cout << "Showing Global configuration...\n";
     gc.show();
-    if(detailnr>=0){
-      cout << "Now showing segments int TaSystem...\n";
-      for(us i=0;i<nSegs();i++){
-        TRACE(13,"Showing segment "<<i <<"..");
-        segs[i]->show(detailnr);
-      }
+    cout << "Now showing segments int TaSystem...\n";
+    for(us i=0;i<nSegs();i++){
+      TRACE(13,"Showing segment "<<i <<"..");
+      segs[i]->show(detailnr);
     }
   }
   void TaSystem::jacTriplets(TripletList& trips){

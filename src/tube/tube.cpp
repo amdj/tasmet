@@ -7,7 +7,7 @@
  */
 
 #include "tube.h"
-#include "tubebvertex.h"
+#include "tubebcvertex.h"       // which includes tubevertex.h
 #include "interpolate.h"
 #include "globalconf.h"
 #include "geom.h"
@@ -177,13 +177,13 @@ namespace tube {
     }
     VARTRACE(2,ileft);
     VARTRACE(2,iright);
-    vd left=leftvertex.getRes(v)();
-    vd right=rightvertex.getRes(v)();
-    d xleft=leftvertex.localGeom().xL;
-    d xright=rightvertex.localGeom().xL;
-    d relpos=(x-xleft)/(xright-xleft);
-    VARTRACE(5,relpos);
-    return math_common::linearInterpolate(left,right,relpos);
+    // vd left=leftvertex.getRes(v)();
+    // vd right=rightvertex.getRes(v)();
+    // d xleft=leftvertex.localGeom().xL;
+    // d xright=rightvertex.localGeom().xL;
+    // d relpos=(x-xleft)/(xright-xleft);
+    // VARTRACE(5,relpos);
+    // return math_common::linearInterpolate(left,right,relpos);
   }
 
   vd Tube::interpolateResMid(varnr v,d x) const{
@@ -202,15 +202,15 @@ namespace tube {
     }
     VARTRACE(2,ileft);
     VARTRACE(2,iright);
-    const TubeVertex& leftvertex=*static_cast<TubeVertex*>(vvertex[ileft]);
-    const TubeVertex& rightvertex=*static_cast<TubeVertex*>(vvertex[iright]);
-    vd left=leftvertex.getRes(v)();
-    vd right=rightvertex.getRes(v)();
-    d xleft=leftvertex.localGeom().vx;
-    d xright=rightvertex.localGeom().vx;
-    d relpos=(x-xleft)/(xright-xleft);
-    VARTRACE(5,relpos);
-    return math_common::linearInterpolate(left,right,relpos);
+    const TubeVertex& leftvertex=*vvertex[ileft];
+    const TubeVertex& rightvertex=*vvertex[iright];
+    // vd left=leftvertex.getRes(v)();
+    // vd right=rightvertex.getRes(v)();
+    // d xleft=leftvertex.localGeom().vx;
+    // d xright=rightvertex.localGeom().vx;
+    // d relpos=(x-xleft)/(xright-xleft);
+    // VARTRACE(5,relpos);
+    // return math_common::linearInterpolate(left,right,relpos);
   }
   vd Tube::getResAt(us varNr,us freqnr) const{
     assert(varNr<NVARS);

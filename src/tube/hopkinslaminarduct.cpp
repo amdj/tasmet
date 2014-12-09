@@ -6,6 +6,8 @@
 #include "varnr.h"
 namespace tube{
   using tasystem::Globalconf;
+  using tasystem::TaSystem;
+
   HopkinsLaminarDuct::HopkinsLaminarDuct(const Geom& geom,d Tl):
     HopkinsLaminarDuct(geom,Tl,Tl){
     TRACE(15,"HopkinsLaminarDuct::HopkinsLaminarDuct()");

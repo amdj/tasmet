@@ -2,6 +2,7 @@
 
 
 namespace tube{
+  using segment::pos;
 
   ConeTube::ConeTube(const Grid& g,d r1,d r2,bool blapprox):Geom(g,blapprox),rL(r1),rR(r2){
     TRACE(15,"ConeTube::ConeTube()");
@@ -47,7 +48,7 @@ namespace tube{
 
     setPrismatic(false);
     S_=number_pi*pow(r,2);
-    if(sideofremote==left)    {
+    if(sideofremote==pos::left)    {
       S_other=other.Sleft();
       phi_other=other.phileft();
       WARN("rh interpolated as well!");
@@ -96,7 +97,7 @@ namespace tube{
     cout << "This Surface area      : " << S_ << "\n";
     cout << "Transition surface area: " << S_other << "\n";
     cout << "\n";
-    if(transition.Position()==left)
+    if(transition.Position()==pos::left)
       cout << "Smooth transition made on the left side\n";
     else
       cout << "Smooth transition made on the right side\n";

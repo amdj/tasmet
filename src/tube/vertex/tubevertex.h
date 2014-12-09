@@ -71,8 +71,13 @@ namespace tube {
     const LocalGeom& localGeom() const;
     const WeightFactors& weightFactors() const;
 
+    const TubeVertex* left() const {return left_;}
+    const TubeVertex* right() const {return right_;}
+    const Tube& getTube() const {return *tube;}
+    us geti() const {return i;}
+
     virtual const variable::var& pL() const {assert(left_); return p_;}
-    virtual const variable::var& pR() const;
+    virtual const variable::var& pR() const {assert(right_); return right_->pL();}
     const variable::var p() const{return 0.5*(pL()+pR());}
     // These are variables for the left and right vertices, but are on
     // the cell walls for the leftmost and rightmost vertices
@@ -92,11 +97,6 @@ namespace tube {
     virtual const variable::var& Ts() const {return Ts_;}
     virtual const variable::var& TsL() const {assert(left_); return left_->Ts();}
     virtual const variable::var& TsR() const {assert(right_); return right_->Ts();}
-
-    const TubeVertex* left() const {return left_;}
-    const TubeVertex* right() const {return right_;}
-    const Tube& getTube() const {return *tube;}
-    us geti() const {return i;}
 
     void setIsentropic();
     void resetHarmonics();
