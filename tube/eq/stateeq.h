@@ -24,7 +24,7 @@ namespace tube{
     d WLi=0,WLip1=0,WLim1=0; 
   public:
     StateL(const TubeVertex& v):TubeEquation(v){}
-    virtual void init(const WeightFactors&,const Tube&);   
+    virtual void init();   
     tasystem::JacRow jac() const;
     vd error() const;			// Error in momentum equation at node i
   private:

@@ -9,12 +9,13 @@
 #include "tubevertex.h"
 #include "weightfactors.h"
 #include "jacobian.h"
+#include "var.h"
 
 namespace tube{
   using tasystem::Jacobian;
   using tasystem::JacRow;
   using tasystem::JacCol;
-
+  using variable::var;
   void Momentum::show() const{
     cout << "----------------- Momentum equation\n";
     cout << "Wddt   : " << Wddt << "\n";
@@ -124,6 +125,74 @@ namespace tube{
     domg_.subvec(dofnr,dofnr+v.gc->Ns()-1)=domg_full;
     TRACE(0,"Momentum::domg() done");
   }
+  var Momentum::momentumFlow() const {
+    TRACE(3,"Momentum::momentumFlow()");
+    const weightFactors& w=v.weightFactors();
+    vd Ut=v.U().tdata();
+    vd rhot=v.rho().tdata();
+    var res(v.gc);
+    res.settdata(v.gc->fDFT*(rhot%Ut%Ut/w.vSf));
+    return res;
+  }
+  vd Momentum::extrapolateMomentumFlow() const{
+    vd momentumFlow;
+    const WeightFactors& w=v.weightFactors();
+    if(!v.left()){
+      const vd& rhoR=v.rhoR().tdata();
+      const vd& UR=v.UR().tdata();
+      momentumFlow=w.wL1*v.gc->fDFT*(rhoR%UR%UR/w.vSfR);
+      momentumFlow+=w.wL0*momentumFlow()();
+      return momentumFlow;
+    }
+    if(!v.right()){
+      const vd& rhoL=v.rhoL().tdata();
+      const vd& UL=v.UL().tdata();
+      momentumFlow=w.wRNm2*v.gc->fDFT*(rhoL%UL%UL/w.vSfL);
+      momentumFlow+=w.wRNm1*momentumFlow()();
+      return momentumFlow;
+    }
+    else{
+      WARN("SOMETHING REALLY WRONG! Momentumflow tried to be extrapolated on a non-boundary vertex");
+    }
+  }
+  JacRow Momentum::dExtrapolateMassFlow() const{
+    const weightFactors& w=v.weightFactors();
+    JacRow jacrow(-1,4);
+    dmat Utd=v.U().diagt();
+    dmat rhotd=v.rho().diagt();
+
+    if(!v.left()){
+      JacCol dU(v.U(),2.0*w.wL0/w.vSf*v.gc->fDFT\
+                *rhotd*Utd*gc->iDFT);
+      JacCol drho(v.rho(),(w.wL0/w.vSf)*v.gc->fDFT\
+                  *(Utd%Utd)*gc->iDFT);
+
+      dmat UtdR=v.UR().diagt();
+      dmat rhotdR=v.rhoR().diagt();
+      JacCol dUR(v.UR(),2.0*(w.wL1/w.vSfR)v.gc->fDFT\
+                 *rhotdR*UtdR*gc->iDFT);
+      JacCol drhoR(v.rhoR(),(w.wL1/w.vSfR)*v.gc->fDFT\
+                   *UtdR*UtdR*gc->iDFT);
+      jacrow+=dU+=drho+=dUR+=drhoR;
+      return jacrow;
+    }
+    if(!v.right()){
+      JacCol dU(v.U(),2.0*w.wRNm1/w.vSf*v.gc->fDFT\
+                *rhotd*Utd*gc->iDFT);
+      JacCol drho(v.rho(),(w.wRNm1/w.vSf)*v.gc->fDFT\
+                  *(Utd%Utd)*gc->iDFT);
+
+      dmat UtdL=v.UL().diagt();
+      dmat rhotdL=v.rhoL().diagt();
+      JacCol dUL(v.UL(),2.0*(w.wRNm2/w.vSfL)v.gc->fDFT\
+                 *rhotdL*UtdL*gc->iDFT);
+      JacCol drhoL(v.rhoL(),(w.wLNm2/w.vSfL)*v.gc->fDFT\
+                   *UtdL*UtdL*gc->iDFT);
+      jacrow+=dU+=drho+=dUL+=drhoL;
+      return jacrow;
+    }
+  }
+
   JacCol Momentum::dU() const {
     TRACE(0,"Momentum::dU()");
     const dmat& fDFT=v.gc->fDFT;

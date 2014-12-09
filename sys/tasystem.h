@@ -21,6 +21,7 @@
 
 namespace segment{
   class Seg;
+  class Connector;
 }
 
 namespace tasystem{
@@ -30,15 +31,14 @@ namespace tasystem{
   typedef Eigen::SparseMatrix<double> esdmat;
   
   class TripletList;
-  using segment::Seg;
 
   class TaSystem{
   private:
     // vector<SegConnection> segConnections;
     bool hasInit=false;
   protected:
-    vector<Seg*> segs;		
-    vector<Seg*> connectors;    // Yes, connectors are just like segments
+    vector<segment::Seg*> segs;		
+    vector<segment::Seg*> connectors;    // Yes, connectors are just like segments
   public:
     Globalconf gc;    
   public:
@@ -60,7 +60,7 @@ namespace tasystem{
     virtual void init();
     us nSegs() const {return segs.size();}
     us nConnectors() const {return connectors.size();}
-    void addConnector(const Connector&);
+    void addConnector(const segment::Connector&);
 
     void showJac(bool force=false);
     // System with a
@@ -68,18 +68,18 @@ namespace tasystem{
     // ############################## ACCESS METHODS
     void setRes(const evd& res);
     void setNf(us);
-    void addSeg(const Seg& s);	// Add a segment to the
+    void addSeg(const segment::Seg& s);	// Add a segment to the
 					// system. It creates a copy
 					// and ads it to segs by emplace_back.
-    void addSeg(const std::vector<Seg*>&);
+    void addSeg(const std::vector<segment::Seg*>&);
     void resetHarmonics();
     // ############################## ACCESS METHODS
 
     // void delseg(us n); // Not yet implementen. Delete a segment from the system (we have to determine how elaborated the API has to be.)
     void setGc(const Globalconf& gc); // Reset globalconf configuration
 
-    Seg* operator[](us i) const;    
-    Seg* getSeg(us i) const; // Easier for cython wrapping
+    segment::Seg* operator[](us i) const;    
+    segment::Seg* getSeg(us i) const; // Easier for cython wrapping
 
     void setRes(const TaSystem& o);
     

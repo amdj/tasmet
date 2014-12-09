@@ -21,6 +21,17 @@ namespace tube{
     case massFlow:
       return c.extrapolateMassFlow();
       break;
+    case momentumFlow:
+      return m.extrapolateMomentumFlow();
+      break;
+    case energyFlow:
+      return e.extrapolateEnergyFlow();
+      break;
+    case heatFlow:
+      return e.extrapolateHeatFlow();
+      break;
+    case solidHeatFlow:
+      return s.extrapolateSolidHeatFlow();
     }
   }
 
@@ -31,8 +42,18 @@ namespace tube{
     case massFlow:
       return c.dExtrapolateMassFlow();
       break;
+    case momentumFlow:
+      return m.dExtrapolateMomentumFlow();
+      break;
+    case energyFlow:
+      return e.dExtrapolateEnergyFlow();
+      break;
+    case heatFlow:
+      return e.dExtrapolateHeatFlow();
+      break;
+    case solidHeatFlow:
+      return s.dExtrapolateSolidHeatFlow();
     }
-    
   }
   void LeftTubeVertex::init(const TubeVertex* left,const TubeVertex* right){
     TubeVertex::init(left,right);

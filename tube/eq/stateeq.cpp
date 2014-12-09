@@ -70,7 +70,7 @@ namespace tube{
       error+=v.gc->gas.Rs()*(v.gc->fDFT*(WLip1*v.right()->rho().tdata()%v.TR().tdata()));      
     return STATE_SCALE*error;
   }
-  void StateL::init(const WeightFactors& w,const Tube& t) {
+  void StateL::init() {
 
     if(v.left()){
       WLi=-w.wLr;

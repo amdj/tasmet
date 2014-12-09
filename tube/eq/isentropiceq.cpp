@@ -8,7 +8,7 @@ namespace tube{
   using tasystem::JacRow;
   using tasystem::JacCol;
 
-  void Isentropic::init(const WeightFactors&,const Tube&) {
+  void Isentropic::init() {
     TRACE(6,"Isentropic::init(t)");
   }
   JacRow Isentropic::jac() const{

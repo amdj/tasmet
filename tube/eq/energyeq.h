@@ -14,16 +14,15 @@ namespace tube{
 
   public:
     d Wddt=0,Wddtkin=0;
-    d Wgip1=0,Wgip=0,Wgim=0,Wgim1=0;
-
+    d WgiRr=0,WgiRl=0,WgiLr=0,WgiLl=0;
     
-    d WcL=0,WcR=0,WcRR=0,WcLL=0; // Conduction weight factors
+    d WcLl=0,WcLr=0,WcRl=0,WcRr=0; // Conduction weight factors
 
-    d Wkini=0,Wkinim1=0,Wkinip1=0;
+    d Wkin=0,WkinL=0,WkinR=0;
   public:
     Energy(const TubeVertex& v):TubeEquation(v){}
     d Htot() const;             // Total enthalpy flow through this node
-    virtual void init(const WeightFactors&,const Tube&);
+    virtual void init();
     virtual tasystem::JacRow jac() const;
     virtual enum EqType getType() const { return EqType::Ene;}
     virtual void show() const; 
@@ -38,6 +37,9 @@ namespace tube{
                                 // left cell wall
     vd QR() const;              // Heat conduction trough right wall
     vd QL() const;              // Heat conduction trough right wall
+    JacRow dQR() const;
+    JacRow dQL() const;
+
 
     vd kappaL() const;		// Thermal conducticity at the left
     // boundary of the vertex

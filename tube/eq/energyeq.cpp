@@ -32,8 +32,6 @@ namespace tube{
     cout << "Wgim    :"<<Wgim<<"\n";
     cout << "Wgip    :"<<Wgip<<"\n";
     cout << "Wgip1   :"<<Wgip1<<"\n";
-    cout << "WgUip1pL:"<<WgUip1pL<<"\n";
-    cout << "WgUim1pR:"<<WgUim1pR<<"\n";   
     cout << "Wkinim1 :"<<Wkinim1<<"\n";
     cout << "Wkini   :"<<Wkini<<"\n";
     cout << "Wkinip1 :"<<Wkinip1<<"\n";

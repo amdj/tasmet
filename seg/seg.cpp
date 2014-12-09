@@ -14,7 +14,7 @@ namespace segment{
     this->gc=&sys.gc;
     init_=true;
   }  
-  Globalconf& Seg::getGc() const{
+  const Globalconf& Seg::getGc() const{
     assert(gc);
     return *gc;
   }

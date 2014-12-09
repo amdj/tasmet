@@ -2,11 +2,12 @@
 #include "tubevertex.h"
 #include "weightfactors.h"
 #include "jacobian.h"
-
+#include "var.h"
 namespace tube{
 
   using tasystem::JacCol;
   using tasystem::JacRow;
+  using variable::var;
   
   void Continuity::show() const {
     cout << "-------------- Continuity equation\n";
@@ -83,14 +84,14 @@ namespace tube{
       const vd& rhoR=v.rhoR().tdata();
       const vd& UR=v.UR().tdata();
       massFlow=w.wL1*v.gc->fDFT*(rhoR%UR);
-      massFlow+=w.wL0*massFlow();
+      massFlow+=w.wL0*massFlow()();
       return massFlow;
     }
     if(!v.right()){
       const vd& rhoL=v.rhoL().tdata();
       const vd& UL=v.UL().tdata();
       massFlow=w.wRNm2*v.gc->fDFT*(rhoL%UL);
-      massFlow+=w.wRNm1*massFlow();
+      massFlow+=w.wRNm1*massFlow()();
       return massFlow;
     }
     else{

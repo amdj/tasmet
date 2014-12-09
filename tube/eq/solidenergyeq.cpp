@@ -9,8 +9,9 @@ namespace tube{
   using tasystem::JacCol;
 
 
-  void SolidTPrescribed::init(const WeightFactors& w,const Tube& t) {
+  void SolidTPrescribed::init() {
     TRACE(6,"SolidTPrescribed::init(t)");
+    const Tube& t=v.getTube();
     if(t.getName().compare("HopkinsLaminarDuct")==0){
       const HopkinsLaminarDuct& d=dynamic_cast<const HopkinsLaminarDuct&>(t);
       Tsmirror=&d.Tmirror;

@@ -32,7 +32,7 @@ namespace segment{
     bool operator==(const Seg& other) const {return (this==&other);}
     bool isInit() const{return init_;}
     // Pure virtual functions
-    tasystem::Globalconf& getGc() const;
+    const tasystem::Globalconf& getGc() const;
     virtual void init(const tasystem::TaSystem&); // Implementation updates gc
     virtual Seg* copy() const=0;
     virtual void resetHarmonics()=0;

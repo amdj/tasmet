@@ -9,7 +9,7 @@ namespace tube{
     const vd* Tsmirror=NULL;
   public:
     SolidTPrescribed(const TubeVertex& v):TubeEquation(v){}
-    void init(const WeightFactors&,const Tube&);
+    virtual void init();
     virtual enum EqType getType() const { return EqType::Sol;}
     tasystem::JacRow jac() const;
     
