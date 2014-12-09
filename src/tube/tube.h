@@ -24,8 +24,8 @@ namespace tube{
   class HeatSource;
   class TubeVertex;
   class Geom;
-  class LeftTubeVertex;
-  class RightTubeVertex;
+
+  class TubeBcVertex;
 
   class Tube:public segment::Seg {
     void showVertices(us detailnr) const ;   
@@ -52,8 +52,8 @@ namespace tube{
     vd getResAt(varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
     vd getErrorAt(us eqnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
     const TubeVertex& operator[](us i) const;
-    const LeftTubeVertex& leftVertex() const;
-    const RightTubeVertex& rightVertex() const;
+    const TubeBcVertex& leftVertex() const;
+    const TubeBcVertex& rightVertex() const;
     us getNVertex() const {return vvertex.size();}    
     vd Htot() const;
     vd mtot() const;

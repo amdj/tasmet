@@ -24,7 +24,7 @@ AUX_SOURCE_DIRECTORy(src/tube/geom geomsources)
 AUX_SOURCE_DIRECTORy(src/tube/drag tubedrag)
 AUX_SOURCE_DIRECTORy(src/tube/heat tubeheat)
 AUX_SOURCE_DIRECTORy(src/tube/vertex tubeheat)
-AUX_SOURCE_DIRECTORy(src/tube/bc tubebc)
+AUX_SOURCE_DIRECTORy(src/tube/con tubecon)
 # set (nonlinear_SRC ${tubesources} ${varsources} ${segsources}
 #   ${syssources}  ${geomsources} ${solsources}
 #   ${varsources} ${commonsources}
@@ -33,7 +33,7 @@ AUX_SOURCE_DIRECTORy(src/tube/bc tubebc)
 set (nonlinear_SRC ${varsources} ${segsources} ${tubeeq}
   ${geomsources} ${syssources} ${tubeheat} ${tubedrag}
   ${varsources} ${commonsources} ${gridsources}
-  ${gridsources} ${tubesources}
+  ${gridsources} ${tubesources} ${tubecon}
   )
 
 # ${tubedrag}
@@ -49,7 +49,7 @@ include_directories(
   src/tube/geom
   src/tube/geom/grid
   src/tube/drag
-  src/tube/bc
+  src/tube/con
   src/tube/vertex
   src/tube/eq
   src/tube/heat

@@ -7,7 +7,8 @@
  */
 
 #include "tube.h"
-#include "tubebcvertex.h"       // which includes tubevertex.h
+#include "lefttubevertex.h"       // which includes tubebcvertex.h
+#include "righttubevertex.h"       // which includes tubebcvertex.h
 #include "interpolate.h"
 #include "globalconf.h"
 #include "geom.h"

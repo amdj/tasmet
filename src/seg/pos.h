@@ -5,4 +5,7 @@
 namespace segment{
   enum pos{left=0,right=1};
 }
+namespace tube{
+  typedef segment::pos pos;
+}
 #endif /* _POS_H_ */

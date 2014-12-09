@@ -9,6 +9,7 @@
 #include "tasystem.h"
 #include "solver.h"
 #include "grid.h"
+#include "pressurebc.h"
 #include <limits>
 #include <boost/archive/text_oarchive.hpp>
 
@@ -76,6 +77,7 @@ int main(int argc,char* argv[]) {
   pL.set(0,3.14);
   if(Nf>0)
     pL.set(1,1.0);
+  PressureBc p(pL,0,pos::left);
   // t1.init(gc);
   // t1.show(1);
   // tube::LeftPressure bcleft(pL);
