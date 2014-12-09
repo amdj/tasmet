@@ -13,6 +13,27 @@ namespace tube{
     TsL_=var(gc);
 
   }
+  vd LeftTubeBcVertex::extrapolateQuant(physquant q) const {
+    TRACE(10,"LeftTubeVertex::extrapolateQuant()");
+    const WeightFactors& w=v.weightFactors();
+
+    switch(q){
+    case massFlow:
+      return c.extrapolateMassFlow();
+      break;
+    }
+  }
+
+  JacRow LeftTubeVertex::dExtrapolateQuant(physquant q) const{
+    TRACE(10,"LeftTubeVertex::dExtrapolateQuant()");
+    const WeightFactors& w=v.weightFactors();
+    switch(q){
+    case massFlow:
+      return c.dExtrapolateMassFlow();
+      break;
+    }
+    
+  }
   void LeftTubeVertex::init(const TubeVertex* left,const TubeVertex* right){
     TubeVertex::init(left,right);
     assert(!left);

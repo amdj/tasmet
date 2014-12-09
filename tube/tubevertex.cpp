@@ -10,7 +10,6 @@ namespace tube{
 
   TubeVertex::TubeVertex(us i,const Tube& tube):
     i(i),
-    lg(tube.geom(),i),
     tube(&tube),
     gc(tube.gc),
     c(*this),
@@ -58,6 +57,16 @@ namespace tube{
     eqs.push_back(&se);    
 
   }
+  TubeVertex::~TubeVertex(){
+    delete w_;
+  }
+  const LocalGeom& TubeVertex::localGeom() const{
+    return weightFactors();
+  }
+  const WeightFactors& TubeVertex::weightFactors() const{
+    assert(w_);
+    return *w_;
+  }
   d TubeVertex::getCurrentMass() const{
     return rho_(0)*lg.vVf;
   }
@@ -67,13 +76,15 @@ namespace tube{
     this->left_=left;
     this->right_=right;
     assert(tube);               // *SHOULD* be a valid pointer
-    WeightFactors w(*this);
-    c.init(w,*tube);
-    m.init(w,*tube);
-    e.init(w,*tube);
+    if(w_)
+      delete w_;
+    w_=new WeightFactors w(*this);
+    c.init(*tube);
+    m.init(*tube);
+    e.init(*tube);
     // s.init(w,*tube);
-    sL.init(w,*tube);
-    is.init(w,*tube);    
+    sL.init(*tube);
+    is.init(*tube);    
 
   }
   us TubeVertex::getNDofs() const{

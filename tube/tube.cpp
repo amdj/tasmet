@@ -21,10 +21,11 @@
   // solution. Moreover, we have equations in each gridpoint. More
   // precisely, in the final solution the continuity, momentum, energy
   // and a suitable equation of state should hold.
-using tasystem::Globalconf;
-using tasystem::Jacobian;
 
 namespace tube {
+  using tasystem::TaSystem;
+  using tasystem::Globalconf;
+  using tasystem::Jacobian;
 
   Tube::Tube(const Geom& geom):Seg(),geom_(geom.copy()){
     TRACE(13,"Tube constructor()...");
@@ -78,9 +79,9 @@ namespace tube {
     return ndofs;
   }  
 
-  void Tube::init(const tasystem::Globalconf& g){
+  void Tube::init(const tasystem::TaSystem& sys){
     TRACE(13,"Tube::Init()");
-    Seg::init(g);
+    Seg::init(sys);
     cleanup_vvertex();
     TRACE(13,"Filling vertices. Current size:"<<vvertex.size());
       // Left *probable* boundary condition
@@ -161,6 +162,7 @@ namespace tube {
   }
   vd Tube::interpolateResStaggered(varnr v,d x) const{
     TRACE(2,"Tube::interpolateResStaggered("<<v<<","<<x<<")");
+    WARN("out of order!");
     us leftpos=0;
     assert(x>=0);
     us iright=0,ileft;
@@ -175,8 +177,6 @@ namespace tube {
     }
     VARTRACE(2,ileft);
     VARTRACE(2,iright);
-    const TubeVertex& leftvertex=*static_cast<TubeVertex*>(vvertex[ileft]);
-    const TubeVertex& rightvertex=*static_cast<TubeVertex*>(vvertex[iright]);
     vd left=leftvertex.getRes(v)();
     vd right=rightvertex.getRes(v)();
     d xleft=leftvertex.localGeom().xL;

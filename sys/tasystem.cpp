@@ -49,9 +49,12 @@ namespace tasystem{
     for (us i=0; i < segs.size(); ++i) {
       delete segs[i];
     }
+    for (us i=0; i < connectors.size(); ++i) {
+      delete connectors[i];
+    }
     segs.clear();
-    WARN("No seg connections");
-    // segConnections.clear();
+    connectors.clear();
+
     hasInit=false;
   }
   void TaSystem::addSeg(const std::vector<Seg*>& segs){
@@ -103,14 +106,12 @@ namespace tasystem{
     TRACE(25,"Address gc:" <<&gc);
     us i=0;
     WARN("No seg connections");
-    // for(auto v=segConnections.begin();v!=segConnections.end();++v){
-    //   TRACE(90,"Connecting segment connection " << i << "...");
-    //   coupleSegs(*v,*this);
-    //   i++;
-    // }
 
-    for(auto seg=segs.begin();seg!=segs.end();seg++)      {
-      (*seg)->init(gc);
+    for(auto seg=segs.begin();seg!=segs.end();seg++) {
+      (*seg)->init(*this);
+    }
+    for(auto con=connectors.begin();con!=connectors.end();con++) {
+      (*con)->init(*this);
     }
 
     // Do some post-sanity checks

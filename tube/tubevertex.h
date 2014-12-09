@@ -28,8 +28,8 @@ namespace tube {
     //Gridpoint at a position
     //in a Tube
     us i;                       // number of this vertex
-    LocalGeom lg;
     const Tube* tube=NULL;
+    WeightFactors* w_=NULL;
   public:
     const tasystem::Globalconf* gc=NULL;
   protected:
@@ -61,11 +61,13 @@ namespace tube {
   public:
 
     TubeVertex(us i,const Tube&);
-    virtual ~TubeVertex(){}     // Will be derived from
+    virtual ~TubeVertex();     // Deletes weightfactors instance
+
     virtual void init(const TubeVertex* left,const TubeVertex* right);   
 
     // Get methods
-    const LocalGeom& localGeom() const {return lg;}
+    const LocalGeom& localGeom() const;
+    const WeightFactors& weightFactors() const;
 
     virtual const variable::var& pL() const {assert(left_); return p_;}
     virtual const variable::var& pR() const;

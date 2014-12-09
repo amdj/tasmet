@@ -13,7 +13,7 @@ namespace tube{
 
   enum varnr{rho=RHONR,U=UNR,T=TNR,p=PNR,Ts=TSNR};
 
-
+  enum physquant{massFlow,momentumFlow,energyFlow,heatFlow,solidHeatFlow};
 }                // namespace tube
 
 #endif /* _VARNR_H_ */

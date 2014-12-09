@@ -33,7 +33,7 @@ namespace tube{
     TubeEquation(const TubeVertex& v):v(v){TRACE(15,"TubeEquation(v)");}
     void setDofNr(us Dofnr){dofnr=Dofnr;}
     us getDofNr(){return dofnr;}    
-    virtual void init(const WeightFactors& w,const Tube& t)=0;
+    virtual void init()=0;
     virtual enum EqType getType() const { return EqType::Non;}
 
     virtual tasystem::JacRow jac() const=0;		// Returns the local Jacobian of this equation

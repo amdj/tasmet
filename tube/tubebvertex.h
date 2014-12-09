@@ -3,38 +3,61 @@
 #define _TUBEBVERTEX_H_
 
 #include "tubevertex.h"
+#include "varnr.h"
 
-
+namespace segment{
+  class Connector;
+}
+namespace tasystem{
+  class JacRow;
+}
 namespace tube{
-  // enum connectpos{ left,right};	// Where to connect the boundary condition.
-  
+
+  enum pos{ left,right};	// Where to connect the boundary condition.
   class Tube;
 
-  class LeftTubeVertex:public TubeVertex{
-    variable::var TL_,pL_,TsL_,UL_,rhoL_;
+  class TubeBcVertex{
+    segment::Connector* con;
   public:
+    virtual pos getPos() const=0;
+    virtual ~TubeBcVertex(){}
+    vd extrapolateQuant(physquant) const=0;
+    JacRow dExtrapolateQuant(physquant) const=0;
+  };
+  class LeftTubeVertex:public TubeVertex,TubeBcVertex{
+
+  public:
+    
     LeftTubeVertex(us i,const Tube& t);
     virtual void init(const TubeVertex* left,const TubeVertex* right);
     virtual ~LeftTubeVertex(){}
-    virtual const variable::var& UL() const {return UL_;}
-    virtual const variable::var& pL() const {return pL_;}
-    virtual const variable::var& TL() const {return TL_;}
-    virtual const variable::var& TsL() const {return TsL_;}
+
+    virtual pos getPos() const {return pos::left;}
+
+    virtual const variable::var& UL() const;
+    virtual const variable::var& pL() const;
+    virtual const variable::var& TL() const;
+    virtual const variable::var& TsL() const;
     virtual void show(us detailnr=1) const;
-};  
+  
+  };  
+
   class RightTubeVertex:public TubeVertex{
-    variable::var TR_,pR_,TsR_,UR_,rhoR_;
   public:
     RightTubeVertex(us i,const Tube& t);
     virtual ~RightTubeVertex(){}
     virtual void init(const TubeVertex* left,const TubeVertex* right);
-    virtual const variable::var& rhoR() const {return rhoR_;}
-    virtual const variable::var& UR() const {return UR_;}
-    virtual const variable::var& pR() const {return pR_;}
-    virtual const variable::var& TR() const {return TR_;}
-    virtual const variable::var& TsR() const {return TsR_;}
+    virtual pos getPos() const {return pos::right;}
+
+
+    virtual const variable::var& rhoR() const;
+    virtual const variable::var& UR() const;
+    virtual const variable::var& pR() const;
+    virtual const variable::var& TR() const;
+    virtual const variable::var& TsR() const;
     virtual void show(us detailnr=1) const;
-};  
+
+  };  
 
 } // namespace tube
 

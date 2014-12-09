@@ -15,7 +15,7 @@ namespace tube{
   public:
     Isentropic(const TubeVertex& v):TubeEquation(v){}
     virtual TubeEquation* copy() const {return new Isentropic(*this);}    
-    virtual void init(const WeightFactors&,const Tube&);    
+    virtual void init(;    
     virtual enum EqType getType() const { return EqType::Ise;}
     virtual vd error() const;			// Error in Energy equation at node i
     virtual tasystem::JacRow jac() const;

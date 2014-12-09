@@ -19,7 +19,9 @@
 #define MAXSEGS 30
 #include "arma_eigen.h"
 
-namespace segment{class Seg;}
+namespace segment{
+  class Seg;
+}
 
 namespace tasystem{
   SPOILNAMESPACE
@@ -36,6 +38,7 @@ namespace tasystem{
     bool hasInit=false;
   protected:
     vector<Seg*> segs;		
+    vector<Seg*> connectors;    // Yes, connectors are just like segments
   public:
     Globalconf gc;    
   public:
@@ -55,8 +58,10 @@ namespace tasystem{
     virtual void setRes(const vd& resvec);	// Set result vector
     virtual esdmat jac(d dummy=-1);		// Return Jacobian matrix
     virtual void init();
-    us getNSegs() const {return segs.size();}
-    void connectSegs(us seg1,us seg2,SegCoupling);
+    us nSegs() const {return segs.size();}
+    us nConnectors() const {return connectors.size();}
+    void addConnector(const Connector&);
+
     void showJac(bool force=false);
     // System with a
     // vector of segments

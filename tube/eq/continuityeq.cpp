@@ -1,7 +1,6 @@
 #include "continuityeq.h"
 #include "tubevertex.h"
 #include "weightfactors.h"
-#include "artvisco.h"
 #include "jacobian.h"
 
 namespace tube{
@@ -12,78 +11,111 @@ namespace tube{
   void Continuity::show() const {
     cout << "-------------- Continuity equation\n";
     cout << "Wddt : " << Wddt << "\n";
-    cout << "Wim1 : " << Wim1 << "\n";
+    cout << "WL : " << WL << "\n";
     cout << "Wi   : " << Wi  << "\n";
-    cout << "Wip1 : " << Wip1 << "\n";    
-    #ifdef CONT_VISCOSITY
-    cout << "Artificial viscosity turned ON for continuity equation\n";
-    #else
-    cout << "Artificial viscosity turned OFF for continuity equation\n";
-    #endif
-    
+    cout << "WR : " << WR << "\n";    
   }
-  void Continuity::init(const WeightFactors& w,const Tube& t){
+  void Continuity::init(){
     TRACE(8,"Continuity::init(tube)");
+    const WeightFactors& w=v.weightFactors();
     Wddt=w.vVf;
 
     if(v.left()&&v.right()){
-      Wim1=-w.wLl;
+      WL=-w.wLl;
       Wi=w.wRl-w.wLr;
-      Wip1=w.wRr;
+      WR=w.wRr;
     }
     else if(v.right()){         // Leftmost vertex
       // Leftmost vertex
       Wi=w.wRl;
-      Wip1=w.wRr;
-      Wim1=-1;
+      WR=w.wRr;
+      WL=-1;
     }
     else if(v.left()){          // Rightmost vertex
       // Leftmost vertex
       Wi=-w.wLr;
-      Wip1=1;
-      Wim1=-w.wLl;
+      WR=1;
+      WL=-w.wLl;
     }
-
   } // init
-
+  var Continuity::massFlow() const{
+    return v.rho()*v.U();
+  }
   JacRow Continuity::jac() const{
     TRACE(6,"Continuity::jac()");
     JacRow jac(dofnr,6);
     TRACE(0,"Continuity, dofnr jac:"<< dofnr);
-    jac.addCol(drhoi());
-    jac.addCol(dUi());
-    if(v.left()){
-      jac.addCol(drhoim1());    
-      jac.addCol(dUim1());
-    }
-    if(v.right()){
-      jac.addCol(drhoip1());
-      jac.addCol(dUip1());
-    }
+    jac.addCol(drho());
+    jac.addCol(dU());
+    jac.addCol(drhoL());    
+    jac.addCol(dUL());
+    jac.addCol(drhoR());
+    jac.addCol(dUR());
+
     return jac;
   }
-  
   vd Continuity::error() const {	
     TRACE(6,"Continuity::Error()");
     vd error(v.gc->Ns(),fillwith::zeros);
     error+=Wddt*v.gc->DDTfd*v.rho()();
     error+=Wi*v.gc->fDFT*(v.rho().tdata()%v.U().tdata());
     if(v.left()){
-      const vd& rhoim1=v.rhoL().tdata();
-      const vd& Uim1=v.UL().tdata();
-      error+=Wim1*v.gc->fDFT*(rhoim1%Uim1);
+      const vd& rhoL=v.rhoL().tdata();
+      const vd& UL=v.UL().tdata();
+      error+=WL*v.gc->fDFT*(rhoL%UL);
     }
     // TRACE(10,"Right:,"<<v.right());    
     if(v.right()){
       // Standard implementation of a no-slip (wall) boundary
       // condition
-      const vd& rhoip1=v.rhoR().tdata();
-      const vd& Uip1=v.UR().tdata();
-      error+=Wip1*v.gc->fDFT*(rhoip1%Uip1);
+      const vd& rhoR=v.rhoR().tdata();
+      const vd& UR=v.UR().tdata();
+      error+=WR*v.gc->fDFT*(rhoR%UR);
     }
     // (Boundary) source term
     error+=v.csource();
     return error;
+  }
+  vd Continuity::extrapolateMassFlow() const{
+    vd massFlow;
+    const WeightFactors& w=v.weightFactors();
+    if(!v.left()){
+      const vd& rhoR=v.rhoR().tdata();
+      const vd& UR=v.UR().tdata();
+      massFlow=w.wL1*v.gc->fDFT*(rhoR%UR);
+      massFlow+=w.wL0*massFlow();
+      return massFlow;
+    }
+    if(!v.right()){
+      const vd& rhoL=v.rhoL().tdata();
+      const vd& UL=v.UL().tdata();
+      massFlow=w.wRNm2*v.gc->fDFT*(rhoL%UL);
+      massFlow+=w.wRNm1*massFlow();
+      return massFlow;
+    }
+    else{
+      WARN("SOMETHING REALLY WRONG! Massflow tried to be extrapolated on a non-boundary vertex");
+    }
+  }
+  JacRow Continuity::dExtrapolateMassFlow() const{
+    const weightFactors& w=v.weightFactors();
+    JacRow jacrow(-1,4);
+    if(!v.left()){
+      JacCol dU(v.U(),w.wL0*v.gc->fDFT*v.rho().diagt()*gc->iDFT);
+      JacCol drho(v.rho(),w.wL0*v.gc->fDFT*v.U().diagt()*gc->iDFT);
+      JacCol dUR(v.UR(),w.wL1*v.gc->fDFT*v.rhoR().diagt()*gc->iDFT);
+      JacCol drhoR(v.rhoR(),w.wL1*v.gc->fDFT*v.UR().diagt()*gc->iDFT);
+      jacrow+=dU+=drho+=dUR+=drhoR;
+      return jacrow;
+    }
+    if(!v.right()){
+      JacCol dU(v.U(),w.wRNm1*v.gc->fDFT*v.rho().diagt()*gc->iDFT);
+      JacCol drho(v.rho(),w.wRNm1*v.gc->fDFT*v.U().diagt()*gc->iDFT);
+      JacCol dUL(v.UL(),w.wRNm2*v.gc->fDFT*v.rhoL().diagt()*gc->iDFT);
+      JacCol drhoL(v.rhoL(),w.wRNm2*v.gc->fDFT*v.UL().diagt()*gc->iDFT);
+      jacrow+=dU+=drho+=dUL+=drhoL;
+      return jacrow;
+    }
   }
   void Continuity::domg(vd& domg_) const{
     TRACE(0,"Continuity::domg()");
@@ -91,37 +123,32 @@ namespace tube{
     // domg_.subvec(dofnr+1,dofnr+2)=domg_full.subvec(1,2); 
     domg_.subvec(dofnr,dofnr+v.gc->Ns()-1)=domg_full;     
   }
-  JacCol Continuity::drhoi() const {
-    TRACE(0,"Continuity::drhoi()");
-    JacCol drhoi(v.rho(),Wddt*v.gc->DDTfd);		// Initialize and add first term
-    drhoi+=Wi*v.gc->fDFT*v.U().diagt()*v.gc->iDFT;
-    return drhoi;
+  JacCol Continuity::drho() const {
+    TRACE(0,"Continuity::drho()");
+    JacCol drho(v.rho(),Wddt*v.gc->DDTfd);		// Initialize and add first term
+    drho+=Wi*v.gc->fDFT*v.U().diagt()*v.gc->iDFT;
+    return drho;
   }
-  JacCol Continuity::dUi() const {
+  JacCol Continuity::dU() const {
     TRACE(0,"Continuity::dUi()");
-    JacCol dUi(v.U(),Wi*v.gc->fDFT*v.rho().diagt()*v.gc->iDFT);
-    return dUi;
+    return JacCol(v.U(),Wi*v.gc->fDFT*v.rho().diagt()*v.gc->iDFT);
   }
-  JacCol Continuity::dUip1() const {
-    TRACE(0,"Continuity::dUip1()");
-    JacCol dUip1(v.UR(),Wip1*v.gc->fDFT*v.rhoR().diagt()*v.gc->iDFT);
-    return dUip1;
-  }
-  JacCol Continuity::dUim1() const {
-    TRACE(0,"Continuity::dUim1()");
-    JacCol dUim1(v.UL(),Wim1*v.gc->fDFT*v.rhoL().diagt()*v.gc->iDFT);
-    return dUim1;
-  }
-  JacCol Continuity::drhoip1() const {
-    TRACE(0,"Continuity::drhoip1()");
-    JacCol drhoip1(v.rhoR(),Wip1*v.gc->fDFT*v.UR().diagt()*v.gc->iDFT);
-    return drhoip1;
-  }
-  JacCol Continuity::drhoim1() const {
-    TRACE(0,"Continuity::drhoim1()");
+  JacCol Continuity::dUR() const {
+    TRACE(0,"Continuity::dUR()");
+    return JacCol(v.UR(),WR*v.gc->fDFT*v.rhoR().diagt()*v.gc->iDFT);
 
-    JacCol drhoim1(v.rhoL(),Wim1*v.gc->fDFT*v.UL().diagt()*v.gc->iDFT);
-    return drhoim1;
+  }
+  JacCol Continuity::dUL() const {
+    TRACE(0,"Continuity::dUL()");
+    return JacCol(v.UL(),WL*v.gc->fDFT*v.rhoL().diagt()*v.gc->iDFT);
+  }
+  JacCol Continuity::drhoR() const {
+    TRACE(0,"Continuity::drhoR()");
+    return JacCol(v.rhoR(),WR*v.gc->fDFT*v.UR().diagt()*v.gc->iDFT);
+  }
+  JacCol Continuity::drhoL() const {
+    TRACE(0,"Continuity::drhoL()");
+    return JacCol(v.rhoL(),WL*v.gc->fDFT*v.UL().diagt()*v.gc->iDFT);
   }
 } // Namespace tube
 

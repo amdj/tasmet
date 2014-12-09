@@ -13,7 +13,7 @@ namespace tube{
   }
   JacRow Isentropic::jac() const{
     TRACE(6,"Isentropic::jac()");
-    JacRow jac(dofnr,2);
+    JacRow jac(dofnr,3);
     TRACE(0,"Isentropic, dofnr jac:"<< dofnr);
     jac+=dpL();
     jac+=dpR();    
@@ -36,7 +36,6 @@ namespace tube{
 
     err+=(p0vec_freqdomain+0.5*(v.pL()()+v.pR()()))/p0;
     err+=-v.gc->fDFT*pow(v.rho().tdata()/rho0,gamma);
-
     
     TRACE(6,"Isentropic::Error() done");
     return err;

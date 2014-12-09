@@ -14,22 +14,24 @@
 #include "drag.h"
 #include "heat.h"
 
-
 namespace tasystem{
-  class Globalconf;
   class Jacobian;
+  class TaSystem;
 }
 namespace tube{
   SPOILNAMESPACE
   class DragResistance;
   class HeatSource;
-  class TubeBcVertex;
+  class TubeVertex;
   class Geom;
+  class LeftTubeVertex;
+  class RightTubeVertex;
 
   class Tube:public segment::Seg {
     void showVertices(us detailnr) const ;   
     Geom* geom_;			// The geometry    
     Tube& operator=(const Tube&); // no copies allowed
+
   protected:
     std::vector<TubeVertex*> vvertex;
   public:
@@ -38,7 +40,7 @@ namespace tube{
     us getNCells() const;
 						   // to some segment
 						   // on right side
-    virtual void init(const tasystem::Globalconf& gc);
+    virtual void init(const tasystem::TaSystem&);
     virtual ~Tube();
 
     void setRes(const Seg& other); // To copy from a
@@ -50,8 +52,8 @@ namespace tube{
     vd getResAt(varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
     vd getErrorAt(us eqnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
     const TubeVertex& operator[](us i) const;
-    const TubeBcVertex& leftVertex() const;
-    const TubeBcVertex& rightVertex() const;
+    const LeftTubeVertex& leftVertex() const;
+    const RightTubeVertex& rightVertex() const;
     us getNVertex() const {return vvertex.size();}    
     vd Htot() const;
     vd mtot() const;

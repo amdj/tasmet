@@ -40,18 +40,22 @@ namespace variable {
     // var operator()(const var&); //Copy constructor
     // Get methods
     const Globalconf& gc() const {return *gc__;}
-    void setGc(const Globalconf& gc){gc__=&gc;}
     const d& operator()(us i) const;				   // Extract amplitude data result at specific frequency    
 
     const vd& operator()() const { return amplitudedata;} //Extract result
 						   //vector
-    void resetHarmonics();
     vc getcRes() const; //Implementation for complex amplitude vector
-    const vd& tdata() const  {return timedata; } //Get time data vector
-    d tdata(d t) const; //Extract the estimated value for a given time t
+    const vd& tdata() const  {return timedata; } //Get time data
+                                                 //vector
+    d tdata(d t) const; //Extract the estimated value for a given time
+                        //t
     dmat diagt() const {return diagmat(timedata);}
     dmat diag() const {return diagmat(amplitudedata);}    
     //Set methods
+
+    void setGc(const Globalconf& gc){gc__=&gc;}
+    void resetHarmonics();
+
     void set(us freq,double val); //Set result vector at specific frequency
     void set(const vd& values); //Set result vector to these values
     void set(const vc& values); //Set result vector to these values, complex numbers

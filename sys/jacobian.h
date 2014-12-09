@@ -29,13 +29,15 @@ namespace tasystem{
   };
 
   class JacRow{                 // Row in Jacobian matrix
+    int __rowdof=-1;            // Number of first row, default is
+                                // invalid state
   public:
-    us __rowdof;                  // Number of first row
     vector<JacCol> jaccols;     // Column blocks
     JacRow(us rowdofnr,us cols=6);
     JacRow(const variable::var&,us cols=6); // Pick rowdofnr from a variable
     void addCol(const JacCol& jaccol);
     JacRow& operator+=(const JacCol& jaccol){addCol(jaccol); return *this;}
+    JacRow& operator+=(const JacRow& jacrow);
     JacRow& operator*=(const d& val); // Multiply all terms with constant value
 
     const us& getRowDof() const {return __rowdof;}

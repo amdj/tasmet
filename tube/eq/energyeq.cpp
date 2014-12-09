@@ -13,7 +13,6 @@
 #include "weightfactors.h"
 #include "tube.h"
 #include "jacobian.h"
-#include "artvisco.h"
 
 
 namespace tube{
@@ -81,12 +80,26 @@ namespace tube{
     
 
     // TRACE(1,"dxm:"<< dxm);
-    // TRACE(1,"dxp:"<< dxp);
-    Wc1=-w.SfL/(w.vx-w.vxm1);
-    Wc2= w.SfL/(w.vx-w.vxm1);
-    Wc3= w.SfR/(w.vxp1-w.vx);
-    Wc4=-w.SfR/(w.vxp1-w.vx);
 
+    // TRACE(1,"dxp:"<< dxp);
+    if(v.left()){
+      WcLL=-w.SfL/(w.vx-w.vxm1);
+      WcL=  w.SfL/(w.vx-w.vxm1);
+    }
+    else{
+      WcLL=-w.SfL/(w.vx);
+      WcL=  w.SfL/(w.vx);
+    }
+    if(left()&&right()){
+
+      Wc2= w.SfL/(w.vx-w.vxm1);
+      Wc3= w.SfR/(w.vxp1-w.vx);
+      Wc4=-w.SfR/(w.vxp1-w.vx);
+    }
+    else if(v.left()){
+
+
+}
   }
   JacRow Energy::jac() const{
     TRACE(6,"Energy::jac()");
@@ -110,6 +123,10 @@ namespace tube{
     }
     jac*=ENERGY_SCALE;
     return jac;    
+  }
+  vd Energy::QR() const{
+    return kappaR()*(TR()()+T()())/
+
   }
   d Energy::Htot() const{
     TRACE(10,"Energy::Htot()");

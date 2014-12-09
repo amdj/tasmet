@@ -42,6 +42,13 @@ namespace tasystem{
       col->data()*=val;
     return *this;
   }
+  JacRow& operator+=(const JacRow& other){
+    TRACE(2,"Jacobian::operator*=()");
+    this->jaccols.reserve(this->jaccols.capacity()+other.jaccols.size()-this->jaccols.size());
+    for(auto col=other.jaccols.begin();col!=other.jaccols.end();col++)
+      this->operator+=(*col);
+    return *this;
+  }
 
   
   
