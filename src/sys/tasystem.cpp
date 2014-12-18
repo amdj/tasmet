@@ -2,9 +2,11 @@
 #include "triplets.h"
 #include "jacobian.h"
 #include "seg.h"
+#include "connector.h"
 
 namespace tasystem{
   using segment::Seg;
+  using segment::Connector;
   using math_common::armaView;
 
   inline us max(us s,us t){  return s? s>=t : t;}
@@ -34,7 +36,13 @@ namespace tasystem{
       addSeg(*o.getSeg(i));
       assert(nSegs()==i+1);
     }
-    WARN("No seg connections");
+    for(us i=0;i<o.nConnectors();i++) {
+      TRACE(14,"Copying connector "<<i << "...");
+      assert(o.connectors[i]);
+      addConnector(*o.connectors[i]);
+      assert(nConnectors()==i+1);
+    }
+
     // segConnections=o.segConnections;
     hasInit=false;
 
@@ -70,6 +78,13 @@ namespace tasystem{
     segs.emplace_back(seg.copy());
     segs[nSegs()-1]->setNumber(nSegs()-1);
   }
+  void TaSystem::addConnector(const Connector& con){
+    TRACE(14,"TaSystem::addConnector()");
+    hasInit=false;
+    connectors.emplace_back(con.copy());
+    connectors[nSegs()-1]->setNumber(nSegs()-1);
+  }
+
   Seg* TaSystem::getSeg(us i) const { return (*this)[i];}
   
   Seg* TaSystem::operator[](us i) const {
@@ -81,29 +96,26 @@ namespace tasystem{
   }
   void TaSystem::setDofEqNrs(){
     TRACE(14,"TaSystem::setDofnrs()");
-
-    us Ndofs=0;
     us firstdof=0;
     us firsteq=0;
-    us Nsegs=nSegs();
-    for(us i=0;i<Nsegs;i++)      {    
-      // Set the dofnrs
-      segs.at(i)->setDofNrs(firstdof);
-      segs.at(i)->setEqNrs(firsteq);
-      us thisndofs=segs.at(i)->getNDofs();
-      us thisneqs=segs.at(i)->getNEqs();      
-      Ndofs+=thisndofs;
-      TRACE(12,"Ndofs for segment "<< i << ": "<<thisndofs);
-      TRACE(12,"Neqs for segment "<< i << ": "<<thisneqs);      
-      firstdof+=thisndofs;
-      firsteq+=segs.at(i)->getNEqs();
 
+    for(auto seg=segs.begin();seg!=segs.end();seg++) {
+      // Set the dofnrs
+      (*seg)->setDofNrs(firstdof);
+      (*seg)->setEqNrs(firsteq);
+      firstdof+=(*seg)->getNDofs();
+      firsteq+=(*seg)->getNEqs();
     }
+    for(auto con=connectors.begin();con!=connectors.end();con++) {
+      (*con)->setEqNrs(firsteq);
+      firsteq+=(*con)->getNEqs();
+    }
+
   }
   void TaSystem::init(){
     TRACE(14,"TaSystem::init()");
     us Nsegs=nSegs();
-    TRACE(25,"Address gc:" <<&gc);
+    // TRACE(25,"Address gc:" <<&gc);
     us i=0;
     WARN("No seg connections");
 
@@ -117,20 +129,22 @@ namespace tasystem{
     // Do some post-sanity checks
     setDofEqNrs();
     us Ndofs=getNDofs();
+    gc.setSys(this);
     TRACE(10,"Segment initialization done. Total NDofs:"<< Ndofs);
     if(Ndofs>MAXNDOFS)      {
-      WARN("Way too many DOFS required: Ndofs=" <<Ndofs << ". Exiting...\n");
-      exit(1);
+      WARN("Way too many DOFS required: Ndofs=" <<Ndofs << ". Initialization failed\n");
+      return;
     }
+
     if(getNDofs()!=getNEqs()){
-      WARN("Ndofs on TaSystem level not equal to number of equations!");
+      WARN("Ndofs on TaSystem level not equal to number of equations! Initialization failed.");
       WARN("Ndofs="<< getNDofs());
       WARN("Neqs ="<< getNEqs());
-      exit(1);
+      return;
+      // exit(1);
     }
     // Last, but not least: initialize a pointer to this tasystem in
     // globalconf
-    gc.setSys(this);
     hasInit=true;
   }
   void TaSystem::setNf(us Nf){
@@ -157,15 +171,24 @@ namespace tasystem{
     us Neqs=0;
     for(us i=0;i<nSegs();i++)
       Neqs+=segs.at(i)->getNEqs();
+    for(us i=0;i<nConnectors();i++)
+      Neqs+=connectors.at(i)->getNEqs();
+
     return Neqs;
   }
   void TaSystem::show(us detailnr){
+    TRACE(10,"TaSystem::show()");
     checkInit();
     TRACE(14,"checkInit() done");
     cout << "########################## Showing TaSystem...\n";
     cout << "Showing Global configuration...\n";
     gc.show();
-    cout << "Now showing segments int TaSystem...\n";
+    cout << "Now showing connectors in TaSystem...\n";
+    for(us i=0;i<nConnectors();i++){
+      TRACE(13,"Showing connector"<<i <<"..");
+      connectors[i]->show(detailnr);
+    }
+    cout << "Now showing segments in TaSystem...\n";
     for(us i=0;i<nSegs();i++){
       TRACE(13,"Showing segment "<<i <<"..");
       segs[i]->show(detailnr);
@@ -175,12 +198,13 @@ namespace tasystem{
     TRACE(14,"TaSystem::jacTriplets()");
     Jacobian jnew;
     us Nsegs=nSegs();
-    for(us j=0;j<nSegs();j++){
-      TRACE(14,"System loop, segment " << j);
-      segment::Seg& curseg=*segs[j];
-      curseg.jac(jnew);
-      TRACE(10,"Creation of Jacobian for segment "<< j << "done."<<endl);
+    for(auto seg=segs.begin();seg!=segs.end();seg++){
+      (*seg)->jac(jnew);
     } // end for loop
+    for(auto con=connectors.begin();con!=connectors.end();con++){
+      (*con)->jac(jnew);
+    } // end for loop
+
     // TRACE(25,"Jac\n"<<jac);
     trips=jnew.getTriplets();
     // trips.show();
@@ -213,13 +237,18 @@ namespace tasystem{
     vd Error(error.data(),Ndofs,false,false); // Globally, neqs=ndofs
     Error.zeros();
     us Nsegs=nSegs();
-    us segeqs;
+    us Ncon=nConnectors();
+    us segeqs,coneqs;
     us starteq=0;
     TRACE(-1,"Nsegs:"<< Nsegs);
     for(us i=0;i<Nsegs;i++){
       segeqs=segs[i]->getNEqs();
       Error.subvec(starteq,starteq+segeqs-1)=segs[i]->error();
       starteq+=segeqs;
+    }
+    for(us i=0;i<Ncon;i++){
+      coneqs=connectors[i]->getNEqs();
+      Error.subvec(starteq,starteq+coneqs-1)=connectors[i]->error();
     }
     return error;
   }
@@ -303,7 +332,7 @@ namespace tasystem{
     checkInit();
     esdmat jac=this->jac();
     if(force || jac.cols()<50){
-      Eigen::IOFormat CleanFmt(1,0," ",";\n","","","[","]");
+      Eigen::IOFormat CleanFmt(2,0," ",";\n","","","[","]");
       Eigen::MatrixXd jacd(jac);
       cout << "Jacobian: \n" << jacd.format(CleanFmt) << "\n";
       cout << "Determinant of jacobian:" << jacd.determinant() << "\n";

@@ -4,12 +4,12 @@
 
 #include <memory>
 #include "vtypes.h"
-#include "connector.h"
+#include "segconbase.h"
 
 
 namespace segment{
 
-  class Seg:public Connector{
+  class Seg:public SegConBase{
   public:
     Seg();
     Seg(const Seg& o);
@@ -18,6 +18,7 @@ namespace segment{
     // Pure virtual functions
     const tasystem::Globalconf& getGc() const;
     virtual Seg* copy() const=0;
+
     virtual void resetHarmonics()=0;
     virtual std::string getType() const=0;		   // This param is
     // important for connecting the segments

@@ -19,14 +19,14 @@ namespace tube{
   //   tasystem::JacCol dTi() const;
   // };
 
-  class StateL:public TubeEquation
+  class State:public TubeEquation
   {
-    d WLi=0,WLip1=0,WLim1=0; 
+    d WLi=0,WLim1=0; 
   public:
-    StateL(const TubeVertex& v):TubeEquation(v){}
+    State(const TubeVertex& v):TubeEquation(v){}
     virtual void init();   
     tasystem::JacRow jac() const;
-    vd error() const;			// Error in momentum equation at node i
+    vd error() const;
   private:
     tasystem::JacCol dpL() const;
     tasystem::JacCol drhoi() const;
@@ -39,14 +39,15 @@ namespace tube{
   class StateR:public TubeEquation
   {
   public:
+    StateR(const TubeVertex& v):TubeEquation(v){}
     tasystem::JacRow jac() const;
-    vd error() const;			// Error in momentum equation at node i
+    vd error() const;			// Error in 
+                                // i
+    virtual void init();   
   protected:
-    tasystem::JacCol drhoi() const;
-    virtual tasystem::JacCol dpR() const;    
-    tasystem::JacCol dTi() const;
-    tasystem::JacCol drhoim1() const;
-    tasystem::JacCol dTim1() const;
+    tasystem::JacCol dpR() const;    
+    tasystem::JacCol drhoR() const;
+    tasystem::JacCol dTR() const;
 
   };
   

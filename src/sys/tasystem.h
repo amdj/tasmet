@@ -38,10 +38,11 @@ namespace tasystem{
     bool hasInit=false;
   protected:
     vector<segment::Seg*> segs;		
-    vector<segment::Seg*> connectors;    // Yes, connectors are just like segments
+    vector<segment::Connector*> connectors;    // Yes, connectors are just like segments
   public:
     Globalconf gc;    
-  public:
+    void setGc(const Globalconf& gc); // Reset globalconf configuration
+
     TaSystem(){}
     TaSystem(const Globalconf& g);
     TaSystem(const TaSystem& o);
@@ -52,37 +53,33 @@ namespace tasystem{
       ar & gc;
     }
     virtual TaSystem* copy() const {return new TaSystem(*this);}
-    virtual void show(us detailnr=0);
-    virtual evd error();			// Total error vector
-    virtual evd getRes();			// Extract result vector
-    virtual void setRes(const vd& resvec);	// Set result vector
-    virtual esdmat jac(d dummy=-1);		// Return Jacobian matrix
     virtual void init();
     us nSegs() const {return segs.size();}
     us nConnectors() const {return connectors.size();}
     void addConnector(const segment::Connector&);
 
     void showJac(bool force=false);
-    // System with a
-    // vector of segments
-    // ############################## ACCESS METHODS
+
+    virtual void show(us detailnr=0);
+    virtual evd error();			// Total error vector
+    virtual evd getRes();			// Extract result vector
+    virtual void setRes(const vd& resvec);	// Set result vector
+    virtual esdmat jac(d dummy=-1);		// Return Jacobian matrix
     void setRes(const evd& res);
     void setNf(us);
     void addSeg(const segment::Seg& s);	// Add a segment to the
-					// system. It creates a copy
-					// and ads it to segs by emplace_back.
+    // system. It creates a copy
+    // and ads it to segs by emplace_back.
     void addSeg(const std::vector<segment::Seg*>&);
-    void resetHarmonics();
-    // ############################## ACCESS METHODS
 
-    // void delseg(us n); // Not yet implementen. Delete a segment from the system (we have to determine how elaborated the API has to be.)
-    void setGc(const Globalconf& gc); // Reset globalconf configuration
+    void resetHarmonics();
+    // void delseg(us n); // Not yet implemented.  Delete a segment
+    // from the system (we have to determine how elaborated the API
+    // has to be.)
 
     segment::Seg* operator[](us i) const;    
     segment::Seg* getSeg(us i) const; // Easier for cython wrapping
-
     void setRes(const TaSystem& o);
-    
     d getCurrentMass();	// Return current mass in system [kg]
     void checkInit(){		// Often called simple method: inline
       if(!hasInit){ init(); hasInit=true; }

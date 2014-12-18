@@ -13,7 +13,8 @@ namespace tube{
     const TubeVertex* right=v.right();
 
     if(left) {   
-      const LocalGeom& llg=left->localGeom();
+      TRACE(15,"left present");
+      const LocalGeom llg=LocalGeom(*left);
       vSfL=llg.vSf;
       vxm1=llg.vx;
       wLl=(vx-xL)/(vx-vxm1);
@@ -25,7 +26,8 @@ namespace tube{
       } // !right
     }   // if left
     if(right){
-      const LocalGeom& rlg=right->localGeom();
+      TRACE(15,"Right present");
+      const LocalGeom rlg=LocalGeom(*right);
       vSfR=rlg.vSf;
       vxp1=rlg.vx;
       wRr=(xR-vx)/(vxp1-vx);

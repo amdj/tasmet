@@ -11,32 +11,29 @@ add_definitions(-DTRACERNAME=nltracer -DARMA_USE_BLAS -DARMA_USE_LAPACK)
 #           read from a pipe; but the GNU assembler has no troubl.
 
 
-AUX_SOURCE_DIRECTORY(src/tube tubesources)
-AUX_SOURCE_DIRECTORY(src/var varsources)
-AUX_SOURCE_DIRECTORY(src/seg segsources)
-AUX_SOURCE_DIRECTORy(src/sys syssources)
-AUX_SOURCE_DIRECTORy(src/tube/geom/grid gridsources)
-AUX_SOURCE_DIRECTORy(src/sol solsources)
-AUX_SOURCE_DIRECTORy(src/gui guisources)
+AUX_SOURCE_DIRECTORy(src/gui gui)
+AUX_SOURCE_DIRECTORY(src/seg seg)
+AUX_SOURCE_DIRECTORy(src/sol sol)
+AUX_SOURCE_DIRECTORy(src/sys sys)
+AUX_SOURCE_DIRECTORY(src/var var)
+AUX_SOURCE_DIRECTORY(src/tube tube)
 
-AUX_SOURCE_DIRECTORy(src/tube/eq tubeeq)
-AUX_SOURCE_DIRECTORy(src/tube/geom geomsources)
-AUX_SOURCE_DIRECTORy(src/tube/drag tubedrag)
-AUX_SOURCE_DIRECTORy(src/tube/heat tubeheat)
-AUX_SOURCE_DIRECTORy(src/tube/vertex tubeheat)
-AUX_SOURCE_DIRECTORy(src/tube/con tubecon)
+AUX_SOURCE_DIRECTORy(src/tube/geom/grid grid)
+AUX_SOURCE_DIRECTORy(src/tube/eq eq)
+AUX_SOURCE_DIRECTORy(src/tube/geom geom)
+AUX_SOURCE_DIRECTORy(src/tube/drag drag)
+AUX_SOURCE_DIRECTORy(src/tube/heat heat)
+AUX_SOURCE_DIRECTORy(src/tube/vertex vertex)
+AUX_SOURCE_DIRECTORy(src/tube/con con)
 # set (nonlinear_SRC ${tubesources} ${varsources} ${segsources}
 #   ${syssources}  ${geomsources} ${solsources}
 #   ${varsources} ${commonsources}
 #   ${tubeeq}  ${tubebc} ${tubedrag} ${gridsources}
 #   )
-set (nonlinear_SRC ${varsources} ${segsources} ${tubeeq}
-  ${geomsources} ${syssources} ${tubeheat} ${tubedrag}
-  ${varsources} ${commonsources} ${gridsources}
-  ${gridsources} ${tubesources} ${tubecon}
+set (nonlinear_SRC ${seg} ${sol} ${sys} ${var} ${tube}
+  #bc
+  ${con} ${drag} ${eq} ${geom} ${grid} ${heat} ${vertex}
   )
-
-# ${tubedrag}
 
 include_directories(
   include
@@ -62,7 +59,7 @@ include_directories(
   ../common/rottfuncs
   /usr/include/umfpack
   )
-add_library(gui ${guisources})
+# add_library(guil ${guisources})
 add_library(nonlin SHARED ${nonlinear_SRC})
 
 target_link_libraries(nonlin math_common boost_thread boost_system blas lapack boost_iostreams boost_serialization)

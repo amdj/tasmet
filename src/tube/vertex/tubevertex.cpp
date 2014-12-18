@@ -15,7 +15,7 @@ namespace tube{
     c(*this),
     m(*this),
     e(*this),
-    sL(*this),
+    s(*this),
     // s(*this),
     se(*this),
     is(*this)
@@ -29,7 +29,7 @@ namespace tube{
     rho_=var(*gc);
     U_=var(*gc);
     T_=var(*gc);
-    p_=var(*gc);
+    pL_=var(*gc);
     Ts_=var(*gc);
 
     // Initialize temperature and density variables to something sane
@@ -40,8 +40,8 @@ namespace tube{
     // Fill vars vector
     vars.at(RHONR)=&rho_;
     vars.at(UNR)=&U_;
-    vars.at(TNR)=&p_;
-    vars.at(PNR)=&T_;
+    vars.at(TNR)=&T_;
+    vars.at(PNR)=&pL_;
     vars.at(TSNR)=&Ts_;    
 
     // Fill eqs vector
@@ -50,12 +50,8 @@ namespace tube{
     eqs.push_back(&c);
     eqs.push_back(&m);
     eqs.push_back(&e);
-    // if(i>1 && i<nCells-1)
-      // eqs.push_back(&s);
-    // else
-    eqs.push_back(&sL);
+    eqs.push_back(&s);
     eqs.push_back(&se);    
-
   }
   TubeVertex::~TubeVertex(){
     delete w_;
@@ -76,13 +72,16 @@ namespace tube{
     this->left_=left;
     this->right_=right;
     assert(tube);               // *SHOULD* be a valid pointer
+    VARTRACE(10,w_);
     delete w_;
+    VARTRACE(10,w_);
     w_=new WeightFactors(*this);
+
     c.init();
     m.init();
     e.init();
     // s.init(w,*tube);
-    sL.init();
+    s.init();
     is.init();    
 
   }
@@ -192,7 +191,7 @@ namespace tube{
     }
   }
   void TubeVertex::setResVar(varnr v,const vd& res){
-    TRACE(4,"TubeVertex::setResVar(varnr,vd)");
+    TRACE(15,"TubeVertex::setResVar(varnr,vd)");
     switch(v) {
     case varnr::rho: // Density
       rho_.set(res);
@@ -200,15 +199,17 @@ namespace tube{
     case varnr::U:                 // Volume flown
       U_.set(res);
       break;
-    case varnr::p:                   // Pressure
-      p_.set(res);
-      break;
     case varnr::T:                 // Temp
       T_.set(res);
+      break;
+    case varnr::pL:                   // Pressure
+      pL_.set(res);
       break;
     case varnr::Ts:                 // Temp
       Ts_.set(res);
       break;
+    default:
+      WARN("Varnr" << v << " not handled!");
     }
   }
   void TubeVertex::setResVar(varnr v,const variable::var& res){
@@ -285,18 +286,8 @@ namespace tube{
       c.show();
       m.show();
       e.show();
-      sL.show();
+      s.show();
     }
-
-    // w.show();
-    // // cout << "cWarti    :"<<cWarti<<"\n";
-
-    // cout << "UsignL:"<<UsignL<<"\n";
-    // cout << "UsignR:"<<UsignR<<"\n";
-
-    // for(auto eq=eqs.begin();eq!=eqs.end();eq++)
-      // (*eq)->show();
-    
     // cout << "Number of eqs :" << getNEqs() << "\n";
     // cout << "Number of dofs:" << getNDofs() << "\n";    
     // cout << "Dofnr rho: " << rho.getDofNr() << "\n";

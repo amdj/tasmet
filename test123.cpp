@@ -22,11 +22,11 @@ TRACETHIS;
 int main(int argc,char* argv[]) {
   // clearConsole();
   cout <<  "Running test..." << endl;
-  int loglevel=1;
+  int loglevel=20;
   us gp=4;
   us Nf=0;
   us Ns=2*Nf+1;
-  cout << "Max value of int: " << std::numeric_limits<int>::max() << "\n";
+  // cout << "Max value of int: " << std::numeric_limits<int>::max() << "\n";
   double f=100;
   double omg=2*number_pi*f;
   double T=1/f;
@@ -77,7 +77,7 @@ int main(int argc,char* argv[]) {
   pL.set(0,3.14);
   if(Nf>0)
     pL.set(1,1.0);
-  PressureBc p(pL,0,pos::left);
+  PressureBc p(pL,0,pos::right);
   // t1.init(gc);
   // t1.show(1);
   // tube::LeftPressure bcleft(pL);
@@ -95,20 +95,26 @@ int main(int argc,char* argv[]) {
   // sys.setAmplitudeDof(0,0,3,1);
   TaSystem sys(air);
   sys.addSeg(t1); 
+  sys.addConnector(p);
   TRACE(25,"SFSG");
-  static_cast<Tube*>(sys.getSeg(0))->geom().show();
-  sys.init();
+  // static_cast<Tube*>(sys.getSeg(0))->geom().show();
+  // sys.show(20);
 
-  // Solver sol(sys);
+  Solver sol(sys);
 
-  sys.show(2);
-  // sol.sys().showJac();
+  // sys.show(2);
 
   // // vd domg(15,fillwith::zeros);
   // // sol.sys().getSeg(0)->domg(domg);
   // // cout << "domg: "<< domg << "\n";
   // cout << "Result:\n"<< sol.sys().getRes() << "\n";
-  // cout << "Error:\n"<< sol.sys().error() << "\n";
+  TRACE(20,"Showing system...");
+  sol.sys().show(10);
+  TRACE(20,"Computing error...");
+
+  cout << "Error:\n"<< sol.sys().error() << "\n";
+
+  sol.sys().showJac();
 
   // sol.doIter();
   // static_cast<Tube*>(sol.sys().getSeg(0))->getResAt(0,0);

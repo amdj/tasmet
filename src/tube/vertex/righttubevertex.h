@@ -3,11 +3,13 @@
 #define _RIGHTTUBEVERTEX_H_
 #include "pos.h"
 #include "tubebcvertex.h"
+#include "state.h"
 
 namespace tube{
 
   class RightTubeVertex:public TubeBcVertex{
     variable::var rhoR_,TR_,TsR_,UR_,pR_;
+    StateR sR;
   public:
     RightTubeVertex(us i,const Tube& t);
     virtual ~RightTubeVertex(){}
@@ -19,8 +21,10 @@ namespace tube{
     virtual const variable::var& pR() const {return pR_;}
     virtual const variable::var& TR() const {return TR_;}
     virtual const variable::var& TsR() const {return TsR_;}
+
     virtual void show(us detailnr=1) const;
 
+    virtual void setResVar(varnr,const vd& res);
   };  
 
 } // namespace tube

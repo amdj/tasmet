@@ -64,19 +64,13 @@ namespace tube{
     vd error(v.gc->Ns(),fillwith::zeros);
     error+=Wddt*v.gc->DDTfd*v.rho()();
     error+=Wi*fDFT*(v.rho().tdata()%v.U().tdata());
-    if(v.left()){
-      const vd& rhoL=v.rhoL().tdata();
-      const vd& UL=v.UL().tdata();
-      error+=WL*fDFT*(rhoL%UL);
-    }
-    // TRACE(10,"Right:,"<<v.right());    
-    if(v.right()){
-      // Standard implementation of a no-slip (wall) boundary
-      // condition
-      const vd& rhoR=v.rhoR().tdata();
-      const vd& UR=v.UR().tdata();
-      error+=WR*fDFT*(rhoR%UR);
-    }
+    const vd& rhoL=v.rhoL().tdata();
+    const vd& UL=v.UL().tdata();
+    error+=WL*fDFT*(rhoL%UL);
+    const vd& rhoR=v.rhoR().tdata();
+    const vd& UR=v.UR().tdata();
+    error+=WR*fDFT*(rhoR%UR);
+
     // (Boundary) source term
     error+=v.csource();
     return error;
@@ -134,13 +128,12 @@ namespace tube{
     return drho;
   }
   JacCol Continuity::dU() const {
-    TRACE(0,"Continuity::dUi()");
+    TRACE(0,"Continuity::dU()");
     return JacCol(v.U(),Wi*fDFT*v.rho().diagt()*iDFT);
   }
   JacCol Continuity::dUR() const {
     TRACE(0,"Continuity::dUR()");
     return JacCol(v.UR(),WR*fDFT*v.rhoR().diagt()*iDFT);
-
   }
   JacCol Continuity::dUL() const {
     TRACE(0,"Continuity::dUL()");

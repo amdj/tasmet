@@ -132,86 +132,16 @@ namespace tube {
       (*v)->updateNf();
     }
   }
-  void Tube::setRes(const Seg& otherseg){
-    TRACE(20,"Tube::setRes(othertube)");
-    const Tube& other=asTube_const(otherseg);
-    // Sanity checks
-    assert(vvertex.size()!=0);
-    // Necessary to let it work
-    assert(gc->Ns()==other.gc->Ns());
-
-  
-    for(auto v=vvertex.begin();v!=vvertex.end();v++){
-      TubeVertex& thisvertex=*static_cast<TubeVertex*>(*v);
-      d vx=thisvertex.localGeom().vx;
-      d xL=thisvertex.localGeom().xL;
-      thisvertex.setResVar(varnr::rho,other.interpolateResMid(varnr::rho,vx));
-      thisvertex.setResVar(varnr::U,other.interpolateResMid(varnr::U,vx));
-      thisvertex.setResVar(varnr::T,other.interpolateResMid(varnr::T,vx));
-      thisvertex.setResVar(varnr::Ts,other.interpolateResMid(varnr::Ts,vx));
-      thisvertex.setResVar(varnr::p,other.interpolateResStaggered(varnr::p,xL));
-      WARN("boundaries todo");
-      // if(v==(vvertex.end()-1)){
-      //   if(bcRight){
-      //     TubeVertex& othervertex=*static_cast<TubeVertex*>(*(other.vvertex.end()-1));          
-      //     thisvertex.setpR(othervertex.pR());
-      //     TRACE(5,"Copying pR");          
-      //   }
-      // }
-    } // for
-
+  const TubeBcVertex& Tube::leftVertex() const{
+    TRACE(3,"Tube::leftVertex()");
+    assert(init_);
+    assert(vvertex[0]);
+    return static_cast<const TubeBcVertex&>(*vvertex[0]);
   }
-  vd Tube::interpolateResStaggered(varnr v,d x) const{
-    TRACE(2,"Tube::interpolateResStaggered("<<v<<","<<x<<")");
-    WARN("out of order!");
-    us leftpos=0;
-    assert(x>=0);
-    us iright=0,ileft;
-    while(geom().x(iright)<=x && iright<geom().nCells()-1)
-      iright++;
-    VARTRACE(5,iright);
-    if(iright>0)
-      ileft=iright-1;
-    else{
-      ileft=0;
-      iright=1;
-    }
-    VARTRACE(2,ileft);
-    VARTRACE(2,iright);
-    // vd left=leftvertex.getRes(v)();
-    // vd right=rightvertex.getRes(v)();
-    // d xleft=leftvertex.localGeom().xL;
-    // d xright=rightvertex.localGeom().xL;
-    // d relpos=(x-xleft)/(xright-xleft);
-    // VARTRACE(5,relpos);
-    // return math_common::linearInterpolate(left,right,relpos);
-  }
-
-  vd Tube::interpolateResMid(varnr v,d x) const{
-    TRACE(2,"Tube::interpolateResMid("<<v<<","<<x<<")");
-    us leftpos=0;
-    assert(x>=0);
-    us iright=0,ileft;
-    while(geom().vx(iright)<=x && iright<geom().nCells()-1)
-      iright++;
-    VARTRACE(5,iright);
-    if(iright>0)
-      ileft=iright-1;
-    else{
-      ileft=0;
-      iright=1;
-    }
-    VARTRACE(2,ileft);
-    VARTRACE(2,iright);
-    const TubeVertex& leftvertex=*vvertex[ileft];
-    const TubeVertex& rightvertex=*vvertex[iright];
-    // vd left=leftvertex.getRes(v)();
-    // vd right=rightvertex.getRes(v)();
-    // d xleft=leftvertex.localGeom().vx;
-    // d xright=rightvertex.localGeom().vx;
-    // d relpos=(x-xleft)/(xright-xleft);
-    // VARTRACE(5,relpos);
-    // return math_common::linearInterpolate(left,right,relpos);
+  const TubeBcVertex& Tube::rightVertex() const{
+    TRACE(3,"Tube::rightVertex()");
+    assert(init_);
+    return static_cast<const TubeBcVertex&>(**(vvertex.end()-1));
   }
   vd Tube::getResAt(us varNr,us freqnr) const{
     assert(varNr<NVARS);
@@ -315,7 +245,6 @@ namespace tube {
     }
     return Result;
   }
-
   vd Tube::error() const{
     TRACE(8,"Tube::Error()");
     assert(vvertex.size()!=0);
@@ -368,6 +297,104 @@ namespace tube {
       delete *v;
     vvertex.clear();
   }
+
+  // Various set and get methods
+  void Tube::setResVar(varnr v,us freqnr,const vd& vals){
+    TRACE(15,"Tube::setResVar()");
+    if(v==varnr::p){
+      assert(vals.size()==geom().nCells()+1);
+    }
+    else{
+      assert(vals.size()==geom().nCells()+2);
+    }
+      
+    for(auto v=vvertex.begin();v!=vvertex.end();v++){
+
+    }
+  }
+
+  void Tube::setRes(const Seg& otherseg){
+    TRACE(20,"Tube::setRes(othertube)");
+    const Tube& other=asTube_const(otherseg);
+    // Sanity checks
+    assert(vvertex.size()!=0);
+    // Necessary to let it work
+    assert(gc->Ns()==other.gc->Ns());
+
+  
+    for(auto v=vvertex.begin();v!=vvertex.end();v++){
+      TubeVertex& thisvertex=*static_cast<TubeVertex*>(*v);
+      d vx=thisvertex.localGeom().vx;
+      d xL=thisvertex.localGeom().xL;
+      thisvertex.setResVar(varnr::rho,other.interpolateResMid(varnr::rho,vx));
+      thisvertex.setResVar(varnr::U,other.interpolateResMid(varnr::U,vx));
+      thisvertex.setResVar(varnr::T,other.interpolateResMid(varnr::T,vx));
+      thisvertex.setResVar(varnr::Ts,other.interpolateResMid(varnr::Ts,vx));
+      thisvertex.setResVar(varnr::p,other.interpolateResStaggered(varnr::p,xL));
+      WARN("boundaries todo");
+      // if(v==(vvertex.end()-1)){
+      //   if(bcRight){
+      //     TubeVertex& othervertex=*static_cast<TubeVertex*>(*(other.vvertex.end()-1));          
+      //     thisvertex.setpR(othervertex.pR());
+      //     TRACE(5,"Copying pR");          
+      //   }
+      // }
+    } // for
+
+  }
+  vd Tube::interpolateResStaggered(varnr v,d x) const{
+    TRACE(2,"Tube::interpolateResStaggered("<<v<<","<<x<<")");
+    WARN("out of order!");
+    us leftpos=0;
+    assert(x>=0);
+    us iright=0,ileft;
+    while(geom().x(iright)<=x && iright<geom().nCells()-1)
+      iright++;
+    VARTRACE(5,iright);
+    if(iright>0)
+      ileft=iright-1;
+    else{
+      ileft=0;
+      iright=1;
+    }
+    VARTRACE(2,ileft);
+    VARTRACE(2,iright);
+    // vd left=leftvertex.getRes(v)();
+    // vd right=rightvertex.getRes(v)();
+    // d xleft=leftvertex.localGeom().xL;
+    // d xright=rightvertex.localGeom().xL;
+    // d relpos=(x-xleft)/(xright-xleft);
+    // VARTRACE(5,relpos);
+    // return math_common::linearInterpolate(left,right,relpos);
+  }
+
+  vd Tube::interpolateResMid(varnr v,d x) const{
+    TRACE(2,"Tube::interpolateResMid("<<v<<","<<x<<")");
+    us leftpos=0;
+    assert(x>=0);
+    us iright=0,ileft;
+    while(geom().vx(iright)<=x && iright<geom().nCells()-1)
+      iright++;
+    VARTRACE(5,iright);
+    if(iright>0)
+      ileft=iright-1;
+    else{
+      ileft=0;
+      iright=1;
+    }
+    VARTRACE(2,ileft);
+    VARTRACE(2,iright);
+    const TubeVertex& leftvertex=*vvertex[ileft];
+    const TubeVertex& rightvertex=*vvertex[iright];
+    // vd left=leftvertex.getRes(v)();
+    // vd right=rightvertex.getRes(v)();
+    // d xleft=leftvertex.localGeom().vx;
+    // d xright=rightvertex.localGeom().vx;
+    // d relpos=(x-xleft)/(xright-xleft);
+    // VARTRACE(5,relpos);
+    // return math_common::linearInterpolate(left,right,relpos);
+  }
+
 } /* namespace tube */
 
 

@@ -11,7 +11,22 @@
 #define NVARS (5)
 namespace tube{
 
-  enum varnr{rho=RHONR,U=UNR,T=TNR,p=PNR,Ts=TSNR};
+  enum varnr{rho=RHONR,
+             U=UNR,
+             T=TNR,
+             p=PNR,
+             Ts=TSNR,
+             rhoL,
+             rhoR,
+             UL,
+             UR,
+             TL,
+             TR,
+             pL,
+             pR,
+             TsL,
+             TsR
+  };
 
   enum physquant{massFlow,momentumFlow,energyFlow,heatFlow,solidHeatFlow};
 }                // namespace tube

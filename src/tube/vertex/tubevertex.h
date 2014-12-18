@@ -42,7 +42,7 @@ namespace tube {
     variable::var rho_;		// Density
     variable::var U_;		// Volume flow
     variable::var T_;		// Temperature
-    variable::var p_;      // Pressure at left cell wall
+    variable::var pL_;      // Pressure at left cell wall
     variable::var Ts_;		// Solid temperature
     TubeVertex& operator=(const TubeVertex& v); // No copy assignments
     // allowed
@@ -53,8 +53,7 @@ namespace tube {
     Continuity c;
     Momentum m;
     Energy e;
-    StateL sL;
-    // State s;
+    State s;
     SolidTPrescribed se;
     Isentropic is;              // Do we really need this burden?
 
@@ -76,25 +75,25 @@ namespace tube {
     const Tube& getTube() const {return *tube;}
     us geti() const {return i;}
 
-    virtual const variable::var& pL() const {assert(left_); return p_;}
+    const variable::var& pL() const { return pL_;}
     virtual const variable::var& pR() const {assert(right_); return right_->pL();}
     const variable::var p() const{return 0.5*(pL()+pR());}
     // These are variables for the left and right vertices, but are on
     // the cell walls for the leftmost and rightmost vertices
     // respectively
-    virtual const variable::var& rho() const {return rho_;}
+    const variable::var& rho() const {return rho_;}
     virtual const variable::var& rhoL() const {assert(left_); return left_->rho();}
     virtual const variable::var& rhoR() const {assert(right_); return right_->rho();}
 
-    virtual const variable::var& U() const {return U_;}
+    const variable::var& U() const {return U_;}
     virtual const variable::var& UL() const {assert(left_); return left_->U();}
     virtual const variable::var& UR() const {assert(right_); return right_->U();}
 
-    virtual const variable::var& T() const { return T_;}
+    const variable::var& T() const { return T_;}
     virtual const variable::var& TL() const { assert(left_); return left_->T();}
     virtual const variable::var& TR() const {assert(right_); return right_->T();}
 
-    virtual const variable::var& Ts() const {return Ts_;}
+    const variable::var& Ts() const {return Ts_;}
     virtual const variable::var& TsL() const {assert(left_); return left_->Ts();}
     virtual const variable::var& TsR() const {assert(right_); return right_->Ts();}
 
@@ -117,7 +116,10 @@ namespace tube {
   virtual void jac(tasystem::Jacobian& tofill) const;		       // Fill complete Jacobian for this node
     virtual void domg(vd& ) const;
     void setResVar(varnr,const variable::var& res);
-    void setResVar(varnr,const vd& res);
+    virtual void setResVar(varnr,const vd& res); // Overridden for
+                                                 // lefttubevertex and
+                                                 // righttubevertex!
+    
     virtual vd getRes() const;			  // Extract current result
                                           // vector
     d getRes(varnr,us freqnr) const;

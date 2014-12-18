@@ -46,7 +46,7 @@ namespace variable {
 						   //vector
     vc getcRes() const; //Implementation for complex amplitude vector
     const vd& tdata() const  {return timedata; } //Get time data
-                                                 //vector
+    const vd& adata() const  {return amplitudedata; } //Get time data                                                 //vector
     d tdata(d t) const; //Extract the estimated value for a given time
                         //t
     dmat diagt() const {return diagmat(timedata);}

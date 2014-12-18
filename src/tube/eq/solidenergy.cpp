@@ -16,9 +16,7 @@ namespace tube{
       const HopkinsLaminarDuct& d=dynamic_cast<const HopkinsLaminarDuct&>(t);
       Tsmirror=&d.Tmirror;
     }
-
     // Nope, we do nothing with weight functions
-    
   }
   JacRow SolidTPrescribed::jac() const{
     TRACE(6,"SolidTPrescribed::jac()");

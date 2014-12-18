@@ -7,9 +7,12 @@ namespace tube {
   SPOILNAMESPACE
 
   class Geom;
+  class TubeVertex;
+
   class LocalGeom
   {
   public:
+    LocalGeom(const TubeVertex&);
     LocalGeom(const Geom& geom,us i);
     virtual ~LocalGeom(){}
     const Geom* geom=NULL;	// Pointer to global Geometry

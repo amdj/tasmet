@@ -1,6 +1,8 @@
 #include "localgeom.h"
 #include "geom.h"
 #include "assert.h"
+#include "tubevertex.h"
+#include "tube.h"
 
 namespace tube{
 
@@ -8,7 +10,9 @@ namespace tube{
     assert(i<nCells());
     return LocalGeom(*this,i);
   }
-
+  LocalGeom::LocalGeom(const TubeVertex& v):
+    LocalGeom(v.getTube().geom(),v.geti())
+  {}
   LocalGeom::LocalGeom(const Geom& geom,us i)
   {
     TRACE(15,"LocalGeom::LocalGeom()");

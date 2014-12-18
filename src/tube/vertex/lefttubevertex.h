@@ -14,12 +14,16 @@ namespace tube{
     virtual ~LeftTubeVertex(){}
 
     virtual pos getPos() const {return segment::pos::left;}
-
+    // For the pressure, we only do not assert that a vertex is
+    // located on the left...
+    virtual const variable::var& pL() const {return pL_;}
     virtual const variable::var& rhoL() const {return rhoL_;}
     virtual const variable::var& UL() const {return UL_;}
     virtual const variable::var& TL() const {return TL_;}
     virtual const variable::var& TsL() const {return TsL_;}
     virtual void show(us detailnr=1) const;
+
+    virtual void setResVar(varnr,const vd& res);
   };  
 
 } // namespace tube

@@ -3,9 +3,9 @@
 #include <cassert>
 namespace segment{
 
-  Seg::Seg(const Seg& other):Connector(other){
+  Seg::Seg(const Seg& other):SegConBase(other){
     TRACE(13,"Seg::Seg()");
   }
-  Seg::Seg():Connector(){}
+  Seg::Seg():SegConBase(){}
 
 }		 // Namespace segment

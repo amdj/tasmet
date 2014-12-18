@@ -44,8 +44,8 @@ namespace tube{
     virtual ~Tube();
 
     void setRes(const Seg& other); // To copy from a
-    void setResVar(varnr,us freqnr,d value);
-    void setResVar(varnr,const vd& value);
+    void setResVar(varnr,us i,us freqnr,d value);
+    void setResVar(varnr,us freqnr,const vd& value);
     void show(us showvertices=0) const;
     const Geom& geom() const;
     vd getResAt(us,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
