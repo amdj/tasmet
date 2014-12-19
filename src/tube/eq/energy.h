@@ -34,8 +34,9 @@ namespace tube{
     d gamma() const;			// Time-avg ratio of specific heats
 
     vd extrapolateEnergyFlow() const;
+    vd extrapolateHeatFlow() const;
     tasystem::JacRow dExtrapolateEnergyFlow() const;
-
+    tasystem::JacRow dExtrapolateHeatFlow() const;
   private:
     vd ddtEtherm() const;
     tasystem::JacRow dddtEtherm() const;

@@ -5,6 +5,7 @@
 #include "isentropictube.h"
 #include "hopkinslaminarduct.h"
 #include "var.h"
+#include "adiabaticwall.h"
 // #include "enginesystem.h"
 #include "tasystem.h"
 #include "solver.h"
@@ -77,37 +78,22 @@ int main(int argc,char* argv[]) {
   pL.set(0,3.14);
   if(Nf>0)
     pL.set(1,1.0);
+  // PressureBc p(pL,0,pos::left);
   PressureBc p(pL,0,pos::right);
-  // t1.init(gc);
-  // t1.show(1);
-  // tube::LeftPressure bcleft(pL);
-  // tube::LeftAdiabaticWall bcleft;
-  // tube::RightAdiabaticWall bcright;
-  // tube::TwImpedance bcright;  
-  // tube::RightIsoTWall bcright(T0);
-  // TRACE(100,"Add bc to tube...");
-  // t1.addBc(bcleft);
-  // t1.addBc(bcright);
-
-
+  AdiabaticWall bright(0,pos::left);
+  // AdiabaticWall bright(0,pos::right);
   // EngineSystem sys(air);
   // sys.setTimingConstraint(0,0,3,2);
   // sys.setAmplitudeDof(0,0,3,1);
   TaSystem sys(air);
   sys.addSeg(t1); 
   sys.addConnector(p);
-  TRACE(25,"SFSG");
-  // static_cast<Tube*>(sys.getSeg(0))->geom().show();
+  sys.addConnector(bright);
   // sys.show(20);
 
   Solver sol(sys);
 
   // sys.show(2);
-
-  // // vd domg(15,fillwith::zeros);
-  // // sol.sys().getSeg(0)->domg(domg);
-  // // cout << "domg: "<< domg << "\n";
-  // cout << "Result:\n"<< sol.sys().getRes() << "\n";
   TRACE(20,"Showing system...");
   sol.sys().show(10);
   TRACE(20,"Computing error...");

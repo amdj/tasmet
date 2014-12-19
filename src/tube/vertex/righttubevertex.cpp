@@ -34,6 +34,7 @@ namespace tube{
     pR_=pL_;
     rhoR_=rho_;
     TR_=T_;
+    TsR_=Ts_;
   }
   void RightTubeVertex::show(us detailnr) const{
     cout << "------------- RightTubeVertex ---------\n";

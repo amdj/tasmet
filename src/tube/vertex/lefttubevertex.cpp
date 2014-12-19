@@ -27,9 +27,9 @@ namespace tube{
     vars.push_back(&TsL_);
 
     // Initialize left wall variables
-    rhoL_=rho();
-    TL_=T();
-    TsL_=Ts();
+    rhoL_=rho_;
+    TL_=T_;
+    TsL_=Ts_;
   }
   void LeftTubeVertex::show(us detailnr) const{
     cout << "------------- LeftTubeVertex ----------\n";

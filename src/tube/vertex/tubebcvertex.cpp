@@ -21,16 +21,16 @@ namespace tube{
       // return e.extrapolateEnergyFlow();
       break;
     case heatFlow:
-      // return e.extrapolateHeatFlow();
+      return e.extrapolateHeatFlow();
       break;
     case solidHeatFlow:
-      // return s.extrapolateSolidHeatFlow();
+      // return se.extrapolateSolidHeatFlow();
     default:
       break;
     }
     WARN("Fatal: No physquant selected");
     abort();
-    return vd2();
+    return vd2();               // To avoid compiler warning
   }
   JacRow TubeBcVertex::dExtrapolateQuant(physquant q) const{
     TRACE(10,"TubeBcVertex::dExtrapolateQuant()");
@@ -44,7 +44,7 @@ namespace tube{
     case energyFlow:
       // return e.dExtrapolateEnergyFlow();      break;
     case heatFlow:
-      // return e.dExtrapolateHeatFlow();
+      return e.dExtrapolateHeatFlow();
       break;
     case solidHeatFlow:
       // return s.dExtrapolateSolidHeatFlow();
@@ -54,7 +54,7 @@ namespace tube{
     }
     WARN("Fatal: No physquant selected");
     abort();
-    return JacRow(0);         
+    return JacRow(0);           // To avoid compiler warning
   }
   
 }                // namespace tube

@@ -13,7 +13,9 @@ namespace tube{
     virtual enum EqType getType() const { return EqType::Sol;}
     tasystem::JacRow jac() const;
     
-    vd error() const;			// Error in Solidenergy equation at node i
+    vd error() const;			// Error in Solidenergy equation at
+                                // node i
+
   private:
     tasystem::JacCol dTsi() const;
     
