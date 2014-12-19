@@ -11,8 +11,7 @@ namespace tasystem{
 
 namespace tube{
   class PressureBc:public TubeBc {
-    us segnr,firsteqnr;
-    pos position;
+    us firsteqnr;
     variable::var pbc;			// Pressure boundary condition
     variable::var Tbc;			// Temperature boundary condition
     variable::var Tsbc;			// Solid temperature boundary condition
@@ -21,11 +20,6 @@ namespace tube{
     PrescribeQty prescribeTs;
     
     PressureBc& operator=(const PressureBc&);
-    const tasystem::TaSystem* sys=NULL;
-    const Tube* t=NULL;
-    static variable::var adiabatictemp(const variable::var& pres); // Return adiabatic compression
-    // amplitude values
-    static variable::var coldtemp(const variable::var& pres); // Returns gc.T0 amplitude data
   public:
     // Set all variables
     PressureBc(const variable::var& p,const variable::var& T,const variable::var& Ts,us segnr,pos position);
@@ -41,11 +35,15 @@ namespace tube{
 
     virtual void updateNf();
     virtual void setEqNrs(us firstdofnr);    
-    virtual us getNEqs() const;    
     virtual vd error() const;
     virtual void jac(tasystem::Jacobian&) const;
     // ------------------------------
     virtual void show(us i) const;
+  private:
+    static variable::var adiabatictemp(const variable::var& pres); // Return adiabatic compression
+    // amplitude values
+    static variable::var coldtemp(const variable::var& pres); // Returns gc.T0 amplitude data
+
   };
 
 } // namespace tube

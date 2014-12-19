@@ -13,13 +13,19 @@ namespace tube{
   class Tube;
   
   class TubeBc:public segment::Connector {
-    us segnr,firsteqnr;
+  protected:
+    us segnr;
     pos position;
     const Tube* t=nullptr;
     const tasystem::TaSystem* sys=nullptr;
   public:
     TubeBc(us segnr,pos position):segnr(segnr),position(position){}
-    TubeBc(const TubeBc& other):TubeBc(other.segnr,other.position){}
+    TubeBc(const TubeBc& other):
+      Connector(other),
+      segnr(other.segnr),
+      position(other.position)
+    {}
+    us getNEqs() const;         // 4 times Ns
     virtual ~TubeBc(){}
     virtual void init(const tasystem::TaSystem&);
   };

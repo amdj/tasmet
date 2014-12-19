@@ -32,7 +32,10 @@ namespace tube{
     PressureBc(pres,adiabatictemp(pres),segnr,position)
   {}
   PressureBc::PressureBc(const PressureBc& other):
-    PressureBc(other.pbc,other.Tbc,other.Tsbc,other.segnr,other.position)
+    TubeBc(other),
+    pbc(other.pbc),
+    Tbc(other.Tbc),
+    Tsbc(other.Tsbc)
   {
     TRACE(8,"PressureBc copy constructor");
   }
@@ -69,13 +72,6 @@ namespace tube{
     pbc.setGc(sys.gc);
     Tbc.setGc(sys.gc); 
     Tsbc.setGc(sys.gc);
-    try{
-      t=dynamic_cast<const Tube*>(sys.getSeg(segnr));
-    }
-    catch(std::bad_cast){
-      WARN("Seg nr " << segnr << " is not a Tube! Initialization failed.");
-      init_=false;
-    }
     TRACE(15,"PressureBc::init()");
   }
   void PressureBc::setEqNrs(us firsteqnr){
@@ -94,10 +90,6 @@ namespace tube{
       prescribeT.set(firsteqnr+Ns,vertex.TR(),Tbc());
       prescribeTs.set(firsteqnr+2*Ns,vertex.TsR(),Tsbc());
     }
-  }
-  us PressureBc::getNEqs() const {
-    TRACE(10,"Pressure::getNEqs()");
-    return 4*gc->Ns();
   }
   vd PressureBc::error() const {
     TRACE(15,"PressureBc::error()");
