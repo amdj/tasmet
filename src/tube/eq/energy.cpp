@@ -328,7 +328,7 @@ namespace tube{
       Qb=(w.SfL/w.vx)*fDFT*(kappaLt%(v.TL().tdata()-v.T().tdata()));
     }
     else if(!v.right()){
-      vd kappaRt=kappaL();
+      vd kappaRt=kappaR();
       Qb=(w.SfR/(w.xR-w.vx))*fDFT*(kappaRt%(v.T().tdata()-v.TR().tdata()));
     }
     else{

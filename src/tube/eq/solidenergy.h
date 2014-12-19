@@ -15,7 +15,11 @@ namespace tube{
     
     vd error() const;			// Error in Solidenergy equation at
                                 // node i
+    vd extrapolateHeatFlow() const;
+    tasystem::JacRow dExtrapolateHeatFlow() const;
 
+    vd kappaL() const;
+    vd kappaR() const;
   private:
     tasystem::JacCol dTsi() const;
     

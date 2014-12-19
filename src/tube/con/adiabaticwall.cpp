@@ -60,14 +60,13 @@ namespace tube{
       vertex=&t->rightVertex();
     }    
     error.subvec(Ns,2*Ns-1)=vertex->extrapolateQuant(physquant::heatFlow);
+    error.subvec(2*Ns,3*Ns-1)=vertex->extrapolateQuant(physquant::solidHeatFlow);
     
     return error;
   }
   void AdiabaticWall::jac(Jacobian& jac) const {
     TRACE(4,"AdiabaticWall::jac()");
-    jac+=Uiszero.jac();
     us Ns=gc->Ns();
-    JacRow heatFlowjac(firsteqnr+Ns,2);
     const TubeBcVertex* vertex;
     if(position==pos::left){
       vertex=&t->leftVertex();
@@ -75,7 +74,15 @@ namespace tube{
     else{
       vertex=&t->rightVertex();
     }    
-    heatFlowjac+=vertex->dExtrapolateQuant(physquant::heatFlow);
+    JacRow heatFlowjac=vertex->dExtrapolateQuant(physquant::heatFlow);
+    heatFlowjac.setRowDof(firsteqnr+Ns);
+    JacRow solidheatFlowjac=vertex->dExtrapolateQuant(physquant::solidHeatFlow);
+    solidheatFlowjac.setRowDof(firsteqnr+2*Ns);
+
+    // Put them into jacobian
+    jac+=Uiszero.jac();
     jac+=heatFlowjac;
+    jac+=solidheatFlowjac;
+    
   }
 } // namespace tube

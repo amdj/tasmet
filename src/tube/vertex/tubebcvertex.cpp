@@ -24,7 +24,7 @@ namespace tube{
       return e.extrapolateHeatFlow();
       break;
     case solidHeatFlow:
-      // return se.extrapolateSolidHeatFlow();
+      return se.extrapolateHeatFlow();
     default:
       break;
     }
@@ -47,7 +47,7 @@ namespace tube{
       return e.dExtrapolateHeatFlow();
       break;
     case solidHeatFlow:
-      // return s.dExtrapolateSolidHeatFlow();
+      return se.dExtrapolateHeatFlow();
       break;
     default:
       break;

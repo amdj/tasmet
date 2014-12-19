@@ -26,7 +26,7 @@ namespace tube {
 
     d SfL=0,SfR=0;		// Fluid surface area at cell walls. *WARNING*
     // use these only for end boundary *conditions!!
-    
+    d SsL=0,SsR=0;    
     d vrh=0;			// Current vertex hydraulic radius
     d xR=0;			// Absolute position of right cell wall
     d xL=0;			// Absolute position of left cell wall

@@ -25,6 +25,8 @@ namespace tube{
 
     SfL=geom.Sf(i);
     SfR=geom.Sf(i+1);
+    SsL=geom.Ss(i);
+    SsR=geom.Ss(i+1);
 
     xR=geom.x(i+1);		// Position of right cell wall
     xL=geom.x(i);			// Position of left cell wall
