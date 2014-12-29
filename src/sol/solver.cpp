@@ -70,7 +70,7 @@ namespace tasystem{
     TRACE(15,"Solver::stop()");
     if(solverThread){
       cout << "Waiting for solver to finish...\n";
-      sc->maxiter=0;
+      sc.maxiter=0;
       solverThread->join();
       solverThread.reset();
     }
@@ -79,53 +79,39 @@ namespace tasystem{
   typedef tuple<d,d> dtuple;
   void Solver::solve(us maxiter,d funtol,d reltol,d mindampfac,d maxdampfac,bool wait){
     TRACE(20,"Solver started.");
-    if(maxiter==0)
-      maxiter=SOLVER_MAXITER;
+    sc=SolverConfiguration(maxiter,funtol,reltol,mindampfac,maxdampfac);
 
-    if(solverThread){
-      if(solverThread->joinable()){
-        cout << "Killing old solver thread...\n";
-        stop();
-      }
-    }
-    
-    if(!solverThread){
-      sc.reset(new SolverConfiguration(maxiter,funtol,reltol,mindampfac,maxdampfac));
-      // SolverInstance si(*this,*sc);
-      solverThread.reset(new boost::thread(SolverInstance(*this,*sc)));
-      // si();
-      // This results in segfault
-      // solverThread.detach();
-      // si.Start();
+    // Stop old solverthread
+    stop();
 
-      if(wait){
-        cout << "Waiting for solver...\n";
-        solverThread->join();
-        solverThread.reset();
-      }
-      // si.Join();
-      // solverThread.join();
-    } else{
-      WARN("Solver already running!");
+    solverThread.reset(new boost::thread(SolverInstance(*this)));
+
+    if(wait){
+      cout << "Waiting for solver...\n";
+      solverThread->join();
+      solverThread.reset();
     }
 
   }
-  tuple<d,d> Solver::doIter(d dampfac1){
-    TRACE(15,"Solver::doIter("<<dampfac1<<")");
-    assert(dampfac1<=1.0);
+  tuple<d,d> Solver::doIter(d dampfac){
+    TRACE(15,"Solver::doIter("<<dampfac<<")");
+    if(dampfac>0 && dampfac<=1.0) // if dampfac is legal value, use that
+      sc.dampfac=dampfac;
+
 
     evd error=sys().error();
-    assert(error.size()>0);
+    if(!error.size()>0){
+      WARN("Error illegal residual vector obtained. Exiting.");
+      return std::make_tuple(-1,-1);
+    }
     evd oldx=sys().getRes();
     d oldfuner=error.norm();
 
     us Ndofs=error.size();
-    TRACE(15,"Computing Jacobian...");
-    esdmat jac;
-    if(!sc)
-      sc.reset(new SolverConfiguration(1,1,1,dampfac1,dampfac1));
 
-    jac=sys().jac(sc->dampfac);
+    esdmat jac;
+
+    jac=sys().jac(sc.dampfac);
     jac.makeCompressed();
 
     assert(jac.cols()==error.size());
@@ -146,28 +132,27 @@ namespace tasystem{
     vd Newx=math_common::armaView(newx);
     TRACE(15,"SFSG");
     reler=fulldx.norm();
-    if(sc){
-      do{
-        newx=oldx+sc->dampfac*fulldx;
-        sys().setRes(Newx);
-        newfuner=sys().error().norm();
-        if((newfuner>oldfuner || !(newfuner>0)) && sc->dampfac>sc->mindampfac){
-          sc->dampfac=sc->dampfac*0.5;
-          cout << "Decreasing dampfac, new dampfac = " << sc->dampfac << "\n";
-        }
-      } while((newfuner>oldfuner || !(newfuner>0)) && sc->dampfac>sc->mindampfac);
-      if(newfuner<oldfuner && sc->dampfac<sc->maxdampfac){
-        cout << "Increasing dampfac, new dampfac = " << sc->dampfac << " . Max dampfac: "<< sc->maxdampfac << "\n";
-        sc->dampfac=sc->dampfac*2;
+    do{
+      newx=oldx+sc.dampfac*fulldx;
+      sys().setRes(Newx);
+      newfuner=sys().error().norm();
+      if((newfuner>oldfuner || !(newfuner>0)) && sc.dampfac>sc.mindampfac){
+        sc.dampfac=sc.dampfac*0.5;
+        cout << "Decreasing dampfac, new dampfac = " << sc.dampfac << "\n";
       }
-    } // If sc
+    } while((newfuner>oldfuner || !(newfuner>0)) && sc.dampfac>sc.mindampfac);
+    if(newfuner<oldfuner && sc.dampfac<sc.maxdampfac){
+      cout << "Increasing dampfac, new dampfac = " << sc.dampfac << " . Max dampfac: "<< sc.maxdampfac << "\n";
+      sc.dampfac=sc.dampfac*2;
+    }
+
     else{
-      newx=oldx+dampfac1*fulldx;
+      newx=oldx+sc.dampfac*fulldx;
       sys().setRes(Newx);
       newfuner=sys().error().norm();
     }
     
-    cout << "Current dampfac: " << sc->dampfac << "\n";
+    cout << "Current dampfac: " << sc.dampfac << "\n";
     TRACE(10,"Iteration done...");
     return std::make_tuple(newfuner,reler);		// Return function error
 

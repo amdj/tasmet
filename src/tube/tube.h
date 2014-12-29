@@ -40,7 +40,7 @@ namespace tube{
     us getNCells() const;
 						   // to some segment
 						   // on right side
-    virtual void init(const tasystem::TaSystem&);
+    virtual bool init(const tasystem::TaSystem&);
     virtual ~Tube();
 
     void setRes(const Seg& other); // To copy from a

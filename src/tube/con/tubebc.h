@@ -27,7 +27,7 @@ namespace tube{
     {}
     us getNEqs() const;         // 4 times Ns
     virtual ~TubeBc(){}
-    virtual void init(const tasystem::TaSystem&);
+    virtual bool init(const tasystem::TaSystem&);
   };
 
 } // namespace tube

@@ -14,10 +14,12 @@ namespace tube{
   using tasystem::JacRow;
   using tasystem::JacCol;
 
-  void AdiabaticWall::init(const TaSystem& sys){
+  bool AdiabaticWall::init(const TaSystem& sys){
     TRACE(15,"AdiabaticWall::init()");
-    TubeBc::init(sys);
+    if(!TubeBc::init(sys))
+      return false;
     zero=vd(sys.gc.Ns(),fillwith::zeros);
+    return true;
   }
   void AdiabaticWall::updateNf(){}
   void AdiabaticWall::show(us i) const {

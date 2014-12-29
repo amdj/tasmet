@@ -63,16 +63,17 @@ namespace tube{
     Tsbc.updateNf();
   }
 
-  void PressureBc::init(const TaSystem& sys)
+  bool PressureBc::init(const TaSystem& sys)
   {
     TRACE(8,"PressureBc::init()");
-    TubeBc::init(sys);
+    if(!TubeBc::init(sys))
+      return false;
 
     // Decouple from old globalconf pointer
     pbc.setGc(sys.gc);
     Tbc.setGc(sys.gc); 
     Tsbc.setGc(sys.gc);
-    TRACE(15,"PressureBc::init()");
+    return true;
   }
   void PressureBc::setEqNrs(us firsteqnr){
     TRACE(2,"Pressure::setEqNrs()");
@@ -112,7 +113,7 @@ namespace tube{
     error.subvec(2*Ns,3*Ns-1)=prescribeTs.error();
     error.subvec(3*Ns,4*Ns-1)=massflowv-vertex->extrapolateQuant(physquant::massFlow);
 
-    VARTRACE(15,error)
+    // VARTRACE(15,error)
     return error;
   }
   void PressureBc::jac(Jacobian& jac) const{

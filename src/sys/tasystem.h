@@ -33,10 +33,8 @@ namespace tasystem{
   class TripletList;
 
   class TaSystem{
-  private:
-    // vector<SegConnection> segConnections;
-    bool hasInit=false;
   protected:
+    bool hasInit=false;
     vector<segment::Seg*> segs;		
     vector<segment::Connector*> connectors;    // Yes, connectors are just like segments
   public:
@@ -53,12 +51,11 @@ namespace tasystem{
       ar & gc;
     }
     virtual TaSystem* copy() const {return new TaSystem(*this);}
-    virtual void init();
+    virtual bool init();
     us nSegs() const {return segs.size();}
     us nConnectors() const {return connectors.size();}
     void addConnector(const segment::Connector&);
     TaSystem& operator+=(const segment::Connector& c){addConnector(c); return *this;}
-    TaSystem& operator+=(const segment::Seg& s){addSeg(s); return *this;}
     void showJac(bool force=false);
 
     virtual void show(us detailnr=0);
@@ -72,9 +69,12 @@ namespace tasystem{
     // system. It creates a copy
     // and ads it to segs by emplace_back.
     void addSeg(const std::vector<segment::Seg*>&);
+    // Shortcut
+    TaSystem& operator+=(const segment::Seg& s){addSeg(s); return *this;}
 
+    // Reset amplitude data in higher harmonics
     void resetHarmonics();
-    // void delseg(us n); // Not yet implemented.  Delete a segment
+    void delseg(us n); // Not yet implemented.  Delete a segment
     // from the system (we have to determine how elaborated the API
     // has to be.)
 
@@ -82,8 +82,12 @@ namespace tasystem{
     segment::Seg* getSeg(us i) const; // Easier for cython wrapping
     void setRes(const TaSystem& o);
     d getCurrentMass();	// Return current mass in system [kg]
-    void checkInit(){		// Often called simple method: inline
-      if(!hasInit){ init(); hasInit=true; }
+    bool checkInit(){		// Often called simple method: inline
+      if(!hasInit){
+        return init(); 
+      }
+      else
+        return hasInit;
     }
   protected:
     us getNDofs() const;	// Compute DOFS in system, set     

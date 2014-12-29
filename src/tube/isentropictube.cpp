@@ -30,12 +30,14 @@ namespace tube {
   IsentropicTube::IsentropicTube(const IsentropicTube& other):Tube(other){
     TRACE(13,"IsentropicTube copy cc");
   }
-  void IsentropicTube::init(const TaSystem& sys){
-    Tube::init(sys);
+  bool IsentropicTube::init(const TaSystem& sys){
+    if(!Tube::init(sys))
+      return false;
     for(auto vertex=vvertex.begin();vertex!=vvertex.end();vertex++){
       TubeVertex& cvertex=**vertex;
       cvertex.setIsentropic();
     }
+    return true;
   }
 
   IsentropicTube::~IsentropicTube(){

@@ -4,22 +4,26 @@
 
 namespace tube{
 
-  void testgp(us gp){
+  void testgp(us& gp){
     if(gp<4 || gp >MAXGP)
       {
         WARN( "WARNING: Given number of gridpoints is "	\
-	     << gp<<", which is larger than MAXGP.\n"
-              << "MAXGP is: " << MAXGP << ". Now exiting...");
-        exit(1);
-    
+	     << gp<<", which is too small, or larger than MAXGP.\n"
+              << "MAXGP is: " << MAXGP << "."
+              "Number of gridpoints will be coerced to 4");
+        gp=4;
       }
   }
 
  
   Grid::Grid(us gp,d L):gp(gp),L(L) {
     TRACE(15,"Grid::Grid()");
-    testgp(gp);
-    assert(L>0);
+    testgp(this->gp);
+    if(L<=0){
+      WARN("Illegal length chosen. Will be coerced to unity.");
+      this->L=1;
+    }
+      
     makex();
   }
   Grid::Grid(const Grid& o):

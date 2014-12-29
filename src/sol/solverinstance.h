@@ -3,16 +3,14 @@
 
 namespace tasystem{
   class Solver;
-  class SolverConfiguration;
+
   class SolverInstance{
     Solver* sol;
-    SolverConfiguration* sc;
   public:
-    SolverInstance(){}
-    SolverInstance(Solver& sol,SolverConfiguration& sc);
+    SolverInstance(Solver& sol);
     void operator()();
     void Kill();
-};
+  };
 
 
 

@@ -8,7 +8,7 @@
 #include <boost/thread.hpp>
 #include <boost/atomic.hpp>
 #include "vtypes.h"
-#define SOLVER_MAXITER 100
+
 namespace tasystem{
   using std::tuple;
   class TaSystem;
@@ -19,16 +19,16 @@ namespace tasystem{
   {
     TaSystem* tasystem=NULL;
     std::unique_ptr<boost::thread> solverThread;
-    std::unique_ptr<SolverConfiguration> sc;
-
   public:
+    SolverConfiguration sc;
+
     Solver(const TaSystem& tasys);
     TaSystem& sys() { return *tasystem;}
     Solver(const Solver& other);
     Solver& operator=(const Solver& other);
     void stop();
-    void solve(us maxiter=0,d funer=1e-8,d reler=1e-6,d mindampfac=1e-2,d maxdampfac=1,bool wait=true);
-    tuple<d,d> doIter(d dampfac=1.0);
+    void solve(us maxiter=5000,d funtol=1e-8,d reltol=1e-6,d mindampfac=1e-2,d maxdampfac=1,bool wait=true);
+    tuple<d,d> doIter(d dampfac=-1);
     ~Solver();
   };
 

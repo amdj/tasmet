@@ -19,7 +19,7 @@ namespace segment{
     virtual ~Connector(){}
     virtual Connector* copy() const=0;
     // 100% Forwarding
-    virtual void init(const tasystem::TaSystem& sys){SegConBase::init(sys);}
+    virtual bool init(const tasystem::TaSystem& sys){ return SegConBase::init(sys);}
   };
 
 } // namespace segment

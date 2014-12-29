@@ -29,7 +29,7 @@ namespace tube{
     PressureBc(const variable::var& p,us segnr,pos position);
     PressureBc(const PressureBc& other);
     virtual ~PressureBc(){}
-    virtual void init(const tasystem::TaSystem&);
+    virtual bool init(const tasystem::TaSystem&);
     virtual segment::Connector* copy() const { return new PressureBc(*this);}
     virtual string getType() const {return string("PressureBc");}
 

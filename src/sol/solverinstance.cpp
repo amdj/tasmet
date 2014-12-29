@@ -8,20 +8,19 @@ namespace tasystem{
   typedef tuple<d,d> dtuple;
 
 
-  SolverInstance::SolverInstance(Solver& sol,SolverConfiguration& sc):
-    sol(&sol),sc(&sc)
-  {
-    TRACE(10,"SolverInstance()");
-    // Starting StartSolving Thread
-  }
+  SolverInstance::SolverInstance(Solver& sol):
+    sol(&sol)
+  {}
+
   void SolverInstance::Kill(){
     TRACE(18,"SolverInstance::Kill()");
-    
+    sol->sc.maxiter=0;
   }
 
   void SolverInstance::operator()(){
     TRACE(15,"SolverInstance::operator()");
     assert(sol!=NULL);
+    SolverConfiguration& sc=sol->sc;
 
     TaSystem& sys=sol->sys();
     evd oldres=sys.getRes();
@@ -30,10 +29,10 @@ namespace tasystem{
     d reler=1.0;
     us nloop=0;
 
-    if(sc->maxiter==0)
-      sc->maxiter=SOLVER_MAXITER;
+    if(sc.maxiter==0)
+      sc.maxiter=SOLVER_MAXITER;
 
-    while((funer>sc->funtol || reler>sc->reltol) && nloop<sc->maxiter)
+    while((funer>sc.funtol || reler>sc.reltol) && nloop<sc.maxiter)
       {
         try{
           dtuple ers=sol->doIter();
@@ -53,9 +52,9 @@ namespace tasystem{
           return;
         }
       }
-    if(nloop==sc->maxiter)
+    if(nloop==sc.maxiter)
       WARN("Solver reached maximum number of iterations! Results might not be reliable!");
-    if(sc->maxiter==0)
+    if(sc.maxiter==0)
       WARN("Solver stopped externally");
     cout << "Solver done.\n";
   }

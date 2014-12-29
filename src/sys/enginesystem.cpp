@@ -39,13 +39,15 @@ namespace tasystem{
     cout << "Target system mass: " << gc.getMass() << "\n";
     TaSystem::show(detailnr);
   }
-  void  EngineSystem::init(){
+  bool  EngineSystem::init(){
     TRACE(15,"EngineSystem::init()");
-    TaSystem::init();
+    if(!TaSystem::init())
+      return false;
     // Only set initial mass when it is not already set by user by
     // using setInitialMass()
     if(gc.getMass()==0)
       gc.setMass(getInitialMassFromGc());
+    return true;
   }
   d EngineSystem::getInitialMassFromGc() const {
     TRACE(15,"EngineSystem::getInitialMassFromGc()");

@@ -17,10 +17,10 @@ namespace segment{
   SegConBase::SegConBase(const SegConBase& o):
     name_(o.name_)
   {/* Copy constructor */  }
-  void SegConBase::init(const TaSystem& sys){
+  bool SegConBase::init(const TaSystem& sys){
     TRACE(13,"Seg::init()");
     this->gc=&sys.gc;
-    init_=true;
-  }  
+    return true;
+  }
 
 } // namespace segment

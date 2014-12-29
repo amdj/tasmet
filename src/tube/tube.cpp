@@ -80,9 +80,10 @@ namespace tube {
     return ndofs;
   }  
 
-  void Tube::init(const tasystem::TaSystem& sys){
+  bool Tube::init(const tasystem::TaSystem& sys){
     TRACE(13,"Tube::Init()");
-    Seg::init(sys);
+    if(!Seg::init(sys))
+      return false;
     cleanup_vvertex();
     TRACE(13,"Filling vertices. Current size:"<<vvertex.size());
       // Left *probable* boundary condition
@@ -93,11 +94,20 @@ namespace tube {
     for(i=1;i<getNCells()-1;i++)
       vvertex.emplace_back(new TubeVertex(i,*this));
     vvertex.emplace_back(new RightTubeVertex(getNCells()-1,*this));
-    TRACE(20,"Done making TubeVertices");
+
+    // Test if all tubevertices were made succesfully
+    int error=0;
+    for(auto vv=vvertex.begin();vv!=vvertex.end();vv++)
+      error+= *vv ? 0 : 1;
+    if(error){
+      WARN("Problems with making tubevertices. Is there enough memory left?");
+      return false;
+    }
+
+
     us nVertex=vvertex.size();    
     assert(nVertex==getNCells());
     // And initialize again.
-    TRACE(20,"Done making TubeVertices");
     for(i=0;i<vvertex.size();i++){
       TRACE(13,"Starting intialization of Vertex "<< i);
       TubeVertex* thisvertex=vvertex[i];
@@ -110,7 +120,7 @@ namespace tube {
       TRACE(15,"Initializing tube");
       thisvertex->init(left,right);
     } // for
-
+    return true;
   } // Tube::init(gc)
   d Tube::getRes(us dofnr) const {
     WARN("Not yet implemented!");
@@ -134,13 +144,11 @@ namespace tube {
   }
   const TubeBcVertex& Tube::leftVertex() const{
     TRACE(3,"Tube::leftVertex()");
-    assert(init_);
     assert(vvertex[0]);
     return static_cast<const TubeBcVertex&>(*vvertex[0]);
   }
   const TubeBcVertex& Tube::rightVertex() const{
     TRACE(3,"Tube::rightVertex()");
-    assert(init_);
     return static_cast<const TubeBcVertex&>(**(vvertex.end()-1));
   }
   vd Tube::getResAt(us varNr,us freqnr) const{

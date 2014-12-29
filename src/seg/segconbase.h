@@ -36,7 +36,7 @@ namespace segment{
     const std::string& getName() const{return name_;} // This one is just the name
     void setName(const std::string& name){ name_=name;} // This one is just the name
 
-    virtual void init(const tasystem::TaSystem&); // Implementation updates gc
+    virtual bool init(const tasystem::TaSystem&); // Implementation updates gc
     bool isInit() const{return init_;}
 
     virtual void setEqNrs(us firstdofnr)=0;    

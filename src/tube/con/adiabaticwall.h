@@ -27,7 +27,7 @@ namespace tube{
     virtual segment::Connector* copy() const {return new AdiabaticWall(*this);}
     virtual string getType() const {return string("AdiabaticWall");}
 
-    virtual void init(const tasystem::TaSystem&);
+    virtual bool init(const tasystem::TaSystem&);
     virtual void updateNf();
     virtual void setEqNrs(us firstdofnr);    
     virtual vd error() const;

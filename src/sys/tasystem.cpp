@@ -42,10 +42,8 @@ namespace tasystem{
       addConnector(*o.connectors[i]);
       assert(nConnectors()==i+1);
     }
-
     // segConnections=o.segConnections;
     hasInit=false;
-
   }
   TaSystem& TaSystem::operator=(const TaSystem& other){
     TRACE(14,"TaSystem::operator=()");
@@ -112,8 +110,9 @@ namespace tasystem{
     }
 
   }
-  void TaSystem::init(){
+  bool TaSystem::init(){
     TRACE(14,"TaSystem::init()");
+    hasInit=false;
     us Nsegs=nSegs();
     // TRACE(25,"Address gc:" <<&gc);
     us i=0;
@@ -121,10 +120,12 @@ namespace tasystem{
     // Quite some assumptions are done where the order of this
     // initialization depends on. So first the segs, then the connectors.
     for(auto seg=segs.begin();seg!=segs.end();seg++) {
-      (*seg)->init(*this);
+      if(!(*seg)->init(*this))
+        return false;
     }
     for(auto con=connectors.begin();con!=connectors.end();con++) {
-      (*con)->init(*this);
+      if(!(*con)->init(*this))
+        return false;
     }
 
     // Set all dofs and equation numbers
@@ -136,21 +137,24 @@ namespace tasystem{
     TRACE(10,"Segment initialization done. Total NDofs:"<< Ndofs);
     if(Ndofs>MAXNDOFS)      {
       WARN("Way too many DOFS required: Ndofs=" <<Ndofs << ". Initialization failed\n");
-      return;
+      return false;
     }
 
     if(getNDofs()!=getNEqs()){
       WARN("Ndofs on TaSystem level not equal to number of equations! Initialization failed.");
       WARN("Ndofs="<< getNDofs());
       WARN("Neqs ="<< getNEqs());
-      return;
+      return false;
       // exit(1);
     }
     // Last, but not least: initialize a pointer to this tasystem in
     // globalconf
     hasInit=true;
+    return true;
   }
   void TaSystem::setNf(us Nf){
+    if(!checkInit())
+      return;
     TRACE(30,"TaSystem::setNf()");
     gc.setNf(Nf);
     for(auto seg=segs.begin();seg!=segs.end();seg++)      {
@@ -181,7 +185,9 @@ namespace tasystem{
   }
   void TaSystem::show(us detailnr){
     TRACE(10,"TaSystem::show()");
-    checkInit();
+    if(!checkInit())
+      return;
+
     TRACE(14,"checkInit() done");
     cout << "########################## Showing TaSystem...\n";
     cout << "Showing Global configuration...\n";
@@ -216,7 +222,9 @@ namespace tasystem{
   }
   esdmat TaSystem::jac(d dummy){
     TRACE(14,"TaSystem::Jac()");
-    checkInit();
+    if(!checkInit())
+      return esdmat();
+
     // Something interesting has to be done here later on to connect
     // the different segments in the sense that blocks of Jacobian
     // matrix parts have to be moved to the right place etc. To be
@@ -234,7 +242,9 @@ namespace tasystem{
   }
   evd TaSystem::error(){
     TRACE(14,"TaSystem::Error()");
-    checkInit();
+    if(!checkInit())
+      return evd();
+
     us Ndofs=getNDofs();
     evd error(Ndofs);
     vd Error(error.data(),Ndofs,false,false); // Globally, neqs=ndofs
@@ -255,12 +265,13 @@ namespace tasystem{
       Error.subvec(starteq,starteq+coneqs-1)=connectors[i]->error();
       starteq+=coneqs;
     }
-    VARTRACE(15,error)
+    // VARTRACE(15,error)
     return error;
   }
   evd TaSystem::getRes(){
     TRACE(14,"TaSystem::getRes()");
-    checkInit();
+    if(!checkInit())
+      return evd();
     us Ndofs=getNDofs();
     TRACE(14,"TaSystem::GetRes(), Ndofs:"<< Ndofs);
     const us& Ns=gc.Ns();
@@ -282,7 +293,8 @@ namespace tasystem{
   void TaSystem::setRes(const TaSystem& other){
     TRACE(25,"TaSystem::setRes(TaSystem)");
     WARN("This only works for Tube segments so far");
-    checkInit();
+    if(!checkInit())
+      return;
     us nsegs=nSegs();
     assert(other.nSegs()==nsegs);
     WARN("Not yet available, testing should be done in ")
@@ -293,6 +305,8 @@ namespace tasystem{
     
   }
   void TaSystem::resetHarmonics(){
+    if(!checkInit())
+      return;
     assert(!segs.empty());
     for(auto seg=segs.begin();seg!=segs.end();seg++)
       (*seg)->resetHarmonics();
@@ -304,7 +318,8 @@ namespace tasystem{
   }
   
   void TaSystem::setRes(const vd& Res){
-    checkInit();
+    if(!checkInit())
+      return;
     TRACE(14,"TaSystem::SetRes(vd res)");
     us Ndofs=getNDofs();
 
@@ -325,7 +340,8 @@ namespace tasystem{
   } // TaSystem::SetRes()
   d TaSystem::getCurrentMass() {
     TRACE(10,"TaSystem::getCurrentMass()");
-    checkInit();
+    if(!checkInit())
+      return -1;
     d mass=0;
     us nsegs=segs.size();
     for(us i=0;i<nsegs;i++){
@@ -335,7 +351,8 @@ namespace tasystem{
   }
   void TaSystem::showJac(bool force){
     TRACE(15,"TaSystem::showJac()");
-    checkInit();
+    if(!checkInit())
+      return;
     esdmat jac=this->jac();
     if(force || jac.cols()<50){
       Eigen::IOFormat CleanFmt(2,0," ",";\n","","","[","]");

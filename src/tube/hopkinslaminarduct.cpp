@@ -28,9 +28,11 @@ namespace tube{
 
   }
   
-  void HopkinsLaminarDuct::init(const TaSystem& sys){
+  bool HopkinsLaminarDuct::init(const TaSystem& sys){
     TRACE(15,"HopkinsLaminarDuct::init(gc)");
-    LaminarDuct::init(sys);
+    if(!LaminarDuct::init(sys))
+      return false;
+
     // Set time-avg data to make solving bit easier
     assert(vvertex.size()>0);
     vd vx(geom().nCells());
@@ -51,6 +53,7 @@ namespace tube{
       cvertex.setResVar(varnr::Ts,Tvar);
     }
     hopkinsheat.setdTwdx(geom(),dTwdx);
+    return true;
   }
   
 }
