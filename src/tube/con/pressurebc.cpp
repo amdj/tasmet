@@ -108,7 +108,7 @@ namespace tube{
     }
 
     error.subvec(0,gc->Ns()-1)=prescribep.error();
-    error.subvec(Ns,2*Ns-1)=prescribeT.error();
+    error.subvec(1*Ns,2*Ns-1)=prescribeT.error();
     error.subvec(2*Ns,3*Ns-1)=prescribeTs.error();
     error.subvec(3*Ns,4*Ns-1)=massflowv-vertex->extrapolateQuant(physquant::massFlow);
 

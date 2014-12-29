@@ -117,8 +117,9 @@ namespace tasystem{
     us Nsegs=nSegs();
     // TRACE(25,"Address gc:" <<&gc);
     us i=0;
-    WARN("No seg connections");
 
+    // Quite some assumptions are done where the order of this
+    // initialization depends on. So first the segs, then the connectors.
     for(auto seg=segs.begin();seg!=segs.end();seg++) {
       (*seg)->init(*this);
     }
@@ -126,8 +127,10 @@ namespace tasystem{
       (*con)->init(*this);
     }
 
-    // Do some post-sanity checks
+    // Set all dofs and equation numbers
     setDofEqNrs();
+
+    // Do some post-sanity checks
     us Ndofs=getNDofs();
     gc.setSys(this);
     TRACE(10,"Segment initialization done. Total NDofs:"<< Ndofs);
@@ -220,7 +223,7 @@ namespace tasystem{
     // continued...
     const us& Ns=gc.Ns();
     us Ndofs=getNDofs();
-    TRACE(-1,"Ndofs:"<<Ndofs);    
+    TRACE(15,"Ndofs:"<<Ndofs);    
     TripletList triplets;
     jacTriplets(triplets);
 
@@ -247,9 +250,12 @@ namespace tasystem{
       starteq+=segeqs;
     }
     for(us i=0;i<Ncon;i++){
+      TRACE(15,"Connector " << i);
       coneqs=connectors[i]->getNEqs();
       Error.subvec(starteq,starteq+coneqs-1)=connectors[i]->error();
+      starteq+=coneqs;
     }
+    VARTRACE(15,error)
     return error;
   }
   evd TaSystem::getRes(){
@@ -335,7 +341,7 @@ namespace tasystem{
       Eigen::IOFormat CleanFmt(2,0," ",";\n","","","[","]");
       Eigen::MatrixXd jacd(jac);
       cout << "Jacobian: \n" << jacd.format(CleanFmt) << "\n";
-      cout << "Determinant of jacobian:" << jacd.determinant() << "\n";
+      cout << "Determinant of jacobian:" <<jacd.determinant() << "\n";
     }
     else if(jac.cols()<1000){
       Eigen::MatrixXd jacd(jac);

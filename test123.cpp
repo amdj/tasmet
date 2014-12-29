@@ -78,32 +78,41 @@ int main(int argc,char* argv[]) {
   pL.set(0,3.14);
   if(Nf>0)
     pL.set(1,1.0);
+  // PressureBc first(pL,0,pos::left);
   // PressureBc p(pL,0,pos::left);
-  PressureBc p(pL,0,pos::right);
-  AdiabaticWall bright(0,pos::left);
+  AdiabaticWall first(0,pos::left);
+  PressureBc second(pL,0,pos::right);
   // AdiabaticWall bright(0,pos::right);
   // EngineSystem sys(air);
   // sys.setTimingConstraint(0,0,3,2);
   // sys.setAmplitudeDof(0,0,3,1);
   TaSystem sys(air);
   sys.addSeg(t1); 
-  sys.addConnector(p);
-  sys.addConnector(bright);
+  sys.addConnector(first);
+  sys.addConnector(second);
   // sys.show(20);
 
   Solver sol(sys);
 
   // sys.show(2);
   TRACE(20,"Showing system...");
-  sol.sys().show(10);
+  // sol.sys().show(10);
   TRACE(20,"Computing error...");
 
-  cout << "Error:\n"<< sol.sys().error() << "\n";
+  cout << "Error:\n"<< sys.error() << "\n";
 
-  sol.sys().showJac();
-
+  sys.showJac();
+  TRACE(20,"Hoi");
+  evd error=sys.error();
+  esdmat jac=sys.jac();
+  TRACE(20,"Hoi");
+  // VARTRACE(15,error);
+  // VARTRACE(15,jac);
+  // evd solu=tasystem::solvesys_eigen(jac,error);
   // sol.doIter();
-  // static_cast<Tube*>(sol.sys().getSeg(0))->getResAt(0,0);
+  TRACE(20,"Hoi");
+  // sleep(1);
+  TRACE(15,"err"<<sol.sys().error());
   return 0;
 }
 

@@ -320,7 +320,7 @@ namespace tube{
     return v.gc->gas.kappa(WLl*TtL+WLr*Tt);
   }
   vd Energy::extrapolateHeatFlow() const{
-    TRACE(4,"Energy::extrapolateHeatFlow()");
+    TRACE(5,"Energy::extrapolateHeatFlow()");
     const WeightFactors& w=v.weightFactors();
     vd Qb(v.gc->Ns());
     if(!v.left()){
@@ -338,22 +338,22 @@ namespace tube{
     return Qb;
   }
   JacRow Energy::dExtrapolateHeatFlow() const{
-    TRACE(4,"Energy::extrapolateHeatFlow()");
+    TRACE(5,"Energy::dExtrapolateHeatFlow()");
     const WeightFactors& w=v.weightFactors();
     JacRow dQb(-1,2);
     vd kappaLt=kappaL();
     vd kappaRt=kappaR();
-    VARTRACE(30,kappaLt)      ;
-    VARTRACE(30,kappaRt);
+    // VARTRACE(30,kappaLt)      ;
+    // VARTRACE(30,kappaRt);
     if(!v.left()){
       vd kappaLt=kappaL();
-      dQb+=JacCol(v.T(),-(w.SfL/w.vx)*fDFT*kappaLt*iDFT);
-      dQb+=JacCol(v.TL(),(w.SfL/w.vx)*fDFT*kappaLt*iDFT);
+      dQb+=JacCol(v.T(),-(w.SfL/w.vx)*fDFT*diagmat(kappaLt)*iDFT);
+      dQb+=JacCol(v.TL(),(w.SfL/w.vx)*fDFT*diagmat(kappaLt)*iDFT);
     }
     else if(!v.right()){
       vd kappaRt=kappaR();
-      dQb+=JacCol(v.T(),(w.SfR/(w.xR-w.vx))*fDFT*kappaRt*iDFT);
-      dQb+=JacCol(v.TR(),-(w.SfR/(w.xR-w.vx))*fDFT*kappaRt*iDFT);
+      dQb+=JacCol(v.T(),(w.SfR/(w.xR-w.vx))*fDFT*diagmat(kappaRt)*iDFT);
+      dQb+=JacCol(v.TR(),-(w.SfR/(w.xR-w.vx))*fDFT*diagmat(kappaRt)*iDFT);
     }
     else{
       WARN("That went fatally wrong!");

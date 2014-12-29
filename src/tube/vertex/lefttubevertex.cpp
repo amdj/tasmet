@@ -1,4 +1,9 @@
 #include "lefttubevertex.h"
+#include "weightfactors.h"
+#include "jacobian.h"
+
+#define iDFT (gc->iDFT)
+#define fDFT (gc->fDFT)
 
 namespace tube{
   using variable::var;
@@ -57,6 +62,64 @@ namespace tube{
       TubeVertex::setResVar(v,res);
       break;
     }
+  }
+  vd LeftTubeVertex::extrapolateMassFlow() const{
+    TRACE(15,"LeftTubeVertex::extrapolateMassFlow()");
+    const WeightFactors& w=weightFactors();
+    return w.wL1*right()->continuity().massFlow()+  \
+     w.wL0*c.massFlow();
+  }
+  JacRow LeftTubeVertex::dExtrapolateMassFlow() const{
+    TRACE(15,"LeftTubeVertex::dExtrapolateMassFlow()");
+    const WeightFactors& w=weightFactors();
+    JacRow jacrow(-1,4);
+    jacrow+=JacCol(U(),w.wL0*fDFT*rho().diagt()*iDFT);
+    jacrow+=JacCol(rho(),w.wL0*fDFT*U().diagt()*iDFT);
+    jacrow+=JacCol(UR(),w.wL1*fDFT*rhoR().diagt()*iDFT);
+    jacrow+=JacCol(rhoR(),w.wL1*fDFT*UR().diagt()*iDFT);
+    return jacrow;
+  }
+  vd LeftTubeVertex::extrapolateDensity() const{
+    TRACE(15,"LeftTubeVertex::extrapolateDensity()");
+    const WeightFactors& w=weightFactors();
+    return w.wL1*rhoR()()+\
+      w.wL0*rho()();
+  }
+  JacRow LeftTubeVertex::dExtrapolateDensity() const{
+    TRACE(15,"LeftTubeVertex::dExtrapolateDensity()");
+
+    const WeightFactors& w=weightFactors();
+    JacRow jacrow(-1,2);
+    jacrow+=JacCol(rho(),w.wL0*eye<dmat>(gc->Ns(),gc->Ns()));
+    jacrow+=JacCol(rhoR(),w.wL1*eye<dmat>(gc->Ns(),gc->Ns()));
+    return jacrow;
+  }
+  vd LeftTubeVertex::extrapolateMomentumFlow() const{
+    TRACE(15,"LeftTubeVertex::extrapolateMomentumFlow()");
+    const WeightFactors& w=weightFactors();
+    return w.wL1*right()->momentum().momentumFlow()+\
+      w.wL0*m.momentumFlow();
+  }
+  JacRow LeftTubeVertex::dExtrapolateMomentumFlow() const{
+    TRACE(15,"LeftTubeVertex::dExtrapolateMomentumFlow()");
+    const WeightFactors& w=weightFactors();
+    JacRow jacrow(-1,4);
+    dmat Utd=U().diagt();
+    dmat rhotd=rho().diagt();
+
+    jacrow+=JacCol(U(),2.0*(w.wL0/w.vSf)*fDFT  \
+              *rhotd*Utd*iDFT);
+    jacrow+=JacCol(rho(),(w.wL0/w.vSf)*fDFT\
+                *(Utd%Utd)*iDFT);
+
+    dmat UtdR=UR().diagt();
+    dmat rhotdR=rhoR().diagt();
+    jacrow+=JacCol(UR(),2.0*(w.wL1/w.vSfR)*fDFT\
+               *rhotdR*UtdR*iDFT);
+    jacrow+=JacCol(rhoR(),(w.wL1/w.vSfR)*fDFT\
+                 *UtdR*UtdR*iDFT);
+
+    return jacrow;
   }
 
 } // namespace tube

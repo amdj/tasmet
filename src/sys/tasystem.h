@@ -57,7 +57,8 @@ namespace tasystem{
     us nSegs() const {return segs.size();}
     us nConnectors() const {return connectors.size();}
     void addConnector(const segment::Connector&);
-
+    TaSystem& operator+=(const segment::Connector& c){addConnector(c); return *this;}
+    TaSystem& operator+=(const segment::Seg& s){addSeg(s); return *this;}
     void showJac(bool force=false);
 
     virtual void show(us detailnr=0);

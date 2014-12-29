@@ -48,11 +48,21 @@ namespace tube{
     vd Qb(v.gc->Ns());
     if(!v.left()){
       vd kappaLt=kappaL();
-      Qb=(w.SsL/w.vx)*fDFT*(kappaLt%(v.TsL().tdata()-v.Ts().tdata()));
+      d SsL;
+      if(w.SsL>0)
+        SsL=w.SsL;
+      else
+        SsL=1.0;
+      Qb=(SsL/w.vx)*fDFT*(kappaLt%(v.TsL().tdata()-v.Ts().tdata()));
     }
     else if(!v.right()){
       vd kappaRt=kappaR();
-      Qb=(w.SsR/(w.xR-w.vx))*fDFT*(kappaRt%(v.T().tdata()-v.TR().tdata()));
+      d SsR;
+      if(w.SsR>0)
+        SsR=w.SsR;
+      else
+        SsR=1.0;
+      Qb=(SsR/(w.xR-w.vx))*fDFT*(kappaRt%(v.T().tdata()-v.TR().tdata()));
     }
     else{
       WARN("That went fatally wrong!");
@@ -66,14 +76,24 @@ namespace tube{
     JacRow dQb(-1,2);
 
     if(!v.left()){
+      d SsL;
+      if(w.SsL>0)
+        SsL=w.SsL;
+      else
+        SsL=1.0;
       vd kappaLt=kappaL();
-      dQb+=JacCol(v.Ts(),-(w.SsL/w.vx)*fDFT*kappaLt*iDFT);
-      dQb+=JacCol(v.TsL(),(w.SsL/w.vx)*fDFT*kappaLt*iDFT);
+      dQb+=JacCol(v.Ts(),-(SsL/w.vx)*fDFT*diagmat(kappaLt)*iDFT);
+      dQb+=JacCol(v.TsL(),(SsL/w.vx)*fDFT*diagmat(kappaLt)*iDFT);
     }
     else if(!v.right()){
       vd kappaRt=kappaR();
-      dQb+=JacCol(v.Ts(),(w.SsR/(w.xR-w.vx))*fDFT*kappaRt*iDFT);
-      dQb+=JacCol(v.TsR(),-(w.SsR/(w.xR-w.vx))*fDFT*kappaRt*iDFT);
+      d SsR;
+      if(w.SsR>0)
+        SsR=w.SsR;
+      else
+        SsR=1.0;
+      dQb+=JacCol(v.Ts(),(SsR/(w.xR-w.vx))*fDFT*diagmat(kappaRt)*iDFT);
+      dQb+=JacCol(v.TsR(),-(SsR/(w.xR-w.vx))*fDFT*diagmat(kappaRt)*iDFT);
     }
     else{
       WARN("That went fatally wrong!");

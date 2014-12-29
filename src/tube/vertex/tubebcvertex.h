@@ -25,6 +25,13 @@ namespace tube{
     virtual segment::pos getPos() const=0;
     vd extrapolateQuant(physquant) const;
     tasystem::JacRow dExtrapolateQuant(physquant) const;
+  private:
+    virtual vd extrapolateMassFlow() const=0;
+    virtual tasystem::JacRow dExtrapolateMassFlow() const=0;
+    virtual vd extrapolateDensity() const=0;
+    virtual tasystem::JacRow dExtrapolateDensity() const=0;
+    virtual vd extrapolateMomentumFlow() const=0;
+    virtual tasystem::JacRow dExtrapolateMomentumFlow() const=0;
   };
 
 } // namespace tube

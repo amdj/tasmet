@@ -28,7 +28,14 @@ namespace tube{
              TsR
   };
 
-  enum physquant{massFlow,momentumFlow,energyFlow,heatFlow,solidHeatFlow};
+  enum physquant{massFlow,
+                 momentumFlow,
+                 energyFlow,
+                 heatFlow,
+                 solidHeatFlow,
+                 density,
+                 volumeFlow
+  };
 }                // namespace tube
 
 #endif /* _VARNR_H_ */

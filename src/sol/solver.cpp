@@ -3,7 +3,6 @@
 #include "solverinstance.h"
 #include "vtypes.h"
 #include <Eigen/Sparse>
-#include "arma_eigen.h"
 
 
 namespace tasystem{
@@ -175,6 +174,8 @@ namespace tasystem{
   } // Solver::DoIter()
 
   Solver::~Solver()  {
+    TRACE(15,"Solver::~Solver()");
+    TRACE(25,"Waiting for solver to stop..");
     stop();
     delete tasystem;
   }

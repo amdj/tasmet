@@ -25,6 +25,14 @@ namespace tube{
     virtual void show(us detailnr=1) const;
 
     virtual void setResVar(varnr,const vd& res);
+  private:
+    virtual vd extrapolateMassFlow() const;
+    virtual tasystem::JacRow dExtrapolateMassFlow() const;
+    virtual vd extrapolateDensity() const;
+    virtual tasystem::JacRow dExtrapolateDensity() const;
+    virtual vd extrapolateMomentumFlow() const;
+    virtual tasystem::JacRow dExtrapolateMomentumFlow() const;
+
   };  
 
 } // namespace tube

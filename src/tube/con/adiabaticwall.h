@@ -16,6 +16,7 @@ namespace tube{
     vd zero;
     PrescribeQty Uiszero;       // Equation to make volume flow zero
                                 // at wall
+    PrescribeddxQty dpdxiszero;
     us firsteqnr;
     AdiabaticWall& operator=(const AdiabaticWall&);
   public:

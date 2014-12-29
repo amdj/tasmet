@@ -87,9 +87,8 @@ namespace tube {
     TRACE(13,"Filling vertices. Current size:"<<vvertex.size());
       // Left *probable* boundary condition
       // vvertex.emplace_back(new LeftTubeVertex(0,g));
-    WARN("Lot wrong here");
+    // WARN("Lot wrong here");
     vvertex.emplace_back(new LeftTubeVertex(0,*this));
-    TRACE(20,"Done making TubeVertices");
     us i;
     for(i=1;i<getNCells()-1;i++)
       vvertex.emplace_back(new TubeVertex(i,*this));
@@ -98,6 +97,7 @@ namespace tube {
     us nVertex=vvertex.size();    
     assert(nVertex==getNCells());
     // And initialize again.
+    TRACE(20,"Done making TubeVertices");
     for(i=0;i<vvertex.size();i++){
       TRACE(13,"Starting intialization of Vertex "<< i);
       TubeVertex* thisvertex=vvertex[i];

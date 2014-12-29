@@ -1,9 +1,12 @@
 #include "tubebcvertex.h"
 #include "var.h"
 #include "jacobian.h"
+#include "weightfactors.h"
+
 
 namespace tube{
   using tasystem::JacRow;
+  using tasystem::JacCol;
 
   TubeBcVertex::TubeBcVertex(us i,const Tube& t):
     TubeVertex(i,t)
@@ -12,10 +15,10 @@ namespace tube{
     TRACE(10,"TubeBcVertex::extrapolateQuant()");
     switch(q){
     case massFlow:
-      return c.extrapolateMassFlow();
+      return extrapolateMassFlow();
       break;
     case momentumFlow:
-      return m.extrapolateMomentumFlow();
+      return extrapolateMomentumFlow();
       break;
     case energyFlow:
       // return e.extrapolateEnergyFlow();
@@ -25,6 +28,8 @@ namespace tube{
       break;
     case solidHeatFlow:
       return se.extrapolateHeatFlow();
+    case density:
+      return extrapolateDensity();
     default:
       break;
     }
@@ -36,10 +41,10 @@ namespace tube{
     TRACE(10,"TubeBcVertex::dExtrapolateQuant()");
     switch(q){
     case massFlow:
-      return c.dExtrapolateMassFlow();
+      return dExtrapolateMassFlow();
       break;
     case momentumFlow:
-      return m.dExtrapolateMomentumFlow();
+      return dExtrapolateMomentumFlow();
       break;
     case energyFlow:
       // return e.dExtrapolateEnergyFlow();      break;
@@ -49,6 +54,8 @@ namespace tube{
     case solidHeatFlow:
       return se.dExtrapolateHeatFlow();
       break;
+    case density:
+      return dExtrapolateDensity();
     default:
       break;
     }
@@ -56,6 +63,6 @@ namespace tube{
     abort();
     return JacRow(0);           // To avoid compiler warning
   }
-  
+
 }                // namespace tube
 

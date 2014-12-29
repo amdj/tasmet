@@ -134,69 +134,6 @@ namespace tube{
     var res(v.gc);
     return fDFT*(rhot%Ut%Ut/w.vSf);
   }
-  vd Momentum::extrapolateMomentumFlow() const{
-    vd emomentumFlow;
-    const WeightFactors& w=v.weightFactors();
-    if(!v.left()){
-      const vd& rhoR=v.rhoR().tdata();
-      const vd& UR=v.UR().tdata();
-      emomentumFlow=w.wL1*v.left()->momentum().momentumFlow();
-      emomentumFlow+=w.wL0*momentumFlow();
-      return emomentumFlow;
-    }
-    if(!v.right()){
-      const vd& rhoL=v.rhoL().tdata();
-      const vd& UL=v.UL().tdata();
-      emomentumFlow=w.wRNm2*v.right()->momentum().momentumFlow();
-      emomentumFlow+=w.wRNm1*momentumFlow();
-      return emomentumFlow;
-    }
-    else{
-      WARN("SOMETHING REALLY WRONG! Momentumflow tried to be extrapolated on a non-boundary vertex");
-      abort();
-      return vd(0,fillwith::zeros);
-    }
-  }
-  JacRow Momentum::dExtrapolateMomentumFlow() const{
-    const WeightFactors& w=v.weightFactors();
-    JacRow jacrow(-1,4);
-    dmat Utd=v.U().diagt();
-    dmat rhotd=v.rho().diagt();
-
-    if(!v.left()){
-      JacCol dU(v.U(),2.0*(w.wL0/w.vSf)*fDFT  \
-                *rhotd*Utd*iDFT);
-      JacCol drho(v.rho(),(w.wL0/w.vSf)*fDFT\
-                  *(Utd%Utd)*iDFT);
-
-      dmat UtdR=v.UR().diagt();
-      dmat rhotdR=v.rhoR().diagt();
-      JacCol dUR(v.UR(),2.0*(w.wL1/w.vSfR)*fDFT\
-                 *rhotdR*UtdR*iDFT);
-      JacCol drhoR(v.rhoR(),(w.wL1/w.vSfR)*fDFT\
-                   *UtdR*UtdR*iDFT);
-      ((((jacrow+=dU)+=drho)+=dUR)+=drhoR);
-    }
-    if(!v.right()){
-      JacCol dU(v.U(),2.0*w.wRNm1/w.vSf*fDFT\
-                *rhotd*Utd*iDFT);
-      JacCol drho(v.rho(),(w.wRNm1/w.vSf)*fDFT\
-                  *(Utd%Utd)*iDFT);
-
-      dmat UtdL=v.UL().diagt();
-      dmat rhotdL=v.rhoL().diagt();
-      JacCol dUL(v.UL(),2.0*(w.wRNm2/w.vSfL)*fDFT\
-                 *rhotdL*UtdL*iDFT);
-      JacCol drhoL(v.rhoL(),(w.wRNm2/w.vSfL)*fDFT\
-                   *UtdL*UtdL*iDFT);
-      ((((jacrow+=dU)+=drho)+=dUL)+=drhoL);
-    }
-    else{
-      WARN("SOMETHING REALLY WRONG! dMomentumflow tried to be extrapolated on a non-boundary vertex");
-      abort();
-    }
-    return jacrow;
-  }
 
   JacCol Momentum::dU() const {
     TRACE(0,"Momentum::dU()");

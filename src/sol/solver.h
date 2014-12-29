@@ -3,13 +3,18 @@
 #define _SOLVER_H_
 #include "solverconfiguration.h"
 #include "vtypes.h"
+#include "arma_eigen.h"
 #include <memory>
 #include <boost/thread.hpp>
 #include <boost/atomic.hpp>
+#include "vtypes.h"
 #define SOLVER_MAXITER 100
 namespace tasystem{
   using std::tuple;
   class TaSystem;
+
+  evd solvesys_eigen(const esdmat& K,const evd& f);
+
   class Solver
   {
     TaSystem* tasystem=NULL;

@@ -15,8 +15,6 @@ namespace tube{
     virtual void domg(vd&) const;
     vd massFlow() const;
 
-    vd extrapolateMassFlow() const;
-    tasystem::JacRow dExtrapolateMassFlow() const;
   private:
     tasystem::JacCol drhoR() const; // Derivative of continuity equation to density at node
     // i + 1

@@ -24,6 +24,19 @@ namespace tube{
     vd error() const;
     tasystem::JacRow jac() const;
   };
+  class PrescribeddxQty{
+    const variable::var *Qi,*Qj,*Qk; // Quantities as position i,j,k
+    d Wi,Wj,Wk;
+    vd vals;
+    us eqnr;
+  public:
+    PrescribeddxQty(){}
+    #define varref const variable::var&
+    void set(us eqnr,varref Qi,varref Qj,varref Qk,d xi,d xj, d xk,const vd& vals);
+    #undef varref
+    vd error() const;
+    tasystem::JacRow jac() const;
+  };
 
 } // namespace tube
 

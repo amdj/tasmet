@@ -79,24 +79,3 @@ cdef extern from "tube.h" namespace "tube":
         vd Htot()
         vd dragCoefVec(us freqnr)
         
-cdef extern from "vertex.h":
-    cdef cppclass Vertex:
-        pass
-cdef extern from "tubevertex.h":
-    cdef cppclass TubeVertex(Vertex):
-        pass
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

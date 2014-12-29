@@ -44,6 +44,7 @@ namespace tube{
     }
   } // init
   vd Continuity::massFlow() const{
+    TRACE(15,"Continuity::massFlow()");
     return fDFT*(v.rho().tdata()%v.U().tdata());
   }
   JacRow Continuity::jac() const{
@@ -74,46 +75,6 @@ namespace tube{
     // (Boundary) source term
     error+=v.csource();
     return error;
-  }
-  vd Continuity::extrapolateMassFlow() const{
-    vd massFlow;
-    const WeightFactors& w=v.weightFactors();
-    if(!v.left()){
-      const vd& rhoR=v.rhoR().tdata();
-      const vd& UR=v.UR().tdata();
-      massFlow=w.wL1*v.right()->continuity().massFlow();
-      massFlow+=w.wL0*this->massFlow();
-    }
-    if(!v.right()){
-      const vd& rhoL=v.rhoL().tdata();
-      const vd& UL=v.UL().tdata();
-      massFlow=w.wRNm2*fDFT*(rhoL%UL);
-      massFlow+=w.wRNm1*this->massFlow();
-    }
-    else{
-      WARN("SOMETHING REALLY WRONG! Massflow tried to be extrapolated on a non-boundary vertex");
-    }
-    return massFlow;
-  }
-  JacRow Continuity::dExtrapolateMassFlow() const{
-    const WeightFactors& w=v.weightFactors();
-    JacRow jacrow(-1,4);
-
-    if(!v.left()){
-      JacCol dU(v.U(),w.wL0*fDFT*v.rho().diagt()*iDFT);
-      JacCol drho(v.rho(),w.wL0*fDFT*v.U().diagt()*iDFT);
-      JacCol dUR(v.UR(),w.wL1*fDFT*v.rhoR().diagt()*iDFT);
-      JacCol drhoR(v.rhoR(),w.wL1*fDFT*v.UR().diagt()*iDFT);
-      ((((jacrow+=dU)+=drho)+=dUR)+=drhoR);
-    }
-    if(!v.right()){
-      JacCol dU(v.U(),w.wRNm1*fDFT*v.rho().diagt()*iDFT);
-      JacCol drho(v.rho(),w.wRNm1*fDFT*v.U().diagt()*iDFT);
-      JacCol dUL(v.UL(),w.wRNm2*fDFT*v.rhoL().diagt()*iDFT);
-      JacCol drhoL(v.rhoL(),w.wRNm2*fDFT*v.UL().diagt()*iDFT);
-      ((((jacrow+=dU)+=drho)+=dUL)+=drhoL);
-    }
-    return jacrow;
   }
   void Continuity::domg(vd& domg_) const{
     TRACE(0,"Continuity::domg()");
