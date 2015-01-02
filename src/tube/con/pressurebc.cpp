@@ -66,9 +66,9 @@ namespace tube{
       return false;
 
     // Decouple from old globalconf pointer
-    prescribep.setGc(sys.gc);
-    prescribeT.setGc(sys.gc);
-    prescribeTs.setGc(sys.gc); 
+    prescribep.setGc(*gc);
+    prescribeT.setGc(*gc);
+    prescribeTs.setGc(*gc); 
     return true;
   }
   void PressureBc::setEqNrs(us firsteqnr){

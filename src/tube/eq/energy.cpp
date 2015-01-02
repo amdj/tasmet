@@ -1,3 +1,4 @@
+// #define TRACERPLUS 0
 // #define ENERGY_SCALE (1/v.gc->rho0/v.gc->c0)
 // #define ENERGY_SCALE (1.0/v.gc->p0)
 // #define ENERGY_SCALE (1.0/100)
@@ -71,7 +72,7 @@ namespace tube{
       WcLl=w.SfL/(w.vx);
       WcLr=-w.SfL/(w.vx);
 
-      WkinLl=-0.5/SfLsq;
+      WkinLl=0.5/SfLsq;
       WkinLr=0;
 
       WLl=1;
@@ -105,8 +106,9 @@ namespace tube{
   }
   d Energy::Htot() const{
     TRACE(10,"Energy::Htot()");
-    vd H=0.5*(HL()+HR());
-    return H(0);
+    // vd H=0.5*(HL()+HR());
+    // return H(0);
+    return 0;
   }
   vd Energy::error() const {		// Error in momentum equation
     TRACE(6,"Energy::Error(), i="<<v.geti());
@@ -158,7 +160,7 @@ namespace tube{
     return jac;    
   }
   vd Energy::ddtEtherm() const {
-    TRACE(2,"Energy::ddtEstat()");
+    TRACE(2,"Energy::ddtEtherm()");
     d gamma=this->gamma();
     return Wddt*DDTfd*0.5*(v.pL()()+v.pR()())/(gamma-1.0);
   }
@@ -170,25 +172,25 @@ namespace tube{
     dddtEtherm+=JacCol(v.pR(),0.5*Wddt*DDTfd/(gamma-1.0));
     return dddtEtherm;
   }
-  vd Energy::ddtEtot() const{
-    TRACE(2,"Energy::ddtEtot()");
+  // vd Energy::ddtEtot() const{
+  //   TRACE(2,"Energy::ddtEtot()");
 
-    const vd& rhot=v.rho().tdata();
-    const vd& Ut=v.U().tdata();
-    return ddtEtherm()+Wddtkin*DDTfd*fDFT*(rhot%Ut%Ut);
-  }
-  JacRow Energy::dddtEtot() const {
-    TRACE(2,"Energy::dddtEtot()");
+  //   const vd& rhot=v.rho().tdata();
+  //   const vd& Ut=v.U().tdata();
+  //   return ddtEtherm()+Wddtkin*DDTfd*fDFT*(rhot%Ut%Ut);
+  // }
+  // JacRow Energy::dddtEtot() const {
+  //   TRACE(2,"Energy::dddtEtot()");
 
-    d gamma=this->gamma();
-    d gamfac=gamma/(gamma-1.0);
-    const vd& rhot=v.rho().tdata();
-    const vd& Ut=v.U().tdata();
-    JacRow dddtEtot=dddtEtherm();
-    dddtEtot+=JacCol(v.U(),2.0*Wddtkin*DDTfd*fDFT*diagmat(rhot%Ut)*iDFT);
-    dddtEtot+=JacCol(v.rho(),Wddtkin*DDTfd*fDFT*diagmat(Ut%Ut)*iDFT);  
-    return dddtEtot;  
-  }
+  //   d gamma=this->gamma();
+  //   d gamfac=gamma/(gamma-1.0);
+  //   const vd& rhot=v.rho().tdata();
+  //   const vd& Ut=v.U().tdata();
+  //   JacRow dddtEtot=dddtEtherm();
+  //   dddtEtot+=JacCol(v.U(),2.0*Wddtkin*DDTfd*fDFT*diagmat(rhot%Ut)*iDFT);
+  //   dddtEtot+=JacCol(v.rho(),Wddtkin*DDTfd*fDFT*diagmat(Ut%Ut)*iDFT);  
+  //   return dddtEtot;  
+  // }
   vd Energy::hL() const{
     TRACE(2,"Energy::hL()");
     // We still assume gamma is constant
@@ -199,45 +201,45 @@ namespace tube{
     const vd& pLt=v.pL().tdata();
 
     return gamfac*fDFT*(pLt%(WLl*UtL+WLr*Ut));
-    }
+  }
   JacRow Energy::dhL() const{
     JacRow dhL(3);
     d gamma=this->gamma();
     d gamfac=gamma/(gamma-1.0);
+    const vd& Ut=v.U().tdata();    
     const vd& UtL=v.UL().tdata();
     const vd& pLt=v.pL().tdata();
-    const vd& Ut=v.U().tdata();    
-    dhL+=JacCol(v.pL(),fDFT*diagmat(WLl*UtL+WLr*Ut)*iDFT);
-    dhL+=JacCol(v.U(),fDFT*(WLr*v.pL().diagt())*iDFT);
-    dhL+=JacCol(v.UL(),fDFT*(WLl*v.pL().diagt())*iDFT);
+    dhL+=JacCol(v.pL(),gamfac*fDFT*diagmat(WLl*UtL+WLr*Ut)*iDFT);
+    dhL+=JacCol(v.U(),gamfac*fDFT*(WLr*v.pL().diagt())*iDFT);
+    dhL+=JacCol(v.UL(),gamfac*fDFT*(WLl*v.pL().diagt())*iDFT);
     return dhL;
   }
-  vd Energy::HL() const{
-    TRACE(2,"Energy::HL()");
-    vd HL=hL();
+  // vd Energy::HL() const{
+  //   TRACE(2,"Energy::HL()");
+  //   vd HL=hL();
 
-    const vd& rhot=v.rho().tdata();
-    const vd& Ut=v.U().tdata();    
-    const vd& rhotL=v.rhoL().tdata();
-    const vd& UtL=v.UL().tdata();    
+  //   const vd& rhot=v.rho().tdata();
+  //   const vd& Ut=v.U().tdata();    
+  //   const vd& rhotL=v.rhoL().tdata();
+  //   const vd& UtL=v.UL().tdata();    
 
-    HL+=fDFT*(WkinLl*rhotL%pow(UtL,3));
-    HL+=fDFT*(WkinLr*rhot%pow(Ut,3));
-    return HL;
-  }
-  JacRow Energy::dHL() const{
-    JacRow dHL=dhL();
-    const vd& rhot=v.rho().tdata();
-    const vd& Ut=v.U().tdata();    
-    const vd& rhotL=v.rhoL().tdata();
-    const vd& UtL=v.UL().tdata();    
-    dHL+=JacCol(v.U(),3.0*WkinLr*fDFT*(diagmat(rhot%Ut%Ut)*iDFT));
-    dHL+=JacCol(v.rho(),WkinLr*fDFT*(diagmat(Ut%Ut%Ut)*iDFT));
+  //   HL+=fDFT*(WkinLl*rhotL%pow(UtL,3));
+  //   HL+=fDFT*(WkinLr*rhot%pow(Ut,3));
+  //   return HL;
+  // }
+  // JacRow Energy::dHL() const{
+  //   JacRow dHL=dhL();
+  //   const vd& rhot=v.rho().tdata();
+  //   const vd& Ut=v.U().tdata();    
+  //   const vd& rhotL=v.rhoL().tdata();
+  //   const vd& UtL=v.UL().tdata();    
+  //   dHL+=JacCol(v.U(),3.0*WkinLr*fDFT*(diagmat(rhot%Ut%Ut)*iDFT));
+  //   dHL+=JacCol(v.rho(),WkinLr*fDFT*(diagmat(Ut%Ut%Ut)*iDFT));
 
-    dHL+=JacCol(v.rhoL(),WkinLl*fDFT*(diagmat(pow(UtL,3))*iDFT));
-    dHL+=JacCol(v.UL(),3.0*WkinLl*fDFT*(diagmat(rhotL%UtL%UtL)*iDFT));
-    return dHL;
-  }
+  //   dHL+=JacCol(v.rhoL(),WkinLl*fDFT*(diagmat(pow(UtL,3))*iDFT));
+  //   dHL+=JacCol(v.UL(),3.0*WkinLl*fDFT*(diagmat(rhotL%UtL%UtL)*iDFT));
+  //   return dHL;
+  // }
   vd Energy::hR() const{
     TRACE(2,"Energy::hR()");
     // We still assume gamma is constant
@@ -256,37 +258,37 @@ namespace tube{
     const vd& Ut=v.U().tdata();
     const vd& UtR=v.UR().tdata();
     const vd& pRt=v.pR().tdata();
-    dhR+=JacCol(v.pR(),fDFT*diagmat(WRr*UtR+WRl*Ut)*iDFT);
-    dhR+=JacCol(v.U(),fDFT*(WRl*v.pR().diagt())*iDFT);
-    dhR+=JacCol(v.UR(),fDFT*(WRr*v.pR().diagt())*iDFT);
+    dhR+=JacCol(v.pR(),gamfac*fDFT*diagmat(WRr*UtR+WRl*Ut)*iDFT);
+    dhR+=JacCol(v.U(),gamfac*fDFT*(WRl*v.pR().diagt())*iDFT);
+    dhR+=JacCol(v.UR(),gamfac*fDFT*(WRr*v.pR().diagt())*iDFT);
     return dhR;
   }
-  vd Energy::HR() const{
-    TRACE(2,"Energy::HR()");
-    vd HR=hR();
+  // vd Energy::HR() const{
+  //   TRACE(2,"Energy::HR()");
+  //   vd HR=hR();
 
-    const vd& rhot=v.rho().tdata();
-    const vd& Ut=v.U().tdata();    
-    const vd& rhotR=v.rhoR().tdata();
-    const vd& UtR=v.UR().tdata();    
+  //   const vd& rhot=v.rho().tdata();
+  //   const vd& Ut=v.U().tdata();    
+  //   const vd& rhotR=v.rhoR().tdata();
+  //   const vd& UtR=v.UR().tdata();    
 
-    HR+=fDFT*(WkinRl*rhot%pow(Ut,3));
-    HR+=fDFT*(WkinRr*rhotR%pow(UtR,3));
-    return HR;
-  }
-  JacRow Energy::dHR() const{
-    JacRow dHR=dhR();
-    const vd& rhot=v.rho().tdata();
-    const vd& Ut=v.rho().tdata();    
-    const vd& rhotR=v.rhoR().tdata();
-    const vd& UtR=v.UR().tdata();    
-    dHR+=JacCol(v.U(),3.0*WkinRl*fDFT*(diagmat(rhot%Ut%Ut)*iDFT));
-    dHR+=JacCol(v.rho(),WkinRl*fDFT*(diagmat(Ut%Ut%Ut)*iDFT));
+  //   HR+=fDFT*(WkinRl*rhot%pow(Ut,3));
+  //   HR+=fDFT*(WkinRr*rhotR%pow(UtR,3));
+  //   return HR;
+  // }
+  // JacRow Energy::dHR() const{
+  //   JacRow dHR=dhR();
+  //   const vd& rhot=v.rho().tdata();
+  //   const vd& Ut=v.rho().tdata();    
+  //   const vd& rhotR=v.rhoR().tdata();
+  //   const vd& UtR=v.UR().tdata();    
+  //   dHR+=JacCol(v.U(),3.0*WkinRl*fDFT*(diagmat(rhot%Ut%Ut)*iDFT));
+  //   dHR+=JacCol(v.rho(),WkinRl*fDFT*(diagmat(Ut%Ut%Ut)*iDFT));
 
-    dHR+=JacCol(v.rhoR(),WkinRr*fDFT*(diagmat(pow(UtR,3))*iDFT));
-    dHR+=JacCol(v.UR(),3.0*WkinRr*fDFT*(diagmat(rhotR%UtR%UtR)*iDFT));
-    return dHR;
-  }
+  //   dHR+=JacCol(v.rhoR(),WkinRr*fDFT*(diagmat(pow(UtR,3))*iDFT));
+  //   dHR+=JacCol(v.UR(),3.0*WkinRr*fDFT*(diagmat(rhotR%UtR%UtR)*iDFT));
+  //   return dHR;
+  // }
   vd Energy::QL() const{
     TRACE(4,"Energy::QL()");
     const vd& Tt=v.T().tdata();
@@ -315,24 +317,24 @@ namespace tube{
   }
   vd Energy::kappaR()  const {		// Returns thermal conductivity time domain data
     TRACE(5,"Energy::kappaR()");
-
     const vd& Tt=v.T().tdata();
-    const vd& TtR=v.TR().tdata();    
+    const vd& TtR=v.TR().tdata();
+    // VARTRACE(25,v.gc->gas.kappa(WRr*TtR+WRl*Tt));
     return v.gc->gas.kappa(WRr*TtR+WRl*Tt);
   }
   vd Energy::kappaL()  const {		// Returns thermal conductivity time domain data
     TRACE(5,"Energy::kappaR()");
-
     const vd& Tt=v.T().tdata();
     const vd& TtL=v.TL().tdata();    
+    // VARTRACE(25,v.gc->gas.kappa(WLl*TtL+WLr*Tt));
     return v.gc->gas.kappa(WLl*TtL+WLr*Tt);
   }
-  vd Energy::EkinL() const{
-    return HL()-hL();
-  }
-  vd Energy::EkinR() const{
-    return HR()-hR();
-  }
+  // vd Energy::EkinL() const{
+  //   return HL()-hL();
+  // }
+  // vd Energy::EkinR() const{
+  //   return HR()-hR();
+  // }
   void Energy::domg(vd& domg_) const {
     TRACE(0,"Energy::domg()");
     assert(v.gc!=NULL);
