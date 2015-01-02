@@ -24,11 +24,6 @@ namespace tube{
 
   void Energy::show() const{
     cout << "------------- Full energy equation\n";
-    #ifdef EN_VISCOSITY
-    cout << "Artificial viscosity turned ON for energy equation\n";
-    #else
-    cout << "Artificial viscosity turned OFF for energy equation\n";
-    #endif
     cout << "Wddt     :"<<Wddt<<"\n";
     cout << "WLl     :"<<WLl<<"\n";
     cout << "WLr     :"<<WLr<<"\n";

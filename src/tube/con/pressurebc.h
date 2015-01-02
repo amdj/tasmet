@@ -9,15 +9,17 @@ namespace tasystem{
   class TaSystem;
 }
 
+
+
 namespace tube{
+
+  variable::var coldtemp(const variable::var&);
+
   class PressureBc:public TubeBc {
     us firsteqnr;
-    variable::var pbc;			// Pressure boundary condition
-    variable::var Tbc;			// Temperature boundary condition
-    variable::var Tsbc;			// Solid temperature boundary condition
-    PrescribeQty prescribep;
-    PrescribeQty prescribeT;
-    PrescribeQty prescribeTs;
+    PrescribeQty prescribep;			// Pressure boundary condition
+    PrescribeQty prescribeT;			// Temperature boundary condition
+    PrescribeQty prescribeTs;			// Solid temperature boundary condition
     
     PressureBc& operator=(const PressureBc&);
   public:
@@ -42,7 +44,6 @@ namespace tube{
   private:
     static variable::var adiabatictemp(const variable::var& pres); // Return adiabatic compression
     // amplitude values
-    static variable::var coldtemp(const variable::var& pres); // Returns gc.T0 amplitude data
 
   };
 

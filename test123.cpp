@@ -5,13 +5,16 @@
 #include "isentropictube.h"
 #include "hopkinslaminarduct.h"
 #include "var.h"
+
 #include "adiabaticwall.h"
+#include "isotwall.h"
+#include "pressurebc.h"
 // #include "enginesystem.h"
+
 #include "tasystem.h"
 #include "solver.h"
 #include "grid.h"
-#include "pressurebc.h"
-#include <limits>
+
 #include <boost/archive/text_oarchive.hpp>
 
 using namespace std;
@@ -31,8 +34,6 @@ int main(int argc,char* argv[]) {
   double f=100;
   double omg=2*number_pi*f;
   double T=1/f;
-  cout << "SFSG\n";
-
 
   if(argc>1)
     loglevel=atoi(argv[1]);
@@ -45,7 +46,6 @@ int main(int argc,char* argv[]) {
   cout<< "Loglevel:"<<loglevel<<"\n";
 
   d L=1;
-  VARTRACE(15,L);
   d S=1;
   d rtube=sqrt(S/number_pi);
   d phi=1.0;
@@ -71,16 +71,18 @@ int main(int argc,char* argv[]) {
 
   Globalconf gc=air;
 
-  // HopkinsLaminarDuct t1(geom1,gc.T0,gc.T0);
+  HopkinsLaminarDuct t1(geom1,gc.T0,gc.T0);
 
-  IsentropicTube t1(geom1);
+  // IsentropicTube t1(geom1);
   variable::var pL(gc,0);
   pL.set(0,3.14);
   if(Nf>0)
     pL.set(1,1.0);
   // PressureBc first(pL,0,pos::left);
   // PressureBc p(pL,0,pos::left);
-  AdiabaticWall first(0,pos::left);
+  variable::var Tbc(gc,393.15);
+  IsoTWall first(0,pos::left,Tbc);
+  // AdiabaticWall first(0,pos::left);
   PressureBc second(pL,0,pos::right);
   // AdiabaticWall bright(0,pos::right);
   // EngineSystem sys(air);

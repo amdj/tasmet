@@ -333,10 +333,9 @@ namespace tasystem{
         startdof=startdof+segdofs;
       }
     }
-    else
-      {
-        WARN("Amount of DOFS in result vector does not match system size!\nNothing done.");
-      }
+    else {
+      WARN("Amount of DOFS in result vector does not match system size!\nNothing done.");
+    }
   } // TaSystem::SetRes()
   d TaSystem::getCurrentMass() {
     TRACE(10,"TaSystem::getCurrentMass()");

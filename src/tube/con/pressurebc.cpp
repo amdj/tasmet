@@ -16,12 +16,16 @@ namespace tube{
   using tasystem::Jacobian;
   using tasystem::JacRow;
   using tasystem::JacCol;
+
+  var coldtemp(const var& pres){
+    return var(pres.gc(),pres.gc().T0);
+  }
   
   PressureBc::PressureBc(const var& pres,const var& temp,const var& stemp,us segnr,pos position):
     TubeBc(segnr,position),
-    pbc(pres),
-    Tbc(temp),
-    Tsbc(stemp)
+    prescribep(pres),
+    prescribeT(temp),
+    prescribeTs(stemp)
   {
     TRACE(8,"PressureBc full constructor");
   }
@@ -33,9 +37,9 @@ namespace tube{
   {}
   PressureBc::PressureBc(const PressureBc& other):
     TubeBc(other),
-    pbc(other.pbc),
-    Tbc(other.Tbc),
-    Tsbc(other.Tsbc)
+    prescribep(other.prescribep),
+    prescribeT(other.prescribeT),
+    prescribeTs(other.prescribeTs)
   {
     TRACE(8,"PressureBc copy constructor");
   }
@@ -50,19 +54,11 @@ namespace tube{
     res.settdata(Tbct);
     return res;
   }
-  var PressureBc::coldtemp(const var& pres){
-    vd adata(pres.gc().Ns(),fillwith::zeros);
-    adata(0)=pres.gc().T0;
-    var res(pres.gc());
-    res.set(adata);
-    return res;
-  }
   void PressureBc::updateNf(){
-    pbc.updateNf();
-    Tbc.updateNf();
-    Tsbc.updateNf();
+    prescribep.updateNf();
+    prescribeT.updateNf();
+    prescribeTs.updateNf();
   }
-
   bool PressureBc::init(const TaSystem& sys)
   {
     TRACE(8,"PressureBc::init()");
@@ -70,9 +66,9 @@ namespace tube{
       return false;
 
     // Decouple from old globalconf pointer
-    pbc.setGc(sys.gc);
-    Tbc.setGc(sys.gc); 
-    Tsbc.setGc(sys.gc);
+    prescribep.setGc(sys.gc);
+    prescribeT.setGc(sys.gc);
+    prescribeTs.setGc(sys.gc); 
     return true;
   }
   void PressureBc::setEqNrs(us firsteqnr){
@@ -81,15 +77,15 @@ namespace tube{
     us Ns=gc->Ns();
     if(position==pos::left){
       const TubeVertex& vertex=t->leftVertex();
-      prescribep.set(firsteqnr,vertex.pL(),pbc());
-      prescribeT.set(firsteqnr+Ns,vertex.TL(),Tbc());
-      prescribeTs.set(firsteqnr+2*Ns,vertex.TsL(),Tsbc());
+      prescribep.set(firsteqnr,vertex.pL());
+      prescribeT.set(firsteqnr+Ns,vertex.TL());
+      prescribeTs.set(firsteqnr+2*Ns,vertex.TsL());
     }
     else{
       const TubeVertex& vertex=t->rightVertex();
-      prescribep.set(firsteqnr,vertex.pR(),pbc());
-      prescribeT.set(firsteqnr+Ns,vertex.TR(),Tbc());
-      prescribeTs.set(firsteqnr+2*Ns,vertex.TsR(),Tsbc());
+      prescribep.set(firsteqnr,vertex.pR());
+      prescribeT.set(firsteqnr+Ns,vertex.TR());
+      prescribeTs.set(firsteqnr+2*Ns,vertex.TsR());
     }
   }
   vd PressureBc::error() const {
@@ -153,7 +149,7 @@ namespace tube{
       else
         side="right";
       cout << "PressureBc boundary condition set at << "<<side <<" side of segment .\n";
-      cout << "Prescribed pressure:" << pbc() << "\n";
+      cout << "Prescribed pressure:" << prescribep.getVals()() << "\n";
     }
     else{
       cout << "Show called but init not yet done!\n";

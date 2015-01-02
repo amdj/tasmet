@@ -8,17 +8,23 @@ namespace tube{
   using tasystem::JacCol;
   using variable::var;
 
-  void PrescribeQty::set(us eqnr,const var& toprescribe,const vd& vals){
+  void PrescribeQty::set(us eqnr,const var& toprescribe,const var& vals){
     TRACE(15,"PrescribeQty::set()");
-
+    set(eqnr,toprescribe);
+    setVals(vals);
+  }
+  void PrescribeQty::set(us eqnr,const var& toprescribe){
+    TRACE(15,"PrescribeQty::set()");
     this->toprescribe=&toprescribe;
     this->eqnr=eqnr;
+  }
+  void PrescribeQty::setVals(const var& vals){
     this->vals=vals;
   }
 
   vd PrescribeQty::error() const {
     TRACE(5,"PrescribeQty::error()");
-    return toprescribe->adata()-vals;
+    return toprescribe->adata()-vals();
   }
   JacRow PrescribeQty::jac() const {
     TRACE(5,"PrescribeQty::jac()");
@@ -28,7 +34,7 @@ namespace tube{
   }
 
   void PrescribeddxQty::set(us eqnr,const var& Qi,const var& Qj,const var& Qk,\
-                            d xi,d xj,d xk,const vd& vals){
+                            d xi,d xj,d xk,const var& vals){
     TRACE(15,"PrescribeQty::set()");
 
     this->Qi=&Qi;
@@ -53,7 +59,7 @@ namespace tube{
 
   vd PrescribeddxQty::error() const {
     TRACE(5,"PrescribeQty::error()");
-    return Wi*Qi->adata()+Wk*Qk->adata()+Wj*Qj->adata()-vals;
+    return Wi*Qi->adata()+Wk*Qk->adata()+Wj*Qj->adata()-vals();
   }
   JacRow PrescribeddxQty::jac() const {
     TRACE(5,"PrescribeQty::jac()");
