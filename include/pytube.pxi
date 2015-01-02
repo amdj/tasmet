@@ -38,7 +38,7 @@ cdef extern from "tasystem.h" namespace "tasystem":
 cdef extern from "solver.h" namespace "tasystem":
     cdef cppclass Solver:
         Solver(TaSystem& sys)
-        void doIter(d dampfac)
+        void doIter(d dampfac) except +
         TaSystem& sys()
         void init()
         void solve(us maxiter,d funtol,d reltol,d mindampfac,d maxdampfac,bool wait)

@@ -95,24 +95,25 @@ int main(int argc,char* argv[]) {
   // sys.show(20);
 
   Solver sol(sys);
-
+  sys.show(10);
   // sys.show(2);
   TRACE(20,"Showing system...");
   // sol.sys().show(10);
   TRACE(20,"Computing error...");
 
   cout << "Error:\n"<< sys.error() << "\n";
-
+  cout << "Res:\n"<< sys.getRes() << "\n";
   sys.showJac();
   TRACE(20,"Hoi");
   evd error=sys.error();
   esdmat jac=sys.jac();
-  TRACE(20,"Hoi");
+
+  // TRACE(20,"Hoi");
   // VARTRACE(15,error);
   // VARTRACE(15,jac);
   // evd solu=tasystem::solvesys_eigen(jac,error);
   // sol.doIter();
-  TRACE(20,"Hoi");
+  // TRACE(20,"Hoi");
   // sleep(1);
   TRACE(15,"err"<<sol.sys().error());
   return 0;

@@ -94,7 +94,7 @@ namespace tube{
     #ifndef NODRAG
     error+=Wddt*drag->drag(v);
     #else
-    if(v.i==0)
+    if(v.geti()==0)
       TRACE(25,"Drag is turned off!");
     #endif
     // (Boundary) source term
@@ -113,6 +113,11 @@ namespace tube{
     jac+=dUL();
     jac+=drhoR();
     jac+=dUR();
+ 
+    #ifndef NODRAG
+    jac+=JacCol(v.U(),Wddt*drag->dUi(v));
+    #endif
+   
     
     return jac;
   }

@@ -61,6 +61,9 @@ namespace tube{
 
     vd QL() const;              // Heat conduction trough left wall
     vd QR() const;              // Heat conduction trough right wall
+    tasystem::JacRow dQL() const;
+    tasystem::JacRow dQR() const;
+
     // tasystem::JacRow dQL() const;
     // tasystem::JacRow dQR() const;
 

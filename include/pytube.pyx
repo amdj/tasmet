@@ -74,10 +74,11 @@ cdef class pytubeBase:
         return dvectond(self.tube[i].Htot())
     cpdef dragCoef(self,freqnr,tubenr=0):
         return dvectond(self.tube[tubenr].dragCoefVec(freqnr))
-    cpdef getResVar(self,_type,freqnr,tubenr=0):
+    cpdef getResVar(self,_type,us freqnr,us tubenr=0):
     # Unfortunately, this is hard-coded
         i=tubenr
         assert(i<self.ntubes)
+        assert(freqnr<(2*self.getNf()+1))
         j=0
         if _type=='rho':
             j=0
