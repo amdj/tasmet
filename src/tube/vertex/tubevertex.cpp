@@ -120,10 +120,6 @@ namespace tube{
     eqs[2]=&is;
   }
   
-  vd TubeVertex::getp0t() const {
-    TRACE(0,"TubeEquation::getp0t()");
-    return gc->p0*vd(gc->Ns(),fillwith::ones);
-  }    
   vd TubeVertex::errorAt(us eqnr) const{
     TRACE(10,"TubeVertex::errorAt()");
     assert(eqnr<eqs.size());

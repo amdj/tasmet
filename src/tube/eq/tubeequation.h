@@ -45,7 +45,9 @@ namespace tube{
     // The definition of these factors is the original definition of d_j+/-1/2 of Wesseling:
     // Wesseling: d_j+/-1/2 = r_j+/-0.5 * epsilon_j+/-0.5
     dmat d_r() const; 		// Artificial viscosity pre-factor right side 
-    dmat d_l() const;			// Artificial viscosity pre-factor left size
+    dmat d_l() const;			// Artificial viscosity pre-factor
+                                // left size
+    vd getp0t() const;
     virtual ~TubeEquation(){}
   private:
     vd nu(const TubeVertex&) const;			// Function of d^2p/dx^2

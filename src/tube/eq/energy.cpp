@@ -49,7 +49,7 @@ namespace tube{
     d vSfsq=pow(w.vSf,2);
 
     Wddt=w.vVf;
-    Wddtkin=0.5*Wddt/pow(w.vSf,2);
+    Wddtkin=0.5*Wddt/w.vSf;
 
     // WkinL=-0.5*w.wLl/SfLsq;
     // Wkin=0.5*(w.wRl/SfRsq-w.wLr/SfLsq);
@@ -58,7 +58,6 @@ namespace tube{
     if(v.left()){
       d vSfLsq=pow(w.vSfL,2);
       WcLl=w.SfL/(w.vx-w.vxm1);
-      WcLr=-w.SfL/(w.vx-w.vxm1);
 
       WkinLl=0.5*w.wLl/vSfLsq;
       WkinLr=0.5*w.wLr/vSfsq;
@@ -70,7 +69,6 @@ namespace tube{
     else{
       d SfLsq=pow(w.SfL,2);
       WcLl=w.SfL/(w.vx);
-      WcLr=-w.SfL/(w.vx);
 
       WkinLl=0.5/SfLsq;
       WkinLr=0;
@@ -79,11 +77,12 @@ namespace tube{
       WLr=0;
 
     }
+    WcLr=-WcLl;
     if(v.right()){    
       d vSfRsq=pow(w.vSfR,2);
 
       WcRl= w.SfR/(w.vxp1-w.vx);
-      WcRr=-w.SfR/(w.vxp1-w.vx);
+
 
       WkinRl=0.5*(w.wRl/vSfsq);
       WkinRr=0.5*w.wRr/vSfRsq;
@@ -95,7 +94,6 @@ namespace tube{
     else{
       d SfRsq=pow(w.SfR,2);
       WcRl= w.SfR/(w.xR-w.vx);
-      WcRr=-w.SfR/(w.xR-w.vx);
 
       WkinRl=0;
       WkinRr=0.5/SfRsq;
@@ -103,6 +101,7 @@ namespace tube{
       WRl=0;
       WRr=1;
     }
+    WcRr=-WcRl;
   }
   d Energy::Htot() const{
     TRACE(10,"Energy::Htot()");
@@ -119,7 +118,7 @@ namespace tube{
     // Total enthalpy flux
     // error+=HR()-HL();
     error+=hR()-hL();
-    error+=QR()-QL();
+    // error+=QR()-QL();
     // VARTRACE(25,QR());
     // VARTRACE(25,QL());
     // External heat    
@@ -139,12 +138,12 @@ namespace tube{
     JacRow jac(dofnr,12);
     TRACE(0,"Energy, dofnr jac:"<< dofnr);
 
-    // jac+=dddtEtot();
-    jac+=dddtEtherm();
-    // jac+=(dHL()*=-1);
-    // jac+=dHR();
-    jac+=(dhL()*=-1);
-    jac+=dhR();
+    jac+=dddtEtot();
+    // jac+=dddtEtherm();
+    jac+=(dHL()*=-1);
+    jac+=dHR();
+    // jac+=(dhL()*=-1);
+    // jac+=dhR();
 
     // Heat conduction part
     jac+=dQR();
@@ -180,9 +179,9 @@ namespace tube{
     d gamfac=gamma/(gamma-1.0);
     const vd& Ut=v.U().tdata();
     const vd& UtL=v.UL().tdata();
-    const vd& pLt=v.pL().tdata();
+    vd pLt=v.pL().tdata()+getp0t();
 
-    return gamfac*fDFT*(pLt%(WLl*UtL+WLr*Ut));
+    return fDFT*(gamfac*pLt%(WLl*UtL+WLr*Ut));
   }
   JacRow Energy::dhL() const{
     JacRow dhL(3);
@@ -190,10 +189,11 @@ namespace tube{
     d gamfac=gamma/(gamma-1.0);
     const vd& Ut=v.U().tdata();    
     const vd& UtL=v.UL().tdata();
-    const vd& pLt=v.pL().tdata();
-    dhL+=JacCol(v.pL(),gamfac*fDFT*diagmat(WLl*UtL+WLr*Ut)*iDFT);
-    dhL+=JacCol(v.U(),gamfac*fDFT*(WLr*v.pL().diagt())*iDFT);
-    dhL+=JacCol(v.UL(),gamfac*fDFT*(WLl*v.pL().diagt())*iDFT);
+    vd pLt=v.pL().tdata()+getp0t();
+
+    dhL+=JacCol(v.pL(),fDFT*diagmat(gamfac*(WLl*UtL+WLr*Ut))*iDFT);
+    dhL+=JacCol(v.U() ,fDFT*diagmat((gamfac*WLr)*pLt)*iDFT);
+    dhL+=JacCol(v.UL(),fDFT*diagmat((gamfac*WLl)*pLt)*iDFT);
     return dhL;
   }
   vd Energy::hR() const{
@@ -203,8 +203,8 @@ namespace tube{
     d gamfac=gamma/(gamma-1.0);
     const vd& Ut=v.U().tdata();    
     const vd& UtR=v.UR().tdata();
-    const vd& pRt=v.pR().tdata();
-    return gamfac*fDFT*(pRt%(WRl*Ut+WRr*UtR));
+    vd pRt=v.pR().tdata()+getp0t();
+    return fDFT*(gamfac*pRt%(WRl*Ut+WRr*UtR));
   }
   JacRow Energy::dhR() const{
     JacRow dhR(3);
@@ -213,129 +213,130 @@ namespace tube{
 
     const vd& Ut=v.U().tdata();
     const vd& UtR=v.UR().tdata();
-    const vd& pRt=v.pR().tdata();
-    dhR+=JacCol(v.pR(),gamfac*fDFT*diagmat(WRr*UtR+WRl*Ut)*iDFT);
-    dhR+=JacCol(v.U(),gamfac*fDFT*(WRl*v.pR().diagt())*iDFT);
-    dhR+=JacCol(v.UR(),gamfac*fDFT*(WRr*v.pR().diagt())*iDFT);
+    vd pRt=v.pR().tdata()+getp0t();
+
+    dhR+=JacCol(v.pR(),fDFT*diagmat(gamfac*(WRr*UtR+WRl*Ut))*iDFT);
+    dhR+=JacCol(v.U(),fDFT*diagmat((gamfac*WRl)*pRt)*iDFT);
+    dhR+=JacCol(v.UR(),fDFT*diagmat((gamfac*WRr)*pRt)*iDFT);
     return dhR;
   }
-  // vd Energy::ddtEtot() const{
-  //   TRACE(2,"Energy::ddtEtot()");
+  vd Energy::ddtEtot() const{
+    TRACE(2,"Energy::ddtEtot()");
 
-  //   const vd& rhot=v.rho().tdata();
-  //   const vd& Ut=v.U().tdata();
-  //   return ddtEtherm()+Wddtkin*DDTfd*fDFT*(rhot%Ut%Ut);
-  // }
-  // JacRow Energy::dddtEtot() const {
-  //   TRACE(2,"Energy::dddtEtot()");
+    const vd& rhot=v.rho().tdata();
+    const vd& Ut=v.U().tdata();
+    return ddtEtherm()+Wddtkin*DDTfd*fDFT*(rhot%Ut%Ut);
+  }
+  JacRow Energy::dddtEtot() const {
+    TRACE(2,"Energy::dddtEtot()");
 
-  //   d gamma=this->gamma();
-  //   d gamfac=gamma/(gamma-1.0);
-  //   const vd& rhot=v.rho().tdata();
-  //   const vd& Ut=v.U().tdata();
-  //   JacRow dddtEtot=dddtEtherm();
-  //   dddtEtot+=JacCol(v.U(),2.0*Wddtkin*DDTfd*fDFT*diagmat(rhot%Ut)*iDFT);
-  //   dddtEtot+=JacCol(v.rho(),Wddtkin*DDTfd*fDFT*diagmat(Ut%Ut)*iDFT);  
-  //   return dddtEtot;  
-  // }
-  // vd Energy::HL() const{
-  //   TRACE(2,"Energy::HL()");
-  //   vd HL=hL();
+    const vd& rhot=v.rho().tdata();
+    const vd& Ut=v.U().tdata();
+    JacRow dddtEtot=dddtEtherm();
+    dddtEtot+=JacCol(v.U(),2.0*Wddtkin*DDTfd*fDFT*diagmat(rhot%Ut)*iDFT);
+    dddtEtot+=JacCol(v.rho(),Wddtkin*DDTfd*fDFT*diagmat(Ut%Ut)*iDFT);  
+    return dddtEtot;  
+  }
+  vd Energy::HL() const{
+    TRACE(2,"Energy::HL()");
+    vd HL=hL();
 
-  //   const vd& rhot=v.rho().tdata();
-  //   const vd& Ut=v.U().tdata();    
-  //   const vd& rhotL=v.rhoL().tdata();
-  //   const vd& UtL=v.UL().tdata();    
+    const vd& rhot=v.rho().tdata();
+    const vd& Ut=v.U().tdata();    
+    const vd& rhotL=v.rhoL().tdata();
+    const vd& UtL=v.UL().tdata();    
 
-  //   HL+=fDFT*(WkinLl*rhotL%pow(UtL,3));
-  //   HL+=fDFT*(WkinLr*rhot%pow(Ut,3));
-  //   return HL;
-  // }
-  // JacRow Energy::dHL() const{
-  //   JacRow dHL=dhL();
-  //   const vd& rhot=v.rho().tdata();
-  //   const vd& Ut=v.U().tdata();    
-  //   const vd& rhotL=v.rhoL().tdata();
-  //   const vd& UtL=v.UL().tdata();    
-  //   dHL+=JacCol(v.U(),3.0*WkinLr*fDFT*(diagmat(rhot%Ut%Ut)*iDFT));
-  //   dHL+=JacCol(v.rho(),WkinLr*fDFT*(diagmat(Ut%Ut%Ut)*iDFT));
+    HL+=fDFT*(WkinLl*rhotL%pow(UtL,3));
+    HL+=fDFT*(WkinLr*rhot%pow(Ut,3));
+    return HL;
+  }
+  JacRow Energy::dHL() const{
+    JacRow dHL=dhL();
+    const vd& rhot=v.rho().tdata();
+    const vd& Ut=v.U().tdata();    
+    const vd& rhotL=v.rhoL().tdata();
+    const vd& UtL=v.UL().tdata();    
+    dHL+=JacCol(v.U(),3.0*WkinLr*fDFT*(diagmat(rhot%Ut%Ut)*iDFT));
+    dHL+=JacCol(v.rho(),WkinLr*fDFT*(diagmat(pow(Ut,3))*iDFT));
 
-  //   dHL+=JacCol(v.rhoL(),WkinLl*fDFT*(diagmat(pow(UtL,3))*iDFT));
-  //   dHL+=JacCol(v.UL(),3.0*WkinLl*fDFT*(diagmat(rhotL%UtL%UtL)*iDFT));
-  //   return dHL;
-  // }
-  // vd Energy::HR() const{
-  //   TRACE(2,"Energy::HR()");
-  //   vd HR=hR();
+    dHL+=JacCol(v.rhoL(),WkinLl*fDFT*(diagmat(pow(UtL,3))*iDFT));
+    dHL+=JacCol(v.UL(),3.0*WkinLl*fDFT*(diagmat(rhotL%UtL%UtL)*iDFT));
+    return dHL;
+  }
+  vd Energy::HR() const{
+    TRACE(2,"Energy::HR()");
+    vd HR=hR();
 
-  //   const vd& rhot=v.rho().tdata();
-  //   const vd& Ut=v.U().tdata();    
-  //   const vd& rhotR=v.rhoR().tdata();
-  //   const vd& UtR=v.UR().tdata();    
+    const vd& rhot=v.rho().tdata();
+    const vd& Ut=v.U().tdata();    
+    const vd& rhotR=v.rhoR().tdata();
+    const vd& UtR=v.UR().tdata();    
 
-  //   HR+=fDFT*(WkinRl*rhot%pow(Ut,3));
-  //   HR+=fDFT*(WkinRr*rhotR%pow(UtR,3));
-  //   return HR;
-  // }
-  // JacRow Energy::dHR() const{
-  //   JacRow dHR=dhR();
-  //   const vd& rhot=v.rho().tdata();
-  //   const vd& Ut=v.rho().tdata();    
-  //   const vd& rhotR=v.rhoR().tdata();
-  //   const vd& UtR=v.UR().tdata();    
-  //   dHR+=JacCol(v.U(),3.0*WkinRl*fDFT*(diagmat(rhot%Ut%Ut)*iDFT));
-  //   dHR+=JacCol(v.rho(),WkinRl*fDFT*(diagmat(Ut%Ut%Ut)*iDFT));
+    HR+=fDFT*(WkinRl*rhot%pow(Ut,3));
+    HR+=fDFT*(WkinRr*rhotR%pow(UtR,3));
+    return HR;
+  }
+  JacRow Energy::dHR() const{
+    JacRow dHR=dhR();
+    const vd& rhot=v.rho().tdata();
+    const vd& Ut=v.rho().tdata();    
+    const vd& rhotR=v.rhoR().tdata();
+    const vd& UtR=v.UR().tdata();    
+    dHR+=JacCol(v.U(),3.0*WkinRl*fDFT*(diagmat(rhot%Ut%Ut)*iDFT));
+    dHR+=JacCol(v.rho(),WkinRl*fDFT*(diagmat(pow(Ut,3))*iDFT));
 
-  //   dHR+=JacCol(v.rhoR(),WkinRr*fDFT*(diagmat(pow(UtR,3))*iDFT));
-  //   dHR+=JacCol(v.UR(),3.0*WkinRr*fDFT*(diagmat(rhotR%UtR%UtR)*iDFT));
-  //   return dHR;
-  // }
+    dHR+=JacCol(v.rhoR(),WkinRr*fDFT*(diagmat(pow(UtR,3))*iDFT));
+    dHR+=JacCol(v.UR(),3.0*WkinRr*fDFT*(diagmat(rhotR%UtR%UtR)*iDFT));
+    return dHR;
+  }
   vd Energy::QL() const{
     TRACE(4,"Energy::QL()");
     const vd& Tt=v.T().tdata();
     const vd& Ttl=v.TL().tdata();
-    return fDFT*(kappaL()%(WcLl*Ttl+WcLr*Tt));
+    VARTRACE(15,fDFT*(kappaLt()%(WcLl*Ttl+WcLr*Tt)));
+    return fDFT*(kappaLt()%(WcLl*Ttl+WcLr*Tt));
   }
   JacRow Energy::dQL() const{
     TRACE(4,"Energy::dQL()");
     JacRow dQL(2);
-    dQL+=JacCol(v.T(),fDFT*diagmat(WcLr*kappaL())*iDFT);
-    dQL+=JacCol(v.TL(),fDFT*diagmat(WcLl*kappaL())*iDFT);
+    dQL+=JacCol(v.T(),fDFT*diagmat(WcLr*kappaLt())*iDFT);
+    dQL+=JacCol(v.TL(),fDFT*diagmat(WcLl*kappaLt())*iDFT);
     return dQL;
   }
   vd Energy::QR() const{
     TRACE(4,"Energy::QR()");
     const vd& Tt=v.T().tdata();
     const vd& Ttr=v.TR().tdata();
-    return fDFT*(kappaR()%(WcRl*Tt+WcRr*Ttr));
+    VARTRACE(15,fDFT*(kappaRt()%(WcRl*Tt+WcRr*Ttr)));
+    return fDFT*(kappaRt()%(WcRl*Tt+WcRr*Ttr));
   }
   JacRow Energy::dQR() const{
     TRACE(4,"Energy::dQR()");
     JacRow dQR(2);
-    dQR+=JacCol(v.T(),fDFT*diagmat(WcRl*kappaR())*iDFT);
-    dQR+=JacCol(v.TR(),fDFT*diagmat(WcRr*kappaR())*iDFT);
+    dQR+=JacCol(v.T(),fDFT*diagmat(WcRl*kappaRt())*iDFT);
+    dQR+=JacCol(v.TR(),fDFT*diagmat(WcRr*kappaRt())*iDFT);
     return dQR;
   }
-  vd Energy::kappaR()  const {		// Returns thermal conductivity time domain data
-    TRACE(5,"Energy::kappaR()");
+  vd Energy::kappaRt()  const {		// Returns thermal conductivity time domain data
+    TRACE(5,"Energy::kappaRt()");
     const vd& Tt=v.T().tdata();
     const vd& TtR=v.TR().tdata();
     // VARTRACE(25,v.gc->gas.kappa(WRr*TtR+WRl*Tt));
     return v.gc->gas.kappa(WRr*TtR+WRl*Tt);
   }
-  vd Energy::kappaL()  const {		// Returns thermal conductivity time domain data
-    TRACE(5,"Energy::kappaR()");
+  vd Energy::kappaLt()  const {		// Returns thermal conductivity time domain data
+    TRACE(5,"Energy::kappaRt()");
     const vd& Tt=v.T().tdata();
     const vd& TtL=v.TL().tdata();    
     // VARTRACE(25,v.gc->gas.kappa(WLl*TtL+WLr*Tt));
     return v.gc->gas.kappa(WLl*TtL+WLr*Tt);
   }
-  // vd Energy::EkinL() const{
-  //   return HL()-hL();
-  // }
-  // vd Energy::EkinR() const{
-  //   return HR()-hR();
-  // }
+  vd Energy::EkinL() const{
+    return HL()-hL();
+  }
+  vd Energy::EkinR() const{
+    return HR()-hR();
+  }
   void Energy::domg(vd& domg_) const {
     TRACE(0,"Energy::domg()");
     assert(v.gc!=NULL);
@@ -354,11 +355,11 @@ namespace tube{
     const WeightFactors& w=v.weightFactors();
     vd Qb(v.gc->Ns());
     if(!v.left()){
-      vd kappaLt=kappaL();
+      vd kappaLt=this->kappaLt();
       Qb=(w.SfL/w.vx)*fDFT*(kappaLt%(v.TL().tdata()-v.T().tdata()));
     }
     else if(!v.right()){
-      vd kappaRt=kappaR();
+      vd kappaRt=this->kappaRt();
       Qb=(w.SfR/(w.xR-w.vx))*fDFT*(kappaRt%(v.T().tdata()-v.TR().tdata()));
     }
     else{
@@ -371,17 +372,16 @@ namespace tube{
     TRACE(5,"Energy::dExtrapolateHeatFlow()");
     const WeightFactors& w=v.weightFactors();
     JacRow dQb(-1,2);
-    vd kappaLt=kappaL();
-    vd kappaRt=kappaR();
+
     // VARTRACE(30,kappaLt)      ;
     // VARTRACE(30,kappaRt);
     if(!v.left()){
-      vd kappaLt=kappaL();
+      vd kappaLt=this->kappaLt();
       dQb+=JacCol(v.T(),-(w.SfL/w.vx)*fDFT*diagmat(kappaLt)*iDFT);
       dQb+=JacCol(v.TL(),(w.SfL/w.vx)*fDFT*diagmat(kappaLt)*iDFT);
     }
     else if(!v.right()){
-      vd kappaRt=kappaR();
+      vd kappaRt=this->kappaRt();
       dQb+=JacCol(v.T(),(w.SfR/(w.xR-w.vx))*fDFT*diagmat(kappaRt)*iDFT);
       dQb+=JacCol(v.TR(),-(w.SfR/(w.xR-w.vx))*fDFT*diagmat(kappaRt)*iDFT);
     }

@@ -27,9 +27,9 @@ namespace tube{
     virtual vd error() const;			// Error in Energy equation at node i
     virtual void domg(vd&) const;
 
-    vd kappaL() const;		// Thermal conducticity at the left
+    vd kappaLt() const;		// Thermal conducticity at the left
     // boundary of the vertex
-    vd kappaR() const;		// Thermal conductivity at the right
+    vd kappaRt() const;		// Thermal conductivity at the right
     // boundary of the vertex
     d gamma() const;			// Time-avg ratio of specific heats
 
