@@ -187,21 +187,21 @@ namespace tasystem{
     TRACE(10,"TaSystem::show()");
     if(!checkInit())
       return;
-
-    TRACE(14,"checkInit() done");
     cout << "########################## Showing TaSystem...\n";
     cout << "Showing Global configuration...\n";
     gc.show();
-    cout << "Now showing connectors in TaSystem...\n";
-    for(us i=0;i<nConnectors();i++){
-      TRACE(13,"Showing connector"<<i <<"..");
-      connectors[i]->show(detailnr);
-    }
-    cout << "Now showing segments in TaSystem...\n";
-    for(us i=0;i<nSegs();i++){
-      TRACE(13,"Showing segment "<<i <<"..");
-      segs[i]->show(detailnr);
-    }
+    if(detailnr>0){
+      cout << "Now showing connectors in TaSystem...\n";
+      for(us i=0;i<nConnectors();i++){
+        TRACE(13,"Showing connector"<<i <<"..");
+        connectors[i]->show(detailnr);
+      }
+      cout << "Now showing segments in TaSystem...\n";
+      for(us i=0;i<nSegs();i++){
+        TRACE(13,"Showing segment "<<i <<"..");
+        segs[i]->show(detailnr);
+      }
+    } // detailnr>0
   }
   void TaSystem::jacTriplets(TripletList& trips){
     TRACE(14,"TaSystem::jacTriplets()");

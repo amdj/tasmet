@@ -7,11 +7,8 @@ cdef class pytubeBase:
     cdef Solver* sol
     cdef Tube* tube[20]
     cdef us ntubes
-    def show(self,showvertex=False):
-        if showvertex is False:
-            self.sol[0].sys().show(0)
-        else:
-            self.sol[0].sys().show(1)
+    def show(self,us nr):
+        self.sol[0].sys().show(nr)
     def __dealloc__(self):
         if self.sol!=NULL:
             del self.sol

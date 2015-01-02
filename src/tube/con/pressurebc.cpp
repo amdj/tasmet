@@ -69,6 +69,7 @@ namespace tube{
     prescribep.setGc(*gc);
     prescribeT.setGc(*gc);
     prescribeTs.setGc(*gc); 
+    init_=true;
     return true;
   }
   void PressureBc::setEqNrs(us firsteqnr){
@@ -140,7 +141,7 @@ namespace tube{
 
   }
 
-  void PressureBc::show(us i) const {
+  void PressureBc::show(us detailnr) const {
     TRACE(5,"PressureBc::show()");
     if(isInit()){
       string side;
@@ -148,15 +149,17 @@ namespace tube{
         side="left";
       else
         side="right";
-      cout << "PressureBc boundary condition set at << "<<side <<" side of segment .\n";
-      cout << "Prescribed pressure:" << prescribep.getVals()() << "\n";
+      cout << "PressureBc boundary condition set at "<<side <<" side of segment "<< segnr<<".\n";
+      if(detailnr>1){
+        cout << "Prescribed pressure:" << prescribep.getVals()() << "\n";
+        cout << "Prescribed fluid temperature:" << prescribeT.getVals()() << "\n";      
+        cout << "Prescribed solid temperature:" << prescribeTs.getVals()() << "\n";      
+      }
     }
     else{
-      cout << "Show called but init not yet done!\n";
-    }
-  }
-
-
+      WARN("Show called but init not yet done!");
+    } // isInit()
+  } // show
 
 } // namespace tube
 

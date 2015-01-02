@@ -167,30 +167,12 @@ namespace tube{
   JacRow Energy::dddtEtherm() const {
     TRACE(2,"Energy::dddtEtherm()");
     d gamma=this->gamma();
-    JacRow dddtEtherm(4);
+    JacRow dddtEtherm(2);
     dddtEtherm+=JacCol(v.pL(),0.5*Wddt*DDTfd/(gamma-1.0));
     dddtEtherm+=JacCol(v.pR(),0.5*Wddt*DDTfd/(gamma-1.0));
     return dddtEtherm;
   }
-  // vd Energy::ddtEtot() const{
-  //   TRACE(2,"Energy::ddtEtot()");
 
-  //   const vd& rhot=v.rho().tdata();
-  //   const vd& Ut=v.U().tdata();
-  //   return ddtEtherm()+Wddtkin*DDTfd*fDFT*(rhot%Ut%Ut);
-  // }
-  // JacRow Energy::dddtEtot() const {
-  //   TRACE(2,"Energy::dddtEtot()");
-
-  //   d gamma=this->gamma();
-  //   d gamfac=gamma/(gamma-1.0);
-  //   const vd& rhot=v.rho().tdata();
-  //   const vd& Ut=v.U().tdata();
-  //   JacRow dddtEtot=dddtEtherm();
-  //   dddtEtot+=JacCol(v.U(),2.0*Wddtkin*DDTfd*fDFT*diagmat(rhot%Ut)*iDFT);
-  //   dddtEtot+=JacCol(v.rho(),Wddtkin*DDTfd*fDFT*diagmat(Ut%Ut)*iDFT);  
-  //   return dddtEtot;  
-  // }
   vd Energy::hL() const{
     TRACE(2,"Energy::hL()");
     // We still assume gamma is constant
@@ -214,6 +196,48 @@ namespace tube{
     dhL+=JacCol(v.UL(),gamfac*fDFT*(WLl*v.pL().diagt())*iDFT);
     return dhL;
   }
+  vd Energy::hR() const{
+    TRACE(2,"Energy::hR()");
+    // We still assume gamma is constant
+    d gamma=this->gamma();
+    d gamfac=gamma/(gamma-1.0);
+    const vd& Ut=v.U().tdata();    
+    const vd& UtR=v.UR().tdata();
+    const vd& pRt=v.pR().tdata();
+    return gamfac*fDFT*(pRt%(WRl*Ut+WRr*UtR));
+  }
+  JacRow Energy::dhR() const{
+    JacRow dhR(3);
+    d gamma=this->gamma();
+    d gamfac=gamma/(gamma-1.0);
+
+    const vd& Ut=v.U().tdata();
+    const vd& UtR=v.UR().tdata();
+    const vd& pRt=v.pR().tdata();
+    dhR+=JacCol(v.pR(),gamfac*fDFT*diagmat(WRr*UtR+WRl*Ut)*iDFT);
+    dhR+=JacCol(v.U(),gamfac*fDFT*(WRl*v.pR().diagt())*iDFT);
+    dhR+=JacCol(v.UR(),gamfac*fDFT*(WRr*v.pR().diagt())*iDFT);
+    return dhR;
+  }
+  // vd Energy::ddtEtot() const{
+  //   TRACE(2,"Energy::ddtEtot()");
+
+  //   const vd& rhot=v.rho().tdata();
+  //   const vd& Ut=v.U().tdata();
+  //   return ddtEtherm()+Wddtkin*DDTfd*fDFT*(rhot%Ut%Ut);
+  // }
+  // JacRow Energy::dddtEtot() const {
+  //   TRACE(2,"Energy::dddtEtot()");
+
+  //   d gamma=this->gamma();
+  //   d gamfac=gamma/(gamma-1.0);
+  //   const vd& rhot=v.rho().tdata();
+  //   const vd& Ut=v.U().tdata();
+  //   JacRow dddtEtot=dddtEtherm();
+  //   dddtEtot+=JacCol(v.U(),2.0*Wddtkin*DDTfd*fDFT*diagmat(rhot%Ut)*iDFT);
+  //   dddtEtot+=JacCol(v.rho(),Wddtkin*DDTfd*fDFT*diagmat(Ut%Ut)*iDFT);  
+  //   return dddtEtot;  
+  // }
   // vd Energy::HL() const{
   //   TRACE(2,"Energy::HL()");
   //   vd HL=hL();
@@ -240,29 +264,6 @@ namespace tube{
   //   dHL+=JacCol(v.UL(),3.0*WkinLl*fDFT*(diagmat(rhotL%UtL%UtL)*iDFT));
   //   return dHL;
   // }
-  vd Energy::hR() const{
-    TRACE(2,"Energy::hR()");
-    // We still assume gamma is constant
-    d gamma=this->gamma();
-    d gamfac=gamma/(gamma-1.0);
-    const vd& Ut=v.U().tdata();    
-    const vd& UtR=v.UR().tdata();
-    const vd& pRt=v.pR().tdata();
-    return gamfac*fDFT*(pRt%(WRl*Ut+WRr*UtR));
-  }
-  JacRow Energy::dhR() const{
-    JacRow dhR(3);
-    d gamma=this->gamma();
-    d gamfac=gamma/(gamma-1.0);
-
-    const vd& Ut=v.U().tdata();
-    const vd& UtR=v.UR().tdata();
-    const vd& pRt=v.pR().tdata();
-    dhR+=JacCol(v.pR(),gamfac*fDFT*diagmat(WRr*UtR+WRl*Ut)*iDFT);
-    dhR+=JacCol(v.U(),gamfac*fDFT*(WRl*v.pR().diagt())*iDFT);
-    dhR+=JacCol(v.UR(),gamfac*fDFT*(WRr*v.pR().diagt())*iDFT);
-    return dhR;
-  }
   // vd Energy::HR() const{
   //   TRACE(2,"Energy::HR()");
   //   vd HR=hR();

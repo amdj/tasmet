@@ -40,36 +40,40 @@ namespace tube{
     return vphi(i)*vS(i);
   }
   vd Geom::vSf_vec() const{
-    vd vSf(nCells());
-    for(us i=0;i<nCells();i++)
-      vSf(i)=this->vSf(i);
-    return vSf;
+    return vS_vec()%vphi_vec();
   }
   vd Geom::vS_vec() const{
-    vd vS(nCells());
+    vd vS(nCells()+2);
     for(us i=0;i<nCells();i++)
-      vS(i)=this->vS(i);
+      vS(i+1)=this->vS(i);
+    vS(0)=this->S(0);
+    vS(nCells()+1)=this->S(nCells());
     return vS;
   }
   vd Geom::vrh_vec() const{
-    vd vrh(nCells());
+    vd vrh(nCells()+2);
     for(us i=0;i<nCells();i++)
-      vrh(i)=this->vrh(i);
+      vrh(i+1)=this->vrh(i);
+    vrh(0)=this->rh(0);
+    vrh(nCells()+1)=this->rh(nCells());
     return vrh;
   }
   vd Geom::vphi_vec() const{
-    vd vphi(nCells());
+    vd vphi(nCells()+2);
     for(us i=0;i<nCells();i++)
-      vphi(i)=this->vphi(i);
+      vphi(i+1)=this->vphi(i);
+    vphi(0)=this->phi(0);
+    vphi(nCells()+1)=this->phi(nCells());
     return vphi;
   }
-  
   vd Geom::vx_vec() const{
     TRACE(10,"Geom::vx_vec()");
     VARTRACE(5,nCells());
-    vd vx(nCells());
+    vd vx(nCells()+2);
     for(us i=0;i<nCells();i++)
-      vx(i)=this->vx(i);
+      vx(i+1)=this->vx(i);
+    vx(0)=0;
+    vx(nCells()+1)=grid().getL();
     return vx;
   }
 

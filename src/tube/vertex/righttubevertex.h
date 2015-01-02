@@ -23,7 +23,7 @@ namespace tube{
     virtual const variable::var& TsR() const {return TsR_;}
 
     virtual void show(us detailnr=1) const;
-
+    virtual d getResBc(varnr,us freqnr) const;
     virtual void setResVar(varnr,const vd& res);
   private:
     virtual vd extrapolateMassFlow() const;

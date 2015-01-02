@@ -2,7 +2,7 @@
 #ifdef NODRAG
 #error NODRAG already defined!
 #endif
-// #define NODRAG
+#define NODRAG
 
 #include "tube.h"
 #include "tubevertex.h"

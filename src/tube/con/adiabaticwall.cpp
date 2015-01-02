@@ -20,6 +20,7 @@ namespace tube{
       return false;
     Uiszero.setGc(*gc); 
     drhodxiszero.setGc(*gc);
+    init_=true;
     return true;
   }
   void AdiabaticWall::updateNf(){
@@ -35,11 +36,10 @@ namespace tube{
         side="left";
       else
         side="right";
-      cout << "AdiabaticWall boundary condition set at << "<<side <<" side of segment .\n";
+      cout << "AdiabaticWall boundary condition set at "<<side <<" side of segment "<<segnr<<".\n";
     }
-    else{
-      cout << "Show called but init not yet done!\n";
-    }
+    else
+      WARN("Show called but init not yet done!");
   }
 
   void AdiabaticWall::setEqNrs(us firsteqnr){

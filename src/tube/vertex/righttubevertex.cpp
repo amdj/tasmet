@@ -129,6 +129,29 @@ namespace tube{
                    *UtdL*UtdL*iDFT);
     return jacrow;
   }
+  d RightTubeVertex::getResBc(varnr v,us freqnr) const{
+    TRACE(15,"RightTubeVertex::getResBc()");
+    switch(v) {
+    case varnr::rho: // Density
+      return rhoR()(freqnr);
+      break;
+    case varnr::U:                 // Volume flown
+      return UR()(freqnr);
+      break;
+    case varnr::p:                   // Pressure
+      return pR()(freqnr);
+      break;
+    case varnr::T:                 // Temp
+      return TR()(freqnr);
+      break;
+    case varnr::Ts:                 // Temp
+      return TsR()(freqnr);
+      break;
+    default:
+      WARN("Unknown variable!");
+      return 0;
+    }
+  }
 
 } // namespace tube
 

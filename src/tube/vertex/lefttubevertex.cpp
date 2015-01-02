@@ -63,6 +63,30 @@ namespace tube{
       break;
     }
   }
+  d LeftTubeVertex::getResBc(varnr v,us freqnr) const{
+    TRACE(15,"LeftTubeVertex::getResBc()");
+    switch(v) {
+    case varnr::rho: // Density
+      return rhoL()(freqnr);
+      break;
+    case varnr::U:                 // Volume flown
+      return UL()(freqnr);
+      break;
+    case varnr::p:                   // Pressure
+      return pL()(freqnr);
+      break;
+    case varnr::T:                 // Temp
+      return TL()(freqnr);
+      break;
+    case varnr::Ts:                 // Temp
+      return TsL()(freqnr);
+      break;
+    default:
+      WARN("Unknown variable!");
+      return 0;
+    }
+  }
+
   vd LeftTubeVertex::extrapolateMassFlow() const{
     TRACE(15,"LeftTubeVertex::extrapolateMassFlow()");
     const WeightFactors& w=weightFactors();

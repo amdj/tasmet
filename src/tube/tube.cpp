@@ -159,11 +159,13 @@ namespace tube {
     TRACE(10,"Tube::getResAt("<<(int)v<<","<<freqnr<<")");
     const us nCells=geom().nCells();
     // VARTRACE(15,getNDofs());
-    vd res(nCells);
+    vd res(nCells+2);
     for(us i=0;i<nCells;i++){
       TubeVertex& cvertex=*static_cast<TubeVertex*>(vvertex[i]);
-      res(i)=cvertex.getRes(v,freqnr);
+      res(i+1)=cvertex.getRes(v,freqnr);
     }
+    res(0)=leftVertex().getResBc(v,freqnr);
+    res(nCells+1)=rightVertex().getResBc(v,freqnr);
     return res;
   }
   vd Tube::getErrorAt(us eqnr,us freqnr) const{
@@ -210,15 +212,17 @@ namespace tube {
     return *vvertex[i];
   }
 
-  void Tube::show(us showvertices) const {
+  void Tube::show(us detailnr) const {
     cout << "++++++++++++Tube name: "<< getName() << " ++++++++++++++++\n";
     cout << "Type: " << getType() <<" with number "<<getNumber()<< ".\n";
     cout << "********************************************************************************\n";
     cout << "Geometry: \n";
     assert(vvertex.size()!=0);
-    geom().show();
-    if(showvertices>=1)
-      this->showVertices(showvertices);
+    if(detailnr>2){
+      geom().show();
+    }
+    if(detailnr>3)
+      this->showVertices(detailnr);
   }
   void Tube::showVertices(us showvertices) const {
     for(us i=0;i<vvertex.size();i++)

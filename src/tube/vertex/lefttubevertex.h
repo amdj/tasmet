@@ -24,6 +24,7 @@ namespace tube{
     virtual void show(us detailnr=1) const;
 
     virtual void setResVar(varnr,const vd& res);
+    virtual d getResBc(varnr,us freqnr) const;
   private:
     virtual vd extrapolateMassFlow() const;
     virtual tasystem::JacRow dExtrapolateMassFlow() const;

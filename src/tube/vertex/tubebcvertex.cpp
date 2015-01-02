@@ -63,6 +63,5 @@ namespace tube{
     abort();
     return JacRow(0);           // To avoid compiler warning
   }
-
 }                // namespace tube
 
