@@ -92,7 +92,7 @@ namespace tube{
   }
   // vd RightTubeVertex::extrapolateVolumeFlow() const{
   //   const WeightFactors& w=weightFactors();
-  //   return w.wRNm2*UL()()+                    \
+  //   return w.wRNm2*UL()()+                    
   //     w.wRNm1*U()();
   // }
   JacRow RightTubeVertex::dExtrapolateDensity() const{

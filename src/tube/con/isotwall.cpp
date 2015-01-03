@@ -80,23 +80,23 @@ namespace tube{
     TRACE(15,"IsoTWall::error()");
     vd error(getNEqs());
     us Ns=gc->Ns();
-    // vd rhoextrapolate;
+    vd rhoextrapolate;
     const TubeBcVertex* vertex;
     if(position==pos::left){
       vertex=&t->leftVertex();
-      // rhoextrapolate=vertex->rhoL()();
+      rhoextrapolate=vertex->rhoL()();
     }
     else{
       vertex=&t->rightVertex();
-      // rhoextrapolate=vertex->rhoR()();
+      rhoextrapolate=vertex->rhoR()();
     }    
-    // rhoextrapolate+=-vertex->extrapolateQuant(physquant::density);
+    rhoextrapolate+=-vertex->extrapolateQuant(physquant::density);
 
     error.subvec(0,Ns-1)=Uiszero.error();
     error.subvec(Ns,2*Ns-1)=Tbc.error();
     error.subvec(2*Ns,3*Ns-1)=Tsbc.error();
     // error.subvec(3*Ns,4*Ns-1)=vertex->extrapolateQuant(physquant::massFlow);
-
+   error.subvec(3*Ns,4*Ns-1)=rhoextrapolate;
     return error;
   }
   void IsoTWall::jac(Jacobian& jac) const {
@@ -104,25 +104,26 @@ namespace tube{
     us Ns=gc->Ns();
     const TubeBcVertex* vertex;
 
-    // JacRow extrapolaterho(firsteqnr+3*Ns,3);
-    // extrapolaterho.setRowDof(firsteqnr+3*Ns);
-    JacRow massfloweq(firsteqnr+3*Ns,4);
+    JacRow extrapolaterho(firsteqnr+3*Ns,3);
+    extrapolaterho.setRowDof(firsteqnr+3*Ns);
+    // JacRow massfloweq(firsteqnr+3*Ns,4);
     if(position==pos::left){
       vertex=&t->leftVertex();
-      // extrapolaterho+=JacCol(vertex->rhoL(),eye<dmat>(gc->Ns(),gc->Ns()));
+      extrapolaterho+=JacCol(vertex->rhoL(),eye<dmat>(gc->Ns(),gc->Ns()));
     }
     else{
       vertex=&t->rightVertex();
-      // extrapolaterho+=JacCol(vertex->rhoR(),eye<dmat>(gc->Ns(),gc->Ns()));
+      extrapolaterho+=JacCol(vertex->rhoR(),eye<dmat>(gc->Ns(),gc->Ns()));
     }    
-    // extrapolaterho+=(vertex->dExtrapolateQuant(physquant::density)*=-1);
+    extrapolaterho+=(vertex->dExtrapolateQuant(physquant::density)*=-1);
     // Put them into jacobian
     // massfloweq+=(vertex->dExtrapolateQuant(physquant::massFlow)*=-1);
 
     jac+=Uiszero.jac();
     jac+=Tbc.jac();
     jac+=Tsbc.jac();
-    jac+=massfloweq;
+    // jac+=massfloweq;
+    jac+=extrapolaterho;
   }
 } // namespace tube
 
