@@ -7,7 +7,7 @@
 #ifdef NOHEAT
 #error Noheat already defined!
 #endif
-#define NOHEAT
+
 
 #include "tubevertex.h"
 #include "weightfactors.h"
@@ -49,15 +49,18 @@ namespace tube{
     d vSfsq=pow(w.vSf,2);
 
     Wddt=w.vVf;
-    Wddtkin=0.5*Wddt/w.vSf;
+    Wddtkin=0.5*Wddt/pow(w.vSf,2);
 
     // WkinL=-0.5*w.wLl/SfLsq;
     // Wkin=0.5*(w.wRl/SfRsq-w.wLr/SfLsq);
     // WkinR=0.5*w.wRr/SfRsq;
     
+    // vxm1=0 for the leftmost vertex, so this is always true:
+    WcLl=w.SfL/(w.vx-w.vxm1);
+    WcLr=-WcLl;
+
     if(v.left()){
       d vSfLsq=pow(w.vSfL,2);
-      WcLl=w.SfL/(w.vx-w.vxm1);
 
       WkinLl=0.5*w.wLl/vSfLsq;
       WkinLr=0.5*w.wLr/vSfsq;
@@ -75,21 +78,17 @@ namespace tube{
 
       WLl=1;
       WLr=0;
-
     }
-    WcLr=-WcLl;
     if(v.right()){    
       d vSfRsq=pow(w.vSfR,2);
 
       WcRl= w.SfR/(w.vxp1-w.vx);
 
-
       WkinRl=0.5*(w.wRl/vSfsq);
-      WkinRr=0.5*w.wRr/vSfRsq;
+      WkinRr=0.5*(w.wRr/vSfRsq);
 
       WRl= w.wRl;
       WRr= w.wRr;
-
     }
     else{
       d SfRsq=pow(w.SfR,2);
@@ -113,12 +112,12 @@ namespace tube{
     TRACE(6,"Energy::Error(), i="<<v.geti());
     assert(v.gc!=NULL);
 
-    // vd error=ddtEtot();         // Time derivative of total energy
-    vd error=ddtEtherm();         // Time derivative of total energy
+    vd error=ddtEtot();         // Time derivative of total energy
+    // vd error=ddtEtherm();         // Time derivative of total energy
     // Total enthalpy flux
-    // error+=HR()-HL();
-    error+=hR()-hL();
-    // error+=QR()-QL();
+    error+=HR()-HL();
+    // error+=hR()-hL();
+    error+=QR()-QL();
     // VARTRACE(25,QR());
     // VARTRACE(25,QL());
     // External heat    
@@ -279,7 +278,7 @@ namespace tube{
   JacRow Energy::dHR() const{
     JacRow dHR=dhR();
     const vd& rhot=v.rho().tdata();
-    const vd& Ut=v.rho().tdata();    
+    const vd& Ut=v.U().tdata();    
     const vd& rhotR=v.rhoR().tdata();
     const vd& UtR=v.UR().tdata();    
     dHR+=JacCol(v.U(),3.0*WkinRl*fDFT*(diagmat(rhot%Ut%Ut)*iDFT));
@@ -356,11 +355,11 @@ namespace tube{
     vd Qb(v.gc->Ns());
     if(!v.left()){
       vd kappaLt=this->kappaLt();
-      Qb=(w.SfL/w.vx)*fDFT*(kappaLt%(v.TL().tdata()-v.T().tdata()));
+      Qb=fDFT*(kappaLt%(WcLl*v.TL().tdata()+WcLr*v.T().tdata()));
     }
     else if(!v.right()){
       vd kappaRt=this->kappaRt();
-      Qb=(w.SfR/(w.xR-w.vx))*fDFT*(kappaRt%(v.T().tdata()-v.TR().tdata()));
+      Qb=fDFT*(kappaRt%(WcRl*v.T().tdata()+WcRr*v.TR().tdata()));
     }
     else{
       WARN("That went fatally wrong!");
@@ -371,19 +370,19 @@ namespace tube{
   JacRow Energy::dExtrapolateHeatFlow() const{
     TRACE(5,"Energy::dExtrapolateHeatFlow()");
     const WeightFactors& w=v.weightFactors();
-    JacRow dQb(-1,2);
+    JacRow dQb(2);
 
     // VARTRACE(30,kappaLt)      ;
     // VARTRACE(30,kappaRt);
     if(!v.left()){
       vd kappaLt=this->kappaLt();
-      dQb+=JacCol(v.T(),-(w.SfL/w.vx)*fDFT*diagmat(kappaLt)*iDFT);
-      dQb+=JacCol(v.TL(),(w.SfL/w.vx)*fDFT*diagmat(kappaLt)*iDFT);
+      dQb+=JacCol(v.T(),fDFT*diagmat(WcLr*kappaLt)*iDFT);
+      dQb+=JacCol(v.TL(),fDFT*diagmat(WcLl*kappaLt)*iDFT);
     }
     else if(!v.right()){
       vd kappaRt=this->kappaRt();
-      dQb+=JacCol(v.T(),(w.SfR/(w.xR-w.vx))*fDFT*diagmat(kappaRt)*iDFT);
-      dQb+=JacCol(v.TR(),-(w.SfR/(w.xR-w.vx))*fDFT*diagmat(kappaRt)*iDFT);
+      dQb+=JacCol(v.T(),fDFT*diagmat(WcRl*kappaRt)*iDFT);
+      dQb+=JacCol(v.TR(),fDFT*diagmat(WcRr*kappaRt)*iDFT);
     }
     else{
       WARN("That went fatally wrong!");

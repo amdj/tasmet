@@ -2,7 +2,6 @@
 #ifdef NODRAG
 #error NODRAG already defined!
 #endif
-#define NODRAG
 
 #include "tube.h"
 #include "tubevertex.h"
@@ -77,17 +76,13 @@ namespace tube{
     error+=WpL*v.pL()();
     error+=WpR*v.pR()();    
 
-    if(v.left()){
-      const vd& rhotL=v.rhoL().tdata();
-      const vd& UtL=v.UL().tdata();
-      error+=WuL*fDFT*(rhotL%UtL%UtL);
-      // Pressure term
-    }
-    if(v.right()){
-      const vd& UtR=v.UR().tdata();
-      const vd& rhotR=v.rhoR().tdata();
-      error+=WuR*fDFT*(rhotR%UtR%UtR);
-    }
+    const vd& rhotL=v.rhoL().tdata();
+    const vd& UtL=v.UL().tdata();
+    error+=WuL*fDFT*(rhotL%UtL%UtL);
+    // Pressure term
+    const vd& UtR=v.UR().tdata();
+    const vd& rhotR=v.rhoR().tdata();
+    error+=WuR*fDFT*(rhotR%UtR%UtR);
 
     // Drag term
     assert(drag!=NULL);

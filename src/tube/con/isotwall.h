@@ -16,16 +16,13 @@ namespace tube{
  // IsoT wall boundary
   class IsoTWall:public TubeBc {
     us firsteqnr;
-    vd zero;
     PrescribeQty Uiszero;       // Equation to make volume flow zero
                                 // at wall
     PrescribeQty Tbc;
     PrescribeQty Tsbc;    
     IsoTWall& operator=(const IsoTWall&);
   public:
-    IsoTWall(us segnr,pos position,const variable::var& Tbc,const variable::var& Tsbc);
-    IsoTWall(us segnr,pos position,const variable::var& Tbc):
-      IsoTWall(segnr,position,Tbc,coldtemp(Tbc)){}
+    IsoTWall(us segnr,pos position,const variable::var& Tbc);
     IsoTWall(const IsoTWall& o);
     virtual ~IsoTWall(){}
 

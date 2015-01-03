@@ -14,15 +14,16 @@ namespace tube{
   using tasystem::JacRow;
   using tasystem::JacCol;
 
-  IsoTWall::IsoTWall(us segnr,pos position,const var& Tbc,const var& Tsbc):
+  IsoTWall::IsoTWall(us segnr,pos position,const var& Tbc):
     TubeBc(segnr,position),
     Tbc(Tbc),
-    Tsbc(Tsbc)
+    Tsbc(Tbc)
   {
     TRACE(15,"IsoTWall::IsoTWall()");
   }
   IsoTWall::IsoTWall(const IsoTWall& o):
     TubeBc(o),
+    Uiszero(o.Uiszero),
     Tbc(o.Tbc),
     Tsbc(o.Tsbc)
   {
@@ -33,7 +34,7 @@ namespace tube{
     TRACE(15,"IsoTWall::init()");
     if(!TubeBc::init(sys))
       return false;
-
+    Uiszero.setGc(*gc);
     Tbc.setGc(*gc);
     Tsbc.setGc(*gc);
     return true;
@@ -73,29 +74,28 @@ namespace tube{
       Uiszero.set(firsteqnr,vertex.UR(),zero);
       Tbc.set(firsteqnr+Ns,vertex.TR()); // vals are set in constructor
       Tsbc.set(firsteqnr+2*Ns,vertex.TsR()); // idem
-
     }
   }
   vd IsoTWall::error() const {
     TRACE(15,"IsoTWall::error()");
     vd error(getNEqs());
     us Ns=gc->Ns();
-    vd rhoextrapolate;
+    // vd rhoextrapolate;
     const TubeBcVertex* vertex;
     if(position==pos::left){
       vertex=&t->leftVertex();
-      rhoextrapolate=vertex->rhoL()();
+      // rhoextrapolate=vertex->rhoL()();
     }
     else{
       vertex=&t->rightVertex();
-      rhoextrapolate=vertex->rhoR()();
+      // rhoextrapolate=vertex->rhoR()();
     }    
-    rhoextrapolate-=vertex->extrapolateQuant(physquant::density);
+    // rhoextrapolate+=-vertex->extrapolateQuant(physquant::density);
 
     error.subvec(0,Ns-1)=Uiszero.error();
     error.subvec(Ns,2*Ns-1)=Tbc.error();
     error.subvec(2*Ns,3*Ns-1)=Tsbc.error();
-    error.subvec(3*Ns,4*Ns-1)=rhoextrapolate;
+    // error.subvec(3*Ns,4*Ns-1)=vertex->extrapolateQuant(physquant::massFlow);
 
     return error;
   }
@@ -104,22 +104,25 @@ namespace tube{
     us Ns=gc->Ns();
     const TubeBcVertex* vertex;
 
-    JacRow extrapolaterho(firsteqnr+3*Ns,3);
-    extrapolaterho.setRowDof(firsteqnr+3*Ns);
+    // JacRow extrapolaterho(firsteqnr+3*Ns,3);
+    // extrapolaterho.setRowDof(firsteqnr+3*Ns);
+    JacRow massfloweq(firsteqnr+3*Ns,4);
     if(position==pos::left){
       vertex=&t->leftVertex();
-      extrapolaterho+=JacCol(vertex->rhoL(),eye<dmat>(gc->Ns(),gc->Ns()));
+      // extrapolaterho+=JacCol(vertex->rhoL(),eye<dmat>(gc->Ns(),gc->Ns()));
     }
     else{
       vertex=&t->rightVertex();
-      extrapolaterho+=JacCol(vertex->rhoR(),eye<dmat>(gc->Ns(),gc->Ns()));
+      // extrapolaterho+=JacCol(vertex->rhoR(),eye<dmat>(gc->Ns(),gc->Ns()));
     }    
-    extrapolaterho+=(vertex->dExtrapolateQuant(physquant::density)*=-1);
+    // extrapolaterho+=(vertex->dExtrapolateQuant(physquant::density)*=-1);
     // Put them into jacobian
+    // massfloweq+=(vertex->dExtrapolateQuant(physquant::massFlow)*=-1);
+
     jac+=Uiszero.jac();
     jac+=Tbc.jac();
     jac+=Tsbc.jac();
-    jac+=extrapolaterho;
+    jac+=massfloweq;
   }
 } // namespace tube
 

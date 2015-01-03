@@ -16,7 +16,7 @@ namespace tube{
     d Wddt=0,Wddtkin=0;
     d WRr=0,WRl=0,WLr=0,WLl=0;
     d WcLl=0,WcLr=0,WcRl=0,WcRr=0; // Conduction weight factors
-    d WkinLl=0,WkinLr=0,WkinRl=0,WkinRr;
+    d WkinLl=0,WkinLr=0,WkinRl=0,WkinRr=0;
   public:
     Energy(const TubeVertex& v):TubeEquation(v){}
     d Htot() const;             // Total enthalpy flow through this node
