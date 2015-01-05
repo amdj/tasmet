@@ -28,8 +28,8 @@ namespace tube{
       break;
     case solidHeatFlow:
       return se.extrapolateHeatFlow();
-    case density:
-      return extrapolateDensity();
+    case rhoRT:
+      return extrapolateRhoRT();
     default:
       break;
     }
@@ -54,8 +54,8 @@ namespace tube{
     case solidHeatFlow:
       return se.dExtrapolateHeatFlow();
       break;
-    case density:
-      return dExtrapolateDensity();
+    case rhoRT:
+      return dExtrapolateRhoRT();
     default:
       break;
     }

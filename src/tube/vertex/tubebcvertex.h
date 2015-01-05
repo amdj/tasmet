@@ -29,8 +29,8 @@ namespace tube{
   private:
     virtual vd extrapolateMassFlow() const=0;
     virtual tasystem::JacRow dExtrapolateMassFlow() const=0;
-    virtual vd extrapolateDensity() const=0;
-    virtual tasystem::JacRow dExtrapolateDensity() const=0;
+    virtual vd extrapolateRhoRT() const=0;
+    virtual tasystem::JacRow dExtrapolateRhoRT() const=0;
     virtual vd extrapolateMomentumFlow() const=0;
     virtual tasystem::JacRow dExtrapolateMomentumFlow() const=0;
   };

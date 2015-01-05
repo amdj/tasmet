@@ -5,6 +5,10 @@
 #include "tube.h"
 #include "weightfactors.h"
 
+#define iDFT (gc->iDFT)
+#define fDFT (gc->fDFT)
+#define DDTfd (gc->DDTfd)
+
 namespace tube{
 
   using variable::var;
@@ -68,62 +72,72 @@ namespace tube{
       Uiszero.set(firsteqnr,vertex.UL(),zero);
       Tbc.set(firsteqnr+Ns,vertex.TL()); // vals are set in constructor
       Tsbc.set(firsteqnr+2*Ns,vertex.TsL()); // idem
+
     }
     else{
       const TubeVertex& vertex=t->rightVertex();
       Uiszero.set(firsteqnr,vertex.UR(),zero);
       Tbc.set(firsteqnr+Ns,vertex.TR()); // vals are set in constructor
       Tsbc.set(firsteqnr+2*Ns,vertex.TsR()); // idem
+
     }
   }
   vd IsoTWall::error() const {
     TRACE(15,"IsoTWall::error()");
     vd error(getNEqs());
     us Ns=gc->Ns();
-    vd rhoextrapolate;
+
     const TubeBcVertex* vertex;
+    
+    const var *pb;
     if(position==pos::left){
       vertex=&t->leftVertex();
-      rhoextrapolate=vertex->rhoL()();
+      pb=&vertex->pL();
     }
     else{
       vertex=&t->rightVertex();
-      rhoextrapolate=vertex->rhoR()();
+      pb=&vertex->pR();
     }    
-    rhoextrapolate+=-vertex->extrapolateQuant(physquant::density);
-
+    // Compute error on state eq derivative
+    vd stateer=(*pb)(); stateer(0)+=gc->p0;
+    stateer+=-vertex->extrapolateQuant(physquant::rhoRT);
+    VARTRACE(30,stateer);
+    // Add all individual error parts to vector
     error.subvec(0,Ns-1)=Uiszero.error();
     error.subvec(Ns,2*Ns-1)=Tbc.error();
     error.subvec(2*Ns,3*Ns-1)=Tsbc.error();
     // error.subvec(3*Ns,4*Ns-1)=vertex->extrapolateQuant(physquant::massFlow);
-   error.subvec(3*Ns,4*Ns-1)=rhoextrapolate;
+    error.subvec(3*Ns,4*Ns-1)=stateer;
     return error;
   }
   void IsoTWall::jac(Jacobian& jac) const {
     TRACE(15,"IsoTWall::jac()");
     us Ns=gc->Ns();
-    const TubeBcVertex* vertex;
 
-    JacRow extrapolaterho(firsteqnr+3*Ns,3);
-    extrapolaterho.setRowDof(firsteqnr+3*Ns);
-    // JacRow massfloweq(firsteqnr+3*Ns,4);
+    const TubeBcVertex* vertex;
+    const variable::var* pb;
+
     if(position==pos::left){
       vertex=&t->leftVertex();
-      extrapolaterho+=JacCol(vertex->rhoL(),eye<dmat>(gc->Ns(),gc->Ns()));
+      pb=&vertex->pL();
     }
     else{
       vertex=&t->rightVertex();
-      extrapolaterho+=JacCol(vertex->rhoR(),eye<dmat>(gc->Ns(),gc->Ns()));
-    }    
-    extrapolaterho+=(vertex->dExtrapolateQuant(physquant::density)*=-1);
-    // Put them into jacobian
-    // massfloweq+=(vertex->dExtrapolateQuant(physquant::massFlow)*=-1);
+      pb=&vertex->pR();
+    }
 
+    // Derivative extrapolated state equation
+    JacRow stateeq(firsteqnr+3*Ns,6);
+    stateeq+=JacCol(*pb,eye<dmat>(gc->Ns(),gc->Ns()));
+    stateeq+=(vertex->dExtrapolateQuant(physquant::rhoRT)*=-1);
+
+
+    // Put them into jacobian
     jac+=Uiszero.jac();
     jac+=Tbc.jac();
     jac+=Tsbc.jac();
     // jac+=massfloweq;
-    jac+=extrapolaterho;
+    jac+=stateeq;
   }
 } // namespace tube
 

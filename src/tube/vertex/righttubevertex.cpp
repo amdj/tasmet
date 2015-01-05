@@ -85,22 +85,21 @@ namespace tube{
     jacrow+=JacCol(rhoL(),w.wRNm2*fDFT*UL().diagt()*iDFT);
     return jacrow;
   }
-  vd RightTubeVertex::extrapolateDensity() const{
+  vd RightTubeVertex::extrapolateRhoRT() const{
     const WeightFactors& w=weightFactors();
-    return w.wRNm2*rhoL()()+                    \
-      w.wRNm1*rho()();
+    const d& R=gc->gas.Rs();
+    return fDFT*(R*(w.wRNm2*rhoL().tdata()%TL().tdata()+   \
+                    w.wRNm1*rho().tdata()%T().tdata()));
   }
-  // vd RightTubeVertex::extrapolateVolumeFlow() const{
-  //   const WeightFactors& w=weightFactors();
-  //   return w.wRNm2*UL()()+                    
-  //     w.wRNm1*U()();
-  // }
-  JacRow RightTubeVertex::dExtrapolateDensity() const{
-    TRACE(15,"RightTubeVertex::dExtrapolateDensity()");
+  JacRow RightTubeVertex::dExtrapolateRhoRT() const{
+    TRACE(15,"RightTubeVertex::dExtrapolateRhoRT()");
     const WeightFactors& w=weightFactors();
-    JacRow jacrow(-1,2);
-    jacrow+=JacCol(rho(),w.wRNm1*eye<dmat>(gc->Ns(),gc->Ns()));
-    jacrow+=JacCol(rhoL(),w.wRNm2*eye<dmat>(gc->Ns(),gc->Ns()));
+    JacRow jacrow(-1,4);
+    const d& R=gc->gas.Rs();    
+    jacrow+=JacCol(rho(),R*w.wRNm1*fDFT*diagmat(T().tdata())*iDFT);
+    jacrow+=JacCol(T(),R*w.wRNm1*fDFT*diagmat(rho().tdata())*iDFT);
+    jacrow+=JacCol(rhoL(),R*w.wRNm2*fDFT*diagmat(TL().tdata())*iDFT);
+    jacrow+=JacCol(TL(),R*w.wRNm2*fDFT*diagmat(rhoL().tdata())*iDFT);
     return jacrow;
   }
   vd RightTubeVertex::extrapolateMomentumFlow() const{

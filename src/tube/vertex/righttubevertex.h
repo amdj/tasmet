@@ -28,8 +28,8 @@ namespace tube{
   private:
     virtual vd extrapolateMassFlow() const;
     virtual tasystem::JacRow dExtrapolateMassFlow() const;
-    virtual vd extrapolateDensity() const;
-    virtual tasystem::JacRow dExtrapolateDensity() const;
+    virtual vd extrapolateRhoRT() const;
+    virtual tasystem::JacRow dExtrapolateRhoRT() const;
     virtual vd extrapolateMomentumFlow() const;
     virtual tasystem::JacRow dExtrapolateMomentumFlow() const;
 
