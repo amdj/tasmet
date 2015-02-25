@@ -11,7 +11,6 @@ add_definitions(-DTRACERNAME=nltracer -DARMA_USE_BLAS -DARMA_USE_LAPACK)
 #           read from a pipe; but the GNU assembler has no troubl.
 
 
-AUX_SOURCE_DIRECTORy(src/gui gui)
 AUX_SOURCE_DIRECTORY(src/seg seg)
 AUX_SOURCE_DIRECTORy(src/sol sol)
 AUX_SOURCE_DIRECTORy(src/sys sys)
@@ -42,7 +41,6 @@ include_directories(
   src/seg
   src/var
   src/tube
-  src/gui
   src/tube/geom
   src/tube/geom/grid
   src/tube/drag
@@ -59,40 +57,19 @@ include_directories(
   ../common/rottfuncs
   /usr/include/umfpack
   )
-# add_library(guil ${guisources})
-add_library(nonlin SHARED ${nonlinear_SRC})
 
-target_link_libraries(nonlin math_common boost_thread boost_system blas lapack boost_iostreams boost_serialization)
-# add_executable(multitube multitube.cpp)
-# target_link_libraries(multitube nonlin math_common armadillo)
+add_library(nonlin SHARED ${nonlinear_SRC})
+target_link_libraries(nonlin math_common boost_thread boost_system boost_iostreams armadillo)
 
 # If the pyx file is a C++ file, we should specify that here.
-set_source_files_properties(
-  #  ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/src/rect.pyx
-  #  ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/src/pi_calculator.pyx
-  pytube.pyx doubletube.pyx
-  PROPERTIES CYTHON_IS_CXX TRUE )
-find_package(wxWidgets COMPONENTS core base REQUIRED)
-include("${wxWidgets_USE_FILE}")
+# find_package(wxWidgets COMPONENTS core base REQUIRED)
+# include("${wxWidgets_USE_FILE}")
 
-set(CYTHON_CXX_EXTENSION cpp)
-set(CYTHON_FLAGS -I/usr/local/include --timestamps)
 add_executable(test123 test123.cpp)
-# add_executable(gui_test gui_test.cpp)
-# add_executable(enginetest enginetest.cpp)
-# add_executable(threetubes threetubes.cpp)
-# cython_add_module(pytube pytube.pyx)
-# cython_add_module(doubletube doubletube.pyx)
 # set_target_properties(pytube PROPERTIES COMPILE_FLAGS "-Wno-cpp  -Wno-strict-aliasing")
 
-
-# target_link_libraries(doubletube nonlin math_common armadillo)
 # target_link_libraries(gui_test gui ${wxWidgets_LIBRARIES} nonlin math_common blas lapack)
-target_link_libraries(test123 nonlin math_common blas lapack boost_iostreams boost_serialization)
-# target_link_libraries(enginetest nonlin  math_common blas lapack)
-# target_link_libraries(threetubes nonlin math_common blas lapack)
-# target_link_libraries(pytube models nonlin math_common blas lapack)
-
+target_link_libraries(test123 nonlin math_common armadillo)
 
 # To execute the test directly
 # add_custom_command(TARGET test123 POST_BUILD COMMAND test123 )
@@ -109,20 +86,4 @@ target_link_libraries(test123 nonlin math_common blas lapack boost_iostreams boo
 #add_library(math_common SHARED ${math_common_SRC})
 # Install headers to include directory
 #install(FILES ${math_common_HEADERS}  DESTINATION include)
-
-
-#set_target_properties(math_common PROPERTIES VERSION ${math_common_VERSION_STR#ING} SOVERSION ${math_common_VERSION_MAJOR})
-
-
-
-
-
-
-
-
-
-
-
-
-
 
