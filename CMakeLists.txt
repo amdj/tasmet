@@ -1,9 +1,7 @@
 # CMakeList.txt for nonlinear code
-add_definitions(-DTRACERNAME=nltracer -DARMA_USE_BLAS -DARMA_USE_LAPACK)
+add_definitions(-DTRACERNAME=nltracer)
 
 ############################## Not so often changed
-
-
 
 # -pipe Use pipes rather than temporary files for communication
 #           between the various stages of compilation.  This fails to
@@ -35,7 +33,6 @@ set (nonlinear_SRC ${seg} ${sol} ${sys} ${var} ${tube}
   )
 
 include_directories(
-  include
   src/sys
   src/sol
   src/seg
@@ -55,11 +52,10 @@ include_directories(
   ../common/fsolve  
   ../common/solid
   ../common/rottfuncs
-  /usr/include/umfpack
   )
 
 add_library(nonlin SHARED ${nonlinear_SRC})
-target_link_libraries(nonlin math_common boost_thread boost_system boost_iostreams armadillo)
+target_link_libraries(nonlin math_common ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${ARMADILLO_LIBRARY})
 
 # If the pyx file is a C++ file, we should specify that here.
 # find_package(wxWidgets COMPONENTS core base REQUIRED)
