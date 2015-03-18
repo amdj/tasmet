@@ -30,7 +30,7 @@ namespace segment{
     virtual ~SegConBase(){}
     // Get and set number
     void setNumber(us number) {this->number=number;} 
-    const us& getNumber() const {return number;}
+    const int& getNumber() const {return number;}
 
     // Get and set name
     const std::string& getName() const{return name_;} // This one is just the name

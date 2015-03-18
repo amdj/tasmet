@@ -46,9 +46,11 @@ namespace tasystem{
     hasInit=false;
   }
   TaSystem& TaSystem::operator=(const TaSystem& other){
-    TRACE(14,"TaSystem::operator=()");
-    cleanup();
-    copyTaSystem(other);
+    if(this!=&other){
+      TRACE(14,"TaSystem::operator=()");
+      cleanup();
+      copyTaSystem(other);
+    }
     return *this;
   }
   void TaSystem::cleanup(){

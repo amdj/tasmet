@@ -1,35 +1,18 @@
-// globalconf.h
-//
-// Author: J.A. de Jong 
-//
-// Description:
-// Global configuration options
-//////////////////////////////////////////////////////////////////////
-#pragma once
-
-#ifndef _GLOBALCONF_H_
-#define _GLOBALCONF_H_
-
-#include <memory>
-#include "vtypes.h"
-#include "gas.h"
-#include <assert.h>
-#define MAXNF (30)
-#define MINOMG (1e-3)
-#define MAXOMG (1e5)
+%module nonlin
+%{
+  #define PY_ARRAY_UNIQUE_SYMBOL npy_array
+  #include "globalconf.h"
+%}
+%include "std_string.i"
+%include "arma_numpy.i"
+%include "std_complex.i"
+typedef std::string string;
+typedef std::complex<double> c;
 
 namespace tasystem{
   SPOILNAMESPACE
 
-  class TaSystem;
-  
   class Globalconf{
-    const TaSystem* thesys=nullptr;
-    d Mass=0;			/* Fluid mass in the system (should remain constant) */
-    d omg;		// The "base" frequency in rad/s
-    bool driven=true;
-    us Nf_;			// Number of frequencies to solve for
-    us Ns_;			// Corresponding number of time samples
   public:
     d T0,p0;			/* Reference temperature and pressure (used to initialize a lot of variables. */
     // finite volume size, speed of sound,
@@ -67,24 +50,15 @@ namespace tasystem{
 
 
     void setGas(const string& mat){gas.setGas(mat);}
-    string getGas() const {return gas;}    
+    const string& getGas() const {return gas;}    
 
     void setMass(d mass){Mass=mass;}
     d getMass() const {return Mass;}
 
     void show() const;
     //    void setgas(string g){ gas(g);}
-  protected:
 
-    void updateiDFT();
-    void updatefDFT();
-    void updateiomg();
-
-    d oldomg; //Previous omega
-  private:
 
   }; /* Class Globalconf */
 }    // namespace tasystem
 
-#endif /* _GLOBALCONF_H_ */
-//////////////////////////////////////////////////////////////////////

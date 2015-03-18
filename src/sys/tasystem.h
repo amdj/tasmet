@@ -13,7 +13,6 @@
 #define MAXNDOFS 600000
 #include <memory>
 #include "vtypes.h"
-#include <boost/archive/text_oarchive.hpp>
 #include "globalconf.h"
 #include "segconnection.h"
 #define MAXSEGS 30
@@ -46,10 +45,6 @@ namespace tasystem{
     TaSystem(const TaSystem& o);
     TaSystem& operator=(const TaSystem& other);
     virtual ~TaSystem();
-    template <typename Archive>
-    void serialize(Archive& ar,const unsigned int version){
-      ar & gc;
-    }
     virtual TaSystem* copy() const {return new TaSystem(*this);}
     virtual bool init();
     us nSegs() const {return segs.size();}

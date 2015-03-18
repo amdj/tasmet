@@ -100,7 +100,7 @@ namespace tasystem{
 
 
     evd error=sys().error();
-    if(!error.size()>0){
+    if(!(error.size()>0)){
       WARN("Error illegal residual vector obtained. Exiting.");
       return std::make_tuple(-1,-1);
     }
