@@ -78,7 +78,7 @@ namespace tasystem{
 
 
     void setGas(const string& mat){gas.setGas(mat);}
-    const string& getGas() const {return gas.getGas();}    
+    const string& getGas() const {return gas;}    
 
     void setMass(d mass){Mass=mass;}
     d getMass() const {return Mass;}
