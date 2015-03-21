@@ -8,7 +8,8 @@
 
 
 namespace variable {
-  
+
+  using namespace tasystem;
   //******************************************************************************** Operators
   
   var operator*(const double& scalar,const var& var1){ // Pre-multiplication with scalar
@@ -165,7 +166,7 @@ namespace variable {
     timedata.fill(val);
     dft();
   }
-  void var::settdata(vd& val) {
+  void var::settdata(const vd& val) {
     TRACE(0,"var::settdata(vd& val)");
     assert(val.size()==timedata.size());
     timedata=val;

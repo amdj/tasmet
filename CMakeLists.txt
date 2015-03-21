@@ -33,6 +33,7 @@ set (nonlinear_SRC ${seg} ${sol} ${sys} ${var} ${tube}
   )
 
 include_directories(
+  swig
   src/sys
   src/sol
   src/seg
@@ -46,6 +47,7 @@ include_directories(
   src/tube/eq
   src/tube/heat
   ../common
+  ../common/swig_files
   ../common/gas
   ../common/interpolate
   ../common/special
@@ -54,24 +56,28 @@ include_directories(
   ../common/rottfuncs
   )
 
-add_library(nonlin SHARED ${nonlinear_SRC})
-target_link_libraries(nonlin math_common ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${ARMADILLO_LIBRARY})
-
-# If the pyx file is a C++ file, we should specify that here.
-# find_package(wxWidgets COMPONENTS core base REQUIRED)
-# include("${wxWidgets_USE_FILE}")
+# add_library(nonlin_lib SHARED ${nonlinear_SRC})
+add_library(nonlin_lib  ${nonlinear_SRC})
+target_link_libraries(nonlin_lib math_common ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${ARMADILLO_LIBRARY})
 
 add_executable(test123 test123.cpp)
-# set_target_properties(pytube PROPERTIES COMPILE_FLAGS "-Wno-cpp  -Wno-strict-aliasing")
+target_link_libraries(test123 nonlin_lib math_common armadillo)
 
-# target_link_libraries(gui_test gui ${wxWidgets_LIBRARIES} nonlin math_common blas lapack)
-target_link_libraries(test123 nonlin math_common armadillo)
+
+set_source_files_properties( ${swig_generated_file_fullname}
+      PROPERTIES COMPILE_FLAGS "-Wno-missing-field-initializers")
+
+# Does this work
+set_source_files_properties(nonlin.i PROPERTIES CPLUSPLUS ON)
+
+swig_add_module(nonlin python nonlin.i)
+set(SWIG_MODULE_nonlin_FILE_nonlin_EXTRA_DEPS
+  ${PROJECT_SOURCE_DIR}/src/common/swig_files/arma_numpy.i
+)
+swig_link_libraries(nonlin nonlin_lib math_common ${PYTHON_LIBRARIES} armadillo)
 
 # To execute the test directly
 # add_custom_command(TARGET test123 POST_BUILD COMMAND test123 )
-
-# add_library(pytube SHARED pytube.cpp)
-# set_target_properties(pytube PROPERTIES PREFIX "")
 
 #enable_testing()
 #add_test(test_cpp test COMMAND test)
@@ -79,7 +85,6 @@ target_link_libraries(test123 nonlin math_common armadillo)
 
 #Install library to library directory
 #install(TARGETS math_common DESTINATION lib)
-#add_library(math_common SHARED ${math_common_SRC})
 # Install headers to include directory
 #install(FILES ${math_common_HEADERS}  DESTINATION include)
 

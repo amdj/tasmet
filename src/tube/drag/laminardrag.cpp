@@ -30,9 +30,9 @@ namespace tube{
     const us& Nf=v.gc->Nf();
     const us& i=v.geti();
     d T0=v.T()(0);	// Time-averaged temperature
-    d mu0=v.gc->gas.mu(T0);
-    d p0=v.p()(0)+v.gc->p0;
-    d rho0=v.gc->gas.rho(T0,p0);
+    d mu0=v.gc->gas().mu(T0);
+    d p0=v.p()(0)+v.gc->p0();
+    d rho0=v.gc->gas().rho(T0,p0);
 
     const d& rh=v.localGeom().vrh;
     d omg=v.gc->getomg();

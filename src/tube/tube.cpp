@@ -28,6 +28,7 @@ namespace tube {
   using tasystem::Globalconf;
   using tasystem::Jacobian;
 
+
   Tube::Tube(const Geom& geom):Seg(),geom_(geom.copy()){
     TRACE(13,"Tube constructor()...");
   }
@@ -311,6 +312,9 @@ namespace tube {
   }
 
   // Various set and get methods
+  void Tube::setResVar(varnr v,us i,us freqnr,d value){
+    WARN("Func does nothing!");
+  }
   void Tube::setResVar(varnr v,us freqnr,const vd& vals){
     TRACE(15,"Tube::setResVar()");
     if(v==varnr::p){

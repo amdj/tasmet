@@ -4,7 +4,7 @@
 #include "state.h"
 
 // #define STATE_SCALE (1)
-#define STATE_SCALE (1/v.gc->p0)
+#define STATE_SCALE (1/v.gc->p0())
 #define iDFT (v.gc->iDFT)
 #define fDFT (v.gc->fDFT)
 
@@ -32,7 +32,7 @@ namespace tube{
     TRACE(6,"State::Error()");
     vd error(v.gc->Ns(),fillwith::zeros);
     error+=v.pL()();
-    error(0)+=v.gc->p0;	       // Add p0 part
+    error(0)+=v.gc->p0();	       // Add p0 part
 
     const vd& rhot=v.rho().tdata();
     const vd& Tt=v.T().tdata();
@@ -41,7 +41,7 @@ namespace tube{
 
     // vd rhomid=Wr*rhot+Wl*rhotL;
     // vd Tmid=Wr*Tt+Wl*TtL;
-    d Rs=v.gc->gas.Rs();
+    d Rs=v.gc->gas().Rs();
     error+=-fDFT*(Wr*Rs*rhot%Tt);
     error+=-fDFT*(Wl*Rs*rhotL%TtL);
     
@@ -60,7 +60,7 @@ namespace tube{
 
     // vd rhomid=Wr*rhot+Wl*rhotL;
     // vd Tmid=Wr*Tt+Wl*TtL;
-    d Rs=v.gc->gas.Rs();
+    d Rs=v.gc->gas().Rs();
 
     jac+=JacCol(v.rhoL(),-STATE_SCALE*Rs*Wl*fDFT*diagmat(TtL)*iDFT);
     jac+=JacCol(v.rho(),-STATE_SCALE*Rs*Wr*fDFT*diagmat(Tt)*iDFT);
@@ -76,11 +76,11 @@ namespace tube{
     TRACE(6,"StateR::Error()");
     vd error(v.gc->Ns(),fillwith::zeros);
     error+=v.pR()();
-    error(0)+=v.gc->p0;	       // Add p0 part
+    error(0)+=v.gc->p0();	       // Add p0 part
 
     const vd& rhoRt=v.rhoR().tdata();
     const vd& TRt=v.TR().tdata();
-    d Rs=v.gc->gas.Rs();
+    d Rs=v.gc->gas().Rs();
     error-=fDFT*(Rs*rhoRt%TRt);
     return STATE_SCALE*error;
   }
@@ -91,8 +91,8 @@ namespace tube{
     TRACE(6,"State::jac()");
     JacRow jac(dofnr,3);
     jac+= JacCol(v.pR(),STATE_SCALE*eye<dmat>(v.gc->Ns(),v.gc->Ns()));
-    jac+=JacCol(v.T(),-STATE_SCALE*v.gc->gas.Rs()*fDFT*v.rhoR().diagt()*iDFT);
-    jac+=JacCol(v.rhoR(),-STATE_SCALE*v.gc->gas.Rs()*fDFT*v.TR().diagt()*iDFT);
+    jac+=JacCol(v.T(),-STATE_SCALE*v.gc->gas().Rs()*fDFT*v.rhoR().diagt()*iDFT);
+    jac+=JacCol(v.rhoR(),-STATE_SCALE*v.gc->gas().Rs()*fDFT*v.TR().diagt()*iDFT);
     return jac;
   }
 

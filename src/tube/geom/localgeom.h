@@ -4,7 +4,10 @@
 #include "vtypes.h"
 
 namespace tube {
+
+  #ifndef SWIG
   SPOILNAMESPACE
+  #endif
 
   class Geom;
   class TubeVertex;

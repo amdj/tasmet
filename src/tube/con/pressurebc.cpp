@@ -18,7 +18,7 @@ namespace tube{
   using tasystem::JacCol;
 
   var coldtemp(const var& pres){
-    return var(pres.gc(),pres.gc().T0);
+    return var(pres.gc(),pres.gc().T0());
   }
   
   PressureBc::PressureBc(const var& pres,const var& temp,const var& stemp,us segnr,pos position):
@@ -46,9 +46,9 @@ namespace tube{
   var PressureBc::adiabatictemp(const var& pres){
     TRACE(10,"PressureBc::adiabatictemp()");
     const Globalconf& gc=pres.gc();
-    d T0=gc.T0;
-    d gamma=gc.gas.gamma(T0);
-    vd p0(gc.Ns(),fillwith::ones); p0*=gc.p0;
+    d T0=gc.T0();
+    d gamma=gc.gas().gamma(T0);
+    vd p0(gc.Ns(),fillwith::ones); p0*=gc.p0();
     vd Tbct=T0*pow((p0+pres.tdata())/p0,(gamma-1.0)/gamma);		// Adiabatic compression/expansion
     var res(pres.gc());
     res.settdata(Tbct);

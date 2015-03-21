@@ -320,15 +320,15 @@ namespace tube{
     TRACE(5,"Energy::kappaRt()");
     const vd& Tt=v.T().tdata();
     const vd& TtR=v.TR().tdata();
-    // VARTRACE(25,v.gc->gas.kappa(WRr*TtR+WRl*Tt));
-    return v.gc->gas.kappa(WRr*TtR+WRl*Tt);
+    // VARTRACE(25,v.gc->gas().kappa(WRr*TtR+WRl*Tt));
+    return v.gc->gas().kappa(WRr*TtR+WRl*Tt);
   }
   vd Energy::kappaLt()  const {		// Returns thermal conductivity time domain data
     TRACE(5,"Energy::kappaRt()");
     const vd& Tt=v.T().tdata();
     const vd& TtL=v.TL().tdata();    
-    // VARTRACE(25,v.gc->gas.kappa(WLl*TtL+WLr*Tt));
-    return v.gc->gas.kappa(WLl*TtL+WLr*Tt);
+    // VARTRACE(25,v.gc->gas().kappa(WLl*TtL+WLr*Tt));
+    return v.gc->gas().kappa(WLl*TtL+WLr*Tt);
   }
   vd Energy::EkinL() const{
     return HL()-hL();
@@ -392,8 +392,8 @@ namespace tube{
   }
   d Energy::gamma() const {
     // d T0=v.T(0);
-    d T0=v.gc->T0; 
-    return v.gc->gas.gamma(T0);
+    d T0=v.gc->T0(); 
+    return v.gc->gas().gamma(T0);
   }
 
 

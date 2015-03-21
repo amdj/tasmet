@@ -15,10 +15,11 @@ namespace segment{
     Seg(const Seg& o);
     virtual ~Seg(){}            // We do not own the gc instance
     bool operator==(const Seg& other) const {return (this==&other);}
+    virtual segment::Seg* copy() const=0;
     // Pure virtual functions
-    const tasystem::Globalconf& getGc() const;
-    virtual Seg* copy() const=0;
 
+    #ifndef SWIG
+    const tasystem::Globalconf& getGc() const;
     virtual void resetHarmonics()=0;
     virtual std::string getType() const=0;		   // This param is
     // important for connecting the segments
@@ -33,8 +34,10 @@ namespace segment{
     virtual void dmtotdx(vd&) const=0; // Derivative of current fluid mass in
     // system to all dofs.
     virtual vd getRes() const=0; // Get a result vector
+    #endif
+
   };
-  
+
 } // Namespace segment
 
 

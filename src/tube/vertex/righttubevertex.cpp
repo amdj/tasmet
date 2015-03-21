@@ -87,7 +87,7 @@ namespace tube{
   }
   vd RightTubeVertex::extrapolateRhoRT() const{
     const WeightFactors& w=weightFactors();
-    const d& R=gc->gas.Rs();
+    const d& R=gc->gas().Rs();
     return fDFT*(R*(w.wRNm2*rhoL().tdata()%TL().tdata()+   \
                     w.wRNm1*rho().tdata()%T().tdata()));
   }
@@ -95,7 +95,7 @@ namespace tube{
     TRACE(15,"RightTubeVertex::dExtrapolateRhoRT()");
     const WeightFactors& w=weightFactors();
     JacRow jacrow(-1,4);
-    const d& R=gc->gas.Rs();    
+    const d& R=gc->gas().Rs();    
     jacrow+=JacCol(rho(),R*w.wRNm1*fDFT*diagmat(T().tdata())*iDFT);
     jacrow+=JacCol(T(),R*w.wRNm1*fDFT*diagmat(rho().tdata())*iDFT);
     jacrow+=JacCol(rhoL(),R*w.wRNm2*fDFT*diagmat(TL().tdata())*iDFT);

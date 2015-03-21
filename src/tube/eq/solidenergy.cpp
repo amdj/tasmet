@@ -39,7 +39,7 @@ namespace tube{
       error(0)-=(*Tsmirror)(v.geti());
     }
     else
-      error(0)-=v.gc->T0;
+      error(0)-=v.gc->T0();
     return error;
   }
   vd SolidTPrescribed::extrapolateHeatFlow() const{

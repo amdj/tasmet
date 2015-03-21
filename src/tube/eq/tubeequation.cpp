@@ -11,7 +11,7 @@ namespace tube{
   }
   vd TubeEquation::getp0t() const {
     TRACE(0,"TubeEquation::getp0t()");
-    return v.gc->p0*vd(v.gc->Ns(),fillwith::ones);
+    return v.gc->p0()*vd(v.gc->Ns(),fillwith::ones);
   }    
 
   // Artificial viscosity matrices

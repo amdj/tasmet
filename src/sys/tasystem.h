@@ -18,39 +18,47 @@
 #define MAXSEGS 30
 #include "arma_eigen.h"
 
+#ifndef SWIG
 namespace segment{
   class Seg;
   class Connector;
 }
+#endif
 
 namespace tasystem{
+  #ifndef SWIG
   SPOILNAMESPACE
 
   typedef Eigen::VectorXd evd;
   typedef Eigen::SparseMatrix<double> esdmat;
-  
+
   class TripletList;
+  #endif  
 
   class TaSystem{
   protected:
     bool hasInit=false;
     vector<segment::Seg*> segs;		
     vector<segment::Connector*> connectors;    // Yes, connectors are just like segments
+    bool driven=true;
   public:
     Globalconf gc;    
     void setGc(const Globalconf& gc); // Reset globalconf configuration
 
-    TaSystem(){}
+    TaSystem():gc(Globalconf::airSTP(0,100)){}
     TaSystem(const Globalconf& g);
     TaSystem(const TaSystem& o);
     TaSystem& operator=(const TaSystem& other);
     virtual ~TaSystem();
     virtual TaSystem* copy() const {return new TaSystem(*this);}
     virtual bool init();
+    void setDriven(bool dr) {driven=dr;}
+    bool isDriven() const {return driven;}
     us nSegs() const {return segs.size();}
     us nConnectors() const {return connectors.size();}
-    void addConnector(const segment::Connector&);
-    TaSystem& operator+=(const segment::Connector& c){addConnector(c); return *this;}
+    TaSystem& operator+=(const segment::Connector& c);
+    TaSystem& operator+=(const segment::Seg& s);	// Add a segment to the
+
     void showJac(bool force=false);
 
     virtual void show(us detailnr=0);
@@ -60,16 +68,14 @@ namespace tasystem{
     virtual esdmat jac(d dummy=-1);		// Return Jacobian matrix
     void setRes(const evd& res);
     void setNf(us);
-    void addSeg(const segment::Seg& s);	// Add a segment to the
+
     // system. It creates a copy
     // and ads it to segs by emplace_back.
-    void addSeg(const std::vector<segment::Seg*>&);
-    // Shortcut
-    TaSystem& operator+=(const segment::Seg& s){addSeg(s); return *this;}
+
 
     // Reset amplitude data in higher harmonics
     void resetHarmonics();
-    void delseg(us n); // Not yet implemented.  Delete a segment
+    // void delseg(us n); // Not yet implemented.  Delete a segment
     // from the system (we have to determine how elaborated the API
     // has to be.)
 

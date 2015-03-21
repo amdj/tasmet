@@ -149,12 +149,12 @@ namespace tube{
     // TRACE(100,"dTwdx:"<<dTwdx);
     const d& rh=v.localGeom().vrh;    
     d T0=v.T()(0);
-    d Pr0=v.gc->gas.pr(T0);
-    d cp0=v.gc->gas.cp(T0);    
-    d p0=v.p()(0)+v.gc->p0;
-    d rho0=v.gc->gas.rho(T0,p0);
-    d kappa0=v.gc->gas.kappa(T0);
-    d mu0=v.gc->gas.mu(T0);
+    d Pr0=v.gc->gas().pr(T0);
+    d cp0=v.gc->gas().cp(T0);    
+    d p0=v.p()(0)+v.gc->p0();
+    d rho0=v.gc->gas().rho(T0,p0);
+    d kappa0=v.gc->gas().kappa(T0);
+    d mu0=v.gc->gas().mu(T0);
     htcoefQ(0)=rho0*cp0*zeroheatQ*dTwdx;
     if(Nf>0){
       vd omgvec=v.gc->getomg()*linspace(1,Nf,Nf);
@@ -171,10 +171,10 @@ namespace tube{
     TRACE(8,"HopkinsHeatSource::HeatTransferCoefH()");
     const us& Nf=v.gc->Nf();
     d T0=v.T()(0);	// Time-averaged temperature
-    d kappa0=v.gc->gas.kappa(T0);
-    d p0=v.p()(0)+v.gc->p0;
-    d rho0=v.gc->gas.rho(T0,p0);
-    d cp0=v.gc->gas.cp(T0);
+    d kappa0=v.gc->gas().kappa(T0);
+    d p0=v.p()(0)+v.gc->p0();
+    d rho0=v.gc->gas().rho(T0,p0);
+    d cp0=v.gc->gas().cp(T0);
     const d& rh=v.localGeom().vrh;
 
     d omg=v.gc->getomg();

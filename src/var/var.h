@@ -13,17 +13,20 @@
 
 
 namespace variable {
+  #ifndef SWIG
   SPOILNAMESPACE
 
-  using namespace tasystem;
   class var;			// Forward declaration
   ostream& operator<< (ostream& out,var& v);
   var operator*(const double& d1,const var& var2);
   // var operator+(const d&,const var&);
 
+  #endif
+
+
   class var {
     int dofnr=-1;
-    const Globalconf* gc__=NULL;
+    const tasystem::Globalconf* gc__=NULL;
     vd timedata,amplitudedata;
     us Nf=0,Ns=0;
 
@@ -32,14 +35,15 @@ namespace variable {
     int getDofNr() const{return dofnr;}
     var() {}
     var(const var& o);
-    var(const Globalconf&);	// Initialize with zeros
-    var(const Globalconf *g): var(*g){}
-    var(const Globalconf&,double); // Initialize with one time-average value
-    var(const Globalconf&,const vd& timedata); // Initialize with timedata!!!!
+    var(const tasystem::Globalconf&);	// Initialize with zeros
+    var(const tasystem::Globalconf *g): var(*g){}
+    var(const tasystem::Globalconf&,double); // Initialize with one time-average value
+    var(const tasystem::Globalconf&,const vd& timedata); // Initialize with timedata!!!!
     var& operator=(const var&);			  // Copy assignment operator
+    ~var(){}
     // var operator()(const var&); //Copy constructor
     // Get methods
-    const Globalconf& gc() const {return *gc__;}
+    const tasystem::Globalconf& gc() const {return *gc__;}
     const d& operator()(us i) const;				   // Extract amplitude data result at specific frequency    
 
     const vd& operator()() const { return amplitudedata;} //Extract result
@@ -53,16 +57,19 @@ namespace variable {
     dmat diag() const {return diagmat(amplitudedata);}    
     //Set methods
 
-    void setGc(const Globalconf& gc){gc__=&gc;}
+    void setGc(const tasystem::Globalconf& gc){gc__=&gc;}
     void resetHarmonics();
 
+
+    void setadata(const vd& values){set(values);}
+    #ifndef SWIG
     void set(us freq,double val); //Set result vector at specific frequency
     void set(const vd& values); //Set result vector to these values
     void set(const vc& values); //Set result vector to these values, complex numbers
-    void setResfluc(vd& values); //Set result vector for only unsteady Fourier components
+    #endif
     // Specific methods to the result using time domain data
     void settdata(double value); //Set time data to specific value for all time
-    void settdata(vd& values);
+    void settdata(const vd& values);
     //Show methods
     void showtdata() const; //Print time data to
     void showRes() const;

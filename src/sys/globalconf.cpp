@@ -1,44 +1,41 @@
 #include "globalconf.h"
 
+
 TRACETHIS
 namespace tasystem{
-  Globalconf Globalconf::airSTP(us Nf_,d freq,d kappa){
-    return Globalconf(Nf_,freq,"air",293.15,101325,kappa);
+  Globalconf Globalconf::airSTP(us Nf_,d freq){
+    return Globalconf(Nf_,freq,"air",TSTP,pSTP);
   }
-  Globalconf::Globalconf(us Nf,d freq,const string& gasstring,d T0,d p0    \
-                         ,d kappa,bool driven):
-    driven(driven),
-    gas(gasstring)
+  Globalconf Globalconf::heliumSTP(us Nf_,d freq){
+    return Globalconf(Nf_,freq,"helium",TSTP,pSTP);
+  }
+  Globalconf::Globalconf(us Nf,d freq,const string& gasstring,d T0,d p0):
+    gas_(gasstring)
   {
     // Sanity checks
     assert(2*number_pi*freq>MINOMG && 2*number_pi*freq<MAXOMG);
     assert(Nf<MAXNF);
     assert(T0<2000 && T0>0);
     assert(p0>0);
-    assert(Mass>=0);
-    assert(kappa>0);
     // End sanity checks
 
-    this->p0=p0;
-    this->T0=T0;
-    this->kappa=kappa;
+    p0_=p0;
+    T0_=T0;
 
-    // Initialize FFT matri
+    // Initialize FFT matrices
     set(Nf,freq);
     TRACE(10,"Globalconf constructor done");
-    
   }
   
   void Globalconf::show() const {
-    cout << "------- Globalconf configuration ------ \n"        \
-         << "------- Nf             : "<< Nf_ <<"\n"                       \
-         << "------- Base frequency : " << omg/2/number_pi << " Hz\n"       \
-         << "------- Gas            : " << getGas() << "\n"                 \
-         << "------- p0             : " << p0 << " [Pa] \n"                 \
-         << "------- T0             : " << T0 << " [K] \n"                  \
-         << "------- rho0           : " << rho0() << " [kg/m^3] \n"         \
-         << "------- kappa:         : " << kappa << "\n"                    \
-         << "------- c0:            : " << c0() << "\n" ;
+    cout << "------- Globalconf configuration ------ \n";        
+    cout << "------- Nf             : "<< Nf_ <<"\n";
+    cout << "------- Base frequency : " << omg/2/number_pi << " Hz\n";           
+    cout << "------- Gas            : " << string(gas_) << "\n";          
+    cout << "------- p0             : " << p0_ << " [Pa] \n";                 
+    cout << "------- T0             : " << T0_ << " [K] \n";
+    cout << "------- rho0           : " << rho0() << " [kg/m^3] \n";
+    cout << "------- c0:            : " << c0() << "\n";
 
   }
   void Globalconf::setNf(us Nf){

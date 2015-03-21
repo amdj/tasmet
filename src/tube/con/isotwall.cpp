@@ -99,7 +99,7 @@ namespace tube{
       pb=&vertex->pR();
     }    
     // Compute error on state eq derivative
-    vd stateer=(*pb)(); stateer(0)+=gc->p0;
+    vd stateer=(*pb)(); stateer(0)+=gc->p0();
     stateer+=-vertex->extrapolateQuant(physquant::rhoRT);
     VARTRACE(30,stateer);
     // Add all individual error parts to vector

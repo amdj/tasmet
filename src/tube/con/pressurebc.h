@@ -12,9 +12,10 @@ namespace tasystem{
 
 
 namespace tube{
-
+  #ifndef SWIG
   variable::var coldtemp(const variable::var&);
-
+  #endif
+  
   class PressureBc:public TubeBc {
     us firsteqnr;
     PrescribeQty prescribep;			// Pressure boundary condition

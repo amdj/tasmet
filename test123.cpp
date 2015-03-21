@@ -15,13 +15,12 @@
 #include "solver.h"
 #include "grid.h"
 
-#include <boost/archive/text_oarchive.hpp>
 
 using namespace std;
 using namespace segment;
 using namespace tasystem;
 using namespace tube;
-TRACETHIS;
+
 
 int main(int argc,char* argv[]) {
   // clearConsole();
@@ -71,7 +70,7 @@ int main(int argc,char* argv[]) {
 
   Globalconf gc=air;
 
-  HopkinsLaminarDuct t1(geom1,gc.T0,gc.T0);
+  HopkinsLaminarDuct t1(geom1,gc.T0(),gc.T0());
 
   // IsentropicTube t1(geom1);
   variable::var pL(gc,0);
@@ -90,9 +89,9 @@ int main(int argc,char* argv[]) {
   // sys.setTimingConstraint(0,0,3,2);
   // sys.setAmplitudeDof(0,0,3,1);
   TaSystem sys(air);
-  sys.addSeg(t1); 
-  sys.addConnector(first);
-  sys.addConnector(second);
+  sys+=t1;
+  sys+=first;
+  sys+=second;
   // sys.show(20);
 
   Solver sol(sys);

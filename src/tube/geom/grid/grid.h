@@ -6,8 +6,9 @@
 #include <assert.h>
 
 namespace tube{
+  #ifndef SWIG
   SPOILNAMESPACE
-
+  #endif
 
   class BoundaryLayer;
   class Grid{
@@ -27,10 +28,12 @@ namespace tube{
     ~Grid();
     // In these functions, we give the number of gridpoints (n) in the
     // boundary layer, plus the size of the layer (Lbl)
-    void setLeftBl(const BoundaryLayer& blleft); // Exponential growing
+    #ifndef SWIG
     // left boundary
-    void setRightBl(const BoundaryLayer& blright); // Exponential growing
+    void setLeftBl(const BoundaryLayer& blleft); // Exponential growing
     // right boundary
+    void setRightBl(const BoundaryLayer& blright); // Exponential growing
+    #endif 
 
     bool isLeftBl() const { return bL?true:false;}
     bool isRightBl() const { return bR?true:false;}

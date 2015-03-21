@@ -8,7 +8,9 @@
 #include "pos.h"
 
 namespace tube {
+  #ifndef SWIG
   SPOILNAMESPACE;
+  #endif
 
   class Geom{
     Grid grid_;
@@ -23,8 +25,10 @@ namespace tube {
 
   public:
     virtual ~Geom(){}
+    #ifndef SWIG
     LocalGeom localGeom(us i) const;	// Get a local geometry for a
                                         // certain vertex
+    #endif
     const Grid& grid() const{return grid_;}
     virtual void show() const=0;
     virtual d S(us i) const=0;		 // Cross sectional area as a function of x

@@ -33,8 +33,8 @@ namespace tube{
     Ts_=var(*gc);
 
     // Initialize temperature and density variables to something sane
-    T_.set(0,gc->T0);
-    Ts_.set(0,gc->T0);
+    T_.set(0,gc->T0());
+    Ts_.set(0,gc->T0());
     rho_.set(0,gc->rho0());    
 
     // Fill vars vector

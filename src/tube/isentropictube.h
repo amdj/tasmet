@@ -13,7 +13,6 @@
 #include "math_common.h"
 
 namespace tube{
-  SPOILNAMESPACE
 
   class IsentropicTube:public Tube
   {
@@ -23,12 +22,14 @@ namespace tube{
   public:
     IsentropicTube(const Geom& geom);
     IsentropicTube(const IsentropicTube&);
+    virtual segment::Seg* copy() const {TRACE(10,"IsentropicTube copy()");return new IsentropicTube(*this);}
+    #ifndef SWIG
     virtual const DragResistance& getDragResistance() const {return nodrag;}
     virtual const HeatSource& getHeatSource() const {return noheat;}
     virtual string getName() const {return string("IsentropicTube");}
-    virtual segment::Seg* copy() const {TRACE(10,"IsentropicTube copy()");return new IsentropicTube(*this);}
     virtual bool init(const tasystem::TaSystem&);
     void cleanup();
+    #endif
     virtual ~IsentropicTube();
   };
   

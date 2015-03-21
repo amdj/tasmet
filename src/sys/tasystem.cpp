@@ -13,9 +13,9 @@ namespace tasystem{
 
   TaSystem::TaSystem(const Globalconf& gc):gc(gc){
     TRACE(14,"TaSystem::TaSystem(gc)");
-    this->gc.setDriven(true);
+    this->setDriven(true);
   }
-  TaSystem::TaSystem(const TaSystem& o)
+  TaSystem::TaSystem(const TaSystem& o):gc(o.gc)
   {
     TRACE(14,"TaSystem::TaSystem(TaSystem&)");
     copyTaSystem(o);
@@ -33,13 +33,13 @@ namespace tasystem{
     for(us i=0;i<o.nSegs();i++) {
       TRACE(14,"Copying segment "<<i << "...");
       assert(o.getSeg(i)!=NULL);
-      addSeg(*o.getSeg(i));
+      (*this)+=(*o.getSeg(i));
       assert(nSegs()==i+1);
     }
     for(us i=0;i<o.nConnectors();i++) {
       TRACE(14,"Copying connector "<<i << "...");
       assert(o.connectors[i]);
-      addConnector(*o.connectors[i]);
+      (*this)+=(*o.connectors[i]);
       assert(nConnectors()==i+1);
     }
     // segConnections=o.segConnections;
@@ -65,24 +65,19 @@ namespace tasystem{
 
     hasInit=false;
   }
-  void TaSystem::addSeg(const std::vector<Seg*>& segs){
-    TRACE(14,"TaSystem::addSeg()");
-    for(auto seg=segs.begin();seg!=segs.end();seg++){
-      if(*seg!=NULL) 
-        addSeg(**seg);
-    }
-  }
-  void TaSystem::addSeg(const Seg& seg){
+  TaSystem& TaSystem::operator+=(const Seg& seg){
     TRACE(14,"TaSystem::addseg()");
     hasInit=false;
     segs.emplace_back(seg.copy());
     segs[nSegs()-1]->setNumber(nSegs()-1);
+    return *this;
   }
-  void TaSystem::addConnector(const Connector& con){
-    TRACE(14,"TaSystem::addConnector()");
+  TaSystem& TaSystem::operator+=(const Connector& con){
+    TRACE(14,"TaSystem::operator+=()");
     hasInit=false;
     connectors.emplace_back(con.copy());
     connectors[nSegs()-1]->setNumber(nSegs()-1);
+    return *this;
   }
 
   Seg* TaSystem::getSeg(us i) const { return (*this)[i];}
@@ -135,7 +130,7 @@ namespace tasystem{
 
     // Do some post-sanity checks
     us Ndofs=getNDofs();
-    gc.setSys(this);
+
     TRACE(10,"Segment initialization done. Total NDofs:"<< Ndofs);
     if(Ndofs>MAXNDOFS)      {
       WARN("Way too many DOFS required: Ndofs=" <<Ndofs << ". Initialization failed\n");
