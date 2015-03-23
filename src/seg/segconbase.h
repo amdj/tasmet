@@ -15,6 +15,7 @@ namespace segment{
   SPOILNAMESPACE
 
   class SegConBase{
+    bool init_=false;
     static us globnr_;
     int number=-1;		// Required for TaSystem. Not used in
     // any segment/connector code

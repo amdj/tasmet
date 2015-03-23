@@ -37,20 +37,21 @@ namespace tube{
 
 
   protected:
+    Tube(const Tube& other);
     std::vector<TubeVertex*> vvertex;
   public:
-    Tube(const Geom& geom);
-    Tube(const Tube& other); // Copy constructor copies everything!
+    Tube(const Geom& geom) throw(std::exception);
+
     Tube& operator=(const Tube&)=delete; // no copies allowed
-						   // to some segment
-						   // on right side
     virtual ~Tube();          // Define this class as abstract
+
     const Geom& geom() const;
-    vd Htot() const;
+    vd Htot() const throw(std::exception);
     void setResVar(varnr,us i,us freqnr,d value);
     void setResVar(varnr,us freqnr,const vd& value);
-    vd getResAt(varnr,us freqnr) const throw(std::exception); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
-    vd getErrorAt(us eqnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
+    vd getValue(varnr,us freqnr) const throw(std::exception); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
+    vc getValueC(varnr,us freqnr) const throw(std::exception); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
+    vd getErrorAt(us eqnr,us freqnr) const throw(std::exception); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
 
     // Methods not exposed to swig
     #ifndef SWIG

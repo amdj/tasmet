@@ -38,7 +38,9 @@ namespace variable {
     var(const tasystem::Globalconf&);	// Initialize with zeros
     var(const tasystem::Globalconf&,double); // Initialize with one time-average value
     var(const tasystem::Globalconf&,const vd& data,bool adata=true); // Initialize with amplitudedata. With timedata if adata is set to false
+    #ifndef SWIG
     var& operator=(const var&);			  // Copy assignment operator
+    #endif
     ~var(){}
     // var operator()(const var&); //Copy constructor
     // Get methods

@@ -152,11 +152,29 @@ namespace tube {
     TRACE(3,"Tube::rightVertex()");
     return static_cast<const TubeBcVertex&>(**(vvertex.end()-1));
   }
-  vd Tube::getResAt(varnr v,us freqnr) const throw(std::exception) {
-    TRACE(10,"Tube::getResAt("<<(int)v<<","<<freqnr<<")");
+  vd Tube::getValue(varnr v,us freqnr) const throw(std::exception) {
+    TRACE(10,"Tube::getValue("<<(int)v<<","<<freqnr<<")");
+    if(!hasInit)
+      throw MyError("Not initialized");
+    if(freqnr>=gc->Ns())
+      throw MyError("Illegal frequency number");
     const us nCells=geom().nCells();
     // VARTRACE(15,getNDofs());
     vd res(nCells+2);
+    for(us i=0;i<nCells;i++){
+      res(i+1)=vvertex[i]->getRes(v,freqnr);
+    }
+    res(0)=leftVertex().getResBc(v,freqnr);
+    res(nCells+1)=rightVertex().getResBc(v,freqnr);
+    return res;
+  }
+  vc Tube::getValueC(varnr v,us freqnr) const throw(std::exception) {
+    TRACE(10,"Tube::getResAt("<<(int)v<<","<<freqnr<<")");
+    const us nCells=geom().nCells();
+    if(freqnr>gc.Nf())
+      throw MyError("Illegal frequency number");
+    // VARTRACE(15,getNDofs());
+    vc res(nCells+2);
     for(us i=0;i<nCells;i++){
       res(i+1)=vvertex[i]->getRes(v,freqnr);
     }
