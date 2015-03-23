@@ -6,7 +6,7 @@
 #include "globalconf.h"
 #include "jacobian.h"
 #include "tubebcvertex.h"
-#include "varnr.h"
+#include "constants.h"
 #include "state.h"
 
 namespace tube{

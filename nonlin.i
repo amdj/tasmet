@@ -47,7 +47,7 @@ typedef std::complex<double> c;
 
  // Segments
 %include "seg.h"
-%include "varnr.h"
+%include "constants.h"
 %include "tube.h"
 %include "isentropictube.h"
 

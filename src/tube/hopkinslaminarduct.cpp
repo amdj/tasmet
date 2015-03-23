@@ -3,7 +3,8 @@
 #include "bessel.h"
 #include "geom.h"
 #include "tubevertex.h"
-#include "varnr.h"
+#include "constants.h"
+
 namespace tube{
   using tasystem::Globalconf;
   using tasystem::TaSystem;

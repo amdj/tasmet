@@ -10,12 +10,11 @@
 #pragma once
 #ifndef _SYSTEM_H_
 #define _SYSTEM_H_
-#define MAXNDOFS 600000
+
 #include <memory>
 #include "vtypes.h"
 #include "globalconf.h"
 #include "segconnection.h"
-#define MAXSEGS 30
 #include "arma_eigen.h"
 
 #ifndef SWIG
@@ -52,7 +51,9 @@ namespace tasystem{
     TaSystem():gc(Globalconf::airSTP(0,100)){}
     TaSystem(const Globalconf& g);
     TaSystem(const TaSystem& o);
+    #ifndef SWIG
     TaSystem& operator=(const TaSystem& other);
+    #endif
     virtual ~TaSystem();
     virtual TaSystem* copy() const {return new TaSystem(*this);}
     virtual bool init();
@@ -70,6 +71,7 @@ namespace tasystem{
     virtual evd error();			// Total error vector
     virtual evd getRes();			// Extract result vector
     virtual esdmat jac(d dummy=-1);		// Return Jacobian matrix
+
 
     #ifndef SWIG
     void setRes(const evd& res);

@@ -1,7 +1,8 @@
 #include "globalconf.h"
+#include "constants.h"
+#include "exception.h"
 
-// The tracer
-TRACETHIS
+
 
 void setLogger(int loglevel){
   TRACE(10,"Setlogger");
@@ -9,25 +10,30 @@ void setLogger(int loglevel){
 }
 
 namespace tasystem{
-  Globalconf Globalconf::airSTP(us Nf_,d freq){
-    return Globalconf(Nf_,freq,"air",TSTP,pSTP);
+  Globalconf Globalconf::airSTP(us Nf_,d freq) throw(std::exception){
+    return Globalconf(Nf_,freq,"air",constants::TSTP,constants::pSTP);
   }
-  Globalconf Globalconf::heliumSTP(us Nf_,d freq){
-    return Globalconf(Nf_,freq,"helium",TSTP,pSTP);
+  Globalconf Globalconf::heliumSTP(us Nf_,d freq) throw(std::exception){
+    return Globalconf(Nf_,freq,"helium",constants::TSTP,constants::pSTP);
   }
-  Globalconf::Globalconf(us Nf,d freq,const string& gasstring,d T0,d p0):
+  Globalconf::Globalconf(us Nf,d freq,const string& gasstring,d T0,d p0)
+    throw(std::exception)
+    :
     gas_(gasstring)
   {
     // Sanity checks
-    assert(2*number_pi*freq>MINOMG && 2*number_pi*freq<MAXOMG);
-    assert(Nf<MAXNF);
-    assert(T0<2000 && T0>0);
-    assert(p0>0);
+    if(2*number_pi*freq>constants::minomg && 2*number_pi*freq<constants::maxomg)
+      throw MyError("Illegal frequency given");
+    if(Nf>=constants::maxNf)
+      throw("Too large number of frequencies given");
+    if(T0>constants::maxT || T0< constants::minT)
+      throw MyError("Illegal reference temperature given");
+    if(p0>constants::maxp || p0< constants::minp)
+      throw MyError("Illegal reference pressure given");
     // End sanity checks
 
     p0_=p0;
     T0_=T0;
-
     // Initialize FFT matrices
     set(Nf,freq);
     TRACE(10,"Globalconf constructor done");

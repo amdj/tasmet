@@ -12,36 +12,25 @@
 
 #include "vtypes.h"
 #include "gas.h"
-#include <assert.h>
-
+#include <exception>
 
 void setLogger(int loglevel);
 
 namespace tasystem{
 
-  const us MAXNF=30;
-  const d MINOMG=1e-3;
-  const d MAXOMG=1e5;
-
-  const d pSTP=101325;
-  const d TSTP=293.15;
-
   #ifndef SWIG
   SPOILNAMESPACE
   #endif
   class Globalconf{
-    d Mass=0;			/* Fluid mass in the system (should remain constant) */
     d omg;		// The "base" frequency in rad/s
-    bool driven=true;
     us Nf_;			// Number of frequencies to solve for
     us Ns_;			// Corresponding number of time samples
     d T0_,p0_;			/* Reference temperature and pressure (used to initialize a lot of variables. */
     gases::Gas gas_;
-
   public:
-    Globalconf(us Nf,d freq,const string& gasstring,d T0,d p0);
-    static Globalconf airSTP(us Nf,d freq);
-    static Globalconf heliumSTP(us Nf,d freq);
+    Globalconf(us Nf,d freq,const string& gasstring,d T0,d p0) throw(std::exception);
+    static Globalconf airSTP(us Nf,d freq) throw(std::exception);
+    static Globalconf heliumSTP(us Nf,d freq) throw(std::exception);
     
     const us& Nf() const {return Nf_;}
     const us& Ns() const {return Ns_;}    
@@ -71,9 +60,6 @@ namespace tasystem{
 
     void setGas(const string& mat){gas_=gases::Gas(mat);}
     const gases::Gas& gas() const {return gas_;}    
-
-    void setMass(d mass){Mass=mass;}
-    d getMass() const {return Mass;}
 
     void show() const;
 

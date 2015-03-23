@@ -10,11 +10,7 @@
 
 namespace tube{
   #ifndef SWIG
-  #define MINGP 4
-  #define MAXGP 5000
   SPOILNAMESPACE
-  const int mingp=MINGP;
-  const int maxgp=MAXGP;
   #undef MINGP
   #undef MAXGP
 
@@ -36,7 +32,9 @@ namespace tube{
     Grid(d L,d dx):Grid((unsigned int) int(ceil(L/dx))+1,L){} // Counts gp based on ceil(L/dx)
     // Copy constructor can just copy all
     Grid(const Grid& g);
+    #ifndef SWIG
     Grid& operator=(const Grid& g);
+    #endif
     ~Grid();
     // In these functions, we give the number of gridpoints (n) in the
     // boundary layer, plus the size of the layer (Lbl)

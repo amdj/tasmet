@@ -13,8 +13,8 @@
 #include "solidenergy.h"
 #include "isentropic.h"
 
+#include "constants.h"
 
-#include "varnr.h"
 namespace tasystem{class Jacobian;}
 namespace tube {    
 

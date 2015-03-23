@@ -8,7 +8,7 @@ add_definitions(-DTRACERNAME=nltracer)
 #           work on some systems where the assembler is unable to
 #           read from a pipe; but the GNU assembler has no troubl.
 
-
+AUX_SOURCE_DIRECTORY(src/ src)
 AUX_SOURCE_DIRECTORY(src/seg seg)
 AUX_SOURCE_DIRECTORy(src/sol sol)
 AUX_SOURCE_DIRECTORy(src/sys sys)
@@ -27,13 +27,14 @@ AUX_SOURCE_DIRECTORy(src/tube/con con)
 #   ${varsources} ${commonsources}
 #   ${tubeeq}  ${tubebc} ${tubedrag} ${gridsources}
 #   )
-set (nonlinear_SRC ${seg} ${sol} ${sys} ${var} ${tube}
+set (nonlinear_SRC ${src} ${seg} ${sol} ${sys} ${var} ${tube}
   #bc
   ${con} ${drag} ${eq} ${geom} ${grid} ${heat} ${vertex}
   )
 
 include_directories(
   swig
+  src
   src/sys
   src/sol
   src/seg

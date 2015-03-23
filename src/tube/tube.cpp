@@ -12,6 +12,7 @@
 #include "interpolate.h"
 #include "globalconf.h"
 #include "geom.h"
+#include "exception.h"
 
 // Tried to keep the method definition a bit in order in which a
   // tube is created, including all its components. First a tube is
@@ -29,7 +30,8 @@ namespace tube {
   using tasystem::Jacobian;
 
 
-  Tube::Tube(const Geom& geom):Seg(),geom_(geom.copy()){
+  Tube::Tube(const Geom& geom) throw(std::exception)
+    :Seg(),geom_(geom.copy()){
     TRACE(13,"Tube constructor()...");
   }
   Tube::Tube(const Tube& other):
@@ -154,7 +156,7 @@ namespace tube {
   }
   vd Tube::getValue(varnr v,us freqnr) const throw(std::exception) {
     TRACE(10,"Tube::getValue("<<(int)v<<","<<freqnr<<")");
-    if(!hasInit)
+    if(!init_)
       throw MyError("Not initialized");
     if(freqnr>=gc->Ns())
       throw MyError("Illegal frequency number");
@@ -171,7 +173,7 @@ namespace tube {
   vc Tube::getValueC(varnr v,us freqnr) const throw(std::exception) {
     TRACE(10,"Tube::getResAt("<<(int)v<<","<<freqnr<<")");
     const us nCells=geom().nCells();
-    if(freqnr>gc.Nf())
+    if(freqnr>gc->Nf())
       throw MyError("Illegal frequency number");
     // VARTRACE(15,getNDofs());
     vc res(nCells+2);

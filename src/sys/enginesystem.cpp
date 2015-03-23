@@ -36,7 +36,7 @@ namespace tasystem{
   void EngineSystem::show(us detailnr) {
     checkInit();
     cout << "########################## Showing EngineSystem...\n";
-    cout << "Target system mass: " << gc.getMass() << "\n";
+    cout << "Target system mass: " << getMass() << "\n";
     TaSystem::show(detailnr);
   }
   bool  EngineSystem::init(){
@@ -45,8 +45,8 @@ namespace tasystem{
       return false;
     // Only set initial mass when it is not already set by user by
     // using setInitialMass()
-    if(gc.getMass()==0)
-      gc.setMass(getInitialMassFromGc());
+    if(getMass()==0)
+      setMass(getInitialMassFromGc());
     return true;
   }
   d EngineSystem::getInitialMassFromGc() const {
@@ -220,7 +220,7 @@ namespace tasystem{
     // Strip first equation (for now, assuming it is a continuity
     d curmass=getCurrentMass();
     TRACE(20,"Current mass in system: "<< curmass << " [kg] \n");
-    error(MASSEQ)=curmass-gc.getMass();
+    error(MASSEQ)=curmass-getMass();
     return error;
   }
   evd EngineSystem::getRes(){

@@ -9,7 +9,7 @@
 #ifndef TUBE_H_
 #define TUBE_H_
 #include "seg.h"
-#include "varnr.h"
+#include "constants.h"
 #include "drag.h"
 #include "heat.h"
 

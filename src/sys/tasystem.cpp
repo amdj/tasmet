@@ -133,7 +133,7 @@ namespace tasystem{
     us Ndofs=getNDofs();
 
     TRACE(10,"Segment initialization done. Total NDofs:"<< Ndofs);
-    if(Ndofs>MAXNDOFS)      {
+    if(Ndofs>constants::maxndofs)      {
       WARN("Way too many DOFS required: Ndofs=" <<Ndofs << ". Initialization failed\n");
       return false;
     }

@@ -4,7 +4,7 @@
 
 #include "tubevertex.h"
 #include "var.h"
-#include "varnr.h"
+#include "constants.h"
 #include "pos.h"
 
 namespace segment{

@@ -1,18 +1,19 @@
 #include "grid.h"
 #include "boundarylayer.h"
 #include "exception.h"
+#include "constants.h"
 
 namespace tube{
   const string mingpmsg = string ("Given number of gridpoints is too small. Minimum gp is ")
-    +std::to_string(mingp) + ".";
-  const string maxgpmsg=string("Given number of gridpoints is too large. Maximum gp is "+std::to_string(maxgp)+".");
+    +std::to_string(constants::mingp) + ".";
+  const string maxgpmsg=string("Given number of gridpoints is too large. Maximum gp is "+std::to_string(constants::maxgp)+".");
 
   Grid::Grid(us gp,d L) throw(std::exception)
     :gp(gp),L(L) {
     TRACE(15,"Grid::Grid()");
-    if(gp<mingp)
+    if(gp<constants::mingp)
       throw MyError(maxgpmsg);
-    else if(gp>maxgp)
+    else if(gp>constants::maxgp)
       throw MyError(maxgpmsg);
     if(L<=0){
       throw MyError("Illegal length chosen.");

@@ -28,7 +28,9 @@ namespace tasystem{
     Solver(const TaSystem& tasys);
     TaSystem& sys() { return *tasystem;}
     Solver(const Solver& other);
+    #ifndef SWIG
     Solver& operator=(const Solver& other);
+    #endif
     void stop();
     void solve(us maxiter=5000,d funtol=1e-8,d reltol=1e-6,d mindampfac=1e-2,d maxdampfac=1,bool wait=true);
     #ifndef SWIG

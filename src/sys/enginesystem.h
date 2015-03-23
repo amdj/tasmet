@@ -13,6 +13,7 @@ namespace tasystem{
   class TripletList;
   
   class EngineSystem:public TaSystem{
+    d mass_=0;
     PickADof tc;		    // Timing constraint
     PickADof av;		    // Reference amplitude value
     d getInitialMassFromGc() const; //
@@ -40,12 +41,14 @@ namespace tasystem{
     vd dmtotdx() const;
     vd domg();
     
+    void setMass(d mass){mass_=mass;}
+    d getMass() const {return mass_;}
+
+
     virtual bool init();
     virtual void show(us detailnr=0);
     // If user decides to set a "custom mass" in the system, which does
     // not correspond to rho0*TotalFluidVolume
-    void setInitialMass(d mass) {gc.setMass(mass);} // Check for
-						    // nonzero mass
   };
 
 } // namespace tasystem
