@@ -22,7 +22,7 @@ namespace tasystem{
     gas_(gasstring)
   {
     // Sanity checks
-    if(2*number_pi*freq>constants::minomg && 2*number_pi*freq<constants::maxomg)
+    if(2*number_pi*freq<constants::minomg && 2*number_pi*freq>constants::maxomg)
       throw MyError("Illegal frequency given");
     if(Nf>=constants::maxNf)
       throw("Too large number of frequencies given");

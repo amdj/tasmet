@@ -20,7 +20,7 @@ namespace tube{
       return false;
     Uiszero.setGc(*gc); 
     drhodxiszero.setGc(*gc);
-    init_=true;
+    setInit(true);
     return true;
   }
   void AdiabaticWall::updateNf(){

@@ -37,6 +37,7 @@ namespace tube {
       TubeVertex& cvertex=**vertex;
       cvertex.setIsentropic();
     }
+    setInit(true);
     return true;
   }
 

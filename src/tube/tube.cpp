@@ -156,8 +156,7 @@ namespace tube {
   }
   vd Tube::getValue(varnr v,us freqnr) const throw(std::exception) {
     TRACE(10,"Tube::getValue("<<(int)v<<","<<freqnr<<")");
-    if(!init_)
-      throw MyError("Not initialized");
+    checkInit();
     if(freqnr>=gc->Ns())
       throw MyError("Illegal frequency number");
     const us nCells=geom().nCells();
@@ -173,18 +172,14 @@ namespace tube {
   vc Tube::getValueC(varnr v,us freqnr) const throw(std::exception) {
     TRACE(10,"Tube::getResAt("<<(int)v<<","<<freqnr<<")");
     const us nCells=geom().nCells();
-    if(freqnr>gc->Nf())
+    if(freqnr>gc->Nf() || freqnr<1)
       throw MyError("Illegal frequency number");
     // VARTRACE(15,getNDofs());
     vc res(nCells+2);
-    for(us i=0;i<nCells;i++){
-      res(i+1)=vvertex[i]->getRes(v,freqnr);
-    }
-    res(0)=leftVertex().getResBc(v,freqnr);
-    res(nCells+1)=rightVertex().getResBc(v,freqnr);
+    res=getValue(v,2*freqnr-1)+I*getValue(v,2*freqnr);
     return res;
   }
-  vd Tube::getErrorAt(us eqnr,us freqnr) const{
+  vd Tube::getErrorAt(us eqnr,us freqnr) const throw(std::exception){
     const us& nCells=getNCells();
     vd er(nCells,fillwith::zeros);
     assert(eqnr<getNDofs());
@@ -209,7 +204,7 @@ namespace tube {
     }
   }
 
-  vd Tube::Htot() const{
+  vd Tube::Htot() const throw(std::exception){
     TRACE(15,"Tube::Htot()");
     
     us nvertex=vvertex.size();

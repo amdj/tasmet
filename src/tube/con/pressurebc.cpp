@@ -69,7 +69,7 @@ namespace tube{
     prescribep.setGc(*gc);
     prescribeT.setGc(*gc);
     prescribeTs.setGc(*gc); 
-    init_=true;
+    setInit(true);
     return true;
   }
   void PressureBc::setEqNrs(us firsteqnr){

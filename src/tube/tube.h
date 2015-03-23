@@ -54,6 +54,8 @@ namespace tube{
     vd getErrorAt(us eqnr,us freqnr) const throw(std::exception); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
 
     // Methods not exposed to swig
+    virtual vd error() const;
+
     #ifndef SWIG
     us getNCells() const;
     virtual bool init(const tasystem::TaSystem&);
@@ -78,7 +80,6 @@ namespace tube{
                                                // harmonic amplitudes
                                                // to zero
     virtual void domg(vd& tofill) const;
-    virtual vd error() const;
 
     virtual vd getRes() const;
     virtual d getRes(us dofnr) const;

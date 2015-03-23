@@ -38,6 +38,9 @@ typedef std::complex<double> c;
 %include "conetube.h"
 %include "pos.h"
 
+
+%include "segconbase.h"
+
  // Connectors
 %include "connector.h"
 %include "tubebc.h"

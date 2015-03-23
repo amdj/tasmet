@@ -2,7 +2,7 @@
 #ifndef _SEGCONBASE_H_
 #define _SEGCONBASE_H_
 #include "vtypes.h"
-
+#include "exception.h"
 
 
 namespace tasystem{
@@ -12,7 +12,9 @@ namespace tasystem{
 }
 
 namespace segment{
+  #ifndef SWIG
   SPOILNAMESPACE
+  #endif
 
   class SegConBase{
     static us globnr_;
@@ -20,7 +22,6 @@ namespace segment{
     // any segment/connector code
     SegConBase& operator=(const SegConBase&);
     std::string name_;
-  protected:
     bool init_=false;
   public:
     const tasystem::Globalconf* gc=NULL;	// Global configuration of the system
@@ -28,6 +29,13 @@ namespace segment{
     SegConBase();
     SegConBase(const SegConBase&);
     virtual ~SegConBase(){}
+
+    void setInit(bool init){init_=init;}
+    bool isInit() const{return init_;}
+    void checkInit() const throw(std::exception) {if(!isInit()) throw MyError("Not initialized"); }
+    virtual vd error() const=0;
+
+    #ifndef SWIG
     // Get and set number
     void setNumber(us number) {this->number=number;} 
     const int& getNumber() const {return number;}
@@ -37,15 +45,13 @@ namespace segment{
     void setName(const std::string& name){ name_=name;} // This one is just the name
 
     virtual bool init(const tasystem::TaSystem&); // Implementation updates gc
-    bool isInit() const{return init_;}
 
     virtual void setEqNrs(us firstdofnr)=0;    
     virtual us getNEqs() const=0;    
-    virtual vd error() const=0;
     virtual void show(us) const=0;
     virtual void jac(tasystem::Jacobian&) const=0;
     virtual void updateNf()=0;  // Update nr of frequencies
-
+    #endif
   };
 
 } // namespace segment

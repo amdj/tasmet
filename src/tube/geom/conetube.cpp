@@ -4,7 +4,7 @@
 namespace tube{
   using segment::pos;
 
-  ConeTube::ConeTube(const Grid& g,d r1,d r2,bool blapprox)
+  ConeTube::ConeTube(const Grid& g,d r1,d r2,bool blapprox) throw(std::exception)
     :Geom(g,blapprox),rL(r1),rR(r2){
     TRACE(15,"ConeTube::ConeTube()");
     if(r1 <=0 || r2 <= 0)
