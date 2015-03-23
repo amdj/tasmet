@@ -23,6 +23,10 @@ namespace segment{
   class Seg;
   class Connector;
 }
+
+namespace tube{
+  class Tube;
+}
 #endif
 
 namespace tasystem{
@@ -58,29 +62,32 @@ namespace tasystem{
     us nConnectors() const {return connectors.size();}
     TaSystem& operator+=(const segment::Connector& c);
     TaSystem& operator+=(const segment::Seg& s);	// Add a segment to the
+    // system. It creates a copy
 
     void showJac(bool force=false);
 
     virtual void show(us detailnr=0);
     virtual evd error();			// Total error vector
     virtual evd getRes();			// Extract result vector
-    virtual void setRes(const vd& resvec);	// Set result vector
     virtual esdmat jac(d dummy=-1);		// Return Jacobian matrix
+
+    #ifndef SWIG
     void setRes(const evd& res);
+    #endif
+    virtual void setRes(const vd& resvec);	// Set result vector
+
     void setNf(us);
-
-    // system. It creates a copy
-    // and ads it to segs by emplace_back.
-
 
     // Reset amplitude data in higher harmonics
     void resetHarmonics();
     // void delseg(us n); // Not yet implemented.  Delete a segment
     // from the system (we have to determine how elaborated the API
     // has to be.)
-
+    tube::Tube* getTube(us i) const throw(std::exception);    
+    #ifndef SWIG                // The unsafe access methods
     segment::Seg* operator[](us i) const;    
     segment::Seg* getSeg(us i) const; // Easier for cython wrapping
+    #endif
     void setRes(const TaSystem& o);
     d getCurrentMass();	// Return current mass in system [kg]
     bool checkInit(){		// Often called simple method: inline

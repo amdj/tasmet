@@ -152,18 +152,13 @@ namespace tube {
     TRACE(3,"Tube::rightVertex()");
     return static_cast<const TubeBcVertex&>(**(vvertex.end()-1));
   }
-  vd Tube::getResAt(us varNr,us freqnr) const{
-    assert(varNr<NVARS);
-    return getResAt((varnr) varNr,freqnr);
-  }
-  vd Tube::getResAt(varnr v,us freqnr) const{
+  vd Tube::getResAt(varnr v,us freqnr) const throw(std::exception) {
     TRACE(10,"Tube::getResAt("<<(int)v<<","<<freqnr<<")");
     const us nCells=geom().nCells();
     // VARTRACE(15,getNDofs());
     vd res(nCells+2);
     for(us i=0;i<nCells;i++){
-      TubeVertex& cvertex=*static_cast<TubeVertex*>(vvertex[i]);
-      res(i+1)=cvertex.getRes(v,freqnr);
+      res(i+1)=vvertex[i]->getRes(v,freqnr);
     }
     res(0)=leftVertex().getResBc(v,freqnr);
     res(nCells+1)=rightVertex().getResBc(v,freqnr);
@@ -203,14 +198,6 @@ namespace tube {
       Htot(i)=vvertex[i]->Htot();
     }
     return Htot;
-  }
-  const TubeVertex& Tube::operator[](us i) const{
-    if(!isInit()){
-      WARN("Tube not initialized!");
-      abort();
-    }
-    assert(i<vvertex.size());
-    return *vvertex[i];
   }
 
   void Tube::show(us detailnr) const {

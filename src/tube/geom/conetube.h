@@ -2,9 +2,12 @@
 #ifndef _CONETUBE_H_
 #define _CONETUBE_H_
 
+#include <exception>
 #include "geom.h"
 #include "vertplates.h"
 #include "pos.h"
+
+
 namespace tube{
 
 
@@ -12,7 +15,7 @@ namespace tube{
  protected:
    d SL,SR,rL,rR;
  public:
-   ConeTube(const Grid& g,d r1,d r2,bool blapprox=true);
+   ConeTube(const Grid& g,d r1,d r2,bool blapprox=true) throw(std::exception);
    ConeTube(const ConeTube& t): ConeTube(t.grid(),t.rL,t.rR,t.isBlApprox()){}
    virtual d S(us i) const;
    virtual d phi(us i) const {return 1.0;}

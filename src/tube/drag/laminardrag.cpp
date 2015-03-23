@@ -14,7 +14,7 @@ namespace tube{
   dmat LaminarDragResistance::dUi(const TubeVertex& v) const { // Derivative of drag resistance to velocity
     TRACE(10,"LaminarDragResistance::dUi()");
     vc CResistance=ComplexResistancecoef(v);
-    variable::var resistance(v.gc);
+    variable::var resistance(*v.gc);
     resistance.set(CResistance);
     return resistance.freqMultiplyMat();
   }

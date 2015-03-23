@@ -47,6 +47,7 @@ include_directories(
   src/tube/eq
   src/tube/heat
   ../common
+  ../common/exception
   ../common/swig_files
   ../common/gas
   ../common/interpolate
@@ -64,9 +65,6 @@ add_executable(test123 test123.cpp)
 target_link_libraries(test123 nonlin_lib math_common armadillo)
 
 
-set_source_files_properties( ${swig_generated_file_fullname}
-      PROPERTIES COMPILE_FLAGS "-Wno-missing-field-initializers")
-
 # Does this work
 set_source_files_properties(nonlin.i PROPERTIES CPLUSPLUS ON)
 
@@ -75,6 +73,9 @@ set(SWIG_MODULE_nonlin_FILE_nonlin_EXTRA_DEPS
   ${PROJECT_SOURCE_DIR}/src/common/swig_files/arma_numpy.i
 )
 swig_link_libraries(nonlin nonlin_lib math_common ${PYTHON_LIBRARIES} armadillo)
+set_source_files_properties( ${swig_generated_file_fullname}
+      PROPERTIES COMPILE_FLAGS "-Wno-missing-field-initializers -Wno-self-assign -Wno-#warnings")
+
 
 # To execute the test directly
 # add_custom_command(TARGET test123 POST_BUILD COMMAND test123 )

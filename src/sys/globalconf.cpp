@@ -1,7 +1,13 @@
 #include "globalconf.h"
 
-
+// The tracer
 TRACETHIS
+
+void setLogger(int loglevel){
+  TRACE(10,"Setlogger");
+  TRACERNAME=loglevel;
+}
+
 namespace tasystem{
   Globalconf Globalconf::airSTP(us Nf_,d freq){
     return Globalconf(Nf_,freq,"air",TSTP,pSTP);

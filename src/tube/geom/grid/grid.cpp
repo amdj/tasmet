@@ -1,29 +1,22 @@
 #include "grid.h"
 #include "boundarylayer.h"
-#define MAXGP 50000
+#include "exception.h"
 
 namespace tube{
+  const string mingpmsg = string ("Given number of gridpoints is too small. Minimum gp is ")
+    +std::to_string(mingp) + ".";
+  const string maxgpmsg=string("Given number of gridpoints is too large. Maximum gp is "+std::to_string(maxgp)+".");
 
-  void testgp(us& gp){
-    if(gp<4 || gp >MAXGP)
-      {
-        WARN( "WARNING: Given number of gridpoints is "	\
-	     << gp<<", which is too small, or larger than MAXGP.\n"
-              << "MAXGP is: " << MAXGP << "."
-              "Number of gridpoints will be coerced to 4");
-        gp=4;
-      }
-  }
-
- 
-  Grid::Grid(us gp,d L):gp(gp),L(L) {
+  Grid::Grid(us gp,d L) throw(std::exception)
+    :gp(gp),L(L) {
     TRACE(15,"Grid::Grid()");
-    testgp(this->gp);
+    if(gp<mingp)
+      throw MyError(maxgpmsg);
+    else if(gp>maxgp)
+      throw MyError(maxgpmsg);
     if(L<=0){
-      WARN("Illegal length chosen. Will be coerced to unity.");
-      this->L=1;
+      throw MyError("Illegal length chosen.");
     }
-      
     makex();
   }
   Grid::Grid(const Grid& o):

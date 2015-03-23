@@ -113,8 +113,8 @@ namespace tube{
   vd HopkinsHeatSource::heat(const TubeVertex& v) const{
     TRACE(5,"HopkinsHeatSource::heat(v)");
     vd heat(v.gc->Ns(),fillwith::zeros);
-    variable::var htcoefH(v.gc);
-    variable::var htcoefQ(v.gc);
+    variable::var htcoefH(*v.gc);
+    variable::var htcoefQ(*v.gc);
     htcoefH.set(HeatTransferCoefH(v));
     htcoefQ.set(HeatTransferCoefQ(v));    
     // TRACE(100,"TminTs:\n"<<v.T()-v.Ts());
@@ -126,7 +126,7 @@ namespace tube{
   }
   dmat HopkinsHeatSource::dTi(const TubeVertex& v) const{
     TRACE(5,"HopkinsHeatSource::dTi(v)");
-    variable::var htcoefH(v.gc);
+    variable::var htcoefH(*v.gc);
     htcoefH.set(HeatTransferCoefH(v));
     dmat dTi(v.gc->Ns(),v.gc->Ns(),fillwith::zeros);
     dTi=htcoefH.freqMultiplyMat();
@@ -134,7 +134,7 @@ namespace tube{
   }
   dmat HopkinsHeatSource::dUi(const TubeVertex& v) const{
     TRACE(5,"HopkinsHeatSource::dUi(v)");
-    variable::var htcoefQ(v.gc);
+    variable::var htcoefQ(*v.gc);
     htcoefQ.set(HeatTransferCoefQ(v));
     dmat dUi(v.gc->Ns(),v.gc->Ns(),fillwith::zeros);
     dUi=htcoefQ.freqMultiplyMat()/v.localGeom().vSf;

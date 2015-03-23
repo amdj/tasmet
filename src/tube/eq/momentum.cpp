@@ -131,7 +131,7 @@ namespace tube{
     const WeightFactors& w=v.weightFactors();
     vd Ut=v.U().tdata();
     vd rhot=v.rho().tdata();
-    var res(v.gc);
+    var res(*v.gc);
     return fDFT*(rhot%Ut%Ut/w.vSf);
   }
 

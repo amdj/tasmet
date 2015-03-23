@@ -2,13 +2,17 @@
 #ifndef _VARNR_H_
 #define _VARNR_H_
 
-#define RHONR (0)
-#define UNR (1)
-#define TNR (2)
-#define PNR (3)
-#define TSNR (4)
+#ifndef SWIG
+const int RHONR=0;
+const int UNR=1;
+const int TNR=2;
+const int PNR=3;
+const int TSNR=4;
 // Number of variables
-#define NVARS (5)
+const int NVARS=5;
+#endif
+
+
 namespace tube{
 
   enum varnr{rho=RHONR,

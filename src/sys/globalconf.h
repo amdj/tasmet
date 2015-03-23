@@ -10,16 +10,18 @@
 #ifndef _GLOBALCONF_H_
 #define _GLOBALCONF_H_
 
-#include <memory>
 #include "vtypes.h"
 #include "gas.h"
 #include <assert.h>
-#define MAXNF (30)
-#define MINOMG (1e-3)
-#define MAXOMG (1e5)
+
+
+void setLogger(int loglevel);
 
 namespace tasystem{
 
+  const us MAXNF=30;
+  const d MINOMG=1e-3;
+  const d MAXOMG=1e5;
 
   const d pSTP=101325;
   const d TSTP=293.15;
@@ -54,8 +56,10 @@ namespace tasystem{
     d p0() const {return p0_;}
     vd omgvec;    
     void setNf(us);
+    #ifndef SWIG
     void set(us Nf,d freq);	// Set data for new frequency and
     // number of samples
+    #endif
     void setomg(d omg);
     void setfreq(d freq);
     dmat iDFT; //inverse discrete Fourier transform matrix

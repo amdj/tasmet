@@ -4,11 +4,23 @@
 
 #include "vtypes.h"
 #include <assert.h>
+#include <exception>
+
+
 
 namespace tube{
   #ifndef SWIG
+  #define MINGP 4
+  #define MAXGP 5000
   SPOILNAMESPACE
+  const int mingp=MINGP;
+  const int maxgp=MAXGP;
+  #undef MINGP
+  #undef MAXGP
+
+
   #endif
+
 
   class BoundaryLayer;
   class Grid{
@@ -20,7 +32,7 @@ namespace tube{
     void makeLeftBl();
     void makeRightBl();
   public:
-    Grid(us gp,d L);
+    Grid(us gp,d L) throw(std::exception);
     Grid(d L,d dx):Grid((unsigned int) int(ceil(L/dx))+1,L){} // Counts gp based on ceil(L/dx)
     // Copy constructor can just copy all
     Grid(const Grid& g);

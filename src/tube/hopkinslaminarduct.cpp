@@ -47,7 +47,7 @@ namespace tube{
     for(us i=0;i<vvertex.size();i++){
       T=Tmirror(i);
       TubeVertex& cvertex=*vvertex[i];
-      variable::var Tvar(gc);
+      variable::var Tvar(*gc);
       Tvar.set(0,T);
       cvertex.setResVar(varnr::T,Tvar);
       cvertex.setResVar(varnr::Ts,Tvar);

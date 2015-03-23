@@ -3,6 +3,7 @@
 #include "jacobian.h"
 #include "seg.h"
 #include "connector.h"
+#include "tube.h"
 
 namespace tasystem{
   using segment::Seg;
@@ -66,14 +67,14 @@ namespace tasystem{
     hasInit=false;
   }
   TaSystem& TaSystem::operator+=(const Seg& seg){
-    TRACE(14,"TaSystem::addseg()");
+    TRACE(14,"TaSystem::operator+=(Seg)");
     hasInit=false;
     segs.emplace_back(seg.copy());
     segs[nSegs()-1]->setNumber(nSegs()-1);
     return *this;
   }
   TaSystem& TaSystem::operator+=(const Connector& con){
-    TRACE(14,"TaSystem::operator+=()");
+    TRACE(14,"TaSystem::operator+=(Connector)");
     hasInit=false;
     connectors.emplace_back(con.copy());
     connectors[nSegs()-1]->setNumber(nSegs()-1);
@@ -299,7 +300,6 @@ namespace tasystem{
       getSeg(i)->setRes(*other.getSeg(i));
     }
     gc=other.gc;
-    
   }
   void TaSystem::resetHarmonics(){
     if(!checkInit())
@@ -313,7 +313,11 @@ namespace tasystem{
     vd res2=math_common::armaView(res);
     setRes(res2);
   }
-  
+  tube::Tube* TaSystem::getTube(us i)  const throw(std::exception){
+    segment::Seg* seg;
+    seg=segs.at(i);
+    return dynamic_cast<tube::Tube*>(seg);
+  }
   void TaSystem::setRes(const vd& Res){
     if(!checkInit())
       return;

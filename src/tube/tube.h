@@ -33,25 +33,23 @@ namespace tube{
 
   class Tube:public segment::Seg {
     void showVertices(us detailnr) const ;   
-    Geom* geom_;			// The geometry    
-    Tube& operator=(const Tube&); // no copies allowed
+    Geom* geom_=nullptr;			// The geometry    
+
 
   protected:
     std::vector<TubeVertex*> vvertex;
   public:
     Tube(const Geom& geom);
     Tube(const Tube& other); // Copy constructor copies everything!
-
+    Tube& operator=(const Tube&)=delete; // no copies allowed
 						   // to some segment
 						   // on right side
-
     virtual ~Tube();          // Define this class as abstract
     const Geom& geom() const;
     vd Htot() const;
     void setResVar(varnr,us i,us freqnr,d value);
     void setResVar(varnr,us freqnr,const vd& value);
-    vd getResAt(us,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
-    vd getResAt(varnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
+    vd getResAt(varnr,us freqnr) const throw(std::exception); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
     vd getErrorAt(us eqnr,us freqnr) const; // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
 
     // Methods not exposed to swig
@@ -63,7 +61,6 @@ namespace tube{
 
 
     us getNVertex() const {return vvertex.size();}    
-
     vd interpolateResMid(varnr v,d x) const; // Amplitude data vectors
     vd interpolateResStaggered(varnr v,d x) const; // Amplitude data!!
 

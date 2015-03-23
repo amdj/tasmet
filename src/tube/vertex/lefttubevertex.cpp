@@ -14,6 +14,7 @@ namespace tube{
     TubeBcVertex(i,t)
   {
     TRACE(15,"LeftTubeVertex::LeftTubeVertex()");
+    const tasystem::Globalconf& gc=*(this->gc);
     rhoL_=var(gc);
     UL_=var(gc);
     TL_=var(gc);

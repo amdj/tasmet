@@ -15,6 +15,7 @@ namespace tube{
     TubeBcVertex(i,t),
     sR(*this)
   {
+    const tasystem::Globalconf& gc=*(this->gc);
     // Initialize right wall variables
     rhoR_=var(gc);
     UR_=var(gc);

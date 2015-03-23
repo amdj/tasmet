@@ -1,11 +1,14 @@
 #include "conetube.h"
-
+#include "exception.h"
 
 namespace tube{
   using segment::pos;
 
-  ConeTube::ConeTube(const Grid& g,d r1,d r2,bool blapprox):Geom(g,blapprox),rL(r1),rR(r2){
+  ConeTube::ConeTube(const Grid& g,d r1,d r2,bool blapprox)
+    :Geom(g,blapprox),rL(r1),rR(r2){
     TRACE(15,"ConeTube::ConeTube()");
+    if(r1 <=0 || r2 <= 0)
+      throw MyError("Illegal radius given");
     SL=number_pi*pow(r1,2);
     SR=number_pi*pow(r2,2);
     setPrismatic(false);

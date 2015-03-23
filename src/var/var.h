@@ -26,7 +26,7 @@ namespace variable {
 
   class var {
     int dofnr=-1;
-    const tasystem::Globalconf* gc__=NULL;
+    const tasystem::Globalconf* gc_=NULL;
     vd timedata,amplitudedata;
     us Nf=0,Ns=0;
 
@@ -36,14 +36,13 @@ namespace variable {
     var() {}
     var(const var& o);
     var(const tasystem::Globalconf&);	// Initialize with zeros
-    var(const tasystem::Globalconf *g): var(*g){}
     var(const tasystem::Globalconf&,double); // Initialize with one time-average value
-    var(const tasystem::Globalconf&,const vd& timedata); // Initialize with timedata!!!!
+    var(const tasystem::Globalconf&,const vd& data,bool adata=true); // Initialize with amplitudedata. With timedata if adata is set to false
     var& operator=(const var&);			  // Copy assignment operator
     ~var(){}
     // var operator()(const var&); //Copy constructor
     // Get methods
-    const tasystem::Globalconf& gc() const {return *gc__;}
+    const tasystem::Globalconf& gc() const {return *gc_;}
     const d& operator()(us i) const;				   // Extract amplitude data result at specific frequency    
 
     const vd& operator()() const { return amplitudedata;} //Extract result
@@ -57,7 +56,7 @@ namespace variable {
     dmat diag() const {return diagmat(amplitudedata);}    
     //Set methods
 
-    void setGc(const tasystem::Globalconf& gc){gc__=&gc;}
+    void setGc(const tasystem::Globalconf& gc){gc_=&gc;}
     void resetHarmonics();
 
 

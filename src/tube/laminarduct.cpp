@@ -47,7 +47,7 @@ namespace tube {
   vd LaminarDuct::dragCoefVec(us freqnr) const{
     TRACE(15,"LaminarDuct::drag_vec()");
     vd dragcoef(getNCells());
-    var drag_varcoef(gc);
+    var drag_varcoef(*gc);
     for(us i=0;i<dragcoef.size();i++){
       const TubeVertex& vertex=getTubeVertex(i);
       drag_varcoef.set(laminardrag.ComplexResistancecoef(vertex));
