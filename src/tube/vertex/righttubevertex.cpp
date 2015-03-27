@@ -129,8 +129,8 @@ namespace tube{
                    *UtdL*UtdL*iDFT);
     return jacrow;
   }
-  d RightTubeVertex::getResBc(varnr v,us freqnr) const{
-    TRACE(15,"RightTubeVertex::getResBc()");
+  d RightTubeVertex::getValueBc(varnr v,us freqnr) const{
+    TRACE(15,"RightTubeVertex::getValueBc()");
     switch(v) {
     case varnr::rho: // Density
       return rhoR()(freqnr);

@@ -154,6 +154,12 @@ namespace tube {
     TRACE(3,"Tube::rightVertex()");
     return static_cast<const TubeBcVertex&>(**(vvertex.end()-1));
   }
+  vd Tube::getx() const {
+    TRACE(10,"Tube::getx()");
+    checkInit();
+    return geom().vx_vec();
+  }
+    
   vd Tube::getValue(varnr v,us freqnr) const throw(std::exception) {
     TRACE(10,"Tube::getValue("<<(int)v<<","<<freqnr<<")");
     checkInit();
@@ -161,12 +167,13 @@ namespace tube {
       throw MyError("Illegal frequency number");
     const us nCells=geom().nCells();
     // VARTRACE(15,getNDofs());
+
     vd res(nCells+2);
     for(us i=0;i<nCells;i++){
-      res(i+1)=vvertex[i]->getRes(v,freqnr);
+      res(i+1)=vvertex[i]->getValue(v,freqnr);
     }
-    res(0)=leftVertex().getResBc(v,freqnr);
-    res(nCells+1)=rightVertex().getResBc(v,freqnr);
+    res(0)=leftVertex().getValueBc(v,freqnr);
+    res(nCells+1)=rightVertex().getValueBc(v,freqnr);
     return res;
   }
   vc Tube::getValueC(varnr v,us freqnr) const throw(std::exception) {

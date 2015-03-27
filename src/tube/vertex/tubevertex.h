@@ -122,8 +122,8 @@ namespace tube {
     
     virtual vd getRes() const;			  // Extract current result
                                           // vector
-    d getRes(varnr,us freqnr) const;
-    variable::var getRes(varnr) const;
+    d getValue(varnr,us freqnr) const;
+    variable::var getValue(varnr) const;
     virtual void updateNf();
 
     // Convenience function, we need a lot of static (background

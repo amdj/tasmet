@@ -14,16 +14,21 @@
 #include "laminardrag.h"
 
 namespace tube{
+  #ifndef SWIG
   SPOILNAMESPACE
+  #endif
 
   class LaminarDuct:public Tube
   {
     LaminarDragResistance laminardrag;
     HeatSource heat;
-    LaminarDuct& operator=(const LaminarDuct&);
-  public:
+  protected:
     LaminarDuct(const Geom& geom);
     LaminarDuct(const LaminarDuct&);
+    LaminarDuct& operator=(const LaminarDuct&)=delete;
+    virtual ~LaminarDuct();
+  public:
+    #ifndef SWIG
     virtual bool init(const tasystem::TaSystem&);
     virtual const DragResistance& getDragResistance() const {return laminardrag;}
     virtual const HeatSource& getHeatSource() const=0; // Yup,
@@ -32,8 +37,8 @@ namespace tube{
     // version of the heat source. This version is more applicable to
     // wide tubes for arbitrary cross-sectional geometries.
     void cleanup();
-    virtual ~LaminarDuct();
     virtual vd dragCoefVec(us freqnr=1) const;
+    #endif
   };
 
   

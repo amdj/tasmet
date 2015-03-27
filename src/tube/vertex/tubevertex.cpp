@@ -163,9 +163,9 @@ namespace tube{
     }
     return res;
   }
-  d TubeVertex::getRes(varnr v,us freqnr) const{
-    TRACE(4,"TubeVertex::getRes()");
-    TRACE(4,"TubeVertex::getRes()");
+  d TubeVertex::getValue(varnr v,us freqnr) const{
+    TRACE(4,"TubeVertex::getValue()");
+    TRACE(4,"TubeVertex::getValue()");
     switch(v) {
     case varnr::rho: // Density
       return rho()(freqnr);
@@ -212,9 +212,9 @@ namespace tube{
       TRACE(4,"TubeVertex::setResVar(varnr,var)");
       setResVar(v,res());
   }
-  var TubeVertex::getRes(varnr v) const{
-    TRACE(4,"TubeVertex::getRes()");
-    TRACE(4,"TubeVertex::getRes()");
+  var TubeVertex::getValue(varnr v) const{
+    TRACE(4,"TubeVertex::getValue()");
+    TRACE(4,"TubeVertex::getValue()");
       switch(v) {
       case varnr::rho: // Density
         return rho();

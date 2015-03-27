@@ -14,6 +14,7 @@ namespace segment{
     Seg();
     Seg(const Seg& o);
     virtual ~Seg(){}            // We do not own the gc instance
+    Seg& operator=(const Seg&)=delete;
     bool operator==(const Seg& other) const {return (this==&other);}
     virtual segment::Seg* copy() const=0;
     // Pure virtual functions

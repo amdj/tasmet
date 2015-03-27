@@ -66,14 +66,13 @@ namespace tasystem{
     // system. It creates a copy
 
     void showJac(bool force=false);
-
+    vd Error() {return math_common::EigenToArma(error());}// Total error vector
     virtual void show(us detailnr=0);
+    #ifndef SWIG
     virtual evd error();			// Total error vector
     virtual evd getRes();			// Extract result vector
     virtual esdmat jac(d dummy=-1);		// Return Jacobian matrix
 
-
-    #ifndef SWIG
     void setRes(const evd& res);
     #endif
     virtual void setRes(const vd& resvec);	// Set result vector

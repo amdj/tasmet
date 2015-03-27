@@ -7,6 +7,7 @@
   #include "var.h"
   #include "tasystem.h"
   #include "grid.h"
+  #include "boundarylayer.h"
   #include "globalconf.h"
   #include "geom.h"
   #include "conetube.h"
@@ -14,7 +15,8 @@
   #include "adiabaticwall.h"  
   #include "tube.h"
   #include "isentropictube.h"
-
+  #include "laminarduct.h"
+  #include "hopkinslaminarduct.h"
   #include "solver.h"
 %}
 using std::string;
@@ -34,10 +36,10 @@ typedef std::complex<double> c;
 
 %include "tasystem.h"
 %include "grid.h"
+%include "boundarylayer.h"
 %include "geom.h"
 %include "conetube.h"
 %include "pos.h"
-
 
 %include "segconbase.h"
 
@@ -53,6 +55,7 @@ typedef std::complex<double> c;
 %include "constants.h"
 %include "tube.h"
 %include "isentropictube.h"
-
+%include "laminarduct.h"
+%include "hopkinslaminarduct.h"
  // Solver
 %include "solver.h"

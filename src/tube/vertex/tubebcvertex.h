@@ -25,7 +25,7 @@ namespace tube{
     virtual segment::pos getPos() const=0;
     vd extrapolateQuant(physquant) const;
     tasystem::JacRow dExtrapolateQuant(physquant) const;
-    virtual d getResBc(varnr,us freqnr) const=0;
+    virtual d getValueBc(varnr,us freqnr) const=0;
   private:
     virtual vd extrapolateMassFlow() const=0;
     virtual tasystem::JacRow dExtrapolateMassFlow() const=0;

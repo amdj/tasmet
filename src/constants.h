@@ -10,13 +10,6 @@
 #define CONSTANTS_H 1
 
 #ifndef SWIG
-const int RHONR=0;
-const int UNR=1;
-const int TNR=2;
-const int PNR=3;
-const int TSNR=4;
-// Number of variables
-const int NVARS=5;
 
 namespace constants {
   
@@ -44,21 +37,18 @@ namespace constants {
 
 namespace tube{
 
-  enum varnr{rho=RHONR,
-             U=UNR,
-             T=TNR,
-             p=PNR,
-             Ts=TSNR,
-             rhoL,
-             rhoR,
-             UL,
-             UR,
-             TL,
-             TR,
-             pL,
-             pR,
-             TsL,
-             TsR
+  #ifndef SWIG
+  const int RHONR=0;
+  const int UNR=1;
+  const int TNR=2;
+  const int PNR=3;
+  const int TSNR=4;
+  // Number of variables
+  const int NVARS=5;
+  #endif
+
+  enum varnr{rho=RHONR, U=UNR, T=TNR, p=PNR, Ts=TSNR,
+             rhoL, rhoR, UL, UR, TL, TR, pL, pR, TsL, TsR
   };
 
   enum physquant{massFlow,
@@ -71,4 +61,3 @@ namespace tube{
 }                // namespace tube
 
 #endif // CONSTANTS_H
-//////////////////////////////////////////////////////////////////////

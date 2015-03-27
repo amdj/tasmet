@@ -32,32 +32,45 @@ namespace tube{
   #endif
 
   class Tube:public segment::Seg {
+
     void showVertices(us detailnr) const ;   
-    Geom* geom_=nullptr;			// The geometry    
-
-
+    // Pointer to the geometry
+    Geom* geom_=nullptr;		
   protected:
+    // No copy assignments
+    Tube& operator=(const Tube&)=delete; // no copies allowed
+    // Copy constructor
     Tube(const Tube& other);
     std::vector<TubeVertex*> vvertex;
-  public:
     Tube(const Geom& geom) throw(std::exception);
-
-    Tube& operator=(const Tube&)=delete; // no copies allowed
+  public:
     virtual ~Tube();          // Define this class as abstract
 
+    // Return a reference to the Geometry instance
     const Geom& geom() const;
+
+    // Return the time-average total enthalpy flow (Watts)
     vd Htot() const throw(std::exception);
+
+    // Set individual at certain location for certain harmonic number
     void setResVar(varnr,us i,us freqnr,d value);
     void setResVar(varnr,us freqnr,const vd& value);
+    
+    // Return a vector of all dof positions, including the DOFS at the
+    // ends.
+    vd getx() const;
+    
+    // Return a value in form of an array with length equal to the
+    // length returned with getx(). 
     vd getValue(varnr,us freqnr) const throw(std::exception); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
     vc getValueC(varnr,us freqnr) const throw(std::exception); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
     vd getErrorAt(us eqnr,us freqnr) const throw(std::exception); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
 
+     us getNCells() const;
     // Methods not exposed to swig
     virtual vd error() const;
 
     #ifndef SWIG
-    us getNCells() const;
     virtual bool init(const tasystem::TaSystem&);
     void setRes(const segment::Seg& other); // To copy from a
     void show(us showvertices=0) const;

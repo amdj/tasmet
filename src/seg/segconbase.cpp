@@ -10,9 +10,9 @@ namespace segment{
   SegConBase::SegConBase(){
     TRACE(13,"SegConBase::SegConBase()");
     globnr_++;
-    std::stringstream s;
-    s << "Nameless" << globnr_;
-    name_=s.str();
+    string s="Nameless";
+    s+=std::to_string(globnr_);
+    name_=s;
   }
   SegConBase::SegConBase(const SegConBase& o):
     name_(o.name_)

@@ -1,3 +1,4 @@
+#include "exception.h"
 #include "boundarylayer.h"
 #include "fsolve.h"
 #include "grid.h"
@@ -56,12 +57,13 @@ namespace tube{
     return bl;
   }
 
-  AutoBoundaryLayer::AutoBoundaryLayer(d dxb,d alpha,const Grid& g)
+  AutoBoundaryLayer::AutoBoundaryLayer(d dxb,d alpha,const Grid& g) throw(std::exception)
   {
     TRACE(15,"AutoBoundaryLayer::AutoBoundaryLayer()");
     this->dxb=dxb;
     this->alpha=alpha;
-    assert(dxb<g.getL()/2.);
+    if(dxb>g.getL()/2 || dxb<=1e-8)
+      throw MyError("Illegal minimal boundary layer thickness");
     d dxo=g.getL()/(g.getgp()-1);
     n=(us) int(ceil(log(dxo/dxb)/log(alpha)+1));
     VARTRACE(35,n);

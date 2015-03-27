@@ -18,7 +18,7 @@ namespace tasystem{
   }
   TaSystem::TaSystem(const TaSystem& o):gc(o.gc)
   {
-    TRACE(14,"TaSystem::TaSystem(TaSystem&)");
+    TRACE(25,"TaSystem::TaSystem(TaSystem&) copy");
     copyTaSystem(o);
   }
   void TaSystem::setGc(const Globalconf& gc){
@@ -370,7 +370,7 @@ namespace tasystem{
     cout << "Number of rows    in Jacobian: " << jac.rows() << "\n";    
   }
   TaSystem::~TaSystem() {
-    TRACE(-5,"~TaSystem()");
+    TRACE(25,"~TaSystem()");
     cleanup();
   }
 

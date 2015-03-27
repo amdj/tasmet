@@ -64,8 +64,8 @@ namespace tube{
       break;
     }
   }
-  d LeftTubeVertex::getResBc(varnr v,us freqnr) const{
-    TRACE(15,"LeftTubeVertex::getResBc()");
+  d LeftTubeVertex::getValueBc(varnr v,us freqnr) const{
+    TRACE(15,"LeftTubeVertex::getValueBc()");
     switch(v) {
     case varnr::rho: // Density
       return rhoL()(freqnr);

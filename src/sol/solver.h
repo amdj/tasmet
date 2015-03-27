@@ -10,10 +10,11 @@
 #include "vtypes.h"
 
 namespace tasystem{
+
+  #ifndef SWIG
   using std::tuple;
   class TaSystem;
 
-  #ifndef SWIG
   evd solvesys_eigen(const esdmat& K,const evd& f);
   #endif
 
@@ -25,13 +26,22 @@ namespace tasystem{
     #ifndef SWIG
     SolverConfiguration sc;
     #endif
+    // The best way to initialize a solver is by using a TaSystem to
+    // work on.
     Solver(const TaSystem& tasys);
-    TaSystem& sys() { return *tasystem;}
+
+    // Return a reference to the TaSystem
+    TaSystem& sys() const { return *tasystem;}
     Solver(const Solver& other);
+
     #ifndef SWIG
-    Solver& operator=(const Solver& other);
+    Solver& operator=(const Solver& other) =delete;
     #endif
+
+    // Stop all solver threads
     void stop();
+
+    // Start a solver thread. 
     void solve(us maxiter=5000,d funtol=1e-8,d reltol=1e-6,d mindampfac=1e-2,d maxdampfac=1,bool wait=true);
     #ifndef SWIG
     tuple<d,d> doIter(d dampfac=-1);

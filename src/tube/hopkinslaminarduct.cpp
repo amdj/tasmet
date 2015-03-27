@@ -54,6 +54,7 @@ namespace tube{
       cvertex.setResVar(varnr::Ts,Tvar);
     }
     hopkinsheat.setdTwdx(geom(),dTwdx);
+    setInit(true);
     return true;
   }
   
