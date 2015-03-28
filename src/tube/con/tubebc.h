@@ -15,22 +15,22 @@ namespace tube{
   #ifndef SWIG
   class Tube;
   #endif
-  #ifdef SWIG
-  %feature("abstract") TubeBc;
-  #endif
+
   class TubeBc:public segment::Connector {
   protected:
     us segnr;
     Pos pos;
+  protected:
     const Tube* t=nullptr;
     const tasystem::TaSystem* sys=nullptr;
-  public:
+
     TubeBc(us segnr,Pos position):segnr(segnr),pos(position){}
     TubeBc(const TubeBc& other):
       Connector(other),
       segnr(other.segnr),
       pos(other.pos)
     {}
+  public:
     virtual ~TubeBc(){}
     #ifndef SWIG
     us getNEqs() const;         // 4 times Ns

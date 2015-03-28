@@ -15,11 +15,12 @@ namespace segment{
   // A connector contains only equations, no degrees of freedom
   
   class Connector:public SegConBase{
-  public:
+  protected:
     Connector():SegConBase(){}
     Connector(const Connector& o):
       SegConBase(o)
     {}
+  public:
     virtual ~Connector(){}
     virtual Connector* copy() const=0;
     #ifndef SWIG

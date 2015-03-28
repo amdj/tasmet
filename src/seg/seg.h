@@ -14,14 +14,13 @@ namespace tasystem {
 namespace segment{
 
   class Seg:public SegConBase{
-  public:
+  protected:
     Seg();
     Seg(const Seg& o);
-    virtual ~Seg(){}            // We do not own the gc instance
     Seg& operator=(const Seg&)=delete;
-    bool operator==(const Seg& other) const {return (this==&other);}
+  public:
+    virtual ~Seg(){}            // We do not own the gc instance
     virtual segment::Seg* copy() const=0;
-
     #ifndef SWIG
     // Pure virtual functions
     void init(const tasystem::TaSystem& sys);

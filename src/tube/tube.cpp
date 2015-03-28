@@ -30,15 +30,28 @@ namespace tube {
   using tasystem::Jacobian;
 
 
-  Tube::Tube(const Geom& geom) throw(std::exception)
-    :Seg(),geom_(geom.copy()){
+  Tube::Tube(const Geom& geom)
+    :Seg(),geom_(geom.copy())
+  {
     TRACE(13,"Tube constructor()...");
   }
   Tube::Tube(const Tube& other):
     Seg(other),
     geom_(other.geom().copy()){
-    
+
   }
+  Tube::~Tube(){
+    TRACE(25,"~Tube()");
+    delete geom_;
+    cleanup_vvertex();
+  }
+  void Tube::cleanup_vvertex(){
+    TRACE(25,"Tube::cleanup_vvertex()");
+    // for(auto v=vvertex.begin();v!=vvertex.end();v++)
+      // delete *v;
+    vvertex.clear();
+  }
+
   const TubeVertex& Tube::getTubeVertex(us i) const{
     assert(vvertex.size()>0);
     assert(i<vvertex.size());
@@ -291,17 +304,6 @@ namespace tube {
       vvertex.at(k)->setRes(res.subvec(firstdof,firstdof+vertexdofs-1));
       firstdof+=vertexdofs;
     }
-  }
-  Tube::~Tube(){
-    TRACE(15,"~Tube()");
-    delete geom_;
-    cleanup_vvertex();
-  }
-  void Tube::cleanup_vvertex(){
-    TRACE(15,"Tube::cleanup_vvertex()");
-    for(auto v=vvertex.begin();v!=vvertex.end();v++)
-      delete *v;
-    vvertex.clear();
   }
 
   // Various set and get methods

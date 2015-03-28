@@ -39,9 +39,10 @@ namespace tube{
   protected:
     std::vector<TubeVertex*> vvertex;
 
+  protected:
     // Copy constructor
     Tube(const Tube& other);
-    Tube(const Geom& geom) throw(std::exception);
+    Tube(const Geom& geom);
     Tube& operator=(const Tube&)=delete; // no copies allowed
   public:
     virtual ~Tube();          // Define this class as abstract

@@ -52,7 +52,10 @@ namespace tube {
       errorMf+=tubes[0]->rightVertex().extrapolateQuant(massFlow);
     }
     else{
-      // errorMf+=tubes[0]->leftVertex()->massFlow();
+      errorMf-=tubes[0]->leftVertex().extrapolateQuant(massFlow);
+    }
+    if(pos[1]==Pos::right){
+      errorMf+=tubes[1]->rightVertex().extrapolateQuant(massFlow);
     }
     return error;
   }

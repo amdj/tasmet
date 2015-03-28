@@ -16,46 +16,33 @@ namespace tasystem{
     TRACE(14,"TaSystem::TaSystem(gc)");
     this->setDriven(true);
   }
-  TaSystem::TaSystem(const TaSystem& o):gc_(o.gc_)
+  TaSystem::TaSystem(const TaSystem& o):
+    gc_(o.gc_)
   {
     TRACE(25,"TaSystem::TaSystem(TaSystem&) copy");
-    copyTaSystem(o);
+    for(auto it=o.segs.begin();it!=o.segs.end();it++){
+      (*this)+=*(*it);
+    }
+    for(auto it=o.connectors.begin();it!=o.connectors.end();it++){
+      (*this)+=*(*it);
+    }
+    hasInit=false;
   }
   void TaSystem::setGc(const Globalconf& gc){
     TRACE(14,"TaSystem::setGc()");
-    this->gc_=gc;
-    hasInit=false;
-  }
-  void TaSystem::copyTaSystem(const TaSystem& o){
-    TRACE(14,"TaSystem::copyTaSystem()");
-    cleanup();
-    gc_=o.gc_;
-    assert(nSegs()==0);
-    for(us i=0;i<o.nSegs();i++) {
-      TRACE(14,"Copying segment "<<i << "...");
-      assert(o.getSeg(i)!=NULL);
-      (*this)+=(*o.getSeg(i));
-      assert(nSegs()==i+1);
-    }
-    for(us i=0;i<o.nConnectors();i++) {
-      TRACE(14,"Copying connector "<<i << "...");
-      assert(o.connectors[i]);
-      (*this)+=(*o.connectors[i]);
-      assert(nConnectors()==i+1);
-    }
-    // segConnections=o.segConnections;
+    gc_=gc;
     hasInit=false;
   }
   void TaSystem::cleanup(){
-    for (us i=0; i < segs.size(); ++i) {
-      delete segs[i];
-    }
-    for (us i=0; i < connectors.size(); ++i) {
-      delete connectors[i];
-    }
+    for(auto it=segs.begin();it!=segs.end();it++)
+      if(*it)
+        delete *it;
+    for(auto it=connectors.begin();it!=connectors.end();it++)
+      if(*it)
+        delete *it;
+
     segs.clear();
     connectors.clear();
-
     hasInit=false;
   }
   TaSystem& TaSystem::operator+=(const Seg& seg){

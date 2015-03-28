@@ -54,6 +54,7 @@ namespace tube{
     eqs.push_back(&se);    
   }
   TubeVertex::~TubeVertex(){
+    TRACE(25,"TubeVertex::~TubeVertex()");
     delete w_;
   }
   const LocalGeom& TubeVertex::localGeom() const {return weightFactors();}

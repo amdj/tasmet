@@ -37,10 +37,10 @@ namespace segment{
     bool init_=false;
   protected:
     const tasystem::Globalconf* gc=NULL;	// Global configuration of the system
-  public:
     SegConBase();
     SegConBase(const SegConBase&);
     SegConBase& operator=(const SegConBase&)=delete;
+  public:
     virtual ~SegConBase(){}
 
     // Get and set name

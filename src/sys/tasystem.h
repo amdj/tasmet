@@ -43,6 +43,8 @@ namespace tasystem{
   %catches(std::exception,...) TaSystem::TaSystem();
   %catches(std::exception,...) TaSystem::TaSystem(const Globalconf&);
   %catches(std::exception,...) TaSystem::Error();
+  %catches(std::exception,...) TaSystem::operator+=(const segment::Seg&);
+  %catches(std::exception,...) TaSystem::operator+=(const segment::Connector&);
   #endif // SWIG
 
   class TaSystem{
@@ -55,7 +57,7 @@ namespace tasystem{
     Globalconf gc_;             // Global configuration parameters
   public:
     void setGc(const Globalconf& gc); // Reset globalconf configuration
-    const Globalconf& gc() const {return gc_;}; // Reset globalconf configuration
+    const Globalconf& gc() const {return gc_;} // Reset globalconf configuration
     TaSystem():gc_(Globalconf::airSTP(0,100)){}
     TaSystem(const Globalconf& g);
     TaSystem(const TaSystem& o);
@@ -113,7 +115,6 @@ namespace tasystem{
     void jacTriplets(TripletList&);
     void setDofEqNrs();
     // A vector of boundary conditions is required
-    void copyTaSystem(const TaSystem& other);
     void cleanup();
 
   };				// class System

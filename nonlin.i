@@ -52,6 +52,7 @@ typedef std::complex<double> c;
 %include "std_complex.i"
 
  // Conversion between numpy and Armadillo
+%include "consolecolors.h"
 %include "arma_numpy.i"
 
  // My compile-time constants

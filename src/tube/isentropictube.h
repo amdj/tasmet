@@ -1,13 +1,14 @@
-/*
- * tube.h
- *
- *  Created on: Oct 8, 2013
- *      Author: anne
- */
-
+// isentropictube.h
+//
+// Author: J.A. de Jong 
+//
+// Description:
+//
+//////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef ISENTROPICTUBE_H_
-#define ISENTROPICTUBE_H__
+#ifndef ISENTROPICTUBE_H
+#define ISENTROPICTUBE_H 1
+
 #include "tube.h"
 #include "vtypes.h"
 #include "math_common.h"
@@ -18,7 +19,7 @@ namespace tube{
   {
     DragResistance nodrag;
     HeatSource noheat;
-    IsentropicTube& operator=(const IsentropicTube&);    
+    IsentropicTube& operator=(const IsentropicTube&) =delete;    
   public:
     IsentropicTube(const Geom& geom);
     IsentropicTube(const IsentropicTube&);
@@ -37,10 +38,6 @@ namespace tube{
   
 } /* namespace tube */
 
-#endif /* ISENTROPICTUBE_H_ */
 
-
-
-
-
-
+#endif // ISENTROPICTUBE_H
+//////////////////////////////////////////////////////////////////////
