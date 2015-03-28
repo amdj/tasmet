@@ -26,10 +26,11 @@ namespace tube{
     virtual ~IsentropicTube();
 
     #ifndef SWIG
+    vd dragCoefVec(us i) const;
     virtual const DragResistance& getDragResistance() const {return nodrag;}
     virtual const HeatSource& getHeatSource() const {return noheat;}
     virtual string getName() const {return string("IsentropicTube");}
-    virtual bool init(const tasystem::TaSystem&);
+    virtual void init(const tasystem::TaSystem&);
     void cleanup();
     #endif
   };

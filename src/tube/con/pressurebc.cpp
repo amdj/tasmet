@@ -21,7 +21,7 @@ namespace tube{
     return var(pres.gc(),pres.gc().T0());
   }
   
-  PressureBc::PressureBc(const var& pres,const var& temp,const var& stemp,us segnr,pos position):
+  PressureBc::PressureBc(const var& pres,const var& temp,const var& stemp,us segnr,Pos position):
     TubeBc(segnr,position),
     prescribep(pres),
     prescribeT(temp),
@@ -29,10 +29,10 @@ namespace tube{
   {
     TRACE(8,"PressureBc full constructor");
   }
-  PressureBc::PressureBc(const var& pres,const var& temp,us segnr,pos position):
+  PressureBc::PressureBc(const var& pres,const var& temp,us segnr,Pos position):
     PressureBc(pres,temp,coldtemp(pres),segnr,position)
   {}
-  PressureBc::PressureBc(const var& pres,us segnr,pos position):
+  PressureBc::PressureBc(const var& pres,us segnr,Pos position):
     PressureBc(pres,adiabatictemp(pres),segnr,position)
   {}
   PressureBc::PressureBc(const PressureBc& other):
@@ -59,24 +59,22 @@ namespace tube{
     prescribeT.updateNf();
     prescribeTs.updateNf();
   }
-  bool PressureBc::init(const TaSystem& sys)
+  void PressureBc::init(const TaSystem& sys)
   {
     TRACE(8,"PressureBc::init()");
-    if(!TubeBc::init(sys))
-      return false;
+    TubeBc::init(sys);
 
     // Decouple from old globalconf pointer
     prescribep.setGc(*gc);
     prescribeT.setGc(*gc);
     prescribeTs.setGc(*gc); 
     setInit(true);
-    return true;
   }
   void PressureBc::setEqNrs(us firsteqnr){
     TRACE(2,"Pressure::setEqNrs()");
     this->firsteqnr=firsteqnr;
     us Ns=gc->Ns();
-    if(position==pos::left){
+    if(pos==Pos::left){
       const TubeVertex& vertex=t->leftVertex();
       prescribep.set(firsteqnr,vertex.pL());
       prescribeT.set(firsteqnr+Ns,vertex.TL());
@@ -96,7 +94,7 @@ namespace tube{
     const dmat& fDFT=gc->fDFT;
     vd massflowv;
     const TubeBcVertex* vertex;
-    if(position==pos::left){
+    if(pos==Pos::left){
       vertex=&t->leftVertex();
       massflowv=fDFT*(vertex->rhoL().tdata()%vertex->UL().tdata());
     }
@@ -122,7 +120,7 @@ namespace tube{
     const dmat& iDFT=gc->iDFT;
 
     const TubeBcVertex* vertex;
-    if(position==pos::left){
+    if(pos==Pos::left){
       vertex=&t->leftVertex();
       massfloweq+=JacCol(vertex->rhoL(),fDFT*vertex->UL().diagt()*iDFT);
       massfloweq+=JacCol(vertex->UL(),fDFT*vertex->rhoL().diagt()*iDFT);
@@ -145,7 +143,7 @@ namespace tube{
     TRACE(5,"PressureBc::show()");
     if(isInit()){
       string side;
-      if(position==pos::left)
+      if(pos==Pos::left)
         side="left";
       else
         side="right";

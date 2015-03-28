@@ -44,9 +44,6 @@ namespace tube {
     variable::var T_;		// Temperature
     variable::var pL_;      // Pressure at left cell wall
     variable::var Ts_;		// Solid temperature
-    TubeVertex& operator=(const TubeVertex& v); // No copy assignments
-    // allowed
-    TubeVertex(const TubeVertex& );             // No copy constructors
 
   protected:
     // equations to solve for.
@@ -58,11 +55,19 @@ namespace tube {
     Isentropic is;              // Do we really need this burden?
 
   public:
+    TubeVertex(us i,const Tube&);
+    virtual ~TubeVertex();     // Deletes weightfactors instance
+
+    // No copy assignments allowed
+    TubeVertex& operator=(const TubeVertex& v)=delete;
+
+    // No copy constructors
+    TubeVertex(const TubeVertex& )=delete;
+
     const Continuity& continuity() const {return c;}
     const Momentum& momentum() const {return m;}
     const Energy& energy() const {return e;}
-    TubeVertex(us i,const Tube&);
-    virtual ~TubeVertex();     // Deletes weightfactors instance
+
 
     virtual void init(const TubeVertex* left,const TubeVertex* right);   
 
@@ -78,6 +83,7 @@ namespace tube {
     const variable::var& pL() const { return pL_;}
     virtual const variable::var& pR() const {assert(right_); return right_->pL();}
     const variable::var p() const{return 0.5*(pL()+pR());}
+
     // These are variables for the left and right vertices, but are on
     // the cell walls for the leftmost and rightmost vertices
     // respectively
@@ -97,23 +103,29 @@ namespace tube {
     virtual const variable::var& TsL() const {assert(left_); return left_->Ts();}
     virtual const variable::var& TsR() const {assert(right_); return right_->Ts();}
 
+    // Set this vertex to be isentropically
     void setIsentropic();
-    void resetHarmonics();
+
+    // Resets all higher harmonics. Can throw
+    void resetHarmonics() throw (std::exception);
+
     void setDofNrs(us firstdofnr);
     void setEqNrs(us firsteqnr);    
     us getNDofs() const;
     us getNEqs() const;
 
-    virtual void setRes(const vd& res);			  // Set result vector
-                                                  // to res
+    // Set result vector to res
+    virtual void setRes(const vd& res);
+
+    // Compute the error for all equations on this gridpoint
+    vd error() const;
+                                      
 
     // const methods
     virtual void show(us detailnr=1) const;
-    vd error() const;		       // Compute error for this
-                                           // gridpoint
     vd errorAt(us i) const;
 
-  virtual void jac(tasystem::Jacobian& tofill) const;		       // Fill complete Jacobian for this node
+    virtual void jac(tasystem::Jacobian& tofill) const;		       // Fill complete Jacobian for this node
     virtual void domg(vd& ) const;
     void setResVar(varnr,const variable::var& res);
     virtual void setResVar(varnr,const vd& res); // Overridden for
@@ -130,6 +142,7 @@ namespace tube {
     // pressure) addings in the equations.
     d Htot() const { return e.Htot();}
     d getCurrentMass() const;
+
     // These virtual functions are required such that boundary
     // condition sources can be added in a later stage by inheriting
     // from this TubeVertex. By default these sources are not a

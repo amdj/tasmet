@@ -11,7 +11,7 @@ namespace tube{
   TubeVertex::TubeVertex(us i,const Tube& tube):
     i(i),
     tube(&tube),
-    gc(tube.gc),
+    gc(&tube.Gc()),
     c(*this),
     m(*this),
     e(*this),
@@ -56,9 +56,7 @@ namespace tube{
   TubeVertex::~TubeVertex(){
     delete w_;
   }
-  const LocalGeom& TubeVertex::localGeom() const{
-    return weightFactors();
-  }
+  const LocalGeom& TubeVertex::localGeom() const {return weightFactors();}
   const WeightFactors& TubeVertex::weightFactors() const{
     assert(w_);
     return *w_;
@@ -110,7 +108,7 @@ namespace tube{
       firsteq+=gc->Ns();
     }
   }
-  void TubeVertex::resetHarmonics(){
+  void TubeVertex::resetHarmonics() throw(std::exception) {
     for(auto var=vars.begin();var!=vars.end();var++)
       (*var)->resetHarmonics();
   }

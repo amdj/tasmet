@@ -2,7 +2,7 @@
 #include "exception.h"
 
 namespace tube{
-  using segment::pos;
+
 
   ConeTube::ConeTube(const Grid& g,d r1,d r2,bool blapprox) throw(std::exception)
     :Geom(g,blapprox),rL(r1),rR(r2){
@@ -39,9 +39,9 @@ namespace tube{
   }
 
   TransitionCylindricalTube::TransitionCylindricalTube(const Grid& g,d r,\
-                                                       pos transitionside,\
+                                                       Pos transitionside,\
                                                        const Geom& other, \
-                                                       pos sideofremote,\
+                                                       Pos sideofremote,\
                                                        d perc,bool blapprox):
     Geom(g,blapprox),
     transition(transitionside,perc),
@@ -51,7 +51,7 @@ namespace tube{
 
     setPrismatic(false);
     S_=number_pi*pow(r,2);
-    if(sideofremote==pos::left)    {
+    if(sideofremote==Pos::left)    {
       S_other=other.Sleft();
       phi_other=other.phileft();
       WARN("rh interpolated as well!");
@@ -100,7 +100,7 @@ namespace tube{
     cout << "This Surface area      : " << S_ << "\n";
     cout << "Transition surface area: " << S_other << "\n";
     cout << "\n";
-    if(transition.Position()==pos::left)
+    if(transition.Position()==Pos::left)
       cout << "Smooth transition made on the left side\n";
     else
       cout << "Smooth transition made on the right side\n";

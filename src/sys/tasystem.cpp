@@ -12,24 +12,24 @@ namespace tasystem{
 
   inline us max(us s,us t){  return s? s>=t : t;}
 
-  TaSystem::TaSystem(const Globalconf& gc):gc(gc){
+  TaSystem::TaSystem(const Globalconf& gc):gc_(gc){
     TRACE(14,"TaSystem::TaSystem(gc)");
     this->setDriven(true);
   }
-  TaSystem::TaSystem(const TaSystem& o):gc(o.gc)
+  TaSystem::TaSystem(const TaSystem& o):gc_(o.gc_)
   {
     TRACE(25,"TaSystem::TaSystem(TaSystem&) copy");
     copyTaSystem(o);
   }
   void TaSystem::setGc(const Globalconf& gc){
     TRACE(14,"TaSystem::setGc()");
-    this->gc=gc;
+    this->gc_=gc;
     hasInit=false;
   }
   void TaSystem::copyTaSystem(const TaSystem& o){
     TRACE(14,"TaSystem::copyTaSystem()");
     cleanup();
-    gc=o.gc;
+    gc_=o.gc_;
     assert(nSegs()==0);
     for(us i=0;i<o.nSegs();i++) {
       TRACE(14,"Copying segment "<<i << "...");
@@ -45,14 +45,6 @@ namespace tasystem{
     }
     // segConnections=o.segConnections;
     hasInit=false;
-  }
-  TaSystem& TaSystem::operator=(const TaSystem& other){
-    if(this!=&other){
-      TRACE(14,"TaSystem::operator=()");
-      cleanup();
-      copyTaSystem(other);
-    }
-    return *this;
   }
   void TaSystem::cleanup(){
     for (us i=0; i < segs.size(); ++i) {
@@ -108,7 +100,7 @@ namespace tasystem{
     }
 
   }
-  bool TaSystem::init(){
+  void TaSystem::init(){
     TRACE(14,"TaSystem::init()");
     hasInit=false;
     us Nsegs=nSegs();
@@ -118,12 +110,10 @@ namespace tasystem{
     // Quite some assumptions are done where the order of this
     // initialization depends on. So first the segs, then the connectors.
     for(auto seg=segs.begin();seg!=segs.end();seg++) {
-      if(!(*seg)->init(*this))
-        return false;
+      (*seg)->init(*this);
     }
     for(auto con=connectors.begin();con!=connectors.end();con++) {
-      if(!(*con)->init(*this))
-        return false;
+      (*con)->init(*this);
     }
 
     // Set all dofs and equation numbers
@@ -134,31 +124,25 @@ namespace tasystem{
 
     TRACE(10,"Segment initialization done. Total NDofs:"<< Ndofs);
     if(Ndofs>constants::maxndofs)      {
-      WARN("Way too many DOFS required: Ndofs=" <<Ndofs << ". Initialization failed\n");
-      return false;
+      throw MyError("Way too many DOFS required. Initialization failed.");
     }
 
     if(getNDofs()!=getNEqs()){
-      WARN("Ndofs on TaSystem level not equal to number of equations! Initialization failed.");
       WARN("Ndofs="<< getNDofs());
       WARN("Neqs ="<< getNEqs());
-      return false;
-      // exit(1);
+      throw MyError("Ndofs on TaSystem level not equal to number of equations! Initialization failed.");
     }
-    // Last, but not least: initialize a pointer to this tasystem in
-    // globalconf
     hasInit=true;
-    return true;
   }
   void TaSystem::setNf(us Nf){
     if(!checkInit())
       return;
     TRACE(30,"TaSystem::setNf()");
-    gc.setNf(Nf);
+    gc_.setNf(Nf);
     for(auto seg=segs.begin();seg!=segs.end();seg++)      {
       (*seg)->updateNf();
     }
-    TRACE(25,"New Ns:"<< gc.Ns() << " . Adres gc: " << &gc);
+    TRACE(25,"New Ns:"<< gc_.Ns() << " . Adres gc: " << &gc_);
 
     setDofEqNrs();
   }
@@ -187,7 +171,7 @@ namespace tasystem{
       return;
     cout << "########################## Showing TaSystem...\n";
     cout << "Showing Global configuration...\n";
-    gc.show();
+    gc_.show();
     if(detailnr>0){
       cout << "Now showing connectors in TaSystem...\n";
       for(us i=0;i<nConnectors();i++){
@@ -227,7 +211,7 @@ namespace tasystem{
     // the different segments in the sense that blocks of Jacobian
     // matrix parts have to be moved to the right place etc. To be
     // continued...
-    const us& Ns=gc.Ns();
+    const us& Ns=gc_.Ns();
     us Ndofs=getNDofs();
     TRACE(15,"Ndofs:"<<Ndofs);    
     TripletList triplets;
@@ -272,7 +256,7 @@ namespace tasystem{
       return evd();
     us Ndofs=getNDofs();
     TRACE(14,"TaSystem::GetRes(), Ndofs:"<< Ndofs);
-    const us& Ns=gc.Ns();
+    const us& Ns=gc_.Ns();
     evd res(Ndofs);
     
     vd Res(res.data(),Ndofs,false,false);
@@ -299,7 +283,7 @@ namespace tasystem{
     for(us i=0;i<nsegs;i++) {
       getSeg(i)->setRes(*other.getSeg(i));
     }
-    gc=other.gc;
+    gc_=other.gc_;
   }
   void TaSystem::resetHarmonics(){
     if(!checkInit())
@@ -313,10 +297,8 @@ namespace tasystem{
     vd res2=math_common::armaView(res);
     setRes(res2);
   }
-  tube::Tube* TaSystem::getTube(us i)  const throw(std::exception){
-    segment::Seg* seg;
-    seg=segs.at(i);
-    return dynamic_cast<tube::Tube*>(seg);
+  const tube::Tube& TaSystem::getTube(us i)  const {
+    return dynamic_cast<const tube::Tube&>(*segs.at(i));
   }
   void TaSystem::setRes(const vd& Res){
     if(!checkInit())

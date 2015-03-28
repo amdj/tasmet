@@ -44,27 +44,22 @@ namespace tube {
     assert(i<vvertex.size());
     return *static_cast<const TubeVertex*>(vvertex.at(i));
   }
-  vd Tube::dragCoefVec(us i) const {
-    return zeros<vd>(geom().nCells());
-  }
   us Tube::getNCells() const {return geom().nCells();}
   const Geom& Tube::geom() const {return *geom_;}
   void Tube::setDofNrs(us firstdof){
     TRACE(13,"Tube::setDofNrs()");
     assert(vvertex.size()>0);
     for(auto vertex=vvertex.begin();vertex!=vvertex.end();vertex++){
-      TubeVertex& v=*static_cast<TubeVertex*>(*vertex);
-      v.setDofNrs(firstdof);
-      firstdof+=v.getNDofs();
+      (*vertex)->setDofNrs(firstdof);
+      firstdof+=(*vertex)->getNDofs();
     }
   }
   void Tube::setEqNrs(us firstdof){
     TRACE(13,"Tube::setDofNrs()");
     assert(vvertex.size()>0);
     for(auto vertex=vvertex.begin();vertex!=vvertex.end();vertex++){
-      TubeVertex& v=*static_cast<TubeVertex*>(*vertex);
-      v.setEqNrs(firstdof);
-      firstdof+=v.getNEqs();
+      (*vertex)->setEqNrs(firstdof);
+      firstdof+=(*vertex)->getNEqs();
     }
   }
   
@@ -83,10 +78,10 @@ namespace tube {
     return ndofs;
   }  
 
-  bool Tube::init(const tasystem::TaSystem& sys){
+  void Tube::init(const tasystem::TaSystem& sys){
     TRACE(13,"Tube::Init()");
-    if(!Seg::init(sys))
-      return false;
+    Seg::init(sys);
+
     cleanup_vvertex();
     TRACE(13,"Filling vertices. Current size:"<<vvertex.size());
       // Left *probable* boundary condition
@@ -97,16 +92,6 @@ namespace tube {
     for(i=1;i<getNCells()-1;i++)
       vvertex.emplace_back(new TubeVertex(i,*this));
     vvertex.emplace_back(new RightTubeVertex(getNCells()-1,*this));
-
-    // Test if all tubevertices were made succesfully
-    int error=0;
-    for(auto vv=vvertex.begin();vv!=vvertex.end();vv++)
-      error+= *vv ? 0 : 1;
-    if(error){
-      WARN("Problems with making tubevertices. Is there enough memory left?");
-      return false;
-    }
-
 
     us nVertex=vvertex.size();    
     assert(nVertex==getNCells());
@@ -123,7 +108,6 @@ namespace tube {
       TRACE(15,"Initializing tube");
       thisvertex->init(left,right);
     } // for
-    return true;
   } // Tube::init(gc)
   d Tube::getRes(us dofnr) const {
     WARN("Not yet implemented!");

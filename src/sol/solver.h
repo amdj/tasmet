@@ -16,8 +16,14 @@ namespace tasystem{
   class TaSystem;
 
   evd solvesys_eigen(const esdmat& K,const evd& f);
-  #endif
-
+  #endif  // ifndef SWIG
+  #ifdef SWIG
+  %catches(std::exception,...) Solver::Solver(const TaSystem& sys);
+  %catches(std::exception,...) Solver::Solver(const Solver& other);
+  %catches(std::exception,...) Solver::solve(us maxiter=5000,d funtol=1e-8,\
+                                             d reltol=1e-6,d mindampfac=1e-2,\
+                                             d maxdampfac=1,bool wait=true);
+  #endif  // ifdef SWIG
   class Solver
   {
     TaSystem* tasystem=NULL;
@@ -25,19 +31,15 @@ namespace tasystem{
   public:
     #ifndef SWIG
     SolverConfiguration sc;
-    #endif
+    #endif  // ifndef SWIG
     // The best way to initialize a solver is by using a TaSystem to
     // work on.
     Solver(const TaSystem& tasys);
+    Solver(const Solver& other);
 
     // Return a reference to the TaSystem
     TaSystem& sys() const { return *tasystem;}
-    Solver(const Solver& other);
-
-    #ifndef SWIG
     Solver& operator=(const Solver& other) =delete;
-    #endif
-
     // Stop all solver threads
     void stop();
 

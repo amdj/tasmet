@@ -5,7 +5,6 @@
 #include "tubevertex.h"
 #include "var.h"
 #include "constants.h"
-#include "pos.h"
 
 namespace segment{
   class Connector;
@@ -18,11 +17,11 @@ namespace tube{
   class Tube;
 
   class TubeBcVertex:public TubeVertex{
-    segment::Connector* con;
+    segment::Connector* con=NULL;
   public:
     TubeBcVertex(us i,const Tube& t);
     virtual ~TubeBcVertex(){}
-    virtual segment::pos getPos() const=0;
+    virtual Pos getPos() const=0;
     vd extrapolateQuant(physquant) const;
     tasystem::JacRow dExtrapolateQuant(physquant) const;
     virtual d getValueBc(varnr,us freqnr) const=0;

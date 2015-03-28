@@ -21,18 +21,17 @@ namespace tube{
     this->Tr=Tr;
   }  
   HopkinsLaminarDuct::HopkinsLaminarDuct(const HopkinsLaminarDuct& o):LaminarDuct(o),
-										hopkinsheat(o.hopkinsheat),
-										Tl(o.Tl),
-										Tr(o.Tr)
+                                                                      hopkinsheat(o.hopkinsheat),
+                                                                      Tl(o.Tl),
+                                                                      Tr(o.Tr)
   {
     TRACE(15,"HopkinsLaminarDuct::HopkinsLaminarDuct(other)");
 
   }
   
-  bool HopkinsLaminarDuct::init(const TaSystem& sys){
+  void HopkinsLaminarDuct::init(const TaSystem& sys){
     TRACE(15,"HopkinsLaminarDuct::init(gc)");
-    if(!LaminarDuct::init(sys))
-      return false;
+    LaminarDuct::init(sys);
 
     // Set time-avg data to make solving bit easier
     assert(vvertex.size()>0);
@@ -55,7 +54,6 @@ namespace tube{
     }
     hopkinsheat.setdTwdx(geom(),dTwdx);
     setInit(true);
-    return true;
   }
   
 }

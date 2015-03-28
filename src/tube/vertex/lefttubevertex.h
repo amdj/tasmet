@@ -1,7 +1,7 @@
 #pragma once
 #ifndef _LEFTTUBEVERTEX_H_
 #define _LEFTTUBEVERTEX_H_
-#include "pos.h"
+#include "constants.h"
 #include "tubebcvertex.h"
 
 namespace tube{
@@ -13,7 +13,7 @@ namespace tube{
     virtual void init(const TubeVertex* left,const TubeVertex* right);
     virtual ~LeftTubeVertex(){}
 
-    virtual pos getPos() const {return segment::pos::left;}
+    virtual Pos getPos() const {return Pos::left;}
     // For the pressure, we only do not assert that a vertex is
     // located on the left...
     virtual const variable::var& pL() const {return pL_;}

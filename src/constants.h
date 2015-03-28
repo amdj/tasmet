@@ -11,8 +11,16 @@
 
 #ifndef SWIG
 
+template<typename T>
+T max(T t1,T t2) { return t1>t2?t1:t2;}
+template<typename T>
+T min(T t1,T t2) { return t1>t2?t2:t1;}
+
+
 namespace constants {
-  
+  typedef double d;
+  typedef unsigned us;
+
   const int mingp=4;              // Minimum number of gridpoints
   const int maxgp=3000;           // Maximum number of gridpoints
 
@@ -34,6 +42,13 @@ namespace constants {
 } // namespace constants
 
 #endif
+
+namespace segment{
+  enum Pos{left=0,right=1};
+}
+namespace tube{
+  typedef segment::Pos Pos;
+}
 
 namespace tube{
 

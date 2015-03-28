@@ -5,19 +5,17 @@
 namespace tube{
   using tasystem::TaSystem;
 
-  bool TubeBc::init(const TaSystem& sys){
+  void TubeBc::init(const TaSystem& sys){
     TRACE(15,"TubeBc::init()");
     this->sys=&sys;
-    if(!Connector::init(sys))
-      return false;
+    Connector::init(sys);
     try{
       t=dynamic_cast<const Tube*>(sys.getSeg(segnr));
     }
-    catch(std::bad_cast){
+    catch(std::bad_cast& b){
       WARN("Seg nr " << segnr << " is not a Tube! Initialization failed.");
-      return false;
+      throw(b);
     }
-    return true;
   } // init
   us TubeBc::getNEqs() const {
       TRACE(10,"TubeBc::getNEqs()");

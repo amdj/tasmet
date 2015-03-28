@@ -45,7 +45,7 @@ namespace tube{
     ~RightImpedance(){}
     virtual void initTubeVertex(us i,const Tube&);
     virtual string getType() const {return string("RightImpedance");}
-    virtual enum connectpos connectPos() const {return connectpos::right;}
+    virtual Pos connectPos() const {return Pos::right;}
     virtual TubeBcVertex* copy() const {return new RightImpedance(*this);}
   protected:
     void updateW(const Tube&);

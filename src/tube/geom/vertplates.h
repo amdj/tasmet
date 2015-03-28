@@ -3,13 +3,7 @@
 #ifndef _GEOMHELPERS_H_
 #define _GEOMHELPERS_H_
 #include "geom.h"
-#include "pos.h"
-inline double min(double x,double y)  {
-  return x<=y? x : y;
-}
-inline double max(double x,double y)  {
-  return x<=y? y : x;
-}
+#include "constants.h"
 
 
 namespace tube{
@@ -36,11 +30,11 @@ namespace tube{
   };
 
   class Transition{
-    segment::pos position;
+    Pos pos;
     d perc;
   public:
-    Transition(segment::pos position,d perc);
-    segment::pos Position() const {return position;}
+    Transition(Pos position,d perc);
+    Pos Position() const {return pos;}
     d percd_other(d x_ov_L) const;    // (Decimal) percentage of transition
   };
 
@@ -49,8 +43,8 @@ namespace tube{
     Transition transition;
     d S_other,phi_other,rh_other,perc;
   public:
-    TransitionVertPlates(const Grid&,d S,d phi,d y0,segment::pos TransitionSide,\
-                         const Geom& other,segment::pos sideofremote,d perc=10,\
+    TransitionVertPlates(const Grid&,d S,d phi,d y0,Pos TransitionSide,\
+                         const Geom& other,Pos sideofremote,d perc=10,\
                          bool blapprox=false);
     virtual Geom* copy() const {return new TransitionVertPlates(*this);}
     virtual void show() const;

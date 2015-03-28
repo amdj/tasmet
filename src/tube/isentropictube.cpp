@@ -9,7 +9,7 @@
 #include "isentropictube.h"
 #include "tubevertex.h"
 #include "globalconf.h"
-
+#include "geom.h"
 // Tried to keep the method definition a bit in order in which a
   // tube is created, including all its components. First a tube is
   // created, which has a geometry and a global
@@ -30,15 +30,16 @@ namespace tube {
   IsentropicTube::IsentropicTube(const IsentropicTube& other):Tube(other){
     TRACE(13,"IsentropicTube copy cc");
   }
-  bool IsentropicTube::init(const TaSystem& sys){
-    if(!Tube::init(sys))
-      return false;
+  void IsentropicTube::init(const TaSystem& sys){
+    Tube::init(sys);
     for(auto vertex=vvertex.begin();vertex!=vvertex.end();vertex++){
       TubeVertex& cvertex=**vertex;
       cvertex.setIsentropic();
     }
     setInit(true);
-    return true;
+  }
+  vd IsentropicTube::dragCoefVec(us i) const {
+    return zeros<vd>(geom().nCells());
   }
 
   IsentropicTube::~IsentropicTube(){

@@ -62,9 +62,8 @@ include_directories(
 add_library(nonlin_lib  ${nonlinear_SRC})
 target_link_libraries(nonlin_lib math_common ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${ARMADILLO_LIBRARY})
 
-add_executable(test123 test123.cpp)
-target_link_libraries(test123 nonlin_lib math_common armadillo)
-
+# add_executable(test123 test123.cpp)
+# target_link_libraries(test123 nonlin_lib math_common armadillo)
 
 # Does this work
 set_source_files_properties(nonlin.i PROPERTIES CPLUSPLUS ON)

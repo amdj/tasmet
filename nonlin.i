@@ -3,28 +3,59 @@
   #define PY_ARRAY_UNIQUE_SYMBOL npy_array
   #define SWIG_FILE_WITH_INIT
 
-  #include "pos.h"
-  #include "var.h"
-  #include "tasystem.h"
-  #include "grid.h"
-  #include "boundarylayer.h"
+  // Conversion between numpy and Armadillo
+  #include "arma_numpy.h"
+
+  #include "constants.h"
+
+  // My exceptions
+  #include "exception.h"
+
+  // Global config
   #include "globalconf.h"
+  #include "var.h"
+
+
+  #include "tasystem.h"
+  #include "boundarylayer.h"
   #include "geom.h"
   #include "conetube.h"
+
+  // For Segments and connectors
+  #include "segconbase.h"
+
+  // Connectors
+  #include "connector.h"
+  #include "tubebc.h"
+  #include "tubeconnector.h"
+
   #include "pressurebc.h"
   #include "adiabaticwall.h"  
+
+  // Segments
+  #include "seg.h"
+
+  // Tubes
+  #include "grid.h"
   #include "tube.h"
   #include "isentropictube.h"
   #include "laminarduct.h"
   #include "hopkinslaminarduct.h"
+
+  // Solver
   #include "solver.h"
-%}
+  %}
 using std::string;
 typedef std::complex<double> c;
 
 %include "std_string.i"
 %include "std_complex.i"
+
+ // Conversion between numpy and Armadillo
 %include "arma_numpy.i"
+
+ // My compile-time constants
+%include "constants.h"
 
 // My exceptions
 %include "my_exceptions.i"
@@ -34,28 +65,33 @@ typedef std::complex<double> c;
 %include "var.h"
 
 
-%include "tasystem.h"
-%include "grid.h"
-%include "boundarylayer.h"
-%include "geom.h"
-%include "conetube.h"
-%include "pos.h"
-
+ // For Segments and connectors
 %include "segconbase.h"
 
  // Connectors
 %include "connector.h"
 %include "tubebc.h"
-
+%include "tubeconnector.h"
+ // Other connectors
 %include "pressurebc.h"
 %include "adiabaticwall.h"  
 
  // Segments
 %include "seg.h"
-%include "constants.h"
+
+ // Tubes
+%include "grid.h"
+%include "boundarylayer.h"
+%include "geom.h"
+ // Geom instances
+%include "conetube.h"
+ // Tubes
 %include "tube.h"
 %include "isentropictube.h"
 %include "laminarduct.h"
 %include "hopkinslaminarduct.h"
+
+ // System
+%include "tasystem.h"
  // Solver
 %include "solver.h"

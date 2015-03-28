@@ -29,7 +29,7 @@ namespace tube{
     virtual segment::Seg* copy() const{return new HopkinsLaminarDuct(*this);}
 
     #ifndef SWIG
-    virtual bool init(const tasystem::TaSystem& gc);
+    virtual void init(const tasystem::TaSystem& gc);
     virtual const HeatSource& getHeatSource() const { return hopkinsheat;}
     #endif
   };

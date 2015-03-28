@@ -38,25 +38,32 @@ namespace tasystem{
   class TripletList;
   #endif  
 
+  #ifdef SWIG
+  %catches(std::exception,...) TaSystem::getTube(us i) const;
+  %catches(std::exception,...) TaSystem::TaSystem();
+  %catches(std::exception,...) TaSystem::TaSystem(const Globalconf&);
+  %catches(std::exception,...) TaSystem::Error();
+  #endif // SWIG
+
   class TaSystem{
   protected:
     bool hasInit=false;
     vector<segment::Seg*> segs;		
     vector<segment::Connector*> connectors;    // Yes, connectors are just like segments
     bool driven=true;
+  protected:
+    Globalconf gc_;             // Global configuration parameters
   public:
-    Globalconf gc;    
     void setGc(const Globalconf& gc); // Reset globalconf configuration
-
-    TaSystem():gc(Globalconf::airSTP(0,100)){}
+    const Globalconf& gc() const {return gc_;}; // Reset globalconf configuration
+    TaSystem():gc_(Globalconf::airSTP(0,100)){}
     TaSystem(const Globalconf& g);
     TaSystem(const TaSystem& o);
-    #ifndef SWIG
-    TaSystem& operator=(const TaSystem& other);
-    #endif
+    TaSystem& operator=(const TaSystem& other)=delete;
+
     virtual ~TaSystem();
     virtual TaSystem* copy() const {return new TaSystem(*this);}
-    virtual bool init();
+
     void setDriven(bool dr) {driven=dr;}
     bool isDriven() const {return driven;}
     us nSegs() const {return segs.size();}
@@ -69,6 +76,7 @@ namespace tasystem{
     vd Error() {return math_common::EigenToArma(error());}// Total error vector
     virtual void show(us detailnr=0);
     #ifndef SWIG
+    virtual void init();
     virtual evd error();			// Total error vector
     virtual evd getRes();			// Extract result vector
     virtual esdmat jac(d dummy=-1);		// Return Jacobian matrix
@@ -84,7 +92,7 @@ namespace tasystem{
     // void delseg(us n); // Not yet implemented.  Delete a segment
     // from the system (we have to determine how elaborated the API
     // has to be.)
-    tube::Tube* getTube(us i) const throw(std::exception);    
+    const tube::Tube& getTube(us i) const;
     #ifndef SWIG                // The unsafe access methods
     segment::Seg* operator[](us i) const;    
     segment::Seg* getSeg(us i) const; // Easier for cython wrapping
@@ -93,7 +101,8 @@ namespace tasystem{
     d getCurrentMass();	// Return current mass in system [kg]
     bool checkInit(){		// Often called simple method: inline
       if(!hasInit){
-        return init(); 
+        init();
+        return true;
       }
       else
         return hasInit;

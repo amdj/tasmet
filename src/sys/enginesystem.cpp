@@ -26,28 +26,21 @@ namespace tasystem{
     setDriven(false);
   }
   EngineSystem::EngineSystem(const TaSystem& sys):TaSystem(sys){}
-  EngineSystem& EngineSystem::operator=(const EngineSystem& sys){
-    TRACE(15,"EngineSystem::operator=()");
-    TaSystem::operator=(sys);
-    tc=sys.tc;
-    av=sys.av;
-    return *this;
-  }
   void EngineSystem::show(us detailnr) {
     checkInit();
     cout << "########################## Showing EngineSystem...\n";
     cout << "Target system mass: " << getMass() << "\n";
     TaSystem::show(detailnr);
   }
-  bool  EngineSystem::init(){
+  void  EngineSystem::init(){
     TRACE(15,"EngineSystem::init()");
-    if(!TaSystem::init())
-      return false;
+    TaSystem::init();
+    hasInit=false;
     // Only set initial mass when it is not already set by user by
     // using setInitialMass()
     if(getMass()==0)
       setMass(getInitialMassFromGc());
-    return true;
+    hasInit=true;
   }
   d EngineSystem::getInitialMassFromGc() const {
     TRACE(15,"EngineSystem::getInitialMassFromGc()");
@@ -57,7 +50,7 @@ namespace tasystem{
       mass+=segs[i]->getCurrentMass();
     } // for loop
     TRACE(20,"Volume of device: "<< mass<<" [m^3].");
-    mass=mass*gc.rho0();
+    mass=mass*gc_.rho0();
     // TRACE(20,"Initial mass as computed from rho0="<<gc.rho0<<" [kg/m^3],\n and volume of device: "<< mass << " [kg].");
     return mass;
   }
@@ -75,10 +68,10 @@ namespace tasystem{
   evd EngineSystem::error(){
     checkInit();
     TRACE(15,"EngineSystem::error()");
-    if(gc.Nf()>0){
+    if(gc_.Nf()>0){
       d aval=av.value(*this);
       cout << "Current amplitude value: " << aval << "\n";
-      cout << "Current frequency      : " << gc.getfreq() << "\n";
+      cout << "Current frequency      : " << gc_.getfreq() << "\n";
     }
 
     #ifdef DIVAMPL
@@ -98,7 +91,7 @@ namespace tasystem{
     us Ndofs=getNDofs();	// This number is without extra omega dof
     #ifdef TIMINGCONSTRAINT
     TRACE(15,"Timincontraint on!");
-    if(gc.Nf()>0)
+    if(gc_.Nf()>0)
       Ndofs++;
     #endif
     esdmat jac(Ndofs,Ndofs);
@@ -118,7 +111,7 @@ namespace tasystem{
 
     us Ndofs=getNDofs();
     #ifdef TIMINGCONSTRAINT
-    if(gc.Nf()>0)
+    if(gc_.Nf()>0)
       Ndofs++;
     #endif
     jactriplets.zeroOutRow(MASSEQ);  // Replace this equation with global
@@ -129,7 +122,7 @@ namespace tasystem{
     us dmtotdxsize=dmtotdx.size();
     us extraspace=0;
     #ifdef TIMINGCONSTRAINT
-    if(gc.Nf()>0){
+    if(gc_.Nf()>0){
 
       vd domg=this->domg();
       if(dampfac>0){
@@ -166,7 +159,7 @@ namespace tasystem{
     TRACE(15,"EngineSystem::Mjac("<<dampfac<<")");
     
     TripletList Mjac=this->Ljac(dampfac); // Its called Mjac, but here it is still Ljac
-    if(gc.Nf()>0){
+    if(gc_.Nf()>0){
       d aval=av.value(*this);
       assert(aval!=0);		// Otherwise, something is wrong.
       Mjac.multiplyTriplets(1/aval); // Now its nearly Mjac
@@ -186,7 +179,7 @@ namespace tasystem{
   }
   evd EngineSystem::errorM(){
     TRACE(15,"EngineSystem::errorM()");
-    if(gc.Nf()>0)    {
+    if(gc_.Nf()>0)    {
       d aval=av.value(*this);
       assert(aval!=0);
       // Divide L by amplitude value to
@@ -202,12 +195,12 @@ namespace tasystem{
     
     us Ndofs=getNDofs();
     #ifdef TIMINGCONSTRAINT
-    if(gc.Nf()>0)
+    if(gc_.Nf()>0)
       Ndofs++;
     #endif
     evd error(Ndofs);		// Add one for the timing constraint  
     #ifdef TIMINGCONSTRAINT
-    if(gc.Nf()>0)    {
+    if(gc_.Nf()>0)    {
       error.head(Ndofs-1)=TaSystem::error();
       error(Ndofs-1)=tc.value(*this);
     }
@@ -227,12 +220,12 @@ namespace tasystem{
     TRACE(15,"EngineSystem::getRes()");
     checkInit();
     #ifdef TIMINGCONSTRAINT
-    if(gc.Nf()>0){
+    if(gc_.Nf()>0){
       us Ndofs=getNDofs()+1;
       evd res(Ndofs);		// Add one for the timing constraint
 
       res.head(Ndofs-1)=TaSystem::getRes();
-      res(Ndofs-1)=gc.getomg();
+      res(Ndofs-1)=gc_.getomg();
       return res;
     } else{
       #endif
@@ -256,7 +249,7 @@ namespace tasystem{
       TaSystem::setRes(res);
     else{
       TaSystem::setRes(res.subvec(0,ndofs-1));
-      gc.setomg(res(ndofs));
+      gc_.setomg(res(ndofs));
       TRACE(18,"New freq:"<< res(ndofs)/2/number_pi);
     }
   }

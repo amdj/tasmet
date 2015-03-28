@@ -2,10 +2,11 @@
 #ifndef _GEOM_H_
 #define _GEOM_H_
 
+#include "constants.h"
 #include "vtypes.h"
 #include "localgeom.h"
 #include "grid.h"
-#include "pos.h"
+
 
 namespace tube {
   #ifndef SWIG

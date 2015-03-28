@@ -22,14 +22,14 @@ namespace tube{
     PrescribeQty Tsbc;    
     IsoTWall& operator=(const IsoTWall&);
   public:
-    IsoTWall(us segnr,pos position,const variable::var& Tbc);
+    IsoTWall(us segnr,Pos position,const variable::var& Tbc);
     IsoTWall(const IsoTWall& o);
     virtual ~IsoTWall(){}
 
     virtual segment::Connector* copy() const {return new IsoTWall(*this);}
     virtual string getType() const {return string("IsoTWall");}
 
-    virtual bool init(const tasystem::TaSystem&);
+    virtual void init(const tasystem::TaSystem&);
     virtual void updateNf();
     virtual void setEqNrs(us firstdofnr);    
     virtual vd error() const;

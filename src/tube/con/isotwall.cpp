@@ -18,7 +18,7 @@ namespace tube{
   using tasystem::JacRow;
   using tasystem::JacCol;
 
-  IsoTWall::IsoTWall(us segnr,pos position,const var& Tbc):
+  IsoTWall::IsoTWall(us segnr,Pos position,const var& Tbc):
     TubeBc(segnr,position),
     Tbc(Tbc),
     Tsbc(Tbc)
@@ -34,14 +34,12 @@ namespace tube{
     TRACE(15,"IsoTWall::IsoTWall(copy)");
   }
 
-  bool IsoTWall::init(const TaSystem& sys){
+  void IsoTWall::init(const TaSystem& sys){
     TRACE(15,"IsoTWall::init()");
-    if(!TubeBc::init(sys))
-      return false;
+    TubeBc::init(sys);
     Uiszero.setGc(*gc);
     Tbc.setGc(*gc);
     Tsbc.setGc(*gc);
-    return true;
   }
   void IsoTWall::updateNf(){
     Tbc.updateNf();
@@ -51,7 +49,7 @@ namespace tube{
     TRACE(5,"IsoTWall::show()");
     if(isInit()){
       string side;
-      if(position==pos::left)
+      if(pos==Pos::left)
         side="left";
       else
         side="right";
@@ -67,7 +65,7 @@ namespace tube{
     var zero(*gc,0);             // zero at all the time
 
     us Ns=gc->Ns();
-    if(position==pos::left){
+    if(pos==Pos::left){
       const TubeVertex& vertex=t->leftVertex();
       Uiszero.set(firsteqnr,vertex.UL(),zero);
       Tbc.set(firsteqnr+Ns,vertex.TL()); // vals are set in constructor
@@ -90,7 +88,7 @@ namespace tube{
     const TubeBcVertex* vertex;
     
     const var *pb;
-    if(position==pos::left){
+    if(pos==Pos::left){
       vertex=&t->leftVertex();
       pb=&vertex->pL();
     }
@@ -117,7 +115,7 @@ namespace tube{
     const TubeBcVertex* vertex;
     const variable::var* pb;
 
-    if(position==pos::left){
+    if(pos==Pos::left){
       vertex=&t->leftVertex();
       pb=&vertex->pL();
     }

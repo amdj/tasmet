@@ -20,21 +20,21 @@ namespace tube{
     us firsteqnr;
     AdiabaticWall& operator=(const AdiabaticWall&);
   public:
-    AdiabaticWall(us segnr,pos position): TubeBc(segnr,position){}
+    AdiabaticWall(us segnr,Pos position): TubeBc(segnr,position){}
     AdiabaticWall(const AdiabaticWall& o): TubeBc(o) {}
     virtual ~AdiabaticWall(){}
-
     virtual segment::Connector* copy() const {return new AdiabaticWall(*this);}
-    virtual string getType() const {return string("AdiabaticWall");}
+    virtual vd error() const;
 
-    virtual bool init(const tasystem::TaSystem&);
+    #ifndef SWIG
+    virtual string getType() const {return string("AdiabaticWall");}
+    virtual void init(const tasystem::TaSystem&);
     virtual void updateNf();
     virtual void setEqNrs(us firstdofnr);    
-    virtual vd error() const;
     virtual void jac(tasystem::Jacobian&) const;
     // ------------------------------
     virtual void show(us i) const;
-
+    #endif
   };
 
 } // namespace tube

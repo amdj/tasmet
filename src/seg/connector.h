@@ -4,9 +4,13 @@
 #include "vtypes.h"
 #include "segconbase.h"
 
+
+#ifndef SWIG
 namespace tasystem{
   class TaSystem;
 }
+#endif
+
 namespace segment{
   // A connector contains only equations, no degrees of freedom
   
@@ -18,8 +22,10 @@ namespace segment{
     {}
     virtual ~Connector(){}
     virtual Connector* copy() const=0;
+    #ifndef SWIG
     // 100% Forwarding
-    virtual bool init(const tasystem::TaSystem& sys){ return SegConBase::init(sys);}
+    virtual void init(const tasystem::TaSystem& sys){ SegConBase::init(sys);}
+    #endif
   };
 
 } // namespace segment

@@ -45,7 +45,7 @@ namespace tasystem{
     d getMass() const {return mass_;}
 
 
-    virtual bool init();
+    virtual void init();
     virtual void show(us detailnr=0);
     // If user decides to set a "custom mass" in the system, which does
     // not correspond to rho0*TotalFluidVolume

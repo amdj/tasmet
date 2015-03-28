@@ -29,7 +29,7 @@ namespace tube{
     virtual ~LaminarDuct();
   public:
     #ifndef SWIG
-    virtual bool init(const tasystem::TaSystem&);
+    virtual void init(const tasystem::TaSystem&);
     virtual const DragResistance& getDragResistance() const {return laminardrag;}
     virtual const HeatSource& getHeatSource() const=0; // Yup,
     // abstract class. HopkinsLaminarTube implements  one version of

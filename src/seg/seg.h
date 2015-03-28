@@ -6,7 +6,11 @@
 #include "vtypes.h"
 #include "segconbase.h"
 
-
+#ifndef SWIG
+namespace tasystem {
+  class TaSystem;
+} // namespace tasystem
+#endif
 namespace segment{
 
   class Seg:public SegConBase{
@@ -17,10 +21,10 @@ namespace segment{
     Seg& operator=(const Seg&)=delete;
     bool operator==(const Seg& other) const {return (this==&other);}
     virtual segment::Seg* copy() const=0;
-    // Pure virtual functions
 
     #ifndef SWIG
-    const tasystem::Globalconf& getGc() const;
+    // Pure virtual functions
+    void init(const tasystem::TaSystem& sys);
     virtual void resetHarmonics()=0;
     virtual std::string getType() const=0;		   // This param is
     // important for connecting the segments

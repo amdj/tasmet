@@ -37,12 +37,12 @@ namespace tube{
     // Pointer to the geometry
     Geom* geom_=nullptr;		
   protected:
-    // No copy assignments
-    Tube& operator=(const Tube&)=delete; // no copies allowed
+    std::vector<TubeVertex*> vvertex;
+
     // Copy constructor
     Tube(const Tube& other);
-    std::vector<TubeVertex*> vvertex;
     Tube(const Geom& geom) throw(std::exception);
+    Tube& operator=(const Tube&)=delete; // no copies allowed
   public:
     virtual ~Tube();          // Define this class as abstract
 
@@ -71,7 +71,7 @@ namespace tube{
     virtual vd error() const;
 
     #ifndef SWIG
-    virtual bool init(const tasystem::TaSystem&);
+    virtual void init(const tasystem::TaSystem&);
     void setRes(const segment::Seg& other); // To copy from a
     void show(us showvertices=0) const;
 
@@ -100,7 +100,7 @@ namespace tube{
     virtual void updateNf();    
 
     // *similar* segment
-    virtual vd dragCoefVec(us) const;              // return drag
+    virtual vd dragCoefVec(us) const=0;              // return drag
                                                    // coefficient
 
     const TubeVertex& operator[](us i) const;

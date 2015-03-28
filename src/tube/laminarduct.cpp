@@ -38,8 +38,8 @@ namespace tube {
     TRACE(13,"LaminarDuct copy constructor()...");
   }
 
-  bool LaminarDuct::init(const TaSystem& sys){
-    return Tube::init(sys);
+  void LaminarDuct::init(const TaSystem& sys){
+    Tube::init(sys);
   }
   LaminarDuct::~LaminarDuct(){
     TRACE(15,"~LaminarDuct()");

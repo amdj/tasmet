@@ -16,7 +16,7 @@
 #include "grid.h"
 
 
-using namespace std;
+SPOILNAMESPACE
 using namespace segment;
 using namespace tasystem;
 using namespace tube;
@@ -81,8 +81,8 @@ int main(int argc,char* argv[]) {
   // PressureBc p(pL,0,pos::left);
   variable::var Tbc(gc,393.15);
   // AdiabaticWall first(0,pos::left);
-  PressureBc first(pL,0,pos::left); 
-  IsoTWall second(0,pos::right,Tbc);
+  PressureBc first(pL,0,left); 
+  IsoTWall second(0,right,Tbc);
  
   // AdiabaticWall bright(0,pos::right);
   // EngineSystem sys(air);

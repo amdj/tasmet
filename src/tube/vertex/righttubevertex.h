@@ -1,7 +1,7 @@
 #pragma once
 #ifndef _RIGHTTUBEVERTEX_H_
 #define _RIGHTTUBEVERTEX_H_
-#include "pos.h"
+#include "constants.h"
 #include "tubebcvertex.h"
 #include "state.h"
 
@@ -14,7 +14,7 @@ namespace tube{
     RightTubeVertex(us i,const Tube& t);
     virtual ~RightTubeVertex(){}
     virtual void init(const TubeVertex* left,const TubeVertex* right);
-    virtual pos getPos() const {return pos::right;}
+    virtual Pos getPos() const {return Pos::right;}
 
     virtual const variable::var& rhoR() const {return rhoR_;}
     virtual const variable::var& UR() const {return UR_;}

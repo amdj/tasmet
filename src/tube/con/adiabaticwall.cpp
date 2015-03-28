@@ -14,14 +14,12 @@ namespace tube{
   using tasystem::JacRow;
   using tasystem::JacCol;
 
-  bool AdiabaticWall::init(const TaSystem& sys){
+  void AdiabaticWall::init(const TaSystem& sys){
     TRACE(15,"AdiabaticWall::init()");
-    if(!TubeBc::init(sys))
-      return false;
+    TubeBc::init(sys);
     Uiszero.setGc(*gc); 
     drhodxiszero.setGc(*gc);
     setInit(true);
-    return true;
   }
   void AdiabaticWall::updateNf(){
     TRACE(15,"AdiabaticWall::updateNf()");
@@ -30,16 +28,14 @@ namespace tube{
   }
   void AdiabaticWall::show(us i) const {
     TRACE(5,"AdiabaticWall::show()");
-    if(isInit()){
-      string side;
-      if(position==pos::left)
-        side="left";
-      else
-        side="right";
-      cout << "AdiabaticWall boundary condition set at "<<side <<" side of segment "<<segnr<<".\n";
-    }
+    checkInit();
+    string side;
+    if(pos==Pos::left)
+      side="left";
     else
-      WARN("Show called but init not yet done!");
+      side="right";
+    cout << "AdiabaticWall boundary condition set at "<<side <<" side of segment "<<segnr<<".\n";
+    
   }
 
   void AdiabaticWall::setEqNrs(us firsteqnr){
@@ -49,7 +45,7 @@ namespace tube{
 
     var zero(*gc,0);             // zero at all the time
 
-    if(position==pos::left){
+    if(pos==Pos::left){
       const TubeVertex& vertex=t->leftVertex();
       Uiszero.set(firsteqnr,vertex.UL(),zero);
       // d xR=vertex.weightFactors().xR;
@@ -77,7 +73,7 @@ namespace tube{
     vd error(getNEqs());
     us Ns=gc->Ns();
     const TubeBcVertex* vertex;
-    if(position==pos::left){
+    if(pos==Pos::left){
       vertex=&t->leftVertex();
     }
     else{
@@ -94,7 +90,7 @@ namespace tube{
     TRACE(4,"AdiabaticWall::jac()");
     us Ns=gc->Ns();
     const TubeBcVertex* vertex;
-    if(position==pos::left){
+    if(pos==Pos::left){
       vertex=&t->leftVertex();
     }
     else{

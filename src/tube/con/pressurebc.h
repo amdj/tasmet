@@ -1,6 +1,7 @@
 #pragma once
 #ifndef _PRESSUREBC_H_
 #define _PRESSUREBC_H_
+#include "constants.h"
 #include "var.h"
 #include "tubebc.h"
 #include "prescribeqty.h"
@@ -15,7 +16,10 @@ namespace tube{
   #ifndef SWIG
   variable::var coldtemp(const variable::var&);
   #endif
-  
+  #ifdef SWIG
+  // %feature("notabstract") PressureBc;
+  #endif // SWIG
+
   class PressureBc:public TubeBc {
     us firsteqnr;
     PrescribeQty prescribep;			// Pressure boundary condition
@@ -25,27 +29,27 @@ namespace tube{
     PressureBc& operator=(const PressureBc&);
   public:
     // Set all variables
-    PressureBc(const variable::var& p,const variable::var& T,const variable::var& Ts,us segnr,pos position);
+    PressureBc(const variable::var& p,const variable::var& T,const variable::var& Ts,us segnr,Pos position);
     // Assume solid temperature constant at gc.T0;
-    PressureBc(const variable::var& p,const variable::var& T,us segnr,pos position); 
+    PressureBc(const variable::var& p,const variable::var& T,us segnr,Pos position); 
     // Assume above and adiabatic compresion/expansion
-    PressureBc(const variable::var& p,us segnr,pos position);
+    PressureBc(const variable::var& p,us segnr,Pos position);
     PressureBc(const PressureBc& other);
-    virtual ~PressureBc(){}
-    virtual bool init(const tasystem::TaSystem&);
     virtual segment::Connector* copy() const { return new PressureBc(*this);}
+    virtual vd error() const;
+    virtual ~PressureBc(){}
     virtual string getType() const {return string("PressureBc");}
-
+    #ifndef SWIG
+    virtual void init(const tasystem::TaSystem&);
     virtual void updateNf();
     virtual void setEqNrs(us firstdofnr);    
-    virtual vd error() const;
     virtual void jac(tasystem::Jacobian&) const;
     // ------------------------------
     virtual void show(us i) const;
   private:
     static variable::var adiabatictemp(const variable::var& pres); // Return adiabatic compression
     // amplitude values
-
+    #endif // SWIG    
   };
 
 } // namespace tube
