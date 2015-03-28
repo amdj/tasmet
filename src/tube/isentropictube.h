@@ -25,12 +25,11 @@ namespace tube{
     IsentropicTube(const IsentropicTube&);
     virtual segment::Seg* copy() const {TRACE(10,"IsentropicTube copy()");return new IsentropicTube(*this);}
     virtual ~IsentropicTube();
-
+    virtual string getType() const {return "IsentropicTube";}
     #ifndef SWIG
     vd dragCoefVec(us i) const;
     virtual const DragResistance& getDragResistance() const {return nodrag;}
     virtual const HeatSource& getHeatSource() const {return noheat;}
-    virtual string getName() const {return string("IsentropicTube");}
     virtual void init(const tasystem::TaSystem&);
     void cleanup();
     #endif

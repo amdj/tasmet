@@ -30,9 +30,10 @@ namespace tube{
     SimpleTubeConnector(us seg1,Pos pos1,us seg2,Pos pos2);
     SimpleTubeConnector(const SimpleTubeConnector&);
     virtual segment::Connector* copy() const {return new SimpleTubeConnector(*this);}
+    virtual string getType() const {return "SimpleTubeConnector";}
 
-    virtual vd error() const;
     #ifndef SWIG
+    virtual vd error() const;
     virtual void init(const tasystem::TaSystem& sys);
 
     virtual void setEqNrs(us firstdofnr);

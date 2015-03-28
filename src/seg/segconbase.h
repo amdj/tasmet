@@ -49,9 +49,9 @@ namespace segment{
 
     // This function determines whether a class is abstract or not for SWIG
     // Return error from internal equations
-    virtual vd error() const=0;
-
+    virtual string getType() const=0;
     #ifndef SWIG
+    virtual vd error() const=0;
     virtual void setEqNrs(us firstdofnr)=0;    
     virtual us getNEqs() const=0;    
     virtual void show(us) const=0;
@@ -72,7 +72,7 @@ namespace segment{
     void checkInit() const {if(!isInit()) throw MyError("Not initialized"); }
 
     // Get and set number. These functions are accessed from TaSystem
-    void setNumber(us number) {this->number=number;} 
+    void setNumber(us number);
     const int& getNumber() const {return number;}
 
 

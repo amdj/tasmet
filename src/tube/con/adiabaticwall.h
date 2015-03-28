@@ -24,10 +24,10 @@ namespace tube{
     AdiabaticWall(const AdiabaticWall& o): TubeBc(o) {}
     virtual ~AdiabaticWall(){}
     virtual segment::Connector* copy() const {return new AdiabaticWall(*this);}
-    virtual vd error() const;
+    virtual string getType() const {return string("AdiabaticWall");}
 
     #ifndef SWIG
-    virtual string getType() const {return string("AdiabaticWall");}
+    virtual vd error() const;
     virtual void init(const tasystem::TaSystem&);
     virtual void updateNf();
     virtual void setEqNrs(us firstdofnr);    

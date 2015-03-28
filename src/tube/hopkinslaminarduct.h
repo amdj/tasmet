@@ -27,7 +27,7 @@ namespace tube{
     HopkinsLaminarDuct(const HopkinsLaminarDuct& o);
     HopkinsLaminarDuct& operator=(const HopkinsLaminarDuct&)=delete;
     virtual segment::Seg* copy() const{return new HopkinsLaminarDuct(*this);}
-
+    virtual string getType() const {return "HopkinsLaminarDuct";}
     #ifndef SWIG
     virtual void init(const tasystem::TaSystem& gc);
     virtual const HeatSource& getHeatSource() const { return hopkinsheat;}

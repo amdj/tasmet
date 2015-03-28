@@ -10,11 +10,12 @@ namespace tube{
     this->sys=&sys;
     Connector::init(sys);
     try{
-      t=dynamic_cast<const Tube*>(sys.getSeg(segnr));
+      t=&sys.getTube(segnr);
     }
-    catch(std::bad_cast& b){
+    catch(std::exception& b){
       WARN("Seg nr " << segnr << " is not a Tube! Initialization failed.");
-      throw(b);
+      WARN("In: " << getType() << " with name "<< getName() <<", and number:" << getNumber());
+      throw;
     }
   } // init
   us TubeBc::getNEqs() const {

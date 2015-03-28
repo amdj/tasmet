@@ -53,10 +53,10 @@ namespace tasystem{
     return *this;
   }
   TaSystem& TaSystem::operator+=(const Connector& con){
-    TRACE(14,"TaSystem::operator+=(Connector)");
+    TRACE(24,"TaSystem::operator+=(Connector)");
     hasInit=false;
     connectors.emplace_back(con.copy());
-    connectors[nSegs()-1]->setNumber(nSegs()-1);
+    connectors[nConnectors()-1]->setNumber(nConnectors()-1);
     return *this;
   }
 

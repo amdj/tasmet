@@ -10,16 +10,20 @@ namespace segment{
   SegConBase::SegConBase(){
     TRACE(13,"SegConBase::SegConBase()");
     globnr_++;
-    string s="Nameless";
+    string s="Nameless ";
     s+=std::to_string(globnr_);
     name_=s;
   }
   SegConBase::SegConBase(const SegConBase& o):
     name_(o.name_)
-  {/* Copy constructor */  }
+  {/* Copy constructor */
+  }
   void SegConBase::init(const TaSystem& sys){
     TRACE(13,"Seg::init()");
     this->gc=&sys.gc();
   }
+  void SegConBase::setNumber(us number) {
+      TRACE(15,"setNumber called for type" << getType());
+      this->number=number;} 
 
 } // namespace segment

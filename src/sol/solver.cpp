@@ -74,6 +74,7 @@ namespace tasystem{
   typedef tuple<d,d> dtuple;
   void Solver::solve(us maxiter,d funtol,d reltol,d mindampfac,d maxdampfac,bool wait){
     TRACE(20,"Solver started.");
+    sys().checkInit();
     sc=SolverConfiguration(maxiter,funtol,reltol,mindampfac,maxdampfac);
 
     // Stop old solverthread

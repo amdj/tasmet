@@ -69,9 +69,9 @@ namespace tube{
 
      us getNCells() const;
     // Methods not exposed to swig
-    virtual vd error() const;
 
     #ifndef SWIG
+    virtual vd error() const;
     virtual void init(const tasystem::TaSystem&);
     void setRes(const segment::Seg& other); // To copy from a
     void show(us showvertices=0) const;
@@ -83,7 +83,6 @@ namespace tube{
 
     virtual us getNDofs() const;
     virtual us getNEqs() const;    
-    virtual string getType() const final {return "Tube";}
     virtual void setDofNrs(us firstdofnr);
     virtual void setEqNrs(us firstdofnr);    
     virtual d getCurrentMass() const;	// Obtain current mass in
