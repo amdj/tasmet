@@ -7,7 +7,7 @@
 //////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef ISENTROPICTUBE_H
-#define ISENTROPICTUBE_H 1
+#define ISENTROPICTUBE_H
 
 #include "tube.h"
 #include "vtypes.h"

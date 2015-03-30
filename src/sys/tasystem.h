@@ -77,8 +77,9 @@ namespace tasystem{
     void showJac(bool force=false);
     vd Error() {return math_common::EigenToArma(error());}// Total error vector
     virtual void show(us detailnr=0);
-    #ifndef SWIG
     virtual void init();
+
+    #ifndef SWIG
     virtual evd error();			// Total error vector
     virtual evd getRes();			// Extract result vector
     virtual esdmat jac(d dummy=-1);		// Return Jacobian matrix
@@ -95,6 +96,9 @@ namespace tasystem{
     // from the system (we have to determine how elaborated the API
     // has to be.)
     const tube::Tube& getTube(us i) const;
+    us getNDofs() const;	// Compute DOFS in system, set     
+    us getNEqs() const;    
+
     #ifndef SWIG                // The unsafe access methods
     segment::Seg* operator[](us i) const;    
     segment::Seg* getSeg(us i) const; // Easier for cython wrapping
@@ -110,8 +114,6 @@ namespace tasystem{
         return hasInit;
     }
   protected:
-    us getNDofs() const;	// Compute DOFS in system, set     
-    us getNEqs() const;    
     void jacTriplets(TripletList&);
     void setDofEqNrs();
     // A vector of boundary conditions is required

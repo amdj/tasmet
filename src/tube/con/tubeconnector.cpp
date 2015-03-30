@@ -4,7 +4,7 @@
 // 
 // Description:
 // Connect two tube-type segments by using conservation of mass,
-// momentum and energy.
+// momentum and energy. Number of equations 
 //////////////////////////////////////////////////////////////////////
 
 #include "tubeconnector.h"
@@ -12,9 +12,21 @@
 #include "tube.h"
 #include "tubebcvertex.h"
 #include "constants.h"
+#include "lefttubevertex.h"
+#include "righttubevertex.h"
 
 namespace tube {
   using tasystem::TaSystem;
+
+  // Number of equations corresponding to this connection:
+  const int Neq=8;
+  inline const RightTubeVertex& rtv(const Tube& t){
+    return static_cast<const RightTubeVertex&>(t.rightVertex());
+  }
+  inline const LeftTubeVertex& ltv(const Tube& t){
+    return static_cast<const LeftTubeVertex&>(t.leftVertex());
+  }
+
 
   SimpleTubeConnector::SimpleTubeConnector(us seg1,Pos pos1,\
                                            us seg2,Pos pos2)
@@ -24,6 +36,8 @@ namespace tube {
   
     if(max(seg1,seg2)>constants::maxsegs)
       throw MyError("Too high segment number given");
+    if(seg1==seg2)
+      throw MyError("Segments cannot be the same");
     segnrs[0]=seg1;
     segnrs[1]=seg2;
     pos[0]=pos1;
@@ -46,8 +60,9 @@ namespace tube {
   vd SimpleTubeConnector::error() const{
     TRACE(10,"SimpleTubeConnector::error()");
 
-    vd error(gc->Ns());
+    vd error(Neq*gc->Ns());
     vd errorMf(gc->Ns(),fillwith::zeros);
+    vd errorMom(gc->Ns(),fillwith::zeros);
     if(pos[0]==Pos::right){
       errorMf+=tubes[0]->rightVertex().extrapolateQuant(massFlow);
     }
@@ -55,8 +70,12 @@ namespace tube {
       errorMf-=tubes[0]->leftVertex().extrapolateQuant(massFlow);
     }
     if(pos[1]==Pos::right){
-      errorMf+=tubes[1]->rightVertex().extrapolateQuant(massFlow);
+      errorMf+=tubes[1]->rightVertex().continuity().massFlow();
     }
+    if(pos[1]==Pos::left){
+      errorMf-=tubes[1]->leftVertex().continuity().massFlow();
+    }
+    error.subvec(0,gc->Ns()-1)=errorMf;
     return error;
   }
   void SimpleTubeConnector::setEqNrs(us firstdofnr){
@@ -65,7 +84,7 @@ namespace tube {
   }
   us SimpleTubeConnector::getNEqs() const {
     TRACE(15,"SimpleTubeConnector::getNEqs()");
-
+    return Neq*gc->Ns();
   }
   void SimpleTubeConnector::show(us) const{
     TRACE(15,"SimpleTubeConnector::show()");

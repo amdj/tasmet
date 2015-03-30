@@ -62,6 +62,7 @@ typedef std::complex<double> c;
 %include "my_exceptions.i"
 
  // Global config
+%feature("autodoc","3");
 %include "globalconf.h"
 %include "var.h"
 

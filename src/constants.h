@@ -7,7 +7,7 @@
 //////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef CONSTANTS_H
-#define CONSTANTS_H 1
+#define CONSTANTS_H
 
 #ifndef SWIG
 
@@ -53,6 +53,8 @@ namespace tube{
 namespace tube{
 
   #ifndef SWIG
+  // These variable numbers are important, as they determine the
+  // position of these variables in the array in tubevertex.h
   const int RHONR=0;
   const int UNR=1;
   const int TNR=2;
