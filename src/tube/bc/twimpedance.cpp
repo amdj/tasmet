@@ -8,7 +8,7 @@
 
 
 namespace tube{
-  TwImpedance::TwImpedance():TubeBcCell(){
+  TwImpedance::TwImpedance():BcCell(){
     TRACE(8,"TwImpedance constructor");
     // Change continuity equation for open boundary
   }
@@ -36,7 +36,7 @@ namespace tube{
     eqs.at(0)=&righttwimp;
     
     eqs.push_back(&sr);
-    // eqs.push_back(std::unique_ptr<TubeEquation>(sr.copy()));
+    // eqs.push_back(std::unique_ptr<Equation>(sr.copy()));
     vars.push_back(&pr);
 
     TwImpedance::updateW(thisseg);
@@ -241,7 +241,7 @@ namespace tube{
   // dmat TwImpedanceEnergyEq::dUi(const Cell& v) const{
   //   TRACE(4,"TwImpedanceEnergyEq::dUi()");
   //   dmat dUi=Energy::dUi(v);
-  //   assert(v.left!=NULL);
+  //   assert(v.left!=nullptr);
   //   const dmat& fDFT=v.gc->fDFT;
   //   const dmat& iDFT=v.gc->iDFT;
   //   d xhalf=impedancecell.xhalf;
@@ -268,7 +268,7 @@ namespace tube{
   // dmat TwImpedanceEnergyEq::dUim1(const Cell& v) const {
   //   TRACE(4,"TwImpedanceEnergyEq::dUim1()");
   //   dmat dUim1=Energy::dUim1(v);
-  //   assert(v.left!=NULL);
+  //   assert(v.left!=nullptr);
   //   dUim1+=TwImpedanceEnergyEq::dUi(v)*v.wRNm2/v.wRNm1;
   //   return dUim1;
   // }

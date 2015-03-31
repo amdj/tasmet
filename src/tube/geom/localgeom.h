@@ -18,7 +18,7 @@ namespace tube {
     LocalGeom(const Cell&);
     LocalGeom(const Geom& geom,us i);
     virtual ~LocalGeom(){}
-    const Geom* geom=NULL;	// Pointer to global Geometry
+    const Geom* geom=nullptr;	// Pointer to global Geometry
     us i;			// Cell number
     us nCells() const;
 

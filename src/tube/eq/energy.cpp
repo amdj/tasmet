@@ -110,7 +110,7 @@ namespace tube{
   }
   vd Energy::error() const {		// Error in momentum equation
     TRACE(6,"Energy::Error(), i="<<v.geti());
-    assert(v.gc!=NULL);
+    assert(v.gc!=nullptr);
 
     vd error=ddtEtot();         // Time derivative of total energy
     // vd error=ddtEtherm();         // Time derivative of total energy
@@ -121,7 +121,7 @@ namespace tube{
     // VARTRACE(25,QR());
     // VARTRACE(25,QL());
     // External heat    
-    assert(heat!=NULL);
+    assert(heat!=nullptr);
     #ifndef NOHEAT
     error+=Wddt*heat->heat(v);
     #else
@@ -338,7 +338,7 @@ namespace tube{
   }
   void Energy::domg(vd& domg_) const {
     TRACE(0,"Energy::domg()");
-    assert(v.gc!=NULL);
+    assert(v.gc!=nullptr);
 
     d gamma=this->gamma();
     d gamfac=gamma/(gamma-1.0);

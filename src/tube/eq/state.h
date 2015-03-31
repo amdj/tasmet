@@ -1,18 +1,28 @@
+// state.h
+//
+// Author: J.A. de Jong 
+//
+// Description:
+//
+//////////////////////////////////////////////////////////////////////
 #pragma once
-// File stateeq.h
+#ifndef STATE_H
+#define STATE_H
 #include "tubeequation.h"
 
 
 namespace tube{
   SPOILNAMESPACE
 
-  class State:public TubeEquation
+  class State:public Equation
   {
   public:
-    State(const Cell& v):TubeEquation(v){}
+    State(const Cell& v):Equation(v){}
     virtual void init(){}
     tasystem::JacRow jac() const;
     vd error() const;
   };
   
 }
+#endif // STATE_H
+//////////////////////////////////////////////////////////////////////

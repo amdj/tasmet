@@ -11,10 +11,10 @@ void setLogger(int loglevel){
 
 namespace tasystem{
   Globalconf Globalconf::airSTP(us Nf_,d freq) throw(std::exception){
-    return Globalconf(Nf_,freq,"air",constants::TSTP,constants::pSTP);
+    return Globalconf(Nf_,freq,"air",constants::T0,constants::p0);
   }
   Globalconf Globalconf::heliumSTP(us Nf_,d freq) throw(std::exception){
-    return Globalconf(Nf_,freq,"helium",constants::TSTP,constants::pSTP);
+    return Globalconf(Nf_,freq,"helium",constants::T0,constants::p0);
   }
   Globalconf::Globalconf(us Nf,d freq,const string& gasstring,d T0,d p0)
     throw(std::exception)

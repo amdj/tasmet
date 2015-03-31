@@ -34,7 +34,7 @@ namespace tube{
     d p0=v.p()(0)+v.gc->p0();
     d rho0=v.gc->gas().rho(T0,p0);
 
-    const d& rh=v.localGeom().vrh;
+    const d& rh=v.vrh;
     d omg=v.gc->getomg();
     vc rescoef(Nf+1);
     rescoef(0)=zfd(mu0,rh);	// Zero frequency drag divided by zero-frequency velocity

@@ -1,14 +1,23 @@
+// solidenergy.h
+//
+// Author: J.A. de Jong 
+//
+// Description:
+//
+//////////////////////////////////////////////////////////////////////
 #pragma once
+#ifndef SOLIDENERGY_H
+#define SOLIDENERGY_H
 #include "tubeequation.h"
+#include "constants.h"
 
 namespace tube{
 
-  class SolidTPrescribed:public TubeEquation
+  class SolidTPrescribed:public Equation
   {
-  private:
-    const vd* Tsmirror=NULL;
+    d Tsmirror=constants::T0;
   public:
-    SolidTPrescribed(const Cell& v):TubeEquation(v){}
+    SolidTPrescribed(const Cell& v):Equation(v){}
     virtual void init();
     virtual enum EqType getType() const { return EqType::Sol;}
     tasystem::JacRow jac() const;
@@ -17,7 +26,7 @@ namespace tube{
                                 // node i
     vd extrapolateHeatFlow() const;
     tasystem::JacRow dExtrapolateHeatFlow() const;
-
+    void setTs(d Ts) {Tsmirror=Ts;}
     vd kappaL() const;
     vd kappaR() const;
   private:
@@ -26,4 +35,5 @@ namespace tube{
   };
 }
 
-
+#endif // SOLIDENERGY_H
+//////////////////////////////////////////////////////////////////////

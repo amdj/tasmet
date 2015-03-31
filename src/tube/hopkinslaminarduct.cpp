@@ -49,8 +49,8 @@ namespace tube{
       Cell& ccell=*cells[i];
       variable::var Tvar(*gc);
       Tvar.set(0,T);
-      ccell.setResVar(varnr::T,Tvar);
-      ccell.setResVar(varnr::Ts,Tvar);
+      ccell.setResVar(Varnr::T,Tvar);
+      ccell.setResVar(Varnr::Ts,Tvar);
     }
     hopkinsheat.setdTwdx(geom(),dTwdx);
     setInit(true);

@@ -1,4 +1,4 @@
-#include "tubebccell.h"
+#include "bccell.h"
 #include "var.h"
 #include "jacobian.h"
 #include "weightfactors.h"
@@ -8,11 +8,11 @@ namespace tube{
   using tasystem::JacRow;
   using tasystem::JacCol;
 
-  TubeBcCell::TubeBcCell(us i,const Tube& t):
+  BcCell::BcCell(us i,const Tube& t):
     Cell(i,t)
   {}
-   vd TubeBcCell::extrapolateQuant(physquant q) const {
-    TRACE(10,"TubeBcCell::extrapolateQuant()");
+   vd BcCell::extrapolateQuant(physquant q) const {
+    TRACE(10,"BcCell::extrapolateQuant()");
     switch(q){
     case massFlow:
       return extrapolateMassFlow();
@@ -37,8 +37,8 @@ namespace tube{
     abort();
     return vd2();               // To avoid compiler warning
   }
-  JacRow TubeBcCell::dExtrapolateQuant(physquant q) const{
-    TRACE(10,"TubeBcCell::dExtrapolateQuant()");
+  JacRow BcCell::dExtrapolateQuant(physquant q) const{
+    TRACE(10,"BcCell::dExtrapolateQuant()");
     switch(q){
     case massFlow:
       return dExtrapolateMassFlow();

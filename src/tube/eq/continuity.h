@@ -1,12 +1,21 @@
+// continuity.h
+//
+// Author: J.A. de Jong 
+//
+// Description:
+//
+//////////////////////////////////////////////////////////////////////
 #pragma once
+#ifndef CONTINUITY_H
+#define CONTINUITY_H
 #include "tubeequation.h"
 
 namespace tube{
 
-  class Continuity:public TubeEquation{	// Tube continuity equation 
-    d Wddt=0,WL=0,Wi=0,WR=0;
+  class Continuity:public Equation{	// Tube continuity equation 
+    d Wddt=0;
   public:
-    Continuity(const Cell& v):TubeEquation(v){TRACE(15,"Continuity()");}
+    Continuity(const Cell& v):Equation(v){TRACE(15,"Continuity()");}
     virtual void init();
     virtual enum EqType getType() const { return EqType::Con;}
     virtual void show() const;
@@ -24,3 +33,5 @@ namespace tube{
   };				// Continuity class
 }				// Namespace tube
 
+#endif // CONTINUITY_H
+//////////////////////////////////////////////////////////////////////

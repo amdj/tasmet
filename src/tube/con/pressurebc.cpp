@@ -93,7 +93,7 @@ namespace tube{
     us Ns=gc->Ns();
     const dmat& fDFT=gc->fDFT;
     vd massflowv;
-    const TubeBcCell* cell;
+    const BcCell* cell;
     if(pos==Pos::left){
       cell=&t->leftCell();
       massflowv=fDFT*(cell->rhoL().tdata()%cell->UL().tdata());
@@ -119,7 +119,7 @@ namespace tube{
     const dmat& fDFT=gc->fDFT;
     const dmat& iDFT=gc->iDFT;
 
-    const TubeBcCell* cell;
+    const BcCell* cell;
     if(pos==Pos::left){
       cell=&t->leftCell();
       massfloweq+=JacCol(cell->rhoL(),fDFT*cell->UL().diagt()*iDFT);

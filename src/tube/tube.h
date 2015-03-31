@@ -28,7 +28,7 @@ namespace tube{
   class Cell;
   class Geom;
 
-  class TubeBcCell;
+  class BcCell;
   #endif
 
   class Tube:public segment::Seg {
@@ -54,8 +54,8 @@ namespace tube{
     vd Htot() const throw(std::exception);
 
     // Set individual at certain location for certain harmonic number
-    void setResVar(varnr,us i,us freqnr,d value);
-    void setResVar(varnr,us freqnr,const vd& value);
+    void setResVar(Varnr,us i,us freqnr,d value);
+    void setResVar(Varnr,us freqnr,const vd& value);
     
     // Return a vector of all dof positions, including the DOFS at the
     // ends.
@@ -63,8 +63,8 @@ namespace tube{
     
     // Return a value in form of an array with length equal to the
     // length returned with getx(). 
-    vd getValue(varnr,us freqnr) const throw(std::exception); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
-    vc getValueC(varnr,us freqnr) const throw(std::exception); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
+    vd getValue(Varnr,us freqnr) const throw(std::exception); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
+    vc getValueC(Varnr,us freqnr) const throw(std::exception); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
     vd getErrorAt(us eqnr,us freqnr) const throw(std::exception); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
 
      us getNCells() const;
@@ -78,8 +78,8 @@ namespace tube{
 
 
     us getNCell() const {return cells.size();}    
-    vd interpolateResMid(varnr v,d x) const; // Amplitude data vectors
-    vd interpolateResStaggered(varnr v,d x) const; // Amplitude data!!
+    vd interpolateResMid(Varnr v,d x) const; // Amplitude data vectors
+    vd interpolateResStaggered(Varnr v,d x) const; // Amplitude data!!
 
     virtual us getNDofs() const;
     virtual us getNEqs() const;    
@@ -104,8 +104,8 @@ namespace tube{
                                                    // coefficient
 
     const Cell& operator[](us i) const;
-    const TubeBcCell& leftCell() const;
-    const TubeBcCell& rightCell() const;
+    const BcCell& leftCell() const;
+    const BcCell& rightCell() const;
     const Cell& getCell(us i) const;
     virtual void jac(tasystem::Jacobian& tofill) const;
     virtual const DragResistance& getDragResistance() const=0;

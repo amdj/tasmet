@@ -111,8 +111,8 @@ namespace tube {
     for(i=0;i<cells.size();i++){
       TRACE(13,"Starting intialization of Cell "<< i);
       Cell* thiscell=cells[i];
-      Cell* left=NULL;
-      Cell* right=NULL;
+      Cell* left=nullptr;
+      Cell* right=nullptr;
       if(i<nCell-1)
         right=cells[i+1];
       if(i>0)
@@ -140,14 +140,14 @@ namespace tube {
       (*v)->updateNf();
     }
   }
-  const TubeBcCell& Tube::leftCell() const{
+  const BcCell& Tube::leftCell() const{
     TRACE(3,"Tube::leftCell()");
     assert(cells[0]);
-    return static_cast<const TubeBcCell&>(*cells[0]);
+    return static_cast<const BcCell&>(*cells[0]);
   }
-  const TubeBcCell& Tube::rightCell() const{
+  const BcCell& Tube::rightCell() const{
     TRACE(3,"Tube::rightCell()");
-    return static_cast<const TubeBcCell&>(**(cells.end()-1));
+    return static_cast<const BcCell&>(**(cells.end()-1));
   }
   vd Tube::getx() const {
     TRACE(10,"Tube::getx()");
@@ -155,7 +155,7 @@ namespace tube {
     return geom().vx_vec();
   }
     
-  vd Tube::getValue(varnr v,us freqnr) const throw(std::exception) {
+  vd Tube::getValue(Varnr v,us freqnr) const throw(std::exception) {
     TRACE(10,"Tube::getValue("<<(int)v<<","<<freqnr<<")");
     checkInit();
     if(freqnr>=gc->Ns())
@@ -171,7 +171,7 @@ namespace tube {
     res(nCells+1)=rightCell().getValueBc(v,freqnr);
     return res;
   }
-  vc Tube::getValueC(varnr v,us freqnr) const throw(std::exception) {
+  vc Tube::getValueC(Varnr v,us freqnr) const throw(std::exception) {
     TRACE(10,"Tube::getResAt("<<(int)v<<","<<freqnr<<")");
     const us nCells=geom().nCells();
     if(freqnr>gc->Nf() || freqnr<1)
@@ -199,22 +199,22 @@ namespace tube {
     TRACE(15,"Tube::dmtotdx()");
     us ncell=cells.size(),Neq;
     us rhodof;
-    for(auto v=cells.begin();v!=cells.end();v++){
-      rhodof=(*ccell.rho())->getDofNr();
-      dmtotdx_(rhodof)=(*v)->localGeom().vVf;
+    for(auto cell=cells.begin();cell!=cells.end();cell++){
+      rhodof=(*cell)->rho().getDofNr();
+      dmtotdx_(rhodof)=(*cell)->vVf;
     }
   }
 
-  vd Tube::Htot() const throw(std::exception){
-    TRACE(15,"Tube::Htot()");
+  // vd Tube::Htot() const throw(std::exception){
+  //   TRACE(15,"Tube::Htot()");
     
-    us ncell=cells.size();
-    vd Htot(ncell);
-    for(us i=0;i<ncell;i++){
-      Htot(i)=cells[i]->Htot();
-    }
-    return Htot;
-  }
+  //   us ncell=cells.size();
+  //   vd Htot(ncell);
+  //   for(us i=0;i<ncell;i++){
+  //     Htot(i)=cells[i]->Htot();
+  //   }
+  //   return Htot;
+  // }
 
   void Tube::show(us detailnr) const {
     cout << "++++++++++++Tube name: "<< getName() << " ++++++++++++++++\n";
@@ -249,7 +249,7 @@ namespace tube {
   vd Tube::getRes() const {
     TRACE(8,"Tube::GetRes()");
     assert(cells.size()!=0);
-    assert(gc!=NULL);
+    assert(gc!=nullptr);
     vd Result(getNDofs(),fillwith::zeros);
     us nCell=cells.size();    
     us Ns=gc->Ns();
@@ -264,7 +264,7 @@ namespace tube {
   vd Tube::error() const{
     TRACE(8,"Tube::Error()");
     assert(cells.size()!=0);
-    assert(gc!=NULL);
+    assert(gc!=nullptr);
     vd error(getNEqs(),fillwith::zeros);
     us nCell=cells.size();    
     us Ns=gc->Ns();
@@ -304,12 +304,12 @@ namespace tube {
   }
 
   // Various set and get methods
-  void Tube::setResVar(varnr v,us i,us freqnr,d value){
+  void Tube::setResVar(Varnr v,us i,us freqnr,d value){
     WARN("Func does nothing!");
   }
-  void Tube::setResVar(varnr v,us freqnr,const vd& vals){
+  void Tube::setResVar(Varnr v,us freqnr,const vd& vals){
     TRACE(15,"Tube::setResVar()");
-    if(v==varnr::p){
+    if(v==Varnr::p){
       assert(vals.size()==geom().nCells()+1);
     }
     else{
@@ -331,14 +331,14 @@ namespace tube {
 
   
     for(auto v=cells.begin();v!=cells.end();v++){
-      const Cell& thiscell=*(*v);
-      d vx=thiscell.localGeom().vx;
-      d xL=thiscell.localGeom().xL;
-      thiscell.setResVar(varnr::rho,other.interpolateResMid(varnr::rho,vx));
-      thiscell.setResVar(varnr::U,other.interpolateResMid(varnr::U,vx));
-      thiscell.setResVar(varnr::T,other.interpolateResMid(varnr::T,vx));
-      thiscell.setResVar(varnr::Ts,other.interpolateResMid(varnr::Ts,vx));
-      thiscell.setResVar(varnr::p,other.interpolateResStaggered(varnr::p,xL));
+      Cell& thiscell=*(*v);
+      d vx=thiscell.vx;
+      d xL=thiscell.xL;
+      thiscell.setResVar(Varnr::rho,other.interpolateResMid(Varnr::rho,vx));
+      thiscell.setResVar(Varnr::U,other.interpolateResMid(Varnr::U,vx));
+      thiscell.setResVar(Varnr::T,other.interpolateResMid(Varnr::T,vx));
+      thiscell.setResVar(Varnr::Ts,other.interpolateResMid(Varnr::Ts,vx));
+      thiscell.setResVar(Varnr::p,other.interpolateResStaggered(Varnr::p,xL));
       WARN("boundaries todo");
       // if(v==(cells.end()-1)){
       //   if(bcRight){
@@ -350,7 +350,7 @@ namespace tube {
     } // for
 
   }
-  vd Tube::interpolateResStaggered(varnr v,d x) const{
+  vd Tube::interpolateResStaggered(Varnr v,d x) const{
     TRACE(2,"Tube::interpolateResStaggered("<<v<<","<<x<<")");
     WARN("out of order!");
     us leftpos=0;
@@ -369,14 +369,14 @@ namespace tube {
     VARTRACE(2,iright);
     // vd left=leftcell.getRes(v)();
     // vd right=rightcell.getRes(v)();
-    // d xleft=leftcell.localGeom().xL;
-    // d xright=rightcell.localGeom().xL;
+    // d xleft=leftcell.xL;
+    // d xright=rightcell.xL;
     // d relpos=(x-xleft)/(xright-xleft);
     // VARTRACE(5,relpos);
     // return math_common::linearInterpolate(left,right,relpos);
   }
 
-  vd Tube::interpolateResMid(varnr v,d x) const{
+  vd Tube::interpolateResMid(Varnr v,d x) const{
     TRACE(2,"Tube::interpolateResMid("<<v<<","<<x<<")");
     us leftpos=0;
     assert(x>=0);
@@ -396,8 +396,8 @@ namespace tube {
     const Cell& rightcell=*cells[iright];
     // vd left=leftcell.getRes(v)();
     // vd right=rightcell.getRes(v)();
-    // d xleft=leftcell.localGeom().vx;
-    // d xright=rightcell.localGeom().vx;
+    // d xleft=leftcell.vx;
+    // d xright=rightcell.vx;
     // d relpos=(x-xleft)/(xright-xleft);
     // VARTRACE(5,relpos);
     // return math_common::linearInterpolate(left,right,relpos);

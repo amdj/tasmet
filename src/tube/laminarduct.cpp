@@ -1,10 +1,12 @@
-/*
- * lintube.cpp
+// laminarduct.cpp
+//
+// last-edit-by: J.A. de Jong 
+// 
+// Description:
+//
+//////////////////////////////////////////////////////////////////////
 
- *
- *  Created on: Oct 8, 2013
- *      Author: anne
- */
+
 
 #include "laminarduct.h"
 #include "cell.h"
@@ -58,3 +60,4 @@ namespace tube {
   
 } /* namespace tube */
 
+//////////////////////////////////////////////////////////////////////

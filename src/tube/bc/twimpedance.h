@@ -23,7 +23,7 @@ namespace tube{
     virtual JacCol dUi(const Cell&) const;
     virtual JacCol dUim1(const Cell&) const;
     virtual JacCol dpR(const Cell& v) const;
-    virtual TubeEquation* copy() const {return new TwImpedanceMomentumEq(*this);}
+    virtual Equation* copy() const {return new TwImpedanceMomentumEq(*this);}
   }; 
   // class TwImpedanceEnergyEq:public Energy{
   // private:
@@ -35,9 +35,9 @@ namespace tube{
   //   virtual dmat dUi(const Cell&) const;
   //   virtual dmat dUim1(const Cell&) const;
   // }; 
-  class RightTwImpedanceEq: public TubeEquation{
+  class RightTwImpedanceEq: public Equation{
   public:
-    virtual TubeEquation* copy() const {return new RightTwImpedanceEq(*this);}
+    virtual Equation* copy() const {return new RightTwImpedanceEq(*this);}
     virtual vd error(const Cell&) const;
     virtual JacRow jac(const Cell& v) const;
     virtual JacCol dUi(const Cell&) const;
@@ -46,7 +46,7 @@ namespace tube{
     virtual JacCol dpL(const Cell&) const;    
   }; 
 
-  class TwImpedance:public TubeBcCell // Adiabatic impedance boundary condition
+  class TwImpedance:public BcCell // Adiabatic impedance boundary condition
   {
   public:
     // TwImpedanceMomentumEq mright; // Completely adjusted equation
@@ -66,7 +66,7 @@ namespace tube{
     virtual void initCell(us i,const Tube& thisseg);
     virtual string getType() const {return string("TwImpedance");}
     virtual enum connectpos connectPos() const {return connectpos::right;}
-    virtual TubeBcCell* copy() const {return new TwImpedance(*this);}
+    virtual BcCell* copy() const {return new TwImpedance(*this);}
   private:
     virtual void updateW(const SegBase&);
     // friend class TwImpedanceMomentumEq;

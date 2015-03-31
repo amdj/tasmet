@@ -36,8 +36,22 @@ namespace constants {
   const d minT=2;                 // Minimal temperature
   const d maxT=2000;              // Maximal temperature
 
-  const d pSTP=101325;
-  const d TSTP=293.15;
+  const d p0=101325;
+  const d T0=293.15;
+
+  #ifndef SWIG
+  // These variable numbers are important, as they determine the
+  // position of these variables in the array in cell.h
+  const int rho=0;
+  const int rhoU=1;
+  const int T=2;
+  const int p=3;
+  const int Ts=4;
+  // Number of variables
+  const int nvars=5;
+  const int neqs=5;
+  #endif
+
   
 } // namespace constants
 
@@ -46,26 +60,16 @@ namespace constants {
 namespace segment{
   enum Pos{left=0,right=1};
 }
+
 namespace tube{
   typedef segment::Pos Pos;
-}
 
-namespace tube{
-
-  #ifndef SWIG
-  // These variable numbers are important, as they determine the
-  // position of these variables in the array in cell.h
-  const int RHONR=0;
-  const int UNR=1;
-  const int TNR=2;
-  const int PNR=3;
-  const int TSNR=4;
-  // Number of variables
-  const int NVARS=5;
-  #endif
-
-  enum varnr{rho=RHONR, U=UNR, T=TNR, p=PNR, Ts=TSNR,
-             rhoL, rhoR, UL, UR, TL, TR, pL, pR, TsL, TsR
+  enum Varnr{rho=constants::rho,
+             rhoU=constants::rhoU,
+             T=constants::T,
+             p=constants::p,
+             Ts=constants::Ts,
+             U
   };
 
   enum physquant{massFlow,

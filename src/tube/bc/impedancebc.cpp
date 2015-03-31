@@ -5,7 +5,7 @@
 
 
 namespace tube{
-  RightImpedance::RightImpedance(vd Z1):TubeBcCell(),Z(Z1),mright(*this,Z){
+  RightImpedance::RightImpedance(vd Z1):BcCell(),Z(Z1),mright(*this,Z){
     TRACE(8,"RightImpedance constructor");
     // Change continuity equation for open boundary
   }
@@ -61,7 +61,7 @@ namespace tube{
 
     // Conduction terms are not changed.
   }
-  RightImpedanceMomentumEq::RightImpedanceMomentumEq(TubeBcCell& tv,vd& Z):Z(Z){
+  RightImpedanceMomentumEq::RightImpedanceMomentumEq(BcCell& tv,vd& Z):Z(Z){
     TRACE(6,"RightImpedanceMomentumEq::RightImpedanceMomentumEq()");
     TRACE(6,"Z:\n"<<Z)
       }

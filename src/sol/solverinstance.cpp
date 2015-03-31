@@ -19,7 +19,7 @@ namespace tasystem{
 
   void SolverInstance::operator()(){
     TRACE(15,"SolverInstance::operator()");
-    assert(sol!=NULL);
+    assert(sol!=nullptr);
     SolverConfiguration& sc=sol->sc;
 
     TaSystem& sys=sol->sys();

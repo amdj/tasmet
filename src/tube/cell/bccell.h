@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _TUBEBCELL_H_
-#define _TUBEBCELL_H_
+#ifndef _BCCELL_H_
+#define _BCCELL_H_
 
 #include "cell.h"
 #include "var.h"
@@ -16,15 +16,15 @@ namespace tube{
 
   class Tube;
 
-  class TubeBcCell:public Cell{
-    segment::Connector* con=NULL;
+  class BcCell:public Cell{
+    segment::Connector* con=nullptr;
   public:
-    TubeBcCell(us i,const Tube& t);
-    virtual ~TubeBcCell(){}
+    BcCell(us i,const Tube& t);
+    virtual ~BcCell(){}
     virtual Pos getPos() const=0;
     vd extrapolateQuant(physquant) const;
     tasystem::JacRow dExtrapolateQuant(physquant) const;
-    virtual d getValueBc(varnr,us freqnr) const=0;
+    virtual d getValueBc(Varnr,us freqnr) const=0;
   private:
     virtual vd extrapolateMassFlow() const=0;
     virtual tasystem::JacRow dExtrapolateMassFlow() const=0;
@@ -36,4 +36,4 @@ namespace tube{
 
 } // namespace tube
 
-#endif /* _TUBEBCELL_H_ */
+#endif /* _BCCELL_H_ */

@@ -1,10 +1,13 @@
-// File tubeequation.h
+// tubeequation.h
+//
+// Author: J.A. de Jong 
+//
+// Description:
+//
+//////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef _TUBEEQUATION_H_
-#define _TUBEEQUATION_H_
-#define iDFT (v.gc->iDFT)
-#define fDFT (v.gc->fDFT)
-
+#ifndef TUBEEQUATION_H
+#define TUBEEQUATION_H
 #include "vtypes.h"
 
 namespace tasystem{
@@ -30,12 +33,12 @@ namespace tube{
   class Tube;
   class WeightFactors;
   
-  class TubeEquation{
+  class Equation{
   protected:
     const Cell& v;
     us dofnr;
   public:
-    TubeEquation(const Cell& v):v(v){TRACE(15,"TubeEquation(v)");}
+    Equation(const Cell& v):v(v){TRACE(15,"Equation(v)");}
     void setDofNr(us Dofnr){dofnr=Dofnr;}
     us getDofNr(){return dofnr;}    
     virtual void init()=0;
@@ -43,6 +46,7 @@ namespace tube{
 
     // Return an eye of the right size:
     dmat eye() const;
+    vd zeros() const;
     virtual tasystem::JacRow jac() const=0;		// Returns the local Jacobian of this equation
     virtual vd error() const=0;
     virtual void show() const { cout << "Empty equation description. From equation.h.\n";}
@@ -53,9 +57,11 @@ namespace tube{
     // dmat d_l() const;			// Artificial viscosity pre-factor
                                 // left size
     vd getp0t() const;
-    virtual ~TubeEquation(){}
+    virtual ~Equation(){}
   private:
     vd nu(const Cell&) const;			// Function of d^2p/dx^2
-  };				// class TubeEquation
+  };				// class Equation
 } // namespace tube
 #endif /* _TUBEEQUATION_H_ */
+
+//////////////////////////////////////////////////////////////////////

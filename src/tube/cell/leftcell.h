@@ -1,12 +1,12 @@
 #pragma once
-#ifndef _LEFTCELL.H_
-#define _LEFTCELL.H_
+#ifndef _LEFTCELL_H_
+#define _LEFTCELL_H_
 #include "constants.h"
-#include "tubebccell.h"
+#include "bccell.h"
 
 namespace tube{
 
-  class LeftCell:public TubeBcCell{
+  class LeftCell:public BcCell{
     variable::var UL_,TL_,TsL_,rhoL_;  
   public:
     LeftCell(us i,const Tube& t);
@@ -23,8 +23,8 @@ namespace tube{
     virtual const variable::var& TsL() const {return TsL_;}
     virtual void show(us detailnr=1) const;
 
-    virtual void setResVar(varnr,const vd& res);
-    virtual d getValueBc(varnr,us freqnr) const;
+    virtual void setResVar(Varnr,const vd& res);
+    virtual d getValueBc(Varnr,us freqnr) const;
   private:
     virtual vd extrapolateMassFlow() const;
     virtual tasystem::JacRow dExtrapolateMassFlow() const;
@@ -36,4 +36,4 @@ namespace tube{
 
 } // namespace tube
 
-#endif /* _LEFTCELL.H_ */
+#endif /* _LEFTCELL_H_ */

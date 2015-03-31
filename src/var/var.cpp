@@ -57,7 +57,7 @@ namespace variable {
     // THIS WOULD COUPLE TO THE WRONG GLOBALCONF when setRes is used
     // between tubes!!!!!
     if(this!=&other){
-      if(this->gc_==NULL)
+      if(this->gc_==nullptr)
         this->gc_=other.gc_;
     
       this->Nf=other.Nf;
@@ -79,7 +79,7 @@ namespace variable {
     return result;
   }
   var var::operator*(d scalar) const {	// Post-multiplication with scalar
-    assert(this->gc_!=NULL);
+    assert(this->gc_!=nullptr);
     vd thisadata=this->tdata();
     return var(*(this->gc_),scalar*thisadata);
   }

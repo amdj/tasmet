@@ -67,7 +67,7 @@ namespace tasystem{
     if(i<nSegs)
       return segs[i];
     else
-      return NULL;
+      return nullptr;
   }
   void TaSystem::setDofEqNrs(){
     TRACE(14,"TaSystem::setDofnrs()");

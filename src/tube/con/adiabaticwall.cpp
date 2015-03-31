@@ -72,7 +72,7 @@ namespace tube{
     TRACE(4,"AdiabaticWall::error()");
     vd error(getNEqs());
     us Ns=gc->Ns();
-    const TubeBcCell* cell;
+    const BcCell* cell;
     if(pos==Pos::left){
       cell=&t->leftCell();
     }
@@ -89,7 +89,7 @@ namespace tube{
   void AdiabaticWall::jac(Jacobian& jac) const {
     TRACE(4,"AdiabaticWall::jac()");
     us Ns=gc->Ns();
-    const TubeBcCell* cell;
+    const BcCell* cell;
     if(pos==Pos::left){
       cell=&t->leftCell();
     }

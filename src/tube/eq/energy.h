@@ -8,9 +8,9 @@ namespace tube{
   SPOILNAMESPACE
 
   
-  class Energy:public TubeEquation
+  class Energy:public Equation
   {
-    const HeatSource* heat=NULL;
+    const HeatSource* heat=nullptr;
 
   public:
     d Wddt=0,Wddtkin=0;
@@ -18,7 +18,7 @@ namespace tube{
     d WcLl=0,WcLr=0,WcRl=0,WcRr=0; // Conduction weight factors
     d WkinLl=0,WkinLr=0,WkinRl=0,WkinRr=0;
   public:
-    Energy(const Cell& v):TubeEquation(v){}
+    Energy(const Cell& v):Equation(v){}
     d Htot() const;             // Total enthalpy flow through this node
     virtual void init();
     virtual tasystem::JacRow jac() const;

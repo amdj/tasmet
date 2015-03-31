@@ -9,11 +9,12 @@ namespace tube{
   inline double max(d x,d y)  {
     return x<=y? y : x;
   }
-  vd TubeEquation::getp0t() const {
-    TRACE(0,"TubeEquation::getp0t()");
+  vd Equation::getp0t() const {
+    TRACE(0,"Equation::getp0t()");
     return v.gc->p0()*vd(v.gc->Ns(),fillwith::ones);
   }    
-  dmat TubeEquation::eye() const {return arma::eye(v.gc->Ns(),v.gc->Ns());}
+  dmat Equation::eye() const {return arma::eye(v.gc->Ns(),v.gc->Ns());}
+  vd Equation::zeros() const {return vd(v.gc->Ns(),fillwith::zeros);}
   // Artificial viscosity matrices
   // vd eps(const vd& nu,d kappa) {
   //   TRACE(5,"eps()");
@@ -28,8 +29,8 @@ namespace tube{
   //   return eps;
   // }
 
-  // dmat TubeEquation::d_r() const {
-  //   TRACE(3,"TubeEquation::d_r()");
+  // dmat Equation::d_r() const {
+  //   TRACE(3,"Equation::d_r()");
   //   const us Ns=v.gc->Ns();
   //   if(!v.right())
   //     return d_l(v);
@@ -43,8 +44,8 @@ namespace tube{
   // }
 
   
-  // dmat TubeEquation::d_l() const {
-  //   TRACE(3,"TubeEquation::d_l()");
+  // dmat Equation::d_l() const {
+  //   TRACE(3,"Equation::d_l()");
   //   const us Ns=v.gc->Ns();
   //   if(!v.left)
   //     return d_r(v);
@@ -56,8 +57,8 @@ namespace tube{
   //     return Dl;
   //   }
   // }
-  // vd TubeEquation::nu() const {
-  //   TRACE(3,"TubeEquation::nu()");
+  // vd Equation::nu() const {
+  //   TRACE(3,"Equation::nu()");
   //   const d& Ns=v.gc->Ns();
   //   TRACE(3,"SFSG"<<Ns);    
   //   vd pi(Ns);

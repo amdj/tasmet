@@ -17,7 +17,7 @@ namespace tube{
     RightIsoTWall(const RightIsoTWall& o):RightIsoTWall(o.Tbc){}
     virtual void initCell(us i,const Tube&);
     virtual string getType() const {return string("RightIsoTWall");}
-    virtual TubeBcCell* copy() const {return new RightIsoTWall(*this);}
+    virtual BcCell* copy() const {return new RightIsoTWall(*this);}
     virtual vd esource() const final;		// Source term for constant
     // temperature
   private:
@@ -32,7 +32,7 @@ namespace tube{
     LeftIsoTWall(const LeftIsoTWall& o):LeftIsoTWall(o.Tbc){}
     virtual void initCell(us i,const Tube&);
     virtual string getType() const {return string("LeftIsoTWall");}
-    virtual TubeBcCell* copy() const {return new LeftIsoTWall(*this);}
+    virtual BcCell* copy() const {return new LeftIsoTWall(*this);}
     virtual vd esource() const final;		// Source term for constant
     // temperature
   private:

@@ -1,9 +1,8 @@
 // File cell.h
 #pragma once
-#ifndef _CELL.H_
-#define _CELL.H_
+#ifndef _CELL_H_
+#define _CELL_H_
 
-#include "localgeom.h"
 #include "var.h"
 #include "tubeequation.h"
 #include "continuity.h"
@@ -27,17 +26,15 @@ namespace tube {
   class Cell {
     //Gridpoint at a position
     //in a Tube
-    us i;                       // number of this cell
-    const Tube* tube=NULL;
-    WeightFactors* w_=NULL;
+    const Tube* tube=nullptr;
   public:
-    const tasystem::Globalconf* gc=NULL;
+    const tasystem::Globalconf* gc=nullptr;
   protected:
-    const Cell* left_=NULL;
-    const Cell* right_=NULL;
+    const Cell* left_=nullptr;
+    const Cell* right_=nullptr;
 
     vector<variable::var*> vars;
-    vector<TubeEquation*> eqs; // Vector of pointers to the
+    vector<Equation*> eqs; // Vector of pointers to the
 
     variable::var rho_;		// Density
     variable::var rhoUL_;		// Mass flow at left cell wall
@@ -54,11 +51,30 @@ namespace tube {
     Isentropic e;              // Do we really need this burden?
     State s;
     SolidTPrescribed se;
-    Isentropic is;              // Do we really need this burden?
+    Isentropic is;              // Does not have 
 
   public:
+    // Geometric data ********************
+    us i=0;                       // number of this cell
+    d vx=0;                       // Vertex position
+    d xL=0;                     // Absolute position of left cell wall
+    d xR=0;                     // Absolute position of right cell wall    
+
+    d vSf=0;			// Cell fluid cross-sectional area
+    d vSs=0;			// Cell solid cross-sectional area
+    d vVf=0;			// Cell cell fluid volume
+    d vVs=0;			// Cell cell solid volume
+
+    d SfL=0,SfR=0;		// Fluid surface area at cell walls.
+
+    d SsL=0,SsR=0;    
+    d vrh=0;			// Current cell hydraulic radius
+    d rhL=0;            // Hydraulic radius at left cell wall
+    d rhR=0;            // Hydraulic radius at right cell wall
+    // End geometric data ********************
+
     Cell(us i,const Tube&);
-    virtual ~Cell();     // Deletes weightfactors instance
+    virtual ~Cell();
 
     // No copy assignments allowed
     Cell& operator=(const Cell& v)=delete;
@@ -71,10 +87,6 @@ namespace tube {
     // const Energy& energy() const {return e;}
 
     virtual void init(const Cell* left,const Cell* right);   
-
-    // Get methods
-    const LocalGeom& localGeom() const;
-    const WeightFactors& weightFactors() const;
 
     const Cell* left() const {return left_;}
     const Cell* right() const {return right_;}
@@ -129,15 +141,15 @@ namespace tube {
 
     virtual void jac(tasystem::Jacobian& tofill) const;		       // Fill complete Jacobian for this node
     virtual void domg(vd& ) const;
-    void setResVar(varnr,const variable::var& res);
-    virtual void setResVar(varnr,const vd& res); // Overridden for
+    void setResVar(Varnr,const variable::var& res);
+    virtual void setResVar(Varnr,const vd& res); // Overridden for
                                                  // lefttubecell and
                                                  // righttubecell!
     
     virtual vd getRes() const;			  // Extract current result
                                           // vector
-    d getValue(varnr,us freqnr) const;
-    variable::var getValue(varnr) const;
+    d getValue(Varnr,us freqnr) const;
+    variable::var getValue(Varnr) const;
     virtual void updateNf();
 
     // Convenience function, we need a lot of static (background
@@ -156,6 +168,6 @@ namespace tube {
   };				// Cell class
 } // namespace tube
 
-#endif /* _CELL.H_ */
+#endif /* _CELL_H_ */
 
 

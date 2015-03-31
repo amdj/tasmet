@@ -28,7 +28,7 @@ namespace tube{
     d p0=v.gc->p0();
     d rho0=v.gc->gas().rho(T0,p0);
     d gamma=v.gc->gas().gamma(T0);
-    vd p0vec_freqdomain=vd(v.gc->Ns(),fillwith::zeros);
+    vd p0vec_freqdomain=zeros();
     p0vec_freqdomain(0)=p0;
 
     // Integrated form

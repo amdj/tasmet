@@ -26,7 +26,7 @@ namespace variable {
 
   class var {
     int dofnr=-1;
-    const tasystem::Globalconf* gc_=NULL;
+    const tasystem::Globalconf* gc_=nullptr;
     vd timedata,amplitudedata;
     us Nf=0,Ns=0;
 

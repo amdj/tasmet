@@ -36,7 +36,7 @@ namespace segment{
     std::string name_;
     bool init_=false;
   protected:
-    const tasystem::Globalconf* gc=NULL;	// Global configuration of the system
+    const tasystem::Globalconf* gc=nullptr;	// Global configuration of the system
     SegConBase();
     SegConBase(const SegConBase&);
     SegConBase& operator=(const SegConBase&)=delete;

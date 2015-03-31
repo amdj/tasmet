@@ -39,14 +39,11 @@ namespace tube{
     drag=&t.getDragResistance();
 
     if(v.left()){
-      const LocalGeom& llg=v.left()->localGeom();
-      Wddt=w.vx-llg.vx;;
+      Wddt=v.vx-v.left()->vx;;
       Wpi=w.SfL;
-      Wpim1=llg.SfL;
-
+      Wpim1=v.SfL;
     }
   }
-  
   vd Momentum::error() const {		// Error in momentum equation
 
     TRACE(6,"Momentum::Error()");
@@ -76,7 +73,7 @@ namespace tube{
     vd rhoUi=fDFT*(rhoUsqit/(v.rho().tdata()*vSf));
 
     // Drag term
-    assert(drag!=NULL);
+    assert(drag!=nullptr);
     #ifndef NODRAG
     error+=Wddt*drag->drag(v);
     #endif
@@ -119,7 +116,7 @@ namespace tube{
   //   JacCol dU(v.U());
   //   dU+=Wddt*v.gc->DDTfd*fDFT*v.rho().diagt()*iDFT; // Time-derivative term
   //   dU+=2.0*Wu*fDFT*(v.rho().diagt()*v.U().diagt())*iDFT;
-  //   assert(drag!=NULL);
+  //   assert(drag!=nullptr);
 
   //   #ifndef NODRAG
   //   dU+=Wddt*drag->dUi(v);

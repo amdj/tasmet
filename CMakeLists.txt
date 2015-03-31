@@ -18,16 +18,19 @@ AUX_SOURCE_DIRECTORY(src/var var)
 AUX_SOURCE_DIRECTORy(src/tube/geom/grid grid)
 # AUX_SOURCE_DIRECTORy(src/tube/eq eq)
 set(eqdir src/tube/eq)
-set(eq ${eqdir}/continuity.cpp ${eqdir}/momentum.cpp ${eqdir}/state.cpp
+set(eq ${eqdir}/continuity.cpp  ${eqdir}/state.cpp
   ${eqdir}/isentropic.cpp ${eqdir}/weightfactors.cpp ${eqdir}/solidenergy.cpp)
-set(eqdir src/tube)
+
+
+set(tubedir src/tube)
 set(tube ${tubedir}/tube.cpp ${tubedir}/isentropictube.cpp)
 
 AUX_SOURCE_DIRECTORy(src/tube/geom geom)
 AUX_SOURCE_DIRECTORy(src/tube/drag drag)
 AUX_SOURCE_DIRECTORy(src/tube/heat heat)
-# AUX_SOURCE_DIRECTORy(src/tube/vertex vertex)
-set(vertex src/tube/vertex/tubevertex.h)
+# AUX_SOURCE_DIRECTORy(src/tube/cell cell)
+set(celldir src/tube/cell)
+set(cell ${celldir}/cell.cpp)# ${celldir}/bccell.cpp)
 AUX_SOURCE_DIRECTORy(src/tube/con con)
 # set (nonlinear_SRC ${tubesources} ${varsources} ${segsources}
 #   ${syssources}  ${geomsources} ${solsources}
@@ -40,14 +43,14 @@ set (nonlinear_SRC
   ${sol}
   ${sys}
   ${var}
-  # ${tube}
+  ${tube}
   # ${con}
   # ${drag}
   ${eq}
   ${geom}
   ${grid}
   # ${heat}
-  ${vertex}
+  ${cell}
   )
 
 include_directories(
@@ -62,7 +65,7 @@ include_directories(
   src/tube/geom/grid
   src/tube/drag
   src/tube/con
-  src/tube/vertex
+  src/tube/cell
   src/tube/eq
   src/tube/heat
   ../common

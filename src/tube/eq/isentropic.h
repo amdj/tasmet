@@ -1,20 +1,22 @@
+// isentropic.h
+//
+// Author: J.A. de Jong 
+//
+// Description:
+//
+//////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef _ISENTROPICEQ_H_
-#define _ISENTROPICEQ_H_
-
-
-
-
+#ifndef ISENTROPIC_H
+#define ISENTROPIC_H
 #include "tubeequation.h"
-
 
 namespace tube{
   SPOILNAMESPACE
 
-  class Isentropic:public TubeEquation{
+  class Isentropic:public Equation{
   public:
-    Isentropic(const Cell& v):TubeEquation(v){}
-    virtual TubeEquation* copy() const {return new Isentropic(*this);}    
+    Isentropic(const Cell& v):Equation(v){}
+    virtual Equation* copy() const {return new Isentropic(*this);}    
     virtual void init();
     virtual enum EqType getType() const { return EqType::Ise;}
     virtual vd error() const;			// Error in Energy equation at node i
@@ -25,4 +27,5 @@ namespace tube{
   };
 }
 
-#endif /* _ISENTROPICEQ_H_ */
+#endif // ISENTROPIC_H
+//////////////////////////////////////////////////////////////////////

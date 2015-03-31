@@ -10,13 +10,13 @@ namespace tube{
   class Tube;
   class DragResistance;
 
-  class Momentum:public TubeEquation
+  class Momentum:public Equation
   {
-    const DragResistance* drag=NULL;
+    const DragResistance* drag=nullptr;
   public:
     d Wddt=0,Wpi=0,Wpim1=0;
 
-    Momentum(const Cell& v):TubeEquation(v){}
+    Momentum(const Cell& v):Equation(v){}
     virtual void init();
     virtual tasystem::JacRow jac() const;
     virtual enum EqType getType() const { return EqType::Mom;}    

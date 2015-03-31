@@ -16,7 +16,7 @@ namespace tube{
 
   class BoundaryLayer;
   class Grid{
-    BoundaryLayer *bL=NULL,*bR=NULL;
+    BoundaryLayer *bL=nullptr,*bR=nullptr;
     us gp;                      // Only changeable by constructor
     d L;                        // Only changeable by constructor
     vd x;

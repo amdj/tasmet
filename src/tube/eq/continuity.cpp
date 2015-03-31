@@ -1,5 +1,4 @@
 #include "cell.h"
-#include "weightfactors.h"
 #include "jacobian.h"
 #include "var.h"
 #include "continuity.h"
@@ -16,23 +15,18 @@ namespace tube{
   void Continuity::show() const {
     cout << "-------------- Continuity equation\n";
     cout << "Wddt : " << Wddt << "\n";
-    cout << "WL : " << WL << "\n";
-    cout << "Wi   : " << Wi  << "\n";
-    cout << "WR : " << WR << "\n";    
   }
   void Continuity::init(){
     TRACE(8,"Continuity::init(tube)");
-    const WeightFactors& w=v.weightFactors();
-    Wddt=w.vVf;
+    Wddt=v.vVf;
   } // init
   JacRow Continuity::jac() const{
     TRACE(6,"Continuity::jac()");
-    JacRow jac(dofnr,6);
-    TRACE(0,"Continuity, dofnr jac:"<< dofnr);
+    JacRow jac(dofnr,3);
+    // TRACE(0,"Continuity, dofnr jac:"<< dofnr);
     jac.addCol(drho());    
     jac.addCol(drhoUL());
     jac.addCol(drhoUR());
-
     return jac;
   }
   vd Continuity::error() const {	

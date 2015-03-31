@@ -11,7 +11,7 @@ namespace tube{
   using tasystem::JacCol;
 
   LeftCell::LeftCell(us i,const Tube& t):
-    TubeBcCell(i,t)
+    BcCell(i,t)
   {
     TRACE(15,"LeftCell::LeftCell()");
     const tasystem::Globalconf& gc=*(this->gc);
@@ -41,22 +41,22 @@ namespace tube{
     cout << "------------- LeftCell ----------\n";
     Cell::show(detailnr);
   }
-  void LeftCell::setResVar(varnr v,const vd& res){
+  void LeftCell::setResVar(Varnr v,const vd& res){
     TRACE(15,"LeftCell::setResVar()");
     switch(v){
-    case varnr::rhoL:
+    case Varnr::rhoL:
       rhoL_.set(res);
       break;
-    case varnr::TL:
+    case Varnr::TL:
       TL_.set(res);
       break;
-    case varnr::UL:
+    case Varnr::UL:
       UL_.set(res);
       break;
-    case varnr::TsL:
+    case Varnr::TsL:
       TsL_.set(res);
       break;
-    case varnr::pL:
+    case Varnr::pL:
       pL_.set(res);
       break;
     default:
@@ -64,22 +64,22 @@ namespace tube{
       break;
     }
   }
-  d LeftCell::getValueBc(varnr v,us freqnr) const{
+  d LeftCell::getValueBc(Varnr v,us freqnr) const{
     TRACE(15,"LeftCell::getValueBc()");
     switch(v) {
-    case varnr::rho: // Density
+    case Varnr::rho: // Density
       return rhoL()(freqnr);
       break;
-    case varnr::U:                 // Volume flown
+    case Varnr::U:                 // Volume flown
       return UL()(freqnr);
       break;
-    case varnr::p:                   // Pressure
+    case Varnr::p:                   // Pressure
       return pL()(freqnr);
       break;
-    case varnr::T:                 // Temp
+    case Varnr::T:                 // Temp
       return TL()(freqnr);
       break;
-    case varnr::Ts:                 // Temp
+    case Varnr::Ts:                 // Temp
       return TsL()(freqnr);
       break;
     default:

@@ -27,7 +27,7 @@ namespace tasystem{
   #endif  // ifdef SWIG
   class Solver
   {
-    TaSystem* tasystem=NULL;
+    TaSystem* tasystem=nullptr;
     std::unique_ptr<boost::thread> solverThread;
   public:
     #ifndef SWIG

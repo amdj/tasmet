@@ -8,12 +8,12 @@
 
 namespace tube{
 
-  class RightAdiabaticWall:public TubeBcCell // Right adiabatichermal wall boundary
+  class RightAdiabaticWall:public BcCell // Right adiabatichermal wall boundary
   {
   public:
     virtual void show() const;
     virtual string getType() const {return string("RightAdiabaticWall");}
-    virtual TubeBcCell* copy() const {return new RightAdiabaticWall(*this);}
+    virtual BcCell* copy() const {return new RightAdiabaticWall(*this);}
     virtual enum connectpos connectPos() const {return connectpos::right;}
     virtual void initCell(us i,const Tube& thisseg);
     virtual const variable::var& pR() const {return pr;};
@@ -23,12 +23,12 @@ namespace tube{
     StateR sr;
     
   };
-  class LeftAdiabaticWall:public TubeBcCell // Right adiabatichermal wall boundary
+  class LeftAdiabaticWall:public BcCell // Right adiabatichermal wall boundary
   {
   public:
     virtual void show() const;
     virtual string getType() const {return string("LeftAdiabaticWall");}
-    virtual TubeBcCell* copy() const {return new LeftAdiabaticWall(*this);}
+    virtual BcCell* copy() const {return new LeftAdiabaticWall(*this);}
     virtual enum connectpos connectPos() const {return connectpos::left;}
     virtual void initCell(us i,const Tube& thisseg);
   };

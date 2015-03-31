@@ -1,5 +1,6 @@
 #include "tube.h"
 #include "cell.h"
+#include "geom.h"
 #include "globalconf.h"
 #include "weightfactors.h"
 #include "jacobian.h"
@@ -9,7 +10,6 @@ namespace tube{
   using tasystem::Jacobian;
 
   Cell::Cell(us i,const Tube& tube):
-    i(i),
     tube(&tube),
     gc(&tube.Gc()),
     c(*this),
@@ -18,13 +18,33 @@ namespace tube{
     s(*this),
     // s(*this),
     se(*this),
-    is(*this)
+    is(*this),
+    i(i)
+
   {
     TRACE(15,"Cell::Cell(i,tube)");
+    const Geom& geom=tube.geom();
+    assert(gc);
 
-    vars.resize(5);
-    assert(gc!=NULL);
+    vx=geom.vx(i);
+    xR=geom.x(i+1);		// Position of right cell wall
+    xL=geom.x(i);			// Position of left cell wall
 
+    // Geometric parameters
+    SfL=geom.Sf(i);
+    SfR=geom.Sf(i+1);
+    SsL=geom.Ss(i);
+    SsR=geom.Ss(i+1);
+
+    vSf=geom.vSf(i);
+    vSs=geom.vSs(i);
+    vVf=geom.vVf(i);
+    vVs=geom.vVs(i);
+    vrh=geom.vrh(i);
+
+    rhL=geom.rh(i);
+    rhR=geom.rh(i+1);
+    
     // Intialize the variables for the right number of harmonics.
     rhoUL_=var(*gc);
     rho_=var(*gc);    
@@ -38,15 +58,15 @@ namespace tube{
     rho_.set(0,gc->rho0());    
 
     // Fill vars vector
-    vars.at(RHONR)=&rho_;
-    vars.at(UNR)=&U_;
-    vars.at(TNR)=&T_;
-    vars.at(PNR)=&pL_;
-    vars.at(TSNR)=&Ts_;    
+    vars.resize(constants::nvars);
+    vars.at(constants::rho)=&rho_;
+    vars.at(constants::rhoU)=&rhoUL_;
+    vars.at(constants::T)=&T_;
+    vars.at(constants::p)=&p_;
+    vars.at(constants::Ts)=&Ts_;    
 
     // Fill eqs vector
-    // eqs.resize(5);
-    eqs.clear();
+    eqs.resize(constants::neqs);
     eqs.push_back(&c);
     eqs.push_back(&m);
     eqs.push_back(&e);
@@ -55,26 +75,15 @@ namespace tube{
   }
   Cell::~Cell(){
     TRACE(25,"Cell::~Cell()");
-    delete w_;
-  }
-  const LocalGeom& Cell::localGeom() const {return weightFactors();}
-  const WeightFactors& Cell::weightFactors() const{
-    assert(w_);
-    return *w_;
   }
   d Cell::getCurrentMass() const{
-    return rho_(0)*weightFactors().vVf;
+    return rho_(0)*vVf;
   }
   void Cell::init(const Cell* left,const Cell* right) {
     TRACE(8,"Cell::init(left,right), cell "<< i << ".");
     // TRACE(25,"Address gc:" <<gc);
     this->left_=left;
     this->right_=right;
-    assert(tube);               // *SHOULD* be a valid pointer
-    VARTRACE(10,w_);
-    delete w_;
-    VARTRACE(10,w_);
-    w_=new WeightFactors(*this);
 
     c.init();
     m.init();
@@ -165,78 +174,80 @@ namespace tube{
   vd Cell::U() const {
     return (0.5*(rhoUL()+rhoUR())/rho_)();
   }
-  d Cell::getValue(varnr v,us freqnr) const{
+  d Cell::getValue(Varnr v,us freqnr) const{
     TRACE(4,"Cell::getValue()");
     TRACE(4,"Cell::getValue()");
     switch(v) {
-    case varnr::rho: // Density
+    case Varnr::rho: // Density
       return rho()(freqnr);
       break;
-    case varnr::U:                 // Volume flown
+    case Varnr::U:                 // Volume flown
       // return U()(freqnr);
       throw MyError("Not yet implemented");
       break;
-    case varnr::p:                   // Pressure
-      return p_;
+    case Varnr::p:                   // Pressure
+      return p_()(freqnr);
       break;
-    case varnr::T:                 // Temp
+    case Varnr::T:                 // Temp
       return T()(freqnr);
       break;
-    case varnr::Ts:                 // Temp
+    case Varnr::Ts:                 // Temp
       return Ts()(freqnr);
       break;
     default:
       return 0;
     }
   }
-  void Cell::setResVar(varnr v,const vd& res){
-    TRACE(15,"Cell::setResVar(varnr,vd)");
+  void Cell::setResVar(Varnr v,const vd& res){
+    TRACE(15,"Cell::setResVar(Varnr,vd)");
     switch(v) {
-    case varnr::rho: // Density
+    case Varnr::rho: // Density
       rho_.set(res);
       break;
-    case varnr::U:                 // Volume flown
-      U_.set(res);
+    case Varnr::U:                 // Volume flown
+      WARN("Todo!");
+      // U_.set(res);
       break;
-    case varnr::T:                 // Temp
+    case Varnr::T:                 // Temp
       T_.set(res);
       break;
-    case varnr::pL:                   // Pressure
-      pL_.set(res);
+    case Varnr::p:                   // Pressure
+      p_.set(res);
       break;
-    case varnr::Ts:                 // Temp
+    case Varnr::Ts:                 // Temp
       Ts_.set(res);
       break;
     default:
       WARN("Varnr" << v << " not handled!");
     }
   }
-  void Cell::setResVar(varnr v,const variable::var& res){
-      TRACE(4,"Cell::setResVar(varnr,var)");
+  void Cell::setResVar(Varnr v,const variable::var& res){
+      TRACE(4,"Cell::setResVar(Varnr,var)");
       setResVar(v,res());
   }
-  var Cell::getValue(varnr v) const{
+  var Cell::getValue(Varnr v) const{
     TRACE(4,"Cell::getValue()");
     TRACE(4,"Cell::getValue()");
       switch(v) {
-      case varnr::rho: // Density
+      case Varnr::rho: // Density
         return rho();
           break;
-      case varnr::U:                 // Volume flown
-        return U();
+      case Varnr::rhoU:                 // Volume flown
+        WARN("Not good!");
+        // return U();
           break;
-      case varnr::p:                   // Pressure
-          return 0.5*(pL()+pR());
+      case Varnr::p:                   // Pressure
+          return p();
           break;
-      case varnr::T:                 // Temp
+      case Varnr::T:                 // Temp
         return T();
           break;
-      case varnr::Ts:                 // Tempc
+      case Varnr::Ts:                 // Tempc
         return Ts();
           break;
-      default:
-        return rho();
       }
+      // Default:
+      return rho();
   }
 
   void Cell::updateNf(){
@@ -275,11 +286,6 @@ namespace tube{
   }    
   void Cell::show(us detailnr) const{
     cout << "----------------- Cell " << i << "----\n";
-    if(detailnr>=4){
-      cout << "Showing weight functions for Cell "<< i <<"\n";
-      assert(w_);
-      w_->show();
-    }
     if(detailnr>=2){
       cout << "Showing weight factors of equations...\n";
       c.show();
@@ -287,6 +293,16 @@ namespace tube{
       e.show();
       s.show();
     }
+    cout <<"Showing LocalGeom data..\n";
+    cout <<"i     :" << i<<"\n";
+    cout <<"vx    :" << vx<<"\n";
+    cout <<"vSf   :" << vSf<<"\n";
+    cout <<"SfL   :" << SfL<<"\n";
+    cout <<"SfR   :" << SfR<<"\n";    
+    cout <<"vVf   :" << vVf<<"\n";
+    cout <<"vrh   :" << vrh<<"\n";
+    cout <<"xL    :" << xL<<"\n";            
+    cout <<"xR    :" << xR<<"\n";
     // cout << "Number of eqs :" << getNEqs() << "\n";
     // cout << "Number of dofs:" << getNDofs() << "\n";    
     // cout << "Dofnr rho: " << rho.getDofNr() << "\n";

@@ -85,7 +85,7 @@ namespace tube{
     vd error(getNEqs());
     us Ns=gc->Ns();
 
-    const TubeBcCell* cell;
+    const BcCell* cell;
     
     const var *pb;
     if(pos==Pos::left){
@@ -112,7 +112,7 @@ namespace tube{
     TRACE(15,"IsoTWall::jac()");
     us Ns=gc->Ns();
 
-    const TubeBcCell* cell;
+    const BcCell* cell;
     const variable::var* pb;
 
     if(pos==Pos::left){

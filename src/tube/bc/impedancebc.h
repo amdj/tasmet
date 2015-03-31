@@ -19,9 +19,9 @@ namespace tube{
 
   class RightImpedanceMomentumEq:public Momentum{
   public:
-    RightImpedanceMomentumEq(TubeBcCell&,vd& Z);
+    RightImpedanceMomentumEq(BcCell&,vd& Z);
     ~RightImpedanceMomentumEq(){}
-    virtual TubeEquation* copy(){ return new RightImpedanceMomentumEq(*this);}
+    virtual Equation* copy(){ return new RightImpedanceMomentumEq(*this);}
     vd error(const Cell&) const;
     JacCol dUi(const Cell&) const;
     JacCol dUim1(const Cell&) const;
@@ -32,7 +32,7 @@ namespace tube{
     vd& Z;
   }; 
 
-  class RightImpedance:public TubeBcCell // Adiabatic impedance boundary condition
+  class RightImpedance:public BcCell // Adiabatic impedance boundary condition
   {
   public:
     vd Z;			// The impedance
@@ -46,7 +46,7 @@ namespace tube{
     virtual void initCell(us i,const Tube&);
     virtual string getType() const {return string("RightImpedance");}
     virtual Pos connectPos() const {return Pos::right;}
-    virtual TubeBcCell* copy() const {return new RightImpedance(*this);}
+    virtual BcCell* copy() const {return new RightImpedance(*this);}
   protected:
     void updateW(const Tube&);
 
