@@ -1,14 +1,14 @@
-// file: bcvertex.cpp, created March 20th, 2014.
+// file: bccell.cpp, created March 20th, 2014.
 // Author: J.A. de Jong
 // #define TRACERPLUS 20
 
 #include "tube.h"
 #include "twimpedance.h"
-#include "tubevertex.h"
+#include "cell.h"
 
 
 namespace tube{
-  TwImpedance::TwImpedance():TubeBcVertex(){
+  TwImpedance::TwImpedance():TubeBcCell(){
     TRACE(8,"TwImpedance constructor");
     // Change continuity equation for open boundary
   }
@@ -20,13 +20,13 @@ namespace tube{
     TRACE(8,"TwImpedance copy assignment operator");
     return *this;
   }
-  // vd TwImpedanceEnergyEq::error(const TubeVertex& v) const {
+  // vd TwImpedanceEnergyEq::error(const Cell& v) const {
   //   return Energy::error(v);
   // }
-  void TwImpedance::initTubeVertex(us i,const Tube& thisseg)
+  void TwImpedance::initCell(us i,const Tube& thisseg)
   {
-    TRACE(12,"TwImpedance::initTubeVertex(), vertex "<< i <<".");
-    TubeVertex::initTubeVertex(i,thisseg);
+    TRACE(12,"TwImpedance::initCell(), cell "<< i <<".");
+    Cell::initCell(i,thisseg);
     // mright.init(thisseg);
     // eqs.at(1).reset(mright.copy());
     pr=var(gc);
@@ -99,7 +99,7 @@ namespace tube{
     return esource;  
   }
 
-  // vd TwImpedanceMomentumEq::error(const TubeVertex& v) const {
+  // vd TwImpedanceMomentumEq::error(const Cell& v) const {
   //   TRACE(10,"TwImpedanceMomentumEq::Error()");
   //   vd error(v.gc->Ns,fillwith::zeros);    
   //   // Add the normal stuff
@@ -117,13 +117,13 @@ namespace tube{
   //   error+=errorZ;
   //   return error;
   // }
-  // JacCol TwImpedanceMomentumEq::dpR(const TubeVertex& v) const{
+  // JacCol TwImpedanceMomentumEq::dpR(const Cell& v) const{
   //   TRACE(10,"TwImpedanceMomentumEq::dpR() ----- not adding anythin");
   //   JacCol dpR(v.pR());
   //   dpR.setToAdd(false);
   //   return dpR;
   // }
-  // JacCol TwImpedanceMomentumEq::dUi(const TubeVertex& v) const{
+  // JacCol TwImpedanceMomentumEq::dUi(const Cell& v) const{
   //   TRACE(10,"TwImpedanceMomentumEq::dUi()");
   //   JacCol dUi=Momentum::dUi(v);
   //   const us& Ns=v.gc->Ns;
@@ -141,7 +141,7 @@ namespace tube{
   //   return dUi;
   // }
 
-  // JacCol TwImpedanceMomentumEq::dUim1(const TubeVertex& v) const{
+  // JacCol TwImpedanceMomentumEq::dUim1(const Cell& v) const{
   //   TRACE(10,"TwImpedanceMomentumEq::dUim1()");
   //   JacCol dUim1=Momentum::dUim1(v);    
   //   const us& Ns=v.gc->Ns;
@@ -158,7 +158,7 @@ namespace tube{
   //   dUim1+=v.w.wRNm2*v.lg.SfR*Z;
   //   return dUim1;
   // }
-  vd RightTwImpedanceEq::error(const TubeVertex& v) const {
+  vd RightTwImpedanceEq::error(const Cell& v) const {
     TRACE(10,"TwImpedanceMomentumEq::Error()");
     vd error(v.gc->Ns(),fillwith::zeros);
     // Add the normal stuff
@@ -179,7 +179,7 @@ namespace tube{
     error+=prefac*fDFT*(pow((0.5*(v.pR().tdata()+v.pL().tdata())+p0)/p0,powfacp)-1.0);
     return error;
   }
-  JacRow RightTwImpedanceEq::jac(const TubeVertex& v) const{
+  JacRow RightTwImpedanceEq::jac(const Cell& v) const{
     TRACE(10,"RightTwImpedanceEq::jac()");
     
     JacRow jac(dofnr,8);
@@ -194,18 +194,18 @@ namespace tube{
     // jac+=dTim1(v);
     return jac;
   }
-  JacCol RightTwImpedanceEq::dUi(const TubeVertex& v) const{
+  JacCol RightTwImpedanceEq::dUi(const Cell& v) const{
     TRACE(10,"RightTwImpedanceEq::dUi()");
     TRACE(5,"dUi wRNm1:"<< v.wRNm1);
 
     return JacCol(v.U,eye(v.gc->Ns(),v.gc->Ns()));
   }
-  // JacCol RightTwImpedanceEq::dUim1(const TubeVertex& v) const{
+  // JacCol RightTwImpedanceEq::dUim1(const Cell& v) const{
   //   TRACE(10,"RightTwImpedanceEq::dUim1()");
   //   return JacCol(v.left->U,v.w.wRNm2*eye(v.gc->Ns,v.gc->Ns));
   // }
 
-  dmat dp(const TubeVertex& v) {
+  dmat dp(const Cell& v) {
     dmat dp(v.gc->Ns(),v.gc->Ns(),fillwith::zeros);
     const us& Ns=v.gc->Ns();
     const dmat& fDFT=v.gc->fDFT;
@@ -221,13 +221,13 @@ namespace tube{
     return dp;
   }
   
-  JacCol RightTwImpedanceEq::dpR(const TubeVertex& v) const{
+  JacCol RightTwImpedanceEq::dpR(const Cell& v) const{
     TRACE(10,"RightTwImpedanceEq::dpR()");
     JacCol dpR(v.pR());
     dpR+=dp(v);
     return dpR;
   }
-  JacCol RightTwImpedanceEq::dpL(const TubeVertex& v) const{
+  JacCol RightTwImpedanceEq::dpL(const Cell& v) const{
     TRACE(10,"RightTwImpedanceEq::dpL()");
     JacCol dpL(v.pL());
     dpL+=dp(v);
@@ -235,16 +235,16 @@ namespace tube{
   }
 
 
-  // TwImpedanceEnergyEq::TwImpedanceEnergyEq(TwImpedance& twimp):impedancevertex(twimp){
+  // TwImpedanceEnergyEq::TwImpedanceEnergyEq(TwImpedance& twimp):impedancecell(twimp){
   //   TRACE(4,"TwImpedanceEnergyEq::TwImpedanceEnergyEq()");
   // }
-  // dmat TwImpedanceEnergyEq::dUi(const TubeVertex& v) const{
+  // dmat TwImpedanceEnergyEq::dUi(const Cell& v) const{
   //   TRACE(4,"TwImpedanceEnergyEq::dUi()");
   //   dmat dUi=Energy::dUi(v);
   //   assert(v.left!=NULL);
   //   const dmat& fDFT=v.gc->fDFT;
   //   const dmat& iDFT=v.gc->iDFT;
-  //   d xhalf=impedancevertex.xhalf;
+  //   d xhalf=impedancecell.xhalf;
   //   d T0=v.gc->T0;
   //   d p0=v.gc->p0;
   //   d c0=v.gc->gas.cm(T0);
@@ -260,12 +260,12 @@ namespace tube{
   //   vd Ztd=(z0/v.lg.SfR)*(pow(1.0+((gamma-1.0)/2.0)*urt/c0,(gamma+1.0)/(gamma-1.0))); // Impedance dp/dUr in time domain
 
   //   vd dTdprt=(T0/p0)*((gamma-1.0)/gamma)*pow(prt/p0,-1.0/gamma);
-  //   dUi+=(-1.0*(v.lg.SfR/impedancevertex.xhalf)*v.wRNm1)*fDFT*diagmat(kappaR%dTdprt%Ztd)*iDFT;
+  //   dUi+=(-1.0*(v.lg.SfR/impedancecell.xhalf)*v.wRNm1)*fDFT*diagmat(kappaR%dTdprt%Ztd)*iDFT;
 
   //   // TRACE(100,"dUi returns:"<<dUi);
   //   return dUi;
   // }
-  // dmat TwImpedanceEnergyEq::dUim1(const TubeVertex& v) const {
+  // dmat TwImpedanceEnergyEq::dUim1(const Cell& v) const {
   //   TRACE(4,"TwImpedanceEnergyEq::dUim1()");
   //   dmat dUim1=Energy::dUim1(v);
   //   assert(v.left!=NULL);

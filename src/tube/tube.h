@@ -25,10 +25,10 @@ namespace tube{
 
   class DragResistance;
   class HeatSource;
-  class TubeVertex;
+  class Cell;
   class Geom;
 
-  class TubeBcVertex;
+  class TubeBcCell;
   #endif
 
   class Tube:public segment::Seg {
@@ -37,7 +37,7 @@ namespace tube{
     // Pointer to the geometry
     Geom* geom_=nullptr;		
   protected:
-    std::vector<TubeVertex*> vvertex;
+    std::vector<Cell*> cells;
 
   protected:
     // Copy constructor
@@ -77,7 +77,7 @@ namespace tube{
     void show(us showvertices=0) const;
 
 
-    us getNVertex() const {return vvertex.size();}    
+    us getNCell() const {return cells.size();}    
     vd interpolateResMid(varnr v,d x) const; // Amplitude data vectors
     vd interpolateResStaggered(varnr v,d x) const; // Amplitude data!!
 
@@ -103,16 +103,16 @@ namespace tube{
     virtual vd dragCoefVec(us) const=0;              // return drag
                                                    // coefficient
 
-    const TubeVertex& operator[](us i) const;
-    const TubeBcVertex& leftVertex() const;
-    const TubeBcVertex& rightVertex() const;
-    const TubeVertex& getTubeVertex(us i) const;
+    const Cell& operator[](us i) const;
+    const TubeBcCell& leftCell() const;
+    const TubeBcCell& rightCell() const;
+    const Cell& getCell(us i) const;
     virtual void jac(tasystem::Jacobian& tofill) const;
     virtual const DragResistance& getDragResistance() const=0;
     virtual const HeatSource& getHeatSource() const=0;
     #endif
   private:
-    void cleanup_vvertex();
+    void cleanup_cells();
   };				// Tube class
 
   #ifndef SWIG  

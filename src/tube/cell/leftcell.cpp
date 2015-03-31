@@ -1,4 +1,4 @@
-#include "lefttubevertex.h"
+#include "leftcell.h"
 #include "weightfactors.h"
 #include "jacobian.h"
 
@@ -10,19 +10,19 @@ namespace tube{
   using tasystem::JacRow;
   using tasystem::JacCol;
 
-  LeftTubeVertex::LeftTubeVertex(us i,const Tube& t):
-    TubeBcVertex(i,t)
+  LeftCell::LeftCell(us i,const Tube& t):
+    TubeBcCell(i,t)
   {
-    TRACE(15,"LeftTubeVertex::LeftTubeVertex()");
+    TRACE(15,"LeftCell::LeftCell()");
     const tasystem::Globalconf& gc=*(this->gc);
     rhoL_=var(gc);
     UL_=var(gc);
     TL_=var(gc);
     TsL_=var(gc);
   }
-  void LeftTubeVertex::init(const TubeVertex* left,const TubeVertex* right){
-    TRACE(10,"LeftTubeVertex::init()");
-    TubeVertex::init(left,right);
+  void LeftCell::init(const Cell* left,const Cell* right){
+    TRACE(10,"LeftCell::init()");
+    Cell::init(left,right);
     assert(!left);
     assert(right);
 
@@ -37,12 +37,12 @@ namespace tube{
     TL_=T_;
     TsL_=Ts_;
   }
-  void LeftTubeVertex::show(us detailnr) const{
-    cout << "------------- LeftTubeVertex ----------\n";
-    TubeVertex::show(detailnr);
+  void LeftCell::show(us detailnr) const{
+    cout << "------------- LeftCell ----------\n";
+    Cell::show(detailnr);
   }
-  void LeftTubeVertex::setResVar(varnr v,const vd& res){
-    TRACE(15,"LeftTubeVertex::setResVar()");
+  void LeftCell::setResVar(varnr v,const vd& res){
+    TRACE(15,"LeftCell::setResVar()");
     switch(v){
     case varnr::rhoL:
       rhoL_.set(res);
@@ -60,12 +60,12 @@ namespace tube{
       pL_.set(res);
       break;
     default:
-      TubeVertex::setResVar(v,res);
+      Cell::setResVar(v,res);
       break;
     }
   }
-  d LeftTubeVertex::getValueBc(varnr v,us freqnr) const{
-    TRACE(15,"LeftTubeVertex::getValueBc()");
+  d LeftCell::getValueBc(varnr v,us freqnr) const{
+    TRACE(15,"LeftCell::getValueBc()");
     switch(v) {
     case varnr::rho: // Density
       return rhoL()(freqnr);
@@ -88,14 +88,14 @@ namespace tube{
     }
   }
 
-  vd LeftTubeVertex::extrapolateMassFlow() const{
-    TRACE(15,"LeftTubeVertex::extrapolateMassFlow()");
+  vd LeftCell::extrapolateMassFlow() const{
+    TRACE(15,"LeftCell::extrapolateMassFlow()");
     const WeightFactors& w=weightFactors();
     return w.wL1*right()->continuity().massFlow()+  \
      w.wL0*c.massFlow();
   }
-  JacRow LeftTubeVertex::dExtrapolateMassFlow() const{
-    TRACE(15,"LeftTubeVertex::dExtrapolateMassFlow()");
+  JacRow LeftCell::dExtrapolateMassFlow() const{
+    TRACE(15,"LeftCell::dExtrapolateMassFlow()");
     const WeightFactors& w=weightFactors();
     JacRow jacrow(-1,4);
     jacrow+=JacCol(U(),w.wL0*fDFT*rho().diagt()*iDFT);
@@ -104,15 +104,15 @@ namespace tube{
     jacrow+=JacCol(rhoR(),w.wL1*fDFT*UR().diagt()*iDFT);
     return jacrow;
   }
-  vd LeftTubeVertex::extrapolateRhoRT() const{
-    TRACE(15,"LeftTubeVertex::extrapolateRhoRT()");
+  vd LeftCell::extrapolateRhoRT() const{
+    TRACE(15,"LeftCell::extrapolateRhoRT()");
     const WeightFactors& w=weightFactors();
     const d& R=gc->gas().Rs();
     return fDFT*(R*(w.wL1*rhoR().tdata()%TR().tdata()+  \
                                w.wL0*rho().tdata()%T().tdata()));
   }
-  JacRow LeftTubeVertex::dExtrapolateRhoRT() const{
-    TRACE(15,"LeftTubeVertex::dExtrapolateRhoRT()");
+  JacRow LeftCell::dExtrapolateRhoRT() const{
+    TRACE(15,"LeftCell::dExtrapolateRhoRT()");
 
     const WeightFactors& w=weightFactors();
     JacRow jacrow(-1,4);
@@ -123,14 +123,14 @@ namespace tube{
     jacrow+=JacCol(rhoR(),fDFT*diagmat(R*w.wL1*TR().tdata())*iDFT);
     return jacrow;
   }
-  vd LeftTubeVertex::extrapolateMomentumFlow() const{
-    TRACE(15,"LeftTubeVertex::extrapolateMomentumFlow()");
+  vd LeftCell::extrapolateMomentumFlow() const{
+    TRACE(15,"LeftCell::extrapolateMomentumFlow()");
     const WeightFactors& w=weightFactors();
     return w.wL1*right()->momentum().momentumFlow()+\
       w.wL0*m.momentumFlow();
   }
-  JacRow LeftTubeVertex::dExtrapolateMomentumFlow() const{
-    TRACE(15,"LeftTubeVertex::dExtrapolateMomentumFlow()");
+  JacRow LeftCell::dExtrapolateMomentumFlow() const{
+    TRACE(15,"LeftCell::dExtrapolateMomentumFlow()");
     const WeightFactors& w=weightFactors();
     JacRow jacrow(-1,4);
     dmat Utd=U().diagt();

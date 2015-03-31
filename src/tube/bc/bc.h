@@ -2,7 +2,7 @@
 #ifndef _BC_H_
 #define _BC_H_
 
-// Possible TubeVertex boundary conditions
+// Possible Cell boundary conditions
 // LeftPressure
 #include "pressurebc.h"
 #include "impedancebc.h"

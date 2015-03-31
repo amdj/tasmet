@@ -5,7 +5,7 @@
 
 
 namespace tube{
-  class TubeVertex;
+  class Cell;
   class WeightFactors:public LocalGeom{
   public:
     d wLl=0,wRr=0,wLr=0,wRl=0;		// Basic weight functions
@@ -16,7 +16,7 @@ namespace tube{
     d vSfR=0,vSfL=0;		// Cross sectional area at vx-position
     // of left and right neighbours
 
-    WeightFactors(const TubeVertex& v);
+    WeightFactors(const Cell& v);
     virtual void show() const;
   };
 

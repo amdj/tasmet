@@ -25,9 +25,9 @@ namespace tube{
   public:
     LaminarDragResistance(const Tube& t);
     d fnu(us i) const;
-    virtual vd drag(const TubeVertex& vertex) const;
-    virtual dmat dUi(const TubeVertex&) const;		// Derivative of drag resistance to volume flow
-    vc ComplexResistancecoef(const TubeVertex&) const; // Returns a complex vector of size Ns with drag resistance coefficients for every nonzero frequency (1..Nf)
+    virtual vd drag(const Cell& cell) const;
+    virtual dmat dUi(const Cell&) const;		// Derivative of drag resistance to volume flow
+    vc ComplexResistancecoef(const Cell&) const; // Returns a complex vector of size Ns with drag resistance coefficients for every nonzero frequency (1..Nf)
   private:
     laminardrag::ZeroFreqDrag zfd;
     rottfuncs::RottFuncs rf;

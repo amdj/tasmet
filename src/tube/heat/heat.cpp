@@ -1,11 +1,11 @@
-#include "tubevertex.h"
+#include "cell.h"
 
 namespace tube{
 
-  vd HeatSource::heat(const TubeVertex& v) const {return vd(v.gc->Ns(),fillwith::zeros);}
-  dmat HeatSource::dUi(const TubeVertex& v) const {return zeros<dmat>(v.gc->Ns(),v.gc->Ns());}
-  // dmat HeatSource::dpi(const TubeVertex& v) const {return v.zero;}  
-  dmat HeatSource::dTi(const TubeVertex& v) const {return zeros<dmat>(v.gc->Ns(),v.gc->Ns());}
+  vd HeatSource::heat(const Cell& v) const {return vd(v.gc->Ns(),fillwith::zeros);}
+  dmat HeatSource::dUi(const Cell& v) const {return zeros<dmat>(v.gc->Ns(),v.gc->Ns());}
+  // dmat HeatSource::dpi(const Cell& v) const {return v.zero;}  
+  dmat HeatSource::dTi(const Cell& v) const {return zeros<dmat>(v.gc->Ns(),v.gc->Ns());}
 
 
 

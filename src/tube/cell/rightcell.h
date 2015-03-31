@@ -1,19 +1,19 @@
 #pragma once
-#ifndef _RIGHTTUBEVERTEX_H_
-#define _RIGHTTUBEVERTEX_H_
+#ifndef _RIGHTCELL.H_
+#define _RIGHTCELL.H_
 #include "constants.h"
-#include "tubebcvertex.h"
+#include "tubebccell.h"
 #include "state.h"
 
 namespace tube{
 
-  class RightTubeVertex:public TubeBcVertex{
+  class RightCell:public TubeBcCell{
     variable::var rhoR_,TR_,TsR_,UR_,pR_;
     StateR sR;
   public:
-    RightTubeVertex(us i,const Tube& t);
-    virtual ~RightTubeVertex(){}
-    virtual void init(const TubeVertex* left,const TubeVertex* right);
+    RightCell(us i,const Tube& t);
+    virtual ~RightCell(){}
+    virtual void init(const Cell* left,const Cell* right);
     virtual Pos getPos() const {return Pos::right;}
 
     virtual const variable::var& rhoR() const {return rhoR_;}
@@ -37,4 +37,4 @@ namespace tube{
 
 } // namespace tube
 
-#endif /* _RIGHTTUBEVERTEX_H_ */
+#endif /* _RIGHTCELL.H_ */

@@ -11,7 +11,7 @@
 
 namespace tube{
   SPOILNAMESPACE
-  class TubeVertex;
+  class Cell;
   class Tube;
   class Geom;
   
@@ -28,13 +28,13 @@ namespace tube{
     HopkinsHeatSource& operator=(const HopkinsHeatSource&);
     HopkinsHeatSource(const HopkinsHeatSource& o);
     void setdTwdx(const Geom& g,const vd& dTwdx);
-    virtual vd heat(const TubeVertex& v) const;
-    virtual dmat dUi(const TubeVertex& v) const;
-    virtual dmat dTi(const TubeVertex& v) const;
+    virtual vd heat(const Cell& v) const;
+    virtual dmat dUi(const Cell& v) const;
+    virtual dmat dTi(const Cell& v) const;
   private:
     void setZeroFreq(const string&);
-    vc HeatTransferCoefH(const TubeVertex&) const;
-    vc HeatTransferCoefQ(const TubeVertex&) const;    
+    vc HeatTransferCoefH(const Cell&) const;
+    vc HeatTransferCoefQ(const Cell&) const;    
   };
 
 } // namespace tube

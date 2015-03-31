@@ -75,8 +75,8 @@ typedef std::complex<double> c;
 %include "tubebc.h"
 %include "tubeconnector.h"
  // Other connectors
-%include "pressurebc.h"
-%include "adiabaticwall.h"  
+// %include "pressurebc.h"
+// %include "adiabaticwall.h"  
 
  // Segments
 %include "seg.h"
@@ -90,8 +90,8 @@ typedef std::complex<double> c;
  // Tubes
 %include "tube.h"
 %include "isentropictube.h"
-%include "laminarduct.h"
-%include "hopkinslaminarduct.h"
+// %include "laminarduct.h"
+// %include "hopkinslaminarduct.h"
 
  // System
 %include "tasystem.h"

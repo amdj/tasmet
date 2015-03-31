@@ -7,8 +7,8 @@
  */
 
 #include "tube.h"
-#include "lefttubevertex.h"       // which includes tubebcvertex.h
-#include "righttubevertex.h"       // which includes tubebcvertex.h
+#include "leftcell.h"       // which includes tubebccell.h
+#include "rightcell.h"       // which includes tubebccell.h
 #include "interpolate.h"
 #include "globalconf.h"
 #include "geom.h"
@@ -17,7 +17,7 @@
 // Tried to keep the method definition a bit in order in which a
   // tube is created, including all its components. First a tube is
   // created, which has a geometry and a global
-  // configuration. Moreover, the tube has gridpoints, "TubeVertex"
+  // configuration. Moreover, the tube has gridpoints, "Cell"
   // instants. Of these, a tube has gp of them, stored in a vector. In
   // each gridpoint, variables live, which represent the current
   // solution. Moreover, we have equations in each gridpoint. More
@@ -43,50 +43,49 @@ namespace tube {
   Tube::~Tube(){
     TRACE(25,"~Tube()");
     delete geom_;
-    cleanup_vvertex();
+    cleanup_cells();
   }
-  void Tube::cleanup_vvertex(){
-    TRACE(25,"Tube::cleanup_vvertex()");
-    // for(auto v=vvertex.begin();v!=vvertex.end();v++)
-      // delete *v;
-    vvertex.clear();
+  void Tube::cleanup_cells(){
+    TRACE(25,"Tube::cleanup_cells()");
+    for(auto v=cells.begin();v!=cells.end();v++)
+      delete *v;
+    cells.clear();
   }
-
-  const TubeVertex& Tube::getTubeVertex(us i) const{
-    assert(vvertex.size()>0);
-    assert(i<vvertex.size());
-    return *static_cast<const TubeVertex*>(vvertex.at(i));
+  const Cell& Tube::getCell(us i) const{
+    assert(cells.size()>0);
+    assert(i<cells.size());
+    return *static_cast<const Cell*>(cells.at(i));
   }
   us Tube::getNCells() const {return geom().nCells();}
   const Geom& Tube::geom() const {return *geom_;}
   void Tube::setDofNrs(us firstdof){
     TRACE(13,"Tube::setDofNrs()");
-    assert(vvertex.size()>0);
-    for(auto vertex=vvertex.begin();vertex!=vvertex.end();vertex++){
-      (*vertex)->setDofNrs(firstdof);
-      firstdof+=(*vertex)->getNDofs();
+    assert(cells.size()>0);
+    for(auto cell=cells.begin();cell!=cells.end();cell++){
+      (*cell)->setDofNrs(firstdof);
+      firstdof+=(*cell)->getNDofs();
     }
   }
   void Tube::setEqNrs(us firstdof){
     TRACE(13,"Tube::setDofNrs()");
-    assert(vvertex.size()>0);
-    for(auto vertex=vvertex.begin();vertex!=vvertex.end();vertex++){
-      (*vertex)->setEqNrs(firstdof);
-      firstdof+=(*vertex)->getNEqs();
+    assert(cells.size()>0);
+    for(auto cell=cells.begin();cell!=cells.end();cell++){
+      (*cell)->setEqNrs(firstdof);
+      firstdof+=(*cell)->getNEqs();
     }
   }
   
   us Tube::getNDofs() const {
     TRACE(10,"Tube::getNDofs()");
     us ndofs=0;
-    for(auto v=vvertex.begin();v!=vvertex.end();v++)
+    for(auto v=cells.begin();v!=cells.end();v++)
       ndofs+=(*v)->getNDofs();
     return ndofs;
   }
   us Tube::getNEqs() const {
     TRACE(10,"Tube::getNEqs()");
     us ndofs=0;
-    for(auto v=vvertex.begin();v!=vvertex.end();v++)
+    for(auto v=cells.begin();v!=cells.end();v++)
       ndofs+=(*v)->getNEqs();
     return ndofs;
   }  
@@ -95,31 +94,31 @@ namespace tube {
     TRACE(13,"Tube::Init()");
     Seg::init(sys);
 
-    cleanup_vvertex();
-    TRACE(13,"Filling vertices. Current size:"<<vvertex.size());
+    cleanup_cells();
+    TRACE(13,"Filling vertices. Current size:"<<cells.size());
       // Left *probable* boundary condition
-      // vvertex.emplace_back(new LeftTubeVertex(0,g));
+      // cells.emplace_back(new LeftCell(0,g));
     // WARN("Lot wrong here");
-    vvertex.emplace_back(new LeftTubeVertex(0,*this));
+    cells.emplace_back(new LeftCell(0,*this));
     us i;
     for(i=1;i<getNCells()-1;i++)
-      vvertex.emplace_back(new TubeVertex(i,*this));
-    vvertex.emplace_back(new RightTubeVertex(getNCells()-1,*this));
+      cells.emplace_back(new Cell(i,*this));
+    cells.emplace_back(new RightCell(getNCells()-1,*this));
 
-    us nVertex=vvertex.size();    
-    assert(nVertex==getNCells());
+    us nCell=cells.size();    
+    assert(nCell==getNCells());
     // And initialize again.
-    for(i=0;i<vvertex.size();i++){
-      TRACE(13,"Starting intialization of Vertex "<< i);
-      TubeVertex* thisvertex=vvertex[i];
-      TubeVertex* left=NULL;
-      TubeVertex* right=NULL;
-      if(i<nVertex-1)
-        right=vvertex[i+1];
+    for(i=0;i<cells.size();i++){
+      TRACE(13,"Starting intialization of Cell "<< i);
+      Cell* thiscell=cells[i];
+      Cell* left=NULL;
+      Cell* right=NULL;
+      if(i<nCell-1)
+        right=cells[i+1];
       if(i>0)
-        left=vvertex[i-1];
+        left=cells[i-1];
       TRACE(15,"Initializing tube");
-      thisvertex->init(left,right);
+      thiscell->init(left,right);
     } // for
   } // Tube::init(gc)
   d Tube::getRes(us dofnr) const {
@@ -127,29 +126,28 @@ namespace tube {
   }
   d Tube::getCurrentMass() const{
     TRACE(8,"Tube::getCurrentMass()");
-    assert(vvertex.size()>0);
+    assert(cells.size()>0);
     d mass=0;
-    for(auto vertex=vvertex.begin();vertex!=vvertex.end();vertex++){
-      TubeVertex& cvertex=*static_cast<TubeVertex*>(*vertex);
-      mass+=cvertex.getCurrentMass();
+    for(auto cell=cells.begin();cell!=cells.end();cell++){
+      mass+=(*cell)->getCurrentMass();
     }
     return mass;
   }
   void Tube::updateNf(){
     TRACE(18,"Tube::updateNf()");
-    assert(vvertex.size()>0);
-    for(auto v=vvertex.begin();v!=vvertex.end();v++){
+    assert(cells.size()>0);
+    for(auto v=cells.begin();v!=cells.end();v++){
       (*v)->updateNf();
     }
   }
-  const TubeBcVertex& Tube::leftVertex() const{
-    TRACE(3,"Tube::leftVertex()");
-    assert(vvertex[0]);
-    return static_cast<const TubeBcVertex&>(*vvertex[0]);
+  const TubeBcCell& Tube::leftCell() const{
+    TRACE(3,"Tube::leftCell()");
+    assert(cells[0]);
+    return static_cast<const TubeBcCell&>(*cells[0]);
   }
-  const TubeBcVertex& Tube::rightVertex() const{
-    TRACE(3,"Tube::rightVertex()");
-    return static_cast<const TubeBcVertex&>(**(vvertex.end()-1));
+  const TubeBcCell& Tube::rightCell() const{
+    TRACE(3,"Tube::rightCell()");
+    return static_cast<const TubeBcCell&>(**(cells.end()-1));
   }
   vd Tube::getx() const {
     TRACE(10,"Tube::getx()");
@@ -167,10 +165,10 @@ namespace tube {
 
     vd res(nCells+2);
     for(us i=0;i<nCells;i++){
-      res(i+1)=vvertex[i]->getValue(v,freqnr);
+      res(i+1)=cells[i]->getValue(v,freqnr);
     }
-    res(0)=leftVertex().getValueBc(v,freqnr);
-    res(nCells+1)=rightVertex().getValueBc(v,freqnr);
+    res(0)=leftCell().getValueBc(v,freqnr);
+    res(nCells+1)=rightCell().getValueBc(v,freqnr);
     return res;
   }
   vc Tube::getValueC(varnr v,us freqnr) const throw(std::exception) {
@@ -188,33 +186,32 @@ namespace tube {
     vd er(nCells,fillwith::zeros);
     assert(eqnr<getNDofs());
     for(us i=0;i<nCells;i++){
-      er(i)=(vvertex[i]->errorAt(eqnr))(eqnr);
+      er(i)=(cells[i]->errorAt(eqnr))(eqnr);
     }
     return er;
   }
   void Tube::resetHarmonics(){
-    for(auto v=vvertex.begin();v!=vvertex.end();v++){
+    for(auto v=cells.begin();v!=cells.end();v++){
       (*v)->resetHarmonics();
     }
   }
   void Tube::dmtotdx(vd& dmtotdx_) const{
     TRACE(15,"Tube::dmtotdx()");
-    us nvertex=vvertex.size(),Neq;
+    us ncell=cells.size(),Neq;
     us rhodof;
-    for(auto v=vvertex.begin();v!=vvertex.end();v++){
-      auto &cvertex=*static_cast<TubeVertex*>(*v);
-      rhodof=cvertex.rho().getDofNr();
-      dmtotdx_(rhodof)=cvertex.localGeom().vVf;
+    for(auto v=cells.begin();v!=cells.end();v++){
+      rhodof=(*ccell.rho())->getDofNr();
+      dmtotdx_(rhodof)=(*v)->localGeom().vVf;
     }
   }
 
   vd Tube::Htot() const throw(std::exception){
     TRACE(15,"Tube::Htot()");
     
-    us nvertex=vvertex.size();
-    vd Htot(nvertex);
-    for(us i=0;i<nvertex;i++){
-      Htot(i)=vvertex[i]->Htot();
+    us ncell=cells.size();
+    vd Htot(ncell);
+    for(us i=0;i<ncell;i++){
+      Htot(i)=cells[i]->Htot();
     }
     return Htot;
   }
@@ -224,7 +221,7 @@ namespace tube {
     cout << "Type: " << getType() <<" with number "<<getNumber()<< ".\n";
     cout << "********************************************************************************\n";
     cout << "Geometry: \n";
-    assert(vvertex.size()!=0);
+    assert(cells.size()!=0);
     if(detailnr>2){
       geom().show();
     }
@@ -232,18 +229,18 @@ namespace tube {
       this->showVertices(detailnr);
   }
   void Tube::showVertices(us showvertices) const {
-    for(us i=0;i<vvertex.size();i++)
-      vvertex[i]->show(showvertices);
+    for(us i=0;i<cells.size();i++)
+      cells[i]->show(showvertices);
   }
   void Tube::jac(Jacobian& tofill) const{			// Return Jacobian matrix of error operator
     // sdmat Tube::Jac(){			// Return Jacobian matrix of error operator    
     TRACE(8," Tube::Jac() for Tubement "<< getNumber() << ".");
     const us& Ns=gc->Ns();
-    us nVertex=vvertex.size();
+    us nCell=cells.size();
 
-    for(us j=0;j<nVertex;j++){			   // Fill the Jacobian
-      TRACE(3,"Obtaining vertex Jacobian...");
-      vvertex.at(j)->jac(tofill);
+    for(us j=0;j<nCell;j++){			   // Fill the Jacobian
+      TRACE(3,"Obtaining cell Jacobian...");
+      cells.at(j)->jac(tofill);
     }	// end for
     // cout <<"Segment" << getNumber() <<" Jacobian done. Jac is:\n"<< Jacobian;
     // cout << "Number of colums in this jacobian" << Jacobian.n_cols<<"\n";
@@ -251,31 +248,31 @@ namespace tube {
   }
   vd Tube::getRes() const {
     TRACE(8,"Tube::GetRes()");
-    assert(vvertex.size()!=0);
+    assert(cells.size()!=0);
     assert(gc!=NULL);
     vd Result(getNDofs(),fillwith::zeros);
-    us nVertex=vvertex.size();    
+    us nCell=cells.size();    
     us Ns=gc->Ns();
     us vndofs,curpos=0;
-    for(us k=0; k<nVertex;k++) {
-      vndofs=vvertex.at(k)->getNDofs();
-      Result.subvec(curpos,curpos+vndofs-1)=vvertex[k]->getRes();
+    for(us k=0; k<nCell;k++) {
+      vndofs=cells.at(k)->getNDofs();
+      Result.subvec(curpos,curpos+vndofs-1)=cells[k]->getRes();
       curpos+=vndofs;
     }
     return Result;
   }
   vd Tube::error() const{
     TRACE(8,"Tube::Error()");
-    assert(vvertex.size()!=0);
+    assert(cells.size()!=0);
     assert(gc!=NULL);
     vd error(getNEqs(),fillwith::zeros);
-    us nVertex=vvertex.size();    
+    us nCell=cells.size();    
     us Ns=gc->Ns();
     us vneqs,curpos=0;
 
-    for(us k=0; k<nVertex;k++) {
-      vneqs=vvertex.at(k)->getNEqs();
-      error.subvec(curpos,curpos+vneqs-1)=vvertex[k]->error();
+    for(us k=0; k<nCell;k++) {
+      vneqs=cells.at(k)->getNEqs();
+      error.subvec(curpos,curpos+vneqs-1)=cells[k]->error();
       curpos+=vneqs;
     }
     TRACE(10,"Filling error for seg nr " << getNumber() << " done." );
@@ -284,25 +281,25 @@ namespace tube {
   void Tube::domg(vd& domg_v) const{
     TRACE(8,"Tube::Error()");
     const us& Ns=gc->Ns();
-    us nVertex=vvertex.size();    
+    us nCell=cells.size();    
     // vd domg(getNDofs(),fillwith::zeros);
     us vndofs,curpos=0;
-    for(us k=0; k<nVertex;k++) {
-      vvertex[k]->domg(domg_v);
+    for(us k=0; k<nCell;k++) {
+      cells[k]->domg(domg_v);
     }
   }
 
   void Tube::setRes(const vd& res){
     TRACE(8,"Tube::SetRes()");
     assert(res.size()==getNDofs());
-    // const us& Neq=(vvertex[0]).Neq;
+    // const us& Neq=(cells[0]).Neq;
     const us& Ns=gc->Ns();
-    us vertexdofs;
+    us celldofs;
     us firstdof=0;
-    for(us k=0; k<vvertex.size();k++) {
-      vertexdofs=vvertex.at(k)->getNDofs();
-      vvertex.at(k)->setRes(res.subvec(firstdof,firstdof+vertexdofs-1));
-      firstdof+=vertexdofs;
+    for(us k=0; k<cells.size();k++) {
+      celldofs=cells.at(k)->getNDofs();
+      cells.at(k)->setRes(res.subvec(firstdof,firstdof+celldofs-1));
+      firstdof+=celldofs;
     }
   }
 
@@ -319,7 +316,7 @@ namespace tube {
       assert(vals.size()==geom().nCells()+2);
     }
       
-    for(auto v=vvertex.begin();v!=vvertex.end();v++){
+    for(auto v=cells.begin();v!=cells.end();v++){
 
     }
   }
@@ -328,25 +325,25 @@ namespace tube {
     TRACE(20,"Tube::setRes(othertube)");
     const Tube& other=asTube_const(otherseg);
     // Sanity checks
-    assert(vvertex.size()!=0);
+    assert(cells.size()!=0);
     // Necessary to let it work
     assert(gc->Ns()==other.gc->Ns());
 
   
-    for(auto v=vvertex.begin();v!=vvertex.end();v++){
-      TubeVertex& thisvertex=*static_cast<TubeVertex*>(*v);
-      d vx=thisvertex.localGeom().vx;
-      d xL=thisvertex.localGeom().xL;
-      thisvertex.setResVar(varnr::rho,other.interpolateResMid(varnr::rho,vx));
-      thisvertex.setResVar(varnr::U,other.interpolateResMid(varnr::U,vx));
-      thisvertex.setResVar(varnr::T,other.interpolateResMid(varnr::T,vx));
-      thisvertex.setResVar(varnr::Ts,other.interpolateResMid(varnr::Ts,vx));
-      thisvertex.setResVar(varnr::p,other.interpolateResStaggered(varnr::p,xL));
+    for(auto v=cells.begin();v!=cells.end();v++){
+      const Cell& thiscell=*(*v);
+      d vx=thiscell.localGeom().vx;
+      d xL=thiscell.localGeom().xL;
+      thiscell.setResVar(varnr::rho,other.interpolateResMid(varnr::rho,vx));
+      thiscell.setResVar(varnr::U,other.interpolateResMid(varnr::U,vx));
+      thiscell.setResVar(varnr::T,other.interpolateResMid(varnr::T,vx));
+      thiscell.setResVar(varnr::Ts,other.interpolateResMid(varnr::Ts,vx));
+      thiscell.setResVar(varnr::p,other.interpolateResStaggered(varnr::p,xL));
       WARN("boundaries todo");
-      // if(v==(vvertex.end()-1)){
+      // if(v==(cells.end()-1)){
       //   if(bcRight){
-      //     TubeVertex& othervertex=*static_cast<TubeVertex*>(*(other.vvertex.end()-1));          
-      //     thisvertex.setpR(othervertex.pR());
+      //     Cell& othercell=*static_cast<Cell*>(*(other.cells.end()-1));          
+      //     thiscell.setpR(othercell.pR());
       //     TRACE(5,"Copying pR");          
       //   }
       // }
@@ -370,10 +367,10 @@ namespace tube {
     }
     VARTRACE(2,ileft);
     VARTRACE(2,iright);
-    // vd left=leftvertex.getRes(v)();
-    // vd right=rightvertex.getRes(v)();
-    // d xleft=leftvertex.localGeom().xL;
-    // d xright=rightvertex.localGeom().xL;
+    // vd left=leftcell.getRes(v)();
+    // vd right=rightcell.getRes(v)();
+    // d xleft=leftcell.localGeom().xL;
+    // d xright=rightcell.localGeom().xL;
     // d relpos=(x-xleft)/(xright-xleft);
     // VARTRACE(5,relpos);
     // return math_common::linearInterpolate(left,right,relpos);
@@ -395,12 +392,12 @@ namespace tube {
     }
     VARTRACE(2,ileft);
     VARTRACE(2,iright);
-    const TubeVertex& leftvertex=*vvertex[ileft];
-    const TubeVertex& rightvertex=*vvertex[iright];
-    // vd left=leftvertex.getRes(v)();
-    // vd right=rightvertex.getRes(v)();
-    // d xleft=leftvertex.localGeom().vx;
-    // d xright=rightvertex.localGeom().vx;
+    const Cell& leftcell=*cells[ileft];
+    const Cell& rightcell=*cells[iright];
+    // vd left=leftcell.getRes(v)();
+    // vd right=rightcell.getRes(v)();
+    // d xleft=leftcell.localGeom().vx;
+    // d xright=rightcell.localGeom().vx;
     // d relpos=(x-xleft)/(xright-xleft);
     // VARTRACE(5,relpos);
     // return math_common::linearInterpolate(left,right,relpos);

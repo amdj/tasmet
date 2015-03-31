@@ -54,7 +54,7 @@ namespace tube{
 
   #ifndef SWIG
   // These variable numbers are important, as they determine the
-  // position of these variables in the array in tubevertex.h
+  // position of these variables in the array in cell.h
   const int RHONR=0;
   const int UNR=1;
   const int TNR=2;

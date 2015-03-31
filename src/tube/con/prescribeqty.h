@@ -10,7 +10,7 @@ namespace tasystem{
 }
 namespace tube{
   SPOILNAMESPACE;
-  class TubeVertex;
+  class Cell;
 
   class PrescribeQty{
     const variable::var* toprescribe;

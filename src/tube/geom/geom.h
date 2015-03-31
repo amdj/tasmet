@@ -28,7 +28,7 @@ namespace tube {
     virtual ~Geom(){}
     #ifndef SWIG
     LocalGeom localGeom(us i) const;	// Get a local geometry for a
-                                        // certain vertex
+                                        // certain cell
     #endif
     const Grid& grid() const{return grid_;}
     virtual void show() const=0;
@@ -56,7 +56,7 @@ namespace tube {
     d rhleft() const {return rh(0);}
     d rhright() const {return rh(nCells());}
 
-    d vx(us i) const;		 // Vertex positions    
+    d vx(us i) const;		 // Cell positions    
     vd vSf_vec() const;
     vd vS_vec() const;
     vd vphi_vec() const;
@@ -64,14 +64,14 @@ namespace tube {
     vd vx_vec() const;
     d Sf(us i) const {return S(i)*phi(i);}		 // Fluid-occupied cross-sectional area of cell-wall    
     d Ss(us i) const {return (1-phi(i))*S(i);}		 // Solid-occupied cross-sectional area
-    d vS(us i) const;		 // Vertex cross-sectional area
-    d vSf(us i) const;		 // Fluid-occupied cross-sectional area for vertex
-    d vSs(us i) const;		 // Solid-occupied cross-sectional area for vertex
+    d vS(us i) const;		 // Cell cross-sectional area
+    d vSf(us i) const;		 // Fluid-occupied cross-sectional area for cell
+    d vSs(us i) const;		 // Solid-occupied cross-sectional area for cell
     d vVf(us i) const;		 // Fluid-occupied volume of cell
     d vVs(us i) const;		 // Solid-occupied volume of cell
     
-    d vphi(us i) const;			// Volume porosity of vertex
-    d vrh(us i) const;			// Hydraulic radius of vertex
+    d vphi(us i) const;			// Volume porosity of cell
+    d vrh(us i) const;			// Hydraulic radius of cell
 
     d getFluidVolume() const;
     d getSolidVolume() const;

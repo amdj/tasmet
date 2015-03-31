@@ -1,5 +1,5 @@
 #include "hopkinsheat.h"
-#include "tubevertex.h"
+#include "cell.h"
 #include "tube.h"
 #include "geom.h"
 
@@ -110,7 +110,7 @@ namespace tube{
   void HopkinsHeatSource::setdTwdx(const Geom& g,const vd& dTwdx){
     this->dTwdx=&dTwdx;
   }
-  vd HopkinsHeatSource::heat(const TubeVertex& v) const{
+  vd HopkinsHeatSource::heat(const Cell& v) const{
     TRACE(5,"HopkinsHeatSource::heat(v)");
     vd heat(v.gc->Ns(),fillwith::zeros);
     variable::var htcoefH(*v.gc);
@@ -124,7 +124,7 @@ namespace tube{
     heat+=htcoefQ.freqMultiplyMat()*(v.U()()/v.localGeom().vSf);    
     return heat;    
   }
-  dmat HopkinsHeatSource::dTi(const TubeVertex& v) const{
+  dmat HopkinsHeatSource::dTi(const Cell& v) const{
     TRACE(5,"HopkinsHeatSource::dTi(v)");
     variable::var htcoefH(*v.gc);
     htcoefH.set(HeatTransferCoefH(v));
@@ -132,7 +132,7 @@ namespace tube{
     dTi=htcoefH.freqMultiplyMat();
     return dTi;
   }
-  dmat HopkinsHeatSource::dUi(const TubeVertex& v) const{
+  dmat HopkinsHeatSource::dUi(const Cell& v) const{
     TRACE(5,"HopkinsHeatSource::dUi(v)");
     variable::var htcoefQ(*v.gc);
     htcoefQ.set(HeatTransferCoefQ(v));
@@ -140,7 +140,7 @@ namespace tube{
     dUi=htcoefQ.freqMultiplyMat()/v.localGeom().vSf;
     return dUi;
   }  
-  vc HopkinsHeatSource::HeatTransferCoefQ(const TubeVertex& v) const{
+  vc HopkinsHeatSource::HeatTransferCoefQ(const Cell& v) const{
     const us& Nf=v.gc->Nf();
     vc htcoefQ(Nf+1,fillwith::zeros);
 
@@ -167,7 +167,7 @@ namespace tube{
     // No time-average part here.
     return htcoefQ;
   }
-  vc HopkinsHeatSource::HeatTransferCoefH(const TubeVertex& v) const{
+  vc HopkinsHeatSource::HeatTransferCoefH(const Cell& v) const{
     TRACE(8,"HopkinsHeatSource::HeatTransferCoefH()");
     const us& Nf=v.gc->Nf();
     d T0=v.T()(0);	// Time-averaged temperature

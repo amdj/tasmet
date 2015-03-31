@@ -46,6 +46,10 @@ namespace variable {
     // Get methods
     const tasystem::Globalconf& gc() const {return *gc_;}
     const d& operator()(us i) const;				   // Extract amplitude data result at specific frequency    
+    #ifndef SWIG
+    // Give back amplitudedata
+    operator vd() const {return amplitudedata;}
+    #endif
 
     const vd& operator()() const { return amplitudedata;} //Extract result
 						   //vector

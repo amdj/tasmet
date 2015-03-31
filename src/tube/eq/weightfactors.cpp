@@ -1,16 +1,16 @@
 #include "weightfactors.h"
-#include "tubevertex.h"
+#include "cell.h"
 #include "tube.h"
 
 namespace tube{
 
 
-  WeightFactors::WeightFactors(const TubeVertex& v):
+  WeightFactors::WeightFactors(const Cell& v):
     LocalGeom(v.getTube().geom(),v.geti())
   {
     TRACE(15,"WeightFactors::WeightFactors()");
-    const TubeVertex* left=v.left();
-    const TubeVertex* right=v.right();
+    const Cell* left=v.left();
+    const Cell* right=v.right();
 
     if(left) {   
       TRACE(15,"left present");

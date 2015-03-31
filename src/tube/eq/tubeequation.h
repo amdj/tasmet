@@ -2,6 +2,9 @@
 #pragma once
 #ifndef _TUBEEQUATION_H_
 #define _TUBEEQUATION_H_
+#define iDFT (v.gc->iDFT)
+#define fDFT (v.gc->fDFT)
+
 #include "vtypes.h"
 
 namespace tasystem{
@@ -23,34 +26,36 @@ namespace tube{
   };
   
   SPOILNAMESPACE  
-  class TubeVertex;
+  class Cell;
   class Tube;
   class WeightFactors;
   
   class TubeEquation{
   protected:
-    const TubeVertex& v;
+    const Cell& v;
     us dofnr;
   public:
-    TubeEquation(const TubeVertex& v):v(v){TRACE(15,"TubeEquation(v)");}
+    TubeEquation(const Cell& v):v(v){TRACE(15,"TubeEquation(v)");}
     void setDofNr(us Dofnr){dofnr=Dofnr;}
     us getDofNr(){return dofnr;}    
     virtual void init()=0;
     virtual enum EqType getType() const { return EqType::Non;}
 
+    // Return an eye of the right size:
+    dmat eye() const;
     virtual tasystem::JacRow jac() const=0;		// Returns the local Jacobian of this equation
     virtual vd error() const=0;
     virtual void show() const { cout << "Empty equation description. From equation.h.\n";}
     virtual void domg(vd&) const {/* Placeholder */}
     // The definition of these factors is the original definition of d_j+/-1/2 of Wesseling:
     // Wesseling: d_j+/-1/2 = r_j+/-0.5 * epsilon_j+/-0.5
-    dmat d_r() const; 		// Artificial viscosity pre-factor right side 
-    dmat d_l() const;			// Artificial viscosity pre-factor
+    // dmat d_r() const; 		// Artificial viscosity pre-factor right side 
+    // dmat d_l() const;			// Artificial viscosity pre-factor
                                 // left size
     vd getp0t() const;
     virtual ~TubeEquation(){}
   private:
-    vd nu(const TubeVertex&) const;			// Function of d^2p/dx^2
+    vd nu(const Cell&) const;			// Function of d^2p/dx^2
   };				// class TubeEquation
 } // namespace tube
 #endif /* _TUBEEQUATION_H_ */

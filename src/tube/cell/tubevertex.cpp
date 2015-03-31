@@ -1,5 +1,5 @@
 #include "tube.h"
-#include "tubevertex.h"
+#include "cell.h"
 #include "globalconf.h"
 #include "weightfactors.h"
 #include "jacobian.h"
@@ -8,7 +8,7 @@ namespace tube{
   using variable::var;
   using tasystem::Jacobian;
 
-  TubeVertex::TubeVertex(us i,const Tube& tube):
+  Cell::Cell(us i,const Tube& tube):
     i(i),
     tube(&tube),
     gc(&tube.Gc()),
@@ -20,16 +20,16 @@ namespace tube{
     se(*this),
     is(*this)
   {
-    TRACE(15,"TubeVertex::TubeVertex(i,tube)");
+    TRACE(15,"Cell::Cell(i,tube)");
 
     vars.resize(5);
     assert(gc!=NULL);
 
     // Intialize the variables for the right number of harmonics.
-    rho_=var(*gc);
-    U_=var(*gc);
+    rhoUL_=var(*gc);
+    rho_=var(*gc);    
     T_=var(*gc);
-    pL_=var(*gc);
+    p_=var(*gc);
     Ts_=var(*gc);
 
     // Initialize temperature and density variables to something sane
@@ -53,20 +53,20 @@ namespace tube{
     eqs.push_back(&s);
     eqs.push_back(&se);    
   }
-  TubeVertex::~TubeVertex(){
-    TRACE(25,"TubeVertex::~TubeVertex()");
+  Cell::~Cell(){
+    TRACE(25,"Cell::~Cell()");
     delete w_;
   }
-  const LocalGeom& TubeVertex::localGeom() const {return weightFactors();}
-  const WeightFactors& TubeVertex::weightFactors() const{
+  const LocalGeom& Cell::localGeom() const {return weightFactors();}
+  const WeightFactors& Cell::weightFactors() const{
     assert(w_);
     return *w_;
   }
-  d TubeVertex::getCurrentMass() const{
+  d Cell::getCurrentMass() const{
     return rho_(0)*weightFactors().vVf;
   }
-  void TubeVertex::init(const TubeVertex* left,const TubeVertex* right) {
-    TRACE(8,"TubeVertex::init(left,right), vertex "<< i << ".");
+  void Cell::init(const Cell* left,const Cell* right) {
+    TRACE(8,"Cell::init(left,right), cell "<< i << ".");
     // TRACE(25,"Address gc:" <<gc);
     this->left_=left;
     this->right_=right;
@@ -84,15 +84,15 @@ namespace tube{
     is.init();    
 
   }
-  us TubeVertex::getNDofs() const{
-    TRACE(5,"TubeVertex::getNDofs()");
+  us Cell::getNDofs() const{
+    TRACE(5,"Cell::getNDofs()");
     return vars.size()*gc->Ns();
   }
-  us TubeVertex::getNEqs() const{
+  us Cell::getNEqs() const{
     return eqs.size()*gc->Ns();
   }
-  void TubeVertex::setDofNrs(us firstdof){
-    TRACE(5,"TubeVertex::setDofNrs()");
+  void Cell::setDofNrs(us firstdof){
+    TRACE(5,"Cell::setDofNrs()");
     us nvars=vars.size();        // This makes it safe to exclude dofs
     // in the vars vector
     for(us i=0;i<nvars;i++){
@@ -100,8 +100,8 @@ namespace tube{
       firstdof+=gc->Ns();
     }
   }
-  void TubeVertex::setEqNrs(us firsteq){
-    TRACE(5,"TubeVertex::setDofNrs()");
+  void Cell::setEqNrs(us firsteq){
+    TRACE(5,"Cell::setDofNrs()");
     us neqs=eqs.size();        // This makes it safe to exclude dofs
     // in the vars vector
     for(us i=0;i<neqs;i++){
@@ -109,24 +109,24 @@ namespace tube{
       firsteq+=gc->Ns();
     }
   }
-  void TubeVertex::resetHarmonics() throw(std::exception) {
+  void Cell::resetHarmonics() throw(std::exception) {
     for(auto var=vars.begin();var!=vars.end();var++)
       (*var)->resetHarmonics();
   }
-  void TubeVertex::setIsentropic(){
-    TRACE(15,"TubeVertex::setIsentropic()");
+  void Cell::setIsentropic(){
+    TRACE(15,"Cell::setIsentropic()");
     is.setDofNr(eqs.at(2)->getDofNr());
     eqs[2]=&is;
   }
   
-  vd TubeVertex::errorAt(us eqnr) const{
-    TRACE(10,"TubeVertex::errorAt()");
+  vd Cell::errorAt(us eqnr) const{
+    TRACE(10,"Cell::errorAt()");
     assert(eqnr<eqs.size());
     return eqs.at(eqnr)->error();
   }
-  vd TubeVertex::error() const
+  vd Cell::error() const
   {
-    TRACE(4,"TubeVertex::error() for TubeVertex "<< i << ".");
+    TRACE(4,"Cell::error() for Cell "<< i << ".");
     // TRACE(4,"Check for position i>0 && i<gp-1...");
     // assert(i>0 && i<seg.geom().gp-1);
     const us& Ns=gc->Ns();
@@ -137,12 +137,12 @@ namespace tube{
     for(us k=0;k<Neq;k++){
       error.subvec(k*Ns,(k+1)*Ns-1)=errorAt(k);
     }
-    TRACE(4,"TubeVertex::error() i="<<i<<" done.");
+    TRACE(4,"Cell::error() i="<<i<<" done.");
     return error;
   }
-  void TubeVertex::domg(vd& domg_) const
+  void Cell::domg(vd& domg_) const
   {
-    TRACE(4,"TubeVertex::domg() for TubeVertex "<< i << ".");
+    TRACE(4,"Cell::domg() for Cell "<< i << ".");
     const us& Ns=gc->Ns();
     TRACE(4,"Assignment of Ns survived:"<< Ns);
     us neqs=eqs.size();
@@ -151,8 +151,8 @@ namespace tube{
       eqs[k]->domg(domg_);
     }
   }
-  vd TubeVertex::getRes() const {			// Get current result vector
-    TRACE(4,"TubeVertex::GetRes()");
+  vd Cell::getRes() const {			// Get current result vector
+    TRACE(4,"Cell::GetRes()");
     const us& Ns=gc->Ns();
     us nvars=vars.size();        // Only return for number of equations
     vd res(getNDofs());
@@ -162,18 +162,22 @@ namespace tube{
     }
     return res;
   }
-  d TubeVertex::getValue(varnr v,us freqnr) const{
-    TRACE(4,"TubeVertex::getValue()");
-    TRACE(4,"TubeVertex::getValue()");
+  vd Cell::U() const {
+    return (0.5*(rhoUL()+rhoUR())/rho_)();
+  }
+  d Cell::getValue(varnr v,us freqnr) const{
+    TRACE(4,"Cell::getValue()");
+    TRACE(4,"Cell::getValue()");
     switch(v) {
     case varnr::rho: // Density
       return rho()(freqnr);
       break;
     case varnr::U:                 // Volume flown
-      return U()(freqnr);
+      // return U()(freqnr);
+      throw MyError("Not yet implemented");
       break;
     case varnr::p:                   // Pressure
-      return 0.5*(pL()(freqnr)+pR()(freqnr));
+      return p_;
       break;
     case varnr::T:                 // Temp
       return T()(freqnr);
@@ -185,8 +189,8 @@ namespace tube{
       return 0;
     }
   }
-  void TubeVertex::setResVar(varnr v,const vd& res){
-    TRACE(15,"TubeVertex::setResVar(varnr,vd)");
+  void Cell::setResVar(varnr v,const vd& res){
+    TRACE(15,"Cell::setResVar(varnr,vd)");
     switch(v) {
     case varnr::rho: // Density
       rho_.set(res);
@@ -207,13 +211,13 @@ namespace tube{
       WARN("Varnr" << v << " not handled!");
     }
   }
-  void TubeVertex::setResVar(varnr v,const variable::var& res){
-      TRACE(4,"TubeVertex::setResVar(varnr,var)");
+  void Cell::setResVar(varnr v,const variable::var& res){
+      TRACE(4,"Cell::setResVar(varnr,var)");
       setResVar(v,res());
   }
-  var TubeVertex::getValue(varnr v) const{
-    TRACE(4,"TubeVertex::getValue()");
-    TRACE(4,"TubeVertex::getValue()");
+  var Cell::getValue(varnr v) const{
+    TRACE(4,"Cell::getValue()");
+    TRACE(4,"Cell::getValue()");
       switch(v) {
       case varnr::rho: // Density
         return rho();
@@ -235,44 +239,44 @@ namespace tube{
       }
   }
 
-  void TubeVertex::updateNf(){
-    TRACE(10,"TubeVertex::setNf()");
+  void Cell::updateNf(){
+    TRACE(10,"Cell::setNf()");
     for(auto var=vars.begin();var!=vars.end();var++)
       (*var)->updateNf();
   }
-  void TubeVertex::setRes(const vd& res){
-    TRACE(10,"TubeVertex::setRes(), i="<< i);
+  void Cell::setRes(const vd& res){
+    TRACE(10,"Cell::setRes(), i="<< i);
     const us& Ns=gc->Ns();
     us nvars=vars.size();        // Only put in for number of equations
     assert(res.size()==getNDofs());
     for(us k=0;k<nvars;k++){
       vars[k]->set(res.subvec(k*gc->Ns(),k*Ns+Ns-1));
     }
-    TRACE(10,"TubeVertex::setRes() exiting, i="<< i);    
+    TRACE(10,"Cell::setRes() exiting, i="<< i);    
   }
-  void TubeVertex::jac(Jacobian& tofill) const {		// Return Jacobian
-    TRACE(5,"TubeVertex::Jac() for vertex "<< i<< ".");
+  void Cell::jac(Jacobian& tofill) const {		// Return Jacobian
+    TRACE(5,"Cell::Jac() for cell "<< i<< ".");
     us neqs=eqs.size();    
     for(us k=0;k<neqs;k++){
       tofill+=eqs[k]->jac();
       TRACE(5,"Equation "<< k <<"... succesfully obtained Jacobian");
     }
   }  
-  vd TubeVertex::csource() const {
-    TRACE(4,"TubeVertex::csource()");
+  vd Cell::csource() const {
+    TRACE(4,"Cell::csource()");
     return zeros(gc->Ns());}
-  vd TubeVertex::msource() const {
-    TRACE(4,"TubeVertex::msource()");
+  vd Cell::msource() const {
+    TRACE(4,"Cell::msource()");
     return zeros(gc->Ns());}
-  vd TubeVertex::esource() const {
-    TRACE(4,"TubeVertex::esource()");
+  vd Cell::esource() const {
+    TRACE(4,"Cell::esource()");
     vd esource=zeros(gc->Ns());
     return esource;
   }    
-  void TubeVertex::show(us detailnr) const{
-    cout << "----------------- TubeVertex " << i << "----\n";
+  void Cell::show(us detailnr) const{
+    cout << "----------------- Cell " << i << "----\n";
     if(detailnr>=4){
-      cout << "Showing weight functions for TubeVertex "<< i <<"\n";
+      cout << "Showing weight functions for Cell "<< i <<"\n";
       assert(w_);
       w_->show();
     }
@@ -290,9 +294,9 @@ namespace tube{
     // cout << "Dofnr p  : " << p.getDofNr() << "\n";
     // cout << "Dofnr T  : " << T.getDofNr() << "\n";
     // cout << "Dofnr Ts : " << Ts.getDofNr() << "\n";
-    // cout << "TubeVertex on left  side:" << left <<"\n";
-    // cout << "This TubeVertex         :" << this <<"\n";
-    // cout << "TubeVertex on right side:" << right <<"\n"   ;
+    // cout << "Cell on left  side:" << left <<"\n";
+    // cout << "This Cell         :" << this <<"\n";
+    // cout << "Cell on right side:" << right <<"\n"   ;
   }
 
 } // namespace tube

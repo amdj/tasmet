@@ -1,5 +1,5 @@
 #include "tubeequation.h"
-#include "tubevertex.h"
+#include "cell.h"
 
 
 namespace tube{
@@ -13,7 +13,7 @@ namespace tube{
     TRACE(0,"TubeEquation::getp0t()");
     return v.gc->p0()*vd(v.gc->Ns(),fillwith::ones);
   }    
-
+  dmat TubeEquation::eye() const {return arma::eye(v.gc->Ns(),v.gc->Ns());}
   // Artificial viscosity matrices
   // vd eps(const vd& nu,d kappa) {
   //   TRACE(5,"eps()");

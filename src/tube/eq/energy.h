@@ -18,7 +18,7 @@ namespace tube{
     d WcLl=0,WcLr=0,WcRl=0,WcRr=0; // Conduction weight factors
     d WkinLl=0,WkinLr=0,WkinRl=0,WkinRr=0;
   public:
-    Energy(const TubeVertex& v):TubeEquation(v){}
+    Energy(const Cell& v):TubeEquation(v){}
     d Htot() const;             // Total enthalpy flow through this node
     virtual void init();
     virtual tasystem::JacRow jac() const;
@@ -28,9 +28,9 @@ namespace tube{
     virtual void domg(vd&) const;
 
     vd kappaLt() const;		// Thermal conducticity at the left
-    // boundary of the vertex
+    // boundary of the cell
     vd kappaRt() const;		// Thermal conductivity at the right
-    // boundary of the vertex
+    // boundary of the cell
     d gamma() const;			// Time-avg ratio of specific heats
 
     vd extrapolateEnergyFlow() const;

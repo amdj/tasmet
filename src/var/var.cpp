@@ -17,7 +17,6 @@ namespace variable {
     vd newtdata=scalar*var1.tdata();
     return var(var1.gc(),newtdata,false);
   }
-
   //***************************************** The var class
   var::var(const Globalconf& gc): var(gc,0.0) {  }
   var::var(const Globalconf& gc1,double initval) :gc_(&gc1),Nf(gc1.Nf()),Ns(gc1.Ns()) {

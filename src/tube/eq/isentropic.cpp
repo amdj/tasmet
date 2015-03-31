@@ -1,4 +1,4 @@
-#include "tubevertex.h"
+#include "cell.h"
 #include "jacobian.h"
 #include "isentropic.h"
 
@@ -17,9 +17,8 @@ namespace tube{
     TRACE(6,"Isentropic::jac()");
     JacRow jac(dofnr,3);
     TRACE(0,"Isentropic, dofnr jac:"<< dofnr);
-    jac+=dpL();
-    jac+=dpR();    
-    jac+=drhoi();
+    jac+=dp();    
+    jac+=drho();
     return jac;
   }
   vd Isentropic::error() const {
@@ -36,31 +35,22 @@ namespace tube{
     // err+=(v.eWisrho*p0vec_freqdomain+(v.eWispL*v.pL()()+v.eWispR*v.pR()()))/p0;
     // err+=-v.eWisrho*fDFT*pow(v.rho.tdata()/rho0,gamma);
 
-    err+=(p0vec_freqdomain+0.5*(v.pL()()+v.pR()()))/p0;
+    err+=(p0vec_freqdomain+v.p()())/p0;
     err+=-fDFT*pow(v.rho().tdata()/rho0,gamma);
     
     TRACE(6,"Isentropic::Error() done");
     return err;
   }
-  JacCol Isentropic::dpL() const {
+  JacCol Isentropic::dp() const {
     TRACE(1,"Isentropic::dpi()");
-    JacCol dpL(v.pL(),arma::eye(v.gc->Ns(),v.gc->Ns()));
+    JacCol dp(v.p(),eye());
     d p0=v.gc->p0();    
     // Integrated form
     // dpL.data()*=v.eWispL/p0;
-    dpL.data()*=0.5/p0;
-    return dpL;
+    dp.data()*=1/p0;
+    return dp;
   }
-  JacCol Isentropic::dpR() const {
-    TRACE(1,"Isentropic::dpi()");
-    JacCol dpR(v.pR(),arma::eye(v.gc->Ns(),v.gc->Ns()));
-    d p0=v.gc->p0();    
-    // Integrated form
-    // dpR.data()*=v.eWispR/p0;
-    dpR.data()*=0.5/p0;
-    return dpR;
-  }
-  JacCol Isentropic::drhoi() const {
+  JacCol Isentropic::drho() const {
     TRACE(1,"Isentropic::drhoi()"); 
     JacCol drhoi(v.rho());
     d T0=v.gc->T0();

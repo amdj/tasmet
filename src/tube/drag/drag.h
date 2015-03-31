@@ -5,14 +5,14 @@
 
 namespace tube{
   SPOILNAMESPACE
-  class TubeVertex;
+  class Cell;
   // Stub for a DragResistance class
   class DragResistance{
   public:
-    virtual vd drag(const TubeVertex& v) const;
-    virtual dmat dUi(const TubeVertex& v) const;
-    // virtual dmat drhoi(const TubeVertex& v) const;
-    // virtual dmat dpi(const TubeVertex& v) const;
+    virtual vd drag(const Cell& v) const;
+    virtual dmat dUi(const Cell& v) const;
+    // virtual dmat drhoi(const Cell& v) const;
+    // virtual dmat dpi(const Cell& v) const;
 
   };
 

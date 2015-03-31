@@ -1,19 +1,22 @@
 #pragma once
 
 #include "tubeequation.h"
-#include "drag.h"
+
+
 
 namespace tube{
   SPOILNAMESPACE
-  class TubeVertex;
+  class Cell;
   class Tube;
+  class DragResistance;
+
   class Momentum:public TubeEquation
   {
     const DragResistance* drag=NULL;
   public:
-    d Wddt=0,WuL=0,Wu=0,WuR=0;
-    d WpL=0,WpR=0;
-    Momentum(const TubeVertex& v):TubeEquation(v){}
+    d Wddt=0,Wpi=0,Wpim1=0;
+
+    Momentum(const Cell& v):TubeEquation(v){}
     virtual void init();
     virtual tasystem::JacRow jac() const;
     virtual enum EqType getType() const { return EqType::Mom;}    
@@ -21,18 +24,15 @@ namespace tube{
     virtual void show() const;
     virtual void domg(vd& domg) const;
 
-    vd momentumFlow() const;
   private:
-    tasystem::JacCol drhoL() const;
-    tasystem::JacCol drho() const;
-    tasystem::JacCol drhoR() const;    
+    // tasystem::JacCol drho() const;
 
-    tasystem::JacCol dUL() const; // Are virtual for bc
-    tasystem::JacCol dU() const;
-    tasystem::JacCol dUR() const;
+    // tasystem::JacCol drhoUL() const; // Are virtual for bc
+    // tasystem::JacCol drhoULL() const; // Are virtual for bc
+    // tasystem::JacCol drhoUR() const;
 
-    tasystem::JacCol dpL() const;
-    tasystem::JacCol dpR() const;
+    // tasystem::JacCol dpi() const;
+    // tasystem::JacCol dpim1() const;
 
   };
 }

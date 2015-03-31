@@ -1,15 +1,15 @@
-// file: bcvertex.h, created March 20th, 2014
+// file: bccell.h, created March 20th, 2014
 // Author: J.A. de Jong
 
-// bcvertex.h: external boundary conditions for tubes. This file
+// bccell.h: external boundary conditions for tubes. This file
 // contains the implementation of typical external boundary conditions
-// for tubes as a custom vertex. Examples are adiabatic walls, isothermal walls and an
+// for tubes as a custom cell. Examples are adiabatic walls, isothermal walls and an
 // adiabatic open pressure boundary conditions.
 #pragma once
 #ifndef _TWIMPEDANCE_H_
 #define _TWIMPEDANCE_H_
 
-#include "tubebcvertex.h"
+#include "tubebccell.h"
 #include "momentumeq.h"
 #include "energyeq.h"
 #include "isentropiceq.h"
@@ -19,34 +19,34 @@ namespace tube{
 
   class TwImpedanceMomentumEq:public Momentum{
   public:
-    virtual vd error(const TubeVertex&) const;
-    virtual JacCol dUi(const TubeVertex&) const;
-    virtual JacCol dUim1(const TubeVertex&) const;
-    virtual JacCol dpR(const TubeVertex& v) const;
+    virtual vd error(const Cell&) const;
+    virtual JacCol dUi(const Cell&) const;
+    virtual JacCol dUim1(const Cell&) const;
+    virtual JacCol dpR(const Cell& v) const;
     virtual TubeEquation* copy() const {return new TwImpedanceMomentumEq(*this);}
   }; 
   // class TwImpedanceEnergyEq:public Energy{
   // private:
-  //   const TwImpedance& impedancevertex;
+  //   const TwImpedance& impedancecell;
   // public:
   //   TwImpedanceEnergyEq(TwImpedance&);
   //   ~TwImpedanceEnergyEq(){}
-  //   virtual vd error(const TubeVertex&) const;
-  //   virtual dmat dUi(const TubeVertex&) const;
-  //   virtual dmat dUim1(const TubeVertex&) const;
+  //   virtual vd error(const Cell&) const;
+  //   virtual dmat dUi(const Cell&) const;
+  //   virtual dmat dUim1(const Cell&) const;
   // }; 
   class RightTwImpedanceEq: public TubeEquation{
   public:
     virtual TubeEquation* copy() const {return new RightTwImpedanceEq(*this);}
-    virtual vd error(const TubeVertex&) const;
-    virtual JacRow jac(const TubeVertex& v) const;
-    virtual JacCol dUi(const TubeVertex&) const;
-    // virtual JacCol dUim1(const TubeVertex&) const;
-    virtual JacCol dpR(const TubeVertex&) const;
-    virtual JacCol dpL(const TubeVertex&) const;    
+    virtual vd error(const Cell&) const;
+    virtual JacRow jac(const Cell& v) const;
+    virtual JacCol dUi(const Cell&) const;
+    // virtual JacCol dUim1(const Cell&) const;
+    virtual JacCol dpR(const Cell&) const;
+    virtual JacCol dpL(const Cell&) const;    
   }; 
 
-  class TwImpedance:public TubeBcVertex // Adiabatic impedance boundary condition
+  class TwImpedance:public TubeBcCell // Adiabatic impedance boundary condition
   {
   public:
     // TwImpedanceMomentumEq mright; // Completely adjusted equation
@@ -63,10 +63,10 @@ namespace tube{
     TwImpedance& operator=(const TwImpedance&);
     ~TwImpedance(){}
     virtual vd esource() const;		// Source term for constant temperature
-    virtual void initTubeVertex(us i,const Tube& thisseg);
+    virtual void initCell(us i,const Tube& thisseg);
     virtual string getType() const {return string("TwImpedance");}
     virtual enum connectpos connectPos() const {return connectpos::right;}
-    virtual TubeBcVertex* copy() const {return new TwImpedance(*this);}
+    virtual TubeBcCell* copy() const {return new TwImpedance(*this);}
   private:
     virtual void updateW(const SegBase&);
     // friend class TwImpedanceMomentumEq;

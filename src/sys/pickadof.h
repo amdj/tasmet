@@ -4,20 +4,20 @@
 #include "vtypes.h"
 #include "tasystem.h"
 #include "seg.h"
-#include "tubevertex.h"
+#include "cell.h"
 
 using segment::Seg;
 
 namespace tasystem{
   SPOILNAMESPACE
   class PickADof{
-    us segnr,vertexnr,varnr,freqnr;
+    us segnr,cellnr,varnr,freqnr;
   public:
-    PickADof(us segnr=0,us vertexnr=0,us varnr=0,us freqnr=0)
-    {set(segnr,vertexnr,varnr,freqnr);}
-    void set(us segnr,us vertexnr,us varnr,us freqnr){
+    PickADof(us segnr=0,us cellnr=0,us varnr=0,us freqnr=0)
+    {set(segnr,cellnr,varnr,freqnr);}
+    void set(us segnr,us cellnr,us varnr,us freqnr){
       this->segnr=segnr;
-      this->vertexnr=vertexnr;
+      this->cellnr=cellnr;
       this->varnr=varnr;
       this->freqnr=freqnr;
     }
@@ -28,7 +28,7 @@ namespace tasystem{
       // us i=0;
       // while()
       // Seg* seg=sys.getSeg()[i];
-      // return static_cast<segment::Seg*>(sys.getSeg(segnr))->vvertex.at(vertexnr)->getRes()(varnr*Ns+freqnr);
+      // return static_cast<segment::Seg*>(sys.getSeg(segnr))->cells.at(cellnr)->getRes()(varnr*Ns+freqnr);
       return 0;
     }
     us dofnr(const TaSystem& sys) const {
@@ -37,8 +37,8 @@ namespace tasystem{
       WARN("Not working anymore");
       // for(us i=0;i<segnr;i++)
       //   dofnr+=sys.getSeg(i)->getNDofs();
-      // for(us i=0;i<vertexnr;i++)
-      //   dofnr+=static_cast<segment::Seg*>(sys.getSeg(segnr))->vvertex.at(i)->getNDofs();
+      // for(us i=0;i<cellnr;i++)
+      //   dofnr+=static_cast<segment::Seg*>(sys.getSeg(segnr))->cells.at(i)->getNDofs();
       // dofnr+=varnr*sys.gc.Ns();
       // dofnr+=freqnr;
       // return dofnr;

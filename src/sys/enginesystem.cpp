@@ -269,13 +269,13 @@ namespace tasystem{
     // Eigen::SparseVector()
     return domg;
   }
-  void EngineSystem::setTimingConstraint(us segnr,us vertexnr,us varnr,us freqnr){
+  void EngineSystem::setTimingConstraint(us segnr,us cellnr,us varnr,us freqnr){
     TRACE(18,"EngineSystem::setTimingConstraint()");
-    tc.set(segnr,vertexnr,varnr,freqnr);
+    tc.set(segnr,cellnr,varnr,freqnr);
   }
-  void EngineSystem::setAmplitudeDof(us segnr,us vertexnr,us varnr,us freqnr)   {
+  void EngineSystem::setAmplitudeDof(us segnr,us cellnr,us varnr,us freqnr)   {
     TRACE(18,"EngineSystem::setAmplitudeDof()");
-    av.set(segnr,vertexnr,varnr,freqnr);
+    av.set(segnr,cellnr,varnr,freqnr);
   }
 
 } // namespace tasystem

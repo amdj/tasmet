@@ -29,8 +29,8 @@ namespace tasystem{
     EngineSystem& operator=(const EngineSystem&);
     virtual TaSystem* copy() const {return new EngineSystem(*this);}
 
-    void setTimingConstraint(us segnr,us vertexnr,us varnr,us freqnr);
-    void setAmplitudeDof(us segnr,us vertexnr,us varnr,us freqnr);    
+    void setTimingConstraint(us segnr,us cellnr,us varnr,us freqnr);
+    void setAmplitudeDof(us segnr,us cellnr,us varnr,us freqnr);    
     // Solving methods
     virtual esdmat jac(d dampfac=-1);
     virtual evd error();

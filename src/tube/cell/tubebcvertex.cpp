@@ -1,4 +1,4 @@
-#include "tubebcvertex.h"
+#include "tubebccell.h"
 #include "var.h"
 #include "jacobian.h"
 #include "weightfactors.h"
@@ -8,11 +8,11 @@ namespace tube{
   using tasystem::JacRow;
   using tasystem::JacCol;
 
-  TubeBcVertex::TubeBcVertex(us i,const Tube& t):
-    TubeVertex(i,t)
+  TubeBcCell::TubeBcCell(us i,const Tube& t):
+    Cell(i,t)
   {}
-   vd TubeBcVertex::extrapolateQuant(physquant q) const {
-    TRACE(10,"TubeBcVertex::extrapolateQuant()");
+   vd TubeBcCell::extrapolateQuant(physquant q) const {
+    TRACE(10,"TubeBcCell::extrapolateQuant()");
     switch(q){
     case massFlow:
       return extrapolateMassFlow();
@@ -37,8 +37,8 @@ namespace tube{
     abort();
     return vd2();               // To avoid compiler warning
   }
-  JacRow TubeBcVertex::dExtrapolateQuant(physquant q) const{
-    TRACE(10,"TubeBcVertex::dExtrapolateQuant()");
+  JacRow TubeBcCell::dExtrapolateQuant(physquant q) const{
+    TRACE(10,"TubeBcCell::dExtrapolateQuant()");
     switch(q){
     case massFlow:
       return dExtrapolateMassFlow();

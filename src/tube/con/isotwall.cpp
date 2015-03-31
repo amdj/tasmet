@@ -1,7 +1,7 @@
 #include "isotwall.h"
 #include "jacobian.h"
 #include "tasystem.h"
-#include "tubebcvertex.h"
+#include "tubebccell.h"
 #include "tube.h"
 #include "weightfactors.h"
 
@@ -66,17 +66,17 @@ namespace tube{
 
     us Ns=gc->Ns();
     if(pos==Pos::left){
-      const TubeVertex& vertex=t->leftVertex();
-      Uiszero.set(firsteqnr,vertex.UL(),zero);
-      Tbc.set(firsteqnr+Ns,vertex.TL()); // vals are set in constructor
-      Tsbc.set(firsteqnr+2*Ns,vertex.TsL()); // idem
+      const Cell& cell=t->leftCell();
+      Uiszero.set(firsteqnr,cell.UL(),zero);
+      Tbc.set(firsteqnr+Ns,cell.TL()); // vals are set in constructor
+      Tsbc.set(firsteqnr+2*Ns,cell.TsL()); // idem
 
     }
     else{
-      const TubeVertex& vertex=t->rightVertex();
-      Uiszero.set(firsteqnr,vertex.UR(),zero);
-      Tbc.set(firsteqnr+Ns,vertex.TR()); // vals are set in constructor
-      Tsbc.set(firsteqnr+2*Ns,vertex.TsR()); // idem
+      const Cell& cell=t->rightCell();
+      Uiszero.set(firsteqnr,cell.UR(),zero);
+      Tbc.set(firsteqnr+Ns,cell.TR()); // vals are set in constructor
+      Tsbc.set(firsteqnr+2*Ns,cell.TsR()); // idem
 
     }
   }
@@ -85,26 +85,26 @@ namespace tube{
     vd error(getNEqs());
     us Ns=gc->Ns();
 
-    const TubeBcVertex* vertex;
+    const TubeBcCell* cell;
     
     const var *pb;
     if(pos==Pos::left){
-      vertex=&t->leftVertex();
-      pb=&vertex->pL();
+      cell=&t->leftCell();
+      pb=&cell->pL();
     }
     else{
-      vertex=&t->rightVertex();
-      pb=&vertex->pR();
+      cell=&t->rightCell();
+      pb=&cell->pR();
     }    
     // Compute error on state eq derivative
     vd stateer=(*pb)(); stateer(0)+=gc->p0();
-    stateer+=-vertex->extrapolateQuant(physquant::rhoRT);
+    stateer+=-cell->extrapolateQuant(physquant::rhoRT);
     VARTRACE(30,stateer);
     // Add all individual error parts to vector
     error.subvec(0,Ns-1)=Uiszero.error();
     error.subvec(Ns,2*Ns-1)=Tbc.error();
     error.subvec(2*Ns,3*Ns-1)=Tsbc.error();
-    // error.subvec(3*Ns,4*Ns-1)=vertex->extrapolateQuant(physquant::massFlow);
+    // error.subvec(3*Ns,4*Ns-1)=cell->extrapolateQuant(physquant::massFlow);
     error.subvec(3*Ns,4*Ns-1)=stateer;
     return error;
   }
@@ -112,22 +112,22 @@ namespace tube{
     TRACE(15,"IsoTWall::jac()");
     us Ns=gc->Ns();
 
-    const TubeBcVertex* vertex;
+    const TubeBcCell* cell;
     const variable::var* pb;
 
     if(pos==Pos::left){
-      vertex=&t->leftVertex();
-      pb=&vertex->pL();
+      cell=&t->leftCell();
+      pb=&cell->pL();
     }
     else{
-      vertex=&t->rightVertex();
-      pb=&vertex->pR();
+      cell=&t->rightCell();
+      pb=&cell->pR();
     }
 
     // Derivative extrapolated state equation
     JacRow stateeq(firsteqnr+3*Ns,6);
     stateeq+=JacCol(*pb,eye<dmat>(gc->Ns(),gc->Ns()));
-    stateeq+=(vertex->dExtrapolateQuant(physquant::rhoRT)*=-1);
+    stateeq+=(cell->dExtrapolateQuant(physquant::rhoRT)*=-1);
 
 
     // Put them into jacobian

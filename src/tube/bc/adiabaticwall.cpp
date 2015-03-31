@@ -2,30 +2,30 @@
 #include "adiabaticwall.h"
 
 // Author: J.A. de Jong
-#include "tubevertex.h"
+#include "cell.h"
 
 
 namespace tube{
   void RightAdiabaticWall::show() const {
     cout << getType() << " boundary condition.\n";
-    TubeVertex::show();
+    Cell::show();
   }
-  void RightAdiabaticWall::initTubeVertex(us i,const Tube& thisseg)
+  void RightAdiabaticWall::initCell(us i,const Tube& thisseg)
   {
-    TRACE(8,"RightAdiabaticWall::Init(), vertex "<< i <<".");
-    TubeVertex::initTubeVertex(i,thisseg);
+    TRACE(8,"RightAdiabaticWall::Init(), cell "<< i <<".");
+    Cell::initCell(i,thisseg);
     pr=var(gc);
     vars.push_back(&pr);
     eqs.push_back(&sr);
   }
-  void LeftAdiabaticWall::initTubeVertex(us i,const Tube& thisseg)
+  void LeftAdiabaticWall::initCell(us i,const Tube& thisseg)
   {
-    TRACE(8,"LeftAdiabaticWall::initTubeVertex(), vertex "<< i <<".");
-    TubeVertex::initTubeVertex(i,thisseg);
+    TRACE(8,"LeftAdiabaticWall::initCell(), cell "<< i <<".");
+    Cell::initCell(i,thisseg);
   }
   void LeftAdiabaticWall::show() const {
     cout << getType() << " boundary condition.\n";
-    TubeVertex::show();
+    Cell::show();
   }
 
 } // namespace tube

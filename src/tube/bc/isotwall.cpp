@@ -1,21 +1,21 @@
 #include "tube.h"
 #include "isotwall.h"
 
-// file: bcvertex.cpp, created March 20th, 2014.
+// file: bccell.cpp, created March 20th, 2014.
 // Author: J.A. de Jong
 #include "twimpedance.h"
-#include "tubevertex.h"
+#include "cell.h"
 
 
 namespace tube{
   void RightIsoTWall::show() const {
     cout << getType() << " boundary condition. Time-averaged part of prescribed temperature: " << Tbc << "\n";
-    TubeVertex::show();
+    Cell::show();
   }
-  void RightIsoTWall::initTubeVertex(us i,const Tube& thisseg)
+  void RightIsoTWall::initCell(us i,const Tube& thisseg)
   {
-    TRACE(8,"RightIsoTWall::initTubeVertex, vertex "<< i <<".");
-    RightAdiabaticWall::initTubeVertex(i,thisseg);
+    TRACE(8,"RightIsoTWall::initCell, cell "<< i <<".");
+    RightAdiabaticWall::initCell(i,thisseg);
     RightIsoTWall::updateW(thisseg);
    }
 
@@ -45,12 +45,12 @@ namespace tube{
    }
   void LeftIsoTWall::show() const {
     cout << getType() << " boundary condition. Time-averaged part of prescribed temperature: " << Tbc << "\n";
-    TubeVertex::show();
+    Cell::show();
   }
-  void LeftIsoTWall::initTubeVertex(us i,const Tube& thisseg)
+  void LeftIsoTWall::initCell(us i,const Tube& thisseg)
   {
-    TRACE(8,"LeftIsoTWall::initTubeVertex, vertex "<< i <<".");
-    LeftAdiabaticWall::initTubeVertex(i,thisseg);
+    TRACE(8,"LeftIsoTWall::initCell, cell "<< i <<".");
+    LeftAdiabaticWall::initCell(i,thisseg);
     LeftIsoTWall::updateW(thisseg);
    }
 

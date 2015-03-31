@@ -10,21 +10,21 @@
 #include "tubeconnector.h"
 #include "tasystem.h"
 #include "tube.h"
-#include "tubebcvertex.h"
+#include "tubebccell.h"
 #include "constants.h"
-#include "lefttubevertex.h"
-#include "righttubevertex.h"
+#include "leftcell.h"
+#include "rightcell.h"
 
 namespace tube {
   using tasystem::TaSystem;
 
   // Number of equations corresponding to this connection:
   const int Neq=8;
-  inline const RightTubeVertex& rtv(const Tube& t){
-    return static_cast<const RightTubeVertex&>(t.rightVertex());
+  inline const RightCell& rtv(const Tube& t){
+    return static_cast<const RightCell&>(t.rightCell());
   }
-  inline const LeftTubeVertex& ltv(const Tube& t){
-    return static_cast<const LeftTubeVertex&>(t.leftVertex());
+  inline const LeftCell& ltv(const Tube& t){
+    return static_cast<const LeftCell&>(t.leftCell());
   }
 
 
@@ -64,16 +64,16 @@ namespace tube {
     vd errorMf(gc->Ns(),fillwith::zeros);
     vd errorMom(gc->Ns(),fillwith::zeros);
     if(pos[0]==Pos::right){
-      errorMf+=tubes[0]->rightVertex().extrapolateQuant(massFlow);
+      errorMf+=tubes[0]->rightCell().extrapolateQuant(massFlow);
     }
     else{
-      errorMf-=tubes[0]->leftVertex().extrapolateQuant(massFlow);
+      errorMf-=tubes[0]->leftCell().extrapolateQuant(massFlow);
     }
     if(pos[1]==Pos::right){
-      errorMf+=tubes[1]->rightVertex().continuity().massFlow();
+      errorMf+=tubes[1]->rightCell().continuity().massFlow();
     }
     if(pos[1]==Pos::left){
-      errorMf-=tubes[1]->leftVertex().continuity().massFlow();
+      errorMf-=tubes[1]->leftCell().continuity().massFlow();
     }
     error.subvec(0,gc->Ns()-1)=errorMf;
     return error;

@@ -5,7 +5,7 @@
 #include "tasystem.h"
 #include "globalconf.h"
 #include "jacobian.h"
-#include "tubebcvertex.h"
+#include "tubebccell.h"
 #include "constants.h"
 #include "state.h"
 
@@ -75,16 +75,16 @@ namespace tube{
     this->firsteqnr=firsteqnr;
     us Ns=gc->Ns();
     if(pos==Pos::left){
-      const TubeVertex& vertex=t->leftVertex();
-      prescribep.set(firsteqnr,vertex.pL());
-      prescribeT.set(firsteqnr+Ns,vertex.TL());
-      prescribeTs.set(firsteqnr+2*Ns,vertex.TsL());
+      const Cell& cell=t->leftCell();
+      prescribep.set(firsteqnr,cell.pL());
+      prescribeT.set(firsteqnr+Ns,cell.TL());
+      prescribeTs.set(firsteqnr+2*Ns,cell.TsL());
     }
     else{
-      const TubeVertex& vertex=t->rightVertex();
-      prescribep.set(firsteqnr,vertex.pR());
-      prescribeT.set(firsteqnr+Ns,vertex.TR());
-      prescribeTs.set(firsteqnr+2*Ns,vertex.TsR());
+      const Cell& cell=t->rightCell();
+      prescribep.set(firsteqnr,cell.pR());
+      prescribeT.set(firsteqnr+Ns,cell.TR());
+      prescribeTs.set(firsteqnr+2*Ns,cell.TsR());
     }
   }
   vd PressureBc::error() const {
@@ -93,20 +93,20 @@ namespace tube{
     us Ns=gc->Ns();
     const dmat& fDFT=gc->fDFT;
     vd massflowv;
-    const TubeBcVertex* vertex;
+    const TubeBcCell* cell;
     if(pos==Pos::left){
-      vertex=&t->leftVertex();
-      massflowv=fDFT*(vertex->rhoL().tdata()%vertex->UL().tdata());
+      cell=&t->leftCell();
+      massflowv=fDFT*(cell->rhoL().tdata()%cell->UL().tdata());
     }
     else{
-      vertex=&t->rightVertex();
-      massflowv=fDFT*(vertex->rhoR().tdata()%vertex->UR().tdata());
+      cell=&t->rightCell();
+      massflowv=fDFT*(cell->rhoR().tdata()%cell->UR().tdata());
     }
 
     error.subvec(0,gc->Ns()-1)=prescribep.error();
     error.subvec(1*Ns,2*Ns-1)=prescribeT.error();
     error.subvec(2*Ns,3*Ns-1)=prescribeTs.error();
-    error.subvec(3*Ns,4*Ns-1)=massflowv-vertex->extrapolateQuant(physquant::massFlow);
+    error.subvec(3*Ns,4*Ns-1)=massflowv-cell->extrapolateQuant(physquant::massFlow);
 
     // VARTRACE(15,error)
     return error;
@@ -119,18 +119,18 @@ namespace tube{
     const dmat& fDFT=gc->fDFT;
     const dmat& iDFT=gc->iDFT;
 
-    const TubeBcVertex* vertex;
+    const TubeBcCell* cell;
     if(pos==Pos::left){
-      vertex=&t->leftVertex();
-      massfloweq+=JacCol(vertex->rhoL(),fDFT*vertex->UL().diagt()*iDFT);
-      massfloweq+=JacCol(vertex->UL(),fDFT*vertex->rhoL().diagt()*iDFT);
+      cell=&t->leftCell();
+      massfloweq+=JacCol(cell->rhoL(),fDFT*cell->UL().diagt()*iDFT);
+      massfloweq+=JacCol(cell->UL(),fDFT*cell->rhoL().diagt()*iDFT);
     }
     else{
-      vertex=&t->rightVertex();
-      massfloweq+=JacCol(vertex->rhoR(),fDFT*vertex->UR().diagt()*iDFT);
-      massfloweq+=JacCol(vertex->UR(),fDFT*vertex->rhoR().diagt()*iDFT);
+      cell=&t->rightCell();
+      massfloweq+=JacCol(cell->rhoR(),fDFT*cell->UR().diagt()*iDFT);
+      massfloweq+=JacCol(cell->UR(),fDFT*cell->rhoR().diagt()*iDFT);
     }
-    massfloweq+=(vertex->dExtrapolateQuant(physquant::massFlow)*=-1);
+    massfloweq+=(cell->dExtrapolateQuant(physquant::massFlow)*=-1);
 
     jac+=prescribep.jac();
     jac+=prescribeT.jac();

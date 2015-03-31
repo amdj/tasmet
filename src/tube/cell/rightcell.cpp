@@ -1,4 +1,4 @@
-#include "righttubevertex.h"
+#include "rightcell.h"
 #include "weightfactors.h"
 #include "jacobian.h"
 
@@ -11,8 +11,8 @@ namespace tube{
   using tasystem::JacRow;
   using tasystem::JacCol;
 
-  RightTubeVertex::RightTubeVertex(us i,const Tube& t):
-    TubeBcVertex(i,t),
+  RightCell::RightCell(us i,const Tube& t):
+    TubeBcCell(i,t),
     sR(*this)
   {
     const tasystem::Globalconf& gc=*(this->gc);
@@ -23,12 +23,12 @@ namespace tube{
     pR_=var(gc);
     TsR_=var(gc);
   }
-  void RightTubeVertex::init(const TubeVertex* left,const TubeVertex* right){
-    TRACE(15,"RightTubeVertex::init()");
+  void RightCell::init(const Cell* left,const Cell* right){
+    TRACE(15,"RightCell::init()");
     assert(!right);             // Otherwise, this is not the
                                 // rightmost!
     assert(left);
-    TubeVertex::init(left,right);
+    Cell::init(left,right);
     sR.init();
 
     eqs.push_back(&sR);
@@ -43,12 +43,12 @@ namespace tube{
     TR_=T_;
     TsR_=Ts_;
   }
-  void RightTubeVertex::show(us detailnr) const{
-    cout << "------------- RightTubeVertex ---------\n";
-    TubeVertex::show(detailnr);
+  void RightCell::show(us detailnr) const{
+    cout << "------------- RightCell ---------\n";
+    Cell::show(detailnr);
   }
-  void RightTubeVertex::setResVar(varnr v,const vd& res){
-    TRACE(15,"RightTubeVertex::setResVar()");
+  void RightCell::setResVar(varnr v,const vd& res){
+    TRACE(15,"RightCell::setResVar()");
     switch(v){
     case varnr::rhoR:
       rhoR_.set(res);
@@ -66,18 +66,18 @@ namespace tube{
       pR_.set(res);
       break;
     default:
-      TubeVertex::setResVar(v,res);
+      Cell::setResVar(v,res);
       break;
     }
   }
-  vd RightTubeVertex::extrapolateMassFlow() const{
-    TRACE(15,"RightTubeVertex::extrapolateMassFlow()");
+  vd RightCell::extrapolateMassFlow() const{
+    TRACE(15,"RightCell::extrapolateMassFlow()");
     const WeightFactors& w=weightFactors();
     return w.wRNm2*left()->continuity().massFlow()+\
       w.wRNm1*c.massFlow();
   }
-  JacRow RightTubeVertex::dExtrapolateMassFlow() const{
-    TRACE(15,"RightTubeVertex::dExtrapolateMassFlow()");
+  JacRow RightCell::dExtrapolateMassFlow() const{
+    TRACE(15,"RightCell::dExtrapolateMassFlow()");
     const WeightFactors& w=weightFactors();
     JacRow jacrow(-1,4);
     jacrow+=JacCol(U(),w.wRNm1*fDFT*rho().diagt()*iDFT);
@@ -86,14 +86,14 @@ namespace tube{
     jacrow+=JacCol(rhoL(),w.wRNm2*fDFT*UL().diagt()*iDFT);
     return jacrow;
   }
-  vd RightTubeVertex::extrapolateRhoRT() const{
+  vd RightCell::extrapolateRhoRT() const{
     const WeightFactors& w=weightFactors();
     const d& R=gc->gas().Rs();
     return fDFT*(R*(w.wRNm2*rhoL().tdata()%TL().tdata()+   \
                     w.wRNm1*rho().tdata()%T().tdata()));
   }
-  JacRow RightTubeVertex::dExtrapolateRhoRT() const{
-    TRACE(15,"RightTubeVertex::dExtrapolateRhoRT()");
+  JacRow RightCell::dExtrapolateRhoRT() const{
+    TRACE(15,"RightCell::dExtrapolateRhoRT()");
     const WeightFactors& w=weightFactors();
     JacRow jacrow(-1,4);
     const d& R=gc->gas().Rs();    
@@ -103,14 +103,14 @@ namespace tube{
     jacrow+=JacCol(TL(),R*w.wRNm2*fDFT*diagmat(rhoL().tdata())*iDFT);
     return jacrow;
   }
-  vd RightTubeVertex::extrapolateMomentumFlow() const{
-    TRACE(15,"RightTubeVertex::extrapolateMomentumFlow()");
+  vd RightCell::extrapolateMomentumFlow() const{
+    TRACE(15,"RightCell::extrapolateMomentumFlow()");
     const WeightFactors& w=weightFactors();
     return w.wRNm2*left()->momentum().momentumFlow()+\
       w.wRNm1*m.momentumFlow();
   }
-  JacRow RightTubeVertex::dExtrapolateMomentumFlow() const{
-    TRACE(15,"RightTubeVertex::dExtrapolateMomentumFlow()");
+  JacRow RightCell::dExtrapolateMomentumFlow() const{
+    TRACE(15,"RightCell::dExtrapolateMomentumFlow()");
     const WeightFactors& w=weightFactors();
     JacRow jacrow(-1,4);
     dmat Utd=U().diagt();
@@ -129,8 +129,8 @@ namespace tube{
                    *UtdL*UtdL*iDFT);
     return jacrow;
   }
-  d RightTubeVertex::getValueBc(varnr v,us freqnr) const{
-    TRACE(15,"RightTubeVertex::getValueBc()");
+  d RightCell::getValueBc(varnr v,us freqnr) const{
+    TRACE(15,"RightCell::getValueBc()");
     switch(v) {
     case varnr::rho: // Density
       return rhoR()(freqnr);

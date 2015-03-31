@@ -1,16 +1,16 @@
-// file: bcvertex.h, created March 20th, 2014
+// file: bccell.h, created March 20th, 2014
 // Author: J.A. de Jong
 
-// bcvertex.h: external boundary conditions for tubes. This file
+// bccell.h: external boundary conditions for tubes. This file
 // contains the implementation of typical external boundary conditions
-// for tubes as a custom vertex. Examples are adiabatic walls, isothermal walls and an
+// for tubes as a custom cell. Examples are adiabatic walls, isothermal walls and an
 // adiabatic open pressure boundary conditions.
 #pragma once
 
 #ifndef _IMPEDANCEBC_H_
 #define _IMPEDANCEBC_H_
 
-#include "tubebcvertex.h"
+#include "tubebccell.h"
 #include "momentumeq.h"
 
 
@@ -19,12 +19,12 @@ namespace tube{
 
   class RightImpedanceMomentumEq:public Momentum{
   public:
-    RightImpedanceMomentumEq(TubeBcVertex&,vd& Z);
+    RightImpedanceMomentumEq(TubeBcCell&,vd& Z);
     ~RightImpedanceMomentumEq(){}
     virtual TubeEquation* copy(){ return new RightImpedanceMomentumEq(*this);}
-    vd error(const TubeVertex&) const;
-    JacCol dUi(const TubeVertex&) const;
-    JacCol dUim1(const TubeVertex&) const;
+    vd error(const Cell&) const;
+    JacCol dUi(const Cell&) const;
+    JacCol dUim1(const Cell&) const;
     // dmat dpi();
     // dmat dpim1();
     // dmat drhoim1();
@@ -32,7 +32,7 @@ namespace tube{
     vd& Z;
   }; 
 
-  class RightImpedance:public TubeBcVertex // Adiabatic impedance boundary condition
+  class RightImpedance:public TubeBcCell // Adiabatic impedance boundary condition
   {
   public:
     vd Z;			// The impedance
@@ -43,10 +43,10 @@ namespace tube{
     RightImpedance(const RightImpedance& o);
     RightImpedance& operator=(const RightImpedance&);
     ~RightImpedance(){}
-    virtual void initTubeVertex(us i,const Tube&);
+    virtual void initCell(us i,const Tube&);
     virtual string getType() const {return string("RightImpedance");}
     virtual Pos connectPos() const {return Pos::right;}
-    virtual TubeBcVertex* copy() const {return new RightImpedance(*this);}
+    virtual TubeBcCell* copy() const {return new RightImpedance(*this);}
   protected:
     void updateW(const Tube&);
 

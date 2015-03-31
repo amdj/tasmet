@@ -1,11 +1,11 @@
-// file: bcvertex.cpp, created March 20th, 2014.
+// file: bccell.cpp, created March 20th, 2014.
 // Author: J.A. de Jong
 #include "impedancebc.h"
-#include "tubevertex.h"
+#include "cell.h"
 
 
 namespace tube{
-  RightImpedance::RightImpedance(vd Z1):TubeBcVertex(),Z(Z1),mright(*this,Z){
+  RightImpedance::RightImpedance(vd Z1):TubeBcCell(),Z(Z1),mright(*this,Z){
     TRACE(8,"RightImpedance constructor");
     // Change continuity equation for open boundary
   }
@@ -19,10 +19,10 @@ namespace tube{
     return *this;
   }
 
-  void RightImpedance::initTubeVertex(us i,const Tube& thisseg)
+  void RightImpedance::initCell(us i,const Tube& thisseg)
   {
-    TRACE(8,"RightImpedance::Init(), vertex "<< i <<".");
-    TubeVertex::initTubeVertex(i,thisseg);
+    TRACE(8,"RightImpedance::Init(), cell "<< i <<".");
+    Cell::initCell(i,thisseg);
     eqs.at(1)=&mright;
     eqs.at(1)->init(thisseg);
     updateW(thisseg);
@@ -61,11 +61,11 @@ namespace tube{
 
     // Conduction terms are not changed.
   }
-  RightImpedanceMomentumEq::RightImpedanceMomentumEq(TubeBcVertex& tv,vd& Z):Z(Z){
+  RightImpedanceMomentumEq::RightImpedanceMomentumEq(TubeBcCell& tv,vd& Z):Z(Z){
     TRACE(6,"RightImpedanceMomentumEq::RightImpedanceMomentumEq()");
     TRACE(6,"Z:\n"<<Z)
       }
-  vd RightImpedanceMomentumEq::error(const TubeVertex& v) const{
+  vd RightImpedanceMomentumEq::error(const Cell& v) const{
     TRACE(40,"RightImpedanceMomentumEq::Error()");
 
     vd error=Momentum::error(v);
@@ -79,7 +79,7 @@ namespace tube{
   //   dmat dpi=Momentum::dpi();
   //   return dpi;
   // }
-  JacCol RightImpedanceMomentumEq::dUi(const TubeVertex& v) const {
+  JacCol RightImpedanceMomentumEq::dUi(const Cell& v) const {
     TRACE(40,"RightImpedanceMomentumEq::dUi()");
     JacCol dUi=Momentum::dUi(v);
     dUi+=v.wRNm1*v.lg.SfR*diagmat(Z);
@@ -88,7 +88,7 @@ namespace tube{
     return dUi;
   }
 
-  JacCol RightImpedanceMomentumEq::dUim1(const TubeVertex& v) const {
+  JacCol RightImpedanceMomentumEq::dUim1(const Cell& v) const {
     TRACE(1,"RightImpedanceMomentumEq::dUim1()");
     JacCol dUim1=Momentum::dUim1(v);    
     dUim1+=v.wRNm2*v.lg.SfR*diagmat(Z);

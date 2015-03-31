@@ -7,7 +7,7 @@
  */
 
 #include "laminarduct.h"
-#include "tubevertex.h"
+#include "cell.h"
 #include "tube.h"
 #include "globalconf.h"
 #include "geom.h"
@@ -15,7 +15,7 @@
 // Tried to keep the method definition a bit in order in which a
   // tube is created, including all its components. First a tube is
   // created, which has a geometry and a global
-  // configuration. Moreover, the tube has gridpoints, "LaminarDuctVertex"
+  // configuration. Moreover, the tube has gridpoints, "LaminarDuctCell"
   // instants. Of these, a tube has gp of them, stored in a vector. In
   // each gridpoint, variables live, which represent the current
   // solution. Moreover, we have equations in each gridpoint. More
@@ -49,8 +49,8 @@ namespace tube {
     vd dragcoef(getNCells());
     var drag_varcoef(*gc);
     for(us i=0;i<dragcoef.size();i++){
-      const TubeVertex& vertex=getTubeVertex(i);
-      drag_varcoef.set(laminardrag.ComplexResistancecoef(vertex));
+      const Cell& cell=getCell(i);
+      drag_varcoef.set(laminardrag.ComplexResistancecoef(cell));
       dragcoef(i)=drag_varcoef(freqnr);
     }
     return dragcoef;

@@ -5,15 +5,15 @@
 
 namespace tube{
   SPOILNAMESPACE
-  class TubeVertex;
+  class Cell;
   // Stub for a DragResistance class
   class HeatSource{
   public:
-    virtual vd heat(const TubeVertex& v) const;
-    virtual dmat dUi(const TubeVertex& v) const;
-    virtual dmat dTi(const TubeVertex& v) const;
-    // virtual dmat drhoi(const TubeVertex& v) const;
-    // virtual dmat dpi(const TubeVertex& v) const;
+    virtual vd heat(const Cell& v) const;
+    virtual dmat dUi(const Cell& v) const;
+    virtual dmat dTi(const Cell& v) const;
+    // virtual dmat drhoi(const Cell& v) const;
+    // virtual dmat dpi(const Cell& v) const;
 
     // See if comment automatically line on new line das dsag dsag
     // dsag gdsa

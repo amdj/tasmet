@@ -9,7 +9,7 @@
 #endif
 
 
-#include "tubevertex.h"
+#include "cell.h"
 #include "weightfactors.h"
 #include "tube.h"
 #include "jacobian.h"
@@ -55,7 +55,7 @@ namespace tube{
     // Wkin=0.5*(w.wRl/SfRsq-w.wLr/SfLsq);
     // WkinR=0.5*w.wRr/SfRsq;
     
-    // vxm1=0 for the leftmost vertex, so this is always true:
+    // vxm1=0 for the leftmost cell, so this is always true:
     WcLl=w.SfL/(w.vx-w.vxm1);
     WcLr=-WcLl;
 

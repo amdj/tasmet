@@ -7,7 +7,7 @@
 // Tried to keep the method definition a bit in order in which a
 // tube is created, including all its components. First a tube is
 // created, which has a geometry and a global
-// configuration. Moreover, the tube has gridpoints, "IsentropicTubeVertex"
+// configuration. Moreover, the tube has gridpoints, "IsentropicCell"
 // instants. Of these, a tube has gp of them, stored in a vector. In
 // each gridpoint, variables live, which represent the current
 // solution. Moreover, we have equations in each gridpoint. More
@@ -15,7 +15,7 @@
 // and a suitable equation of state should hold.
 //////////////////////////////////////////////////////////////////////
 #include "isentropictube.h"
-#include "tubevertex.h"
+#include "cell.h"
 #include "globalconf.h"
 #include "geom.h"
 
@@ -32,9 +32,9 @@ namespace tube {
   }
   void IsentropicTube::init(const TaSystem& sys){
     Tube::init(sys);
-    for(auto vertex=vvertex.begin();vertex!=vvertex.end();vertex++){
-      TubeVertex& cvertex=**vertex;
-      cvertex.setIsentropic();
+    for(auto cell=cells.begin();cell!=cells.end();cell++){
+      Cell& ccell=**cell;
+      ccell.setIsentropic();
     }
     setInit(true);
   }

@@ -13,23 +13,41 @@ AUX_SOURCE_DIRECTORY(src/seg seg)
 AUX_SOURCE_DIRECTORy(src/sol sol)
 AUX_SOURCE_DIRECTORy(src/sys sys)
 AUX_SOURCE_DIRECTORY(src/var var)
-AUX_SOURCE_DIRECTORY(src/tube tube)
+# AUX_SOURCE_DIRECTORY(src/tube tube)
 
 AUX_SOURCE_DIRECTORy(src/tube/geom/grid grid)
-AUX_SOURCE_DIRECTORy(src/tube/eq eq)
+# AUX_SOURCE_DIRECTORy(src/tube/eq eq)
+set(eqdir src/tube/eq)
+set(eq ${eqdir}/continuity.cpp ${eqdir}/momentum.cpp ${eqdir}/state.cpp
+  ${eqdir}/isentropic.cpp ${eqdir}/weightfactors.cpp ${eqdir}/solidenergy.cpp)
+set(eqdir src/tube)
+set(tube ${tubedir}/tube.cpp ${tubedir}/isentropictube.cpp)
+
 AUX_SOURCE_DIRECTORy(src/tube/geom geom)
 AUX_SOURCE_DIRECTORy(src/tube/drag drag)
 AUX_SOURCE_DIRECTORy(src/tube/heat heat)
-AUX_SOURCE_DIRECTORy(src/tube/vertex vertex)
+# AUX_SOURCE_DIRECTORy(src/tube/vertex vertex)
+set(vertex src/tube/vertex/tubevertex.h)
 AUX_SOURCE_DIRECTORy(src/tube/con con)
 # set (nonlinear_SRC ${tubesources} ${varsources} ${segsources}
 #   ${syssources}  ${geomsources} ${solsources}
 #   ${varsources} ${commonsources}
 #   ${tubeeq}  ${tubebc} ${tubedrag} ${gridsources}
 #   )
-set (nonlinear_SRC ${src} ${seg} ${sol} ${sys} ${var} ${tube}
-  #bc
-  ${con} ${drag} ${eq} ${geom} ${grid} ${heat} ${vertex}
+set (nonlinear_SRC
+  ${src}
+  ${seg}
+  ${sol}
+  ${sys}
+  ${var}
+  # ${tube}
+  # ${con}
+  # ${drag}
+  ${eq}
+  ${geom}
+  ${grid}
+  # ${heat}
+  ${vertex}
   )
 
 include_directories(
@@ -64,6 +82,8 @@ target_link_libraries(nonlin_lib math_common ${Boost_THREAD_LIBRARY} ${Boost_SYS
 
 # add_executable(test123 test123.cpp)
 # target_link_libraries(test123 nonlin_lib math_common armadillo)
+
+add_definitions(-DNODRAG)
 
 # Does this work
 set_source_files_properties(nonlin.i PROPERTIES CPLUSPLUS ON)

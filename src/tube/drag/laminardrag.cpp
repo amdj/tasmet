@@ -1,17 +1,17 @@
 #include "tube.h"
-#include "tubevertex.h"
+#include "cell.h"
 #include "laminardrag.h"
 #include "geom.h"
 namespace tube{
   
 
-  vd LaminarDragResistance::drag(const TubeVertex& v) const {
+  vd LaminarDragResistance::drag(const Cell& v) const {
     TRACE(10,"LaminarDragResistance::drag(v)");
     vd drag=dUi(v)*v.U()();
     // VERY IMPORTANT: NOM
     return drag; 		// No momentum scale here, since this is already done in dUi!!!!
   }
-  dmat LaminarDragResistance::dUi(const TubeVertex& v) const { // Derivative of drag resistance to velocity
+  dmat LaminarDragResistance::dUi(const Cell& v) const { // Derivative of drag resistance to velocity
     TRACE(10,"LaminarDragResistance::dUi()");
     vc CResistance=ComplexResistancecoef(v);
     variable::var resistance(*v.gc);
@@ -25,7 +25,7 @@ namespace tube{
     TRACE(11,"Exiting redefinition of Rottfuncs");
   }
 
-  vc LaminarDragResistance::ComplexResistancecoef(const TubeVertex& v) const {
+  vc LaminarDragResistance::ComplexResistancecoef(const Cell& v) const {
     TRACE(0,"LaminarDragResistance::ComplexResistancecoef()");
     const us& Nf=v.gc->Nf();
     const us& i=v.geti();

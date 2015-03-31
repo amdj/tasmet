@@ -2,7 +2,7 @@
 #include "hopkinslaminarduct.h"
 #include "bessel.h"
 #include "geom.h"
-#include "tubevertex.h"
+#include "cell.h"
 #include "constants.h"
 
 namespace tube{
@@ -34,7 +34,7 @@ namespace tube{
     LaminarDuct::init(sys);
 
     // Set time-avg data to make solving bit easier
-    assert(vvertex.size()>0);
+    assert(cells.size()>0);
     vd vx(geom().nCells());
     for(us i=0;i<vx.size();i++)
       vx(i)=geom().vx(i);
@@ -44,13 +44,13 @@ namespace tube{
     dTwdx=math_common::ddx_central(Tmirror,vx);
     // WARN("ToBECANGED!!")
     d T;
-    for(us i=0;i<vvertex.size();i++){
+    for(us i=0;i<cells.size();i++){
       T=Tmirror(i);
-      TubeVertex& cvertex=*vvertex[i];
+      Cell& ccell=*cells[i];
       variable::var Tvar(*gc);
       Tvar.set(0,T);
-      cvertex.setResVar(varnr::T,Tvar);
-      cvertex.setResVar(varnr::Ts,Tvar);
+      ccell.setResVar(varnr::T,Tvar);
+      ccell.setResVar(varnr::Ts,Tvar);
     }
     hopkinsheat.setdTwdx(geom(),dTwdx);
     setInit(true);

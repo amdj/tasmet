@@ -1,8 +1,8 @@
 #pragma once
-#ifndef _TUBEBVERTEX_H_
-#define _TUBEBVERTEX_H_
+#ifndef _TUBEBCELL_H_
+#define _TUBEBCELL_H_
 
-#include "tubevertex.h"
+#include "cell.h"
 #include "var.h"
 #include "constants.h"
 
@@ -16,11 +16,11 @@ namespace tube{
 
   class Tube;
 
-  class TubeBcVertex:public TubeVertex{
+  class TubeBcCell:public Cell{
     segment::Connector* con=NULL;
   public:
-    TubeBcVertex(us i,const Tube& t);
-    virtual ~TubeBcVertex(){}
+    TubeBcCell(us i,const Tube& t);
+    virtual ~TubeBcCell(){}
     virtual Pos getPos() const=0;
     vd extrapolateQuant(physquant) const;
     tasystem::JacRow dExtrapolateQuant(physquant) const;
@@ -36,4 +36,4 @@ namespace tube{
 
 } // namespace tube
 
-#endif /* _TUBEBVERTEX_H_ */
+#endif /* _TUBEBCELL_H_ */
