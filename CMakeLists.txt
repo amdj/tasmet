@@ -13,15 +13,14 @@ AUX_SOURCE_DIRECTORY(src/seg seg)
 AUX_SOURCE_DIRECTORy(src/sol sol)
 AUX_SOURCE_DIRECTORy(src/sys sys)
 AUX_SOURCE_DIRECTORY(src/var var)
-# AUX_SOURCE_DIRECTORY(src/tube tube)
 
 AUX_SOURCE_DIRECTORy(src/tube/geom/grid grid)
 # AUX_SOURCE_DIRECTORy(src/tube/eq eq)
 set(eqdir src/tube/eq)
 set(eq ${eqdir}/continuity.cpp  ${eqdir}/state.cpp
-  ${eqdir}/isentropic.cpp ${eqdir}/weightfactors.cpp ${eqdir}/solidenergy.cpp)
+  ${eqdir}/isentropic.cpp ${eqdir}/weightfactors.cpp ${eqdir}/solidenergy.cpp ${eqdir}/momentum.cpp)
 
-
+# AUX_SOURCE_DIRECTORY(src/tube tube)
 set(tubedir src/tube)
 set(tube ${tubedir}/tube.cpp ${tubedir}/isentropictube.cpp)
 

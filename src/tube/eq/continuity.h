@@ -27,9 +27,9 @@ namespace tube{
   private:
     tasystem::JacCol drho() const;	// Derivative of continuity equation to density at
     // novirtual de i
-    tasystem::JacCol drhoUR() const;	// Derivative of continuity equation to Volume flow at i
+    tasystem::JacCol dmR() const;	// Derivative of continuity equation to Volume flow at i
     // node (only nonzero for nonconstant grids)
-    tasystem::JacCol drhoUL() const;	// Derivative of continuity equation to density at
+    tasystem::JacCol dmL() const;	// Derivative of continuity equation to density at
   };				// Continuity class
 }				// Namespace tube
 

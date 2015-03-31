@@ -9,6 +9,7 @@
 #ifndef TUBEEQUATION_H
 #define TUBEEQUATION_H
 #include "vtypes.h"
+#include "constants.h"
 
 namespace tasystem{
   class JacRow;
@@ -17,16 +18,6 @@ namespace tasystem{
 namespace variable{class var;}
 
 namespace tube{
-  
-  enum EqType{
-    Con,			// Continuity
-    Mom,			// Momentum
-    Ene,			// Energy
-    Ise,			// Isentropic
-    Sta,			// State
-    Sol,			// SolidEnergy
-    Non				// None
-  };
   
   SPOILNAMESPACE  
   class Cell;
@@ -42,7 +33,7 @@ namespace tube{
     void setDofNr(us Dofnr){dofnr=Dofnr;}
     us getDofNr(){return dofnr;}    
     virtual void init()=0;
-    virtual enum EqType getType() const { return EqType::Non;}
+    virtual enum EqType getType() const=0;
 
     // Return an eye of the right size:
     dmat eye() const;

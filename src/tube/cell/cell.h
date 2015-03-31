@@ -5,12 +5,6 @@
 
 #include "var.h"
 #include "tubeequation.h"
-#include "continuity.h"
-#include "momentum.h"
-#include "energy.h"
-#include "state.h"
-#include "solidenergy.h"
-#include "isentropic.h"
 
 #include "constants.h"
 
@@ -19,9 +13,7 @@ namespace tube {
 
   SPOILNAMESPACE;
   class Tube;
-  // Abstract base class Cell contains:
-  // i: cell nr
-  // gc: pointer to Globalconf
+  class Equation;
 
   class Cell {
     //Gridpoint at a position
@@ -33,25 +25,14 @@ namespace tube {
     const Cell* left_=nullptr;
     const Cell* right_=nullptr;
 
-    vector<variable::var*> vars;
-    vector<Equation*> eqs; // Vector of pointers to the
-
     variable::var rho_;		// Density
-    variable::var rhoUL_;		// Mass flow at left cell wall
+    variable::var mL_;		// Mass flow at left cell wall
     variable::var T_;		// Temperature
     variable::var p_;      // Pressure at left cell wall
     variable::var Ts_;		// Solid temperature
 
-  protected:
-    // equations to solve for.
-    Continuity c;
-    Momentum m;
-    // Temporarily put to isentropic
-    // Energy e;
-    Isentropic e;              // Do we really need this burden?
-    State s;
-    SolidTPrescribed se;
-    Isentropic is;              // Does not have 
+    vector<variable::var*> vars={&rho_,&mL_,&T_,&p_,&Ts_};
+    vector<Equation*> eqs; // Vector of pointers to the equations
 
   public:
     // Geometric data ********************
@@ -82,10 +63,6 @@ namespace tube {
     // No copy constructors
     Cell(const Cell& )=delete;
 
-    const Continuity& continuity() const {return c;}
-    const Momentum& momentum() const {return m;}
-    // const Energy& energy() const {return e;}
-
     virtual void init(const Cell* left,const Cell* right);   
 
     const Cell* left() const {return left_;}
@@ -93,9 +70,8 @@ namespace tube {
     const Tube& getTube() const {return *tube;}
     us geti() const {return i;}
 
-    const variable::var& rhoUL() const {return rhoUL_;}
-    vd U() const;
-    virtual const variable::var& rhoUR() const {assert(right_); return right_->rhoUL();}
+    const variable::var& mL() const {return mL_;}
+    virtual const variable::var& mR() const {assert(right_); return right_->mL();}
     const variable::var& p() const{return p_;}
 
     // These are variables for the left and right vertices, but are on

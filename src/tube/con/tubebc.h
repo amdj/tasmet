@@ -33,7 +33,7 @@ namespace tube{
   public:
     virtual ~TubeBc(){}
     #ifndef SWIG
-    us getNEqs() const;         // 4 times Ns
+    us getNEqs() const;
     virtual void init(const tasystem::TaSystem&);
     #endif
   };

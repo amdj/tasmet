@@ -5,6 +5,14 @@
 #include "weightfactors.h"
 #include "jacobian.h"
 
+#include "continuity.h"
+#include "momentum.h"
+// #include "energy.h"
+#include "state.h"
+#include "solidenergy.h"
+#include "isentropic.h"
+
+
 namespace tube{
   using variable::var;
   using tasystem::Jacobian;
@@ -12,15 +20,7 @@ namespace tube{
   Cell::Cell(us i,const Tube& tube):
     tube(&tube),
     gc(&tube.Gc()),
-    c(*this),
-    m(*this),
-    e(*this),
-    s(*this),
-    // s(*this),
-    se(*this),
-    is(*this),
     i(i)
-
   {
     TRACE(15,"Cell::Cell(i,tube)");
     const Geom& geom=tube.geom();
@@ -46,7 +46,7 @@ namespace tube{
     rhR=geom.rh(i+1);
     
     // Intialize the variables for the right number of harmonics.
-    rhoUL_=var(*gc);
+    mL_=var(*gc);
     rho_=var(*gc);    
     T_=var(*gc);
     p_=var(*gc);
@@ -60,21 +60,24 @@ namespace tube{
     // Fill vars vector
     vars.resize(constants::nvars);
     vars.at(constants::rho)=&rho_;
-    vars.at(constants::rhoU)=&rhoUL_;
+    vars.at(constants::m)=&mL_;
     vars.at(constants::T)=&T_;
     vars.at(constants::p)=&p_;
     vars.at(constants::Ts)=&Ts_;    
 
     // Fill eqs vector
     eqs.resize(constants::neqs);
-    eqs.push_back(&c);
-    eqs.push_back(&m);
-    eqs.push_back(&e);
-    eqs.push_back(&s);
-    eqs.push_back(&se);    
+    eqs.push_back(new Continuity(*this));
+    eqs.push_back(new Momentum(*this));
+    // eqs.push_back(new Energy(*this));
+    eqs.push_back(new Isentropic(*this));
+    eqs.push_back(new State(*this));
+    eqs.push_back(new SolidTPrescribed(*this));    
   }
   Cell::~Cell(){
     TRACE(25,"Cell::~Cell()");
+    for(auto eq=eqs.begin();eq!=eqs.end();eq++)
+      delete *eq;
   }
   d Cell::getCurrentMass() const{
     return rho_(0)*vVf;
@@ -85,13 +88,9 @@ namespace tube{
     this->left_=left;
     this->right_=right;
 
-    c.init();
-    m.init();
-    e.init();
-    // s.init(w,*tube);
-    s.init();
-    is.init();    
-
+    for (auto eq = eqs.begin(); eq != eqs.end(); eq++) {
+      (*eq)->init();
+    }
   }
   us Cell::getNDofs() const{
     TRACE(5,"Cell::getNDofs()");
@@ -124,8 +123,10 @@ namespace tube{
   }
   void Cell::setIsentropic(){
     TRACE(15,"Cell::setIsentropic()");
-    is.setDofNr(eqs.at(2)->getDofNr());
-    eqs[2]=&is;
+    Isentropic* is=new Isentropic(*this);
+    is->setDofNr(eqs.at(2)->getDofNr());
+    delete eqs[2];
+    eqs[2]=is;
   }
   
   vd Cell::errorAt(us eqnr) const{
@@ -171,9 +172,9 @@ namespace tube{
     }
     return res;
   }
-  vd Cell::U() const {
-    return (0.5*(rhoUL()+rhoUR())/rho_)();
-  }
+  // vd Cell::U() const {
+  //   return (0.5*(rhoUL()+rhoUR())/rho_)();
+  // }
   d Cell::getValue(Varnr v,us freqnr) const{
     TRACE(4,"Cell::getValue()");
     TRACE(4,"Cell::getValue()");
@@ -288,10 +289,9 @@ namespace tube{
     cout << "----------------- Cell " << i << "----\n";
     if(detailnr>=2){
       cout << "Showing weight factors of equations...\n";
-      c.show();
-      m.show();
-      e.show();
-      s.show();
+      for (auto eq = eqs.begin(); eq != eqs.end(); ++eq) {
+        (*eq)->show();
+      }
     }
     cout <<"Showing LocalGeom data..\n";
     cout <<"i     :" << i<<"\n";

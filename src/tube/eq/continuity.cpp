@@ -25,16 +25,16 @@ namespace tube{
     JacRow jac(dofnr,3);
     // TRACE(0,"Continuity, dofnr jac:"<< dofnr);
     jac.addCol(drho());    
-    jac.addCol(drhoUL());
-    jac.addCol(drhoUR());
+    jac.addCol(dmL());
+    jac.addCol(dmR());
     return jac;
   }
   vd Continuity::error() const {	
     TRACE(6,"Continuity::Error()");
     vd error(v.gc->Ns(),fillwith::zeros);
     error+=Wddt*v.gc->DDTfd*v.rho()();
-    error+=v.rhoUR();
-    error-=v.rhoUL();
+    error+=v.mR();
+    error-=v.mL();
 
     // (Boundary) source term
     error+=v.csource();
@@ -46,13 +46,13 @@ namespace tube{
     // domg_.subvec(dofnr+1,dofnr+2)=domg_full.subvec(1,2); 
     domg_.subvec(dofnr,dofnr+v.gc->Ns()-1)=domg_full;     
   }
-  JacCol Continuity::drhoUR() const {
+  JacCol Continuity::dmR() const {
     TRACE(0,"Continuity::drhoR()");
-    return JacCol(v.rhoUR(),eye());
+    return JacCol(v.mR(),eye());
   }
-  JacCol Continuity::drhoUL() const {
+  JacCol Continuity::dmL() const {
     TRACE(0,"Continuity::drhoL()");
-    return JacCol(v.rhoUL(),eye());
+    return JacCol(v.mL(),eye());
   }
 } // Namespace tube
 

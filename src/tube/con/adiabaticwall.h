@@ -3,7 +3,7 @@
 #define _ADIABATICWALL_H__
 
 #include "tubebc.h"
-#include "prescribeqty.h"
+
 
 namespace tasystem{
   class TaSystem;
@@ -13,13 +13,9 @@ namespace tube{
 
  // Adiabatic wall boundary
   class AdiabaticWall:public TubeBc {
-    vd zero;
-    PrescribeQty Uiszero;       // Equation to make volume flow zero
-                                // at wall
-    PrescribeddxQty drhodxiszero;
     us firsteqnr;
-    AdiabaticWall& operator=(const AdiabaticWall&);
   public:
+    AdiabaticWall& operator=(const AdiabaticWall&)=delete;
     AdiabaticWall(us segnr,Pos position): TubeBc(segnr,position){}
     AdiabaticWall(const AdiabaticWall& o): TubeBc(o) {}
     virtual ~AdiabaticWall(){}

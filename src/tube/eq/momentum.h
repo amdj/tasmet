@@ -14,7 +14,8 @@ namespace tube{
   {
     const DragResistance* drag=nullptr;
   public:
-    d Wddt=0,Wpi=0,Wpim1=0;
+    d Wddt=0,Wpi=0,Wpim1=0,
+      Wmim1,Wmi;
 
     Momentum(const Cell& v):Equation(v){}
     virtual void init();
@@ -23,16 +24,7 @@ namespace tube{
     virtual vd error() const;			// Error in momentum equation at node i
     virtual void show() const;
     virtual void domg(vd& domg) const;
-
   private:
-    // tasystem::JacCol drho() const;
-
-    // tasystem::JacCol drhoUL() const; // Are virtual for bc
-    // tasystem::JacCol drhoULL() const; // Are virtual for bc
-    // tasystem::JacCol drhoUR() const;
-
-    // tasystem::JacCol dpi() const;
-    // tasystem::JacCol dpim1() const;
 
   };
 }

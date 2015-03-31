@@ -43,7 +43,7 @@ namespace constants {
   // These variable numbers are important, as they determine the
   // position of these variables in the array in cell.h
   const int rho=0;
-  const int rhoU=1;
+  const int m=1;
   const int T=2;
   const int p=3;
   const int Ts=4;
@@ -65,7 +65,7 @@ namespace tube{
   typedef segment::Pos Pos;
 
   enum Varnr{rho=constants::rho,
-             rhoU=constants::rhoU,
+             rhoU=constants::m,
              T=constants::T,
              p=constants::p,
              Ts=constants::Ts,
@@ -79,6 +79,20 @@ namespace tube{
                  solidHeatFlow,
                  rhoRT,
   };
+
+  #ifndef SWIG
+  enum EqType{
+    Con=0,			// Continuity
+    Mom=1,			// Momentum
+    Ene=2,			// Energy
+    Ise=3,			// Isentropic
+    Sta=4,			// State
+    Sol=5,			// SolidEnergy
+    Non				// None
+  };
+  #endif  
+
+
 }                // namespace tube
 
 #endif // CONSTANTS_H

@@ -21,6 +21,7 @@ namespace tube{
     virtual void init(){}
     tasystem::JacRow jac() const;
     vd error() const;
+    EqType getType() const {return EqType::Sta;}
   };
   
 }
