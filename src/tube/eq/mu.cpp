@@ -8,7 +8,7 @@
 
 #include "mu.h"
 #include "cell.h"
-#include "jacobian.h"
+#include "jacrow.h"
 
 #define iDFT (v.gc->iDFT)
 #define fDFT (v.gc->fDFT)

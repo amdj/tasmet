@@ -120,9 +120,10 @@ namespace tube{
 
     // Get reference to one of the boundary Cells
     const BcCell& bcCell(Pos) const;
-    // Internal cell
+    // Access to cells
     const Cell& getCell(us i) const;
-
+    const Cell& operator[](us i) const;
+    
     virtual const DragResistance& getDragResistance() const=0;
     virtual const HeatSource& getHeatSource() const=0;
     #endif

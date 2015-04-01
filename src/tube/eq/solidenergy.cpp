@@ -1,5 +1,5 @@
 #include "solidenergy.h"
-#include "jacobian.h"
+#include "jacrow.h"
 #include "cell.h"
 
 #define iDFT (v.gc->iDFT)

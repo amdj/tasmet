@@ -21,19 +21,13 @@ namespace tube{
     BcCell(us i,const Tube& t);
     virtual ~BcCell(){}
     virtual Pos getPos() const=0;
-    vd extrapolateQuant(Physquant) const;
-    tasystem::JacRow dExtrapolateQuant(Physquant) const;
+    virtual vd extrapolateQuant(Physquant) const=0;
+    virtual tasystem::JacRow dExtrapolateQuant(Physquant) const=0;
     // virtual d getValueBc(Varnr,us freqnr) const=0;
     Equation* Eq(us i) {return eqs.at(i);}
     virtual const variable::var& mbc() const=0; // Return mass flow at the
                                         // cell wall
   private:
-    // virtual vd extrapolateMassFlow() const=0;
-    // virtual tasystem::JacRow dExtrapolateMassFlow() const=0;
-    // virtual vd extrapolateRhoRT() const=0;
-    // virtual tasystem::JacRow dExtrapolateRhoRT() const=0;
-    // virtual vd extrapolateMomentumFlow() const=0;
-    // virtual tasystem::JacRow dExtrapolateMomentumFlow() const=0;
   };
 
 } // namespace tube

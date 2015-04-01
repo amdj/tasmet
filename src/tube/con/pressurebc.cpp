@@ -90,6 +90,8 @@ namespace tube{
       error+=Wddt*DDTfd*cell.mbc()();
       error+=cell.vSf*cell.p()();
       error-=cell.SfL*p_prescribed();
+      error+=cell.mu()();       // 
+      error-=cell.extrapolateQuant(Physquant::momentumFlow);
     }
     else{
       d Wddt=cell.xR-cell.vx;
@@ -111,6 +113,8 @@ namespace tube{
       JacRow jacr(firsteqnr,5);
       jacr+=JacCol(cell.mbc(),Wddt*DDTfd);
       jacr+=JacCol(cell.p(),cell.vSf*eye(Ns,Ns));
+      jacr+=JacCol(cell.mu(),eye(Ns,Ns));
+      jacr+=-cell.dExtrapolateQuant(Physquant::momentumFlow);
       jac+=jacr;
     }
 

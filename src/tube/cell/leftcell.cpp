@@ -1,15 +1,45 @@
 #include "leftcell.h"
 #include "weightfactors.h"
-#include "jacobian.h"
+#include "jacrow.h"
+#include "tube.h"
 
 #define iDFT (gc->iDFT)
 #define fDFT (gc->fDFT)
+
+#define eye eye(t.Gc().Ns(),t.Gc().Ns())
 
 namespace tube{
   using variable::var;
   using tasystem::JacRow;
   using tasystem::JacCol;
 
+  // Extrapolate momentum flow left side
+  vd2 weightfactors(const Tube& t){
+    d vxi=t[0].vx;
+    d vxip1=t[1].vx;
+
+    // Compute weight factors
+    d wL0=vxip1/(vxip1-vxi);
+    d wL1=-vxi/(vxip1-vxi);
+    VARTRACE(25,wL0);
+    VARTRACE(25,wL1);
+    return vd2({wL0,wL1});
+  }
+  
+  vd extrapolateMomentumFlow(const Tube& t){
+    vd2 w=weightfactors(t); d wL0=w(0),wL1=w(1);
+    return wL0*t[0].mu()()+wL1*t[1].mu()();
+  }
+  JacRow dExtrapolateMomentumFlow(const Tube& t){
+    vd2 w=weightfactors(t); d wL0=w(0),wL1=w(1);
+    JacRow jacrow(2);
+    jacrow+=JacCol(t[0].mu(),wL0*eye);
+    jacrow+=JacCol(t[1].mu(),wL1*eye);
+    return jacrow;
+  }
+
+
+  
   LeftCell::LeftCell(us i,const Tube& t):
     BcCell(i,t)
   {
@@ -32,8 +62,33 @@ namespace tube{
     cout << "------------- LeftCell ----------\n";
     Cell::show(detailnr);
   }
-  void LeftCell::setResVar(Varnr v,const vd& res){
-    TRACE(15,"LeftCell::setResVar()");
+  vd LeftCell::extrapolateQuant(Physquant p) const {
+    TRACE(5,"LeftCell::extrapolateQuant()");
+    switch(p){
+    case Physquant::momentumFlow:
+      return extrapolateMomentumFlow(getTube());      
+      break;
+    default:
+      WARN("This is not yet implemented!");
+      assert(false);
+    }
+
+  }
+  JacRow LeftCell::dExtrapolateQuant(Physquant p) const {
+    TRACE(5,"LeftCell::dExtrapolateQuant()");
+    switch(p){
+    case Physquant::momentumFlow:
+      return dExtrapolateMomentumFlow(getTube());      
+      break;
+    default:
+      WARN("This is not yet implemented!");
+      assert(false);
+
+    }
+  }
+
+  // void LeftCell::setResVar(Varnr v,const vd& res){
+  //   TRACE(15,"LeftCell::setResVar()");
     // switch(v){
     // case Varnr::rhoL:
     //   rhoL_.set(res);
@@ -54,7 +109,7 @@ namespace tube{
     //   Cell::setResVar(v,res);
     //   break;
     // }
-  }
+  // }
   // d LeftCell::getValueBc(Varnr v,us freqnr) const{
   //   TRACE(15,"LeftCell::getValueBc()");
     // switch(v) {

@@ -12,7 +12,7 @@
 #include "cell.h"
 #include "weightfactors.h"
 #include "tube.h"
-#include "jacobian.h"
+#include "jacrow.h"
 #include "energy.h"
 
 #define iDFT (v.gc->iDFT)

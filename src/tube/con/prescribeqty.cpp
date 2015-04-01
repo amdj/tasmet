@@ -1,5 +1,5 @@
 #include "prescribeqty.h"
-#include "jacobian.h"
+#include "jacrow.h"
 #include "var.h"
 
 namespace tube{

@@ -1,6 +1,6 @@
 #include "rightcell.h"
 #include "weightfactors.h"
-#include "jacobian.h"
+#include "jacrow.h"
 
 #define iDFT (gc->iDFT)
 #define fDFT (gc->fDFT)
@@ -25,14 +25,23 @@ namespace tube{
     Cell::init(left,right);
     mR_=var(*gc);
     vars.push_back(&mR_);
-
   }
   void RightCell::show(us detailnr) const{
     cout << "------------- RightCell ---------\n";
     Cell::show(detailnr);
   }
-  void RightCell::setResVar(Varnr v,const vd& res){
-    TRACE(15,"RightCell::setResVar()");
+
+  vd RightCell::extrapolateQuant(Physquant p) const {
+    TRACE(5,"RightCell::extrapolateQuant()");
+
+  }
+  JacRow RightCell::dExtrapolateQuant(Physquant p) const {
+    TRACE(5,"RightCell::dExtrapolateQuant()");
+
+  }
+
+  // void RightCell::setResVar(Varnr v,const vd& res){
+  //   TRACE(15,"RightCell::setResVar()");
     // switch(v){
     // case Varnr::rhoR:
     //   rhoR_.set(res);
@@ -53,7 +62,7 @@ namespace tube{
     //   Cell::setResVar(v,res);
     //   break;
     // }
-  }
+  // }
   // vd RightCell::extrapolateMassFlow() const{
   //   TRACE(15,"RightCell::extrapolateMassFlow()");
   //   const WeightFactors& w=weightFactors();

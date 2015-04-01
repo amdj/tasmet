@@ -1,5 +1,5 @@
 #include "cell.h"
-#include "jacobian.h"
+#include "jacrow.h"
 #include "isentropic.h"
 
 #define iDFT (v.gc->iDFT)

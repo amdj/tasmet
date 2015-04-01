@@ -17,19 +17,11 @@ namespace tube{
     // located on the left...
     // virtual const variable::var& pL() const {return pL_;}
     virtual void show(us detailnr=1) const;
-
-    virtual void setResVar(Varnr,const vd& res);
-    // virtual d getValueBc(Varnr,us freqnr) const;
-
     const variable::var& mbc() const {return mL_;}
 
-  private:
-    // virtual vd extrapolateMassFlow() const;
-    // virtual tasystem::JacRow dExtrapolateMassFlow() const;
-    // virtual vd extrapolateRhoRT() const;
-    // virtual tasystem::JacRow dExtrapolateRhoRT() const;
-    // virtual vd extrapolateMomentumFlow() const;
-    // virtual tasystem::JacRow dExtrapolateMomentumFlow() const;
+    // OVerloaded virtuals from BcCell
+    vd extrapolateQuant(Physquant) const;
+    tasystem::JacRow dExtrapolateQuant(Physquant) const;
   };  
 
 } // namespace tube

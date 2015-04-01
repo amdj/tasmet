@@ -15,17 +15,14 @@ namespace tube{
     virtual void init(const Cell* left,const Cell* right);
     virtual Pos getPos() const {return Pos::right;}
     virtual void show(us detailnr=1) const;
-    // virtual d getValueBc(Varnr,us freqnr) const;
-    virtual void setResVar(Varnr,const vd& res);
+
     const variable::var& mbc() const{return mR_;}
     virtual const variable::var& mR() const { return mR_;}
-  private:
-    // virtual vd extrapolateMassFlow() const;
-    // virtual tasystem::JacRow dExtrapolateMassFlow() const;
-    // virtual vd extrapolateRhoRT() const;
-    // virtual tasystem::JacRow dExtrapolateRhoRT() const;
-    // virtual vd extrapolateMomentumFlow() const;
-    // virtual tasystem::JacRow dExtrapolateMomentumFlow() const;
+    
+    // OVerloaded virtuals from BcCell
+    vd extrapolateQuant(Physquant) const;
+    tasystem::JacRow dExtrapolateQuant(Physquant) const;
+
 
   };  
 

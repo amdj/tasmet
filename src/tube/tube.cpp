@@ -52,9 +52,10 @@ namespace tube {
     cells.clear();
   }
   const Cell& Tube::getCell(us i) const{
-    assert(cells.size()>0);
-    assert(i<cells.size());
-    return *static_cast<const Cell*>(cells.at(i));
+    return *cells.at(i);
+  }
+  const Cell& Tube::operator[](us i) const{
+    return *cells[i];
   }
   us Tube::getNCells() const {return geom().nCells();}
   const Geom& Tube::geom() const {return *geom_;}

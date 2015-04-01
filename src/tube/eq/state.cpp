@@ -1,6 +1,6 @@
 #include "cell.h"
 #include "weightfactors.h"
-#include "jacobian.h"
+#include "jacrow.h"
 #include "state.h"
 
 // #define STATE_SCALE (1)

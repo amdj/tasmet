@@ -3,7 +3,7 @@
 #include "tube.h"
 #include "cell.h"
 #include "weightfactors.h"
-#include "jacobian.h"
+#include "jacrow.h"
 #include "var.h"
 #include "momentum.h"
 
