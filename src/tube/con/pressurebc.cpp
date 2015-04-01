@@ -1,5 +1,3 @@
-#define TRACERPLUS 20
-
 #include "tube.h"
 #include "pressurebc.h"
 #include "tasystem.h"
@@ -94,6 +92,11 @@ namespace tube{
       error-=cell.SfL*p_prescribed();
     }
     else{
+      d Wddt=cell.xR-cell.vx;
+      error+=Wddt*DDTfd*cell.mbc()();
+      error-=cell.vSf*cell.p()();
+      error=cell.SfL*p_prescribed();
+
       WARN("Not yet implemented")
     }      
 

@@ -21,16 +21,17 @@ namespace tasystem{
 namespace tube{
   #ifndef SWIG
   SPOILNAMESPACE
-
-
   class DragResistance;
   class HeatSource;
   class Cell;
   class Geom;
-
   class BcCell;
+  #endif  // SWIG
+  #ifdef SWIG
+  %catches(std::exception,...) Tube::getValue(Varnr,us freqnr) const;
+  %catches(std::exception,...) Tube::getValueC(Varnr,us freqnr) const;
+  %catches(std::exception,...) Tube::getErrorAt(us eqnr,us freqnr) const;
   #endif
-
   class Tube:public segment::Seg {
 
     void showVertices(us detailnr) const ;   
@@ -63,50 +64,65 @@ namespace tube{
     
     // Return a value in form of an array with length equal to the
     // length returned with getx(). 
-    vd getValue(Varnr,us freqnr) const throw(std::exception); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
-    vc getValueC(Varnr,us freqnr) const throw(std::exception); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
-    vd getErrorAt(us eqnr,us freqnr) const throw(std::exception); // Extract a result vector for given variable number (rho,U,T,p,Ts) and frequency number.
 
-     us getNCells() const;
+    // Extract a result vector for given variable number
+    // (rho,U,T,p,Ts) and frequency number.
+    vd getValue(Varnr,us freqnr) const;
+
+    // Extract a  result vector  for given variable  number (rho,U,T,p,Ts)
+    // and frequency number.
+    vc getValueC(Varnr,us freqnr) const;
+
+    // Extract a result vector for given variable number
+    // (rho,U,T,p,Ts) and frequency number.
+    vd getErrorAt(us eqnr,us freqnr) const;
+
+    // Return number of Cells 
+    us getNCells() const;
+
     // Methods not exposed to swig
-
     #ifndef SWIG
     virtual vd error() const;
     virtual void init(const tasystem::TaSystem&);
-    void setRes(const segment::Seg& other); // To copy from a
     void show(us showvertices=0) const;
 
 
     us getNCell() const {return cells.size();}    
-    vd interpolateResMid(Varnr v,d x) const; // Amplitude data vectors
-    vd interpolateResStaggered(Varnr v,d x) const; // Amplitude data!!
 
-    virtual us getNDofs() const;
-    virtual us getNEqs() const;    
-    virtual void setDofNrs(us firstdofnr);
-    virtual void setEqNrs(us firstdofnr);    
-    virtual d getCurrentMass() const;	// Obtain current mass in
-                                        // system
-    virtual void dmtotdx(vd&) const; // Derivative of current mass in
-				    // system to all dofs.
-    virtual void resetHarmonics();             // Set all higher
-                                               // harmonic amplitudes
-                                               // to zero
-    virtual void domg(vd& tofill) const;
+    // ******************** Overloaded virtual methods
+    // Return number of DOFS
+    us getNDofs() const;
+    // Return # equations
+    us getNEqs() const;    
+    // Set dof nrs
+    void setDofNrs(us firstdofnr);
+    void setEqNrs(us firstdofnr);    
+	// Obtain current mass in system
+    d getCurrentMass() const;
+    // Derivative of current mass in system to all dofs.
+    void dmtotdx(vd&) const;
+    // Set all higher harmonic amplitudes to zero
+    void resetHarmonics();
+    // Derivative of dofs to frequency
+    void domg(vd& tofill) const;
+    // Obtain result vector
+    vd getRes() const;
+    // Fill Jacobian submatrix
+    void jac(tasystem::Jacobian& tofill) const;
+    // Set result vector
+    void setRes(const vd& res);
+    // Update number of frequencies (something changed in Gc)
+    void updateNf();    
+    // ******************** End overloaded virtuals
 
-    virtual vd getRes() const;
-    virtual d getRes(us dofnr) const;
-    virtual void setRes(const vd& res);
-    virtual void updateNf();    
+    // return drag coefficient
+    virtual vd dragCoefVec(us) const=0;
 
-    // *similar* segment
-    virtual vd dragCoefVec(us) const=0;              // return drag
-                                                   // coefficient
-
-    const Cell& operator[](us i) const;
+    // Get reference to one of the boundary Cells
     const BcCell& bcCell(Pos) const;
+    // Internal cell
     const Cell& getCell(us i) const;
-    virtual void jac(tasystem::Jacobian& tofill) const;
+
     virtual const DragResistance& getDragResistance() const=0;
     virtual const HeatSource& getHeatSource() const=0;
     #endif

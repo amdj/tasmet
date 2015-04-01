@@ -19,8 +19,28 @@ namespace variable {
   //******************************************************************************** Operators
   
   var operator*(const double& scalar,const var& var1){ // Pre-multiplication with scalar
-    vd newtdata=scalar*var1.tdata();
-    return var(var1.gc(),newtdata,false);
+    TRACE(0,"var::operator*(scalar,var)");
+    return var(*var1.gc_,scalar*var1.adata_);
+  }
+  var var::operator/(const var& var2) const {
+    TRACE(0,"var::operator/()");
+    return var(*gc_,this->tdata()/var2.tdata_,false);
+  }
+  var var::operator-(const var& other) const{
+    TRACE(0,"var::operator-(var)");
+    return var(*gc_,adata_-other.adata_);
+  }
+  var var::operator*(d scalar) const {
+    TRACE(0,"var::operator*(scalar)");	// Post-multiplication with scalar
+    return var(*gc_,scalar*adata_);
+  }
+  var var::operator+(const var& other) const{
+    TRACE(0,"var::operator+()");
+    return var(*gc_,adata_+other.adata_);
+  }
+  var var::operator*(const var& var2) const { // Multiply two
+    TRACE(0,"var::operator*(const var& var2) const");
+    return var(*gc_,tdata_+var2.tdata_,false);
   }
   //***************************************** The var class
   var::var(const Globalconf& gc): var(gc,0.0) {  }
@@ -41,7 +61,7 @@ namespace variable {
       tdata_=iDFT*adata_;
     }
     else{
-      this->tdata_=tdata_;
+      this->tdata_=data;
       adata_=fDFT*tdata_;
     }
   }
@@ -76,22 +96,6 @@ namespace variable {
     }
     return *this;
   }
-  var var::operator+(const var& other) const{
-    TRACE(4,"var::operator+()");
-    var result(*this->gc_);
-    result.setadata(this->operator()()+other());
-    return var(*(this->gc_),adata_+other.adata_);
-  }
-  var var::operator-(const var& other) const{
-    var result(*this->gc_);
-    result.setadata(this->operator()()-other());
-    return result;
-  }
-  var var::operator*(d scalar) const {	// Post-multiplication with scalar
-    assert(this->gc_!=nullptr);
-    vd thisadata=this->tdata();
-    return var(*(this->gc_),scalar*thisadata);
-  }
   void var::updateNf(){
     TRACE(0,"var::updateNf()");
     us size=adata_.size();
@@ -114,15 +118,6 @@ namespace variable {
       tdata_=vd(Ns,fillwith::zeros); // Reinitialize tdata_
       tdata_=iDFT*adata_;
     }
-  }
-  var var::operator*(const var& var2) const { // Multiply two
-    // variables in time domain
-    TRACE(0,"var::operator*(const var& var2) const");
-    assert(size()==var2.size());
-    var result(*(this->gc_));
-    vd tdata=this->tdata()%var2.tdata();
-    result.settdata(tdata);
-    return result;
   }
   // Get methods (which require implementation)
   const d& var::operator()(us i) const {//Extract result at specific frequency
@@ -238,13 +233,6 @@ namespace variable {
   }
   // The product
 
-  var var::operator/(const var& var2) const
-  {
-    vd tdata=this->tdata()/var2.tdata();
-    var newvar(*(this->gc_));
-    newvar.settdata(tdata);
-    return newvar;
-  }
   //***************************************** End of the var class
 
 

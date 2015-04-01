@@ -11,7 +11,7 @@ namespace tube{
   BcCell::BcCell(us i,const Tube& t):
     Cell(i,t)
   {}
-   vd BcCell::extrapolateQuant(physquant q) const {
+   vd BcCell::extrapolateQuant(Physquant q) const {
     TRACE(10,"BcCell::extrapolateQuant()");
     // switch(q){
     // case massFlow:
@@ -33,11 +33,11 @@ namespace tube{
     // default:
     //   break;
     // }
-    WARN("Fatal: No physquant selected");
+    WARN("Fatal: No Physquant selected");
     abort();
     return vd2();               // To avoid compiler warning
   }
-  JacRow BcCell::dExtrapolateQuant(physquant q) const{
+  JacRow BcCell::dExtrapolateQuant(Physquant q) const{
     TRACE(10,"BcCell::dExtrapolateQuant()");
     // switch(q){
     // case massFlow:
@@ -59,7 +59,7 @@ namespace tube{
     // default:
     //   break;
     // }
-    WARN("Fatal: No physquant selected");
+    WARN("Fatal: No Physquant selected");
     abort();
     return JacRow(0);           // To avoid compiler warning
   }

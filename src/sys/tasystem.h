@@ -104,7 +104,6 @@ namespace tasystem{
     segment::Seg* operator[](us i) const;    
     segment::Seg* getSeg(us i) const; // Easier for cython wrapping
     #endif
-    void setRes(const TaSystem& o);
     d getCurrentMass();	// Return current mass in system [kg]
     bool checkInit(){		// Often called simple method: inline
       if(!hasInit){

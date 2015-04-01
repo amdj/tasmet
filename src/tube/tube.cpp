@@ -121,9 +121,6 @@ namespace tube {
       thiscell->init(left,right);
     } // for
   } // Tube::init(gc)
-  d Tube::getRes(us dofnr) const {
-    WARN("Not yet implemented!");
-  }
   d Tube::getCurrentMass() const{
     TRACE(8,"Tube::getCurrentMass()");
     assert(cells.size()>0);
@@ -156,33 +153,30 @@ namespace tube {
     return geom().vx_vec();
   }
     
-  vd Tube::getValue(Varnr v,us freqnr) const throw(std::exception) {
+  vd Tube::getValue(Varnr v,us freqnr) const {
     TRACE(10,"Tube::getValue("<<(int)v<<","<<freqnr<<")");
     checkInit();
     if(freqnr>=gc->Ns())
       throw MyError("Illegal frequency number");
     const us nCells=geom().nCells();
-    // VARTRACE(15,getNDofs());
 
-    vd res(nCells+2);
+    vd res(nCells);
     for(us i=0;i<nCells;i++){
-      res(i+1)=cells[i]->getValue(v,freqnr);
+      res(i)=cells[i]->getValue(v,freqnr);
     }
-    // res(0)=bcCell(Pos::left).getValueBc(v,freqnr);
-    // res(nCells+1)=bcCell(Pos::right).getValueBc(v,freqnr);
     return res;
   }
-  vc Tube::getValueC(Varnr v,us freqnr) const throw(std::exception) {
+  vc Tube::getValueC(Varnr v,us freqnr) const {
     TRACE(10,"Tube::getResAt("<<(int)v<<","<<freqnr<<")");
     const us nCells=geom().nCells();
     if(freqnr>gc->Nf() || freqnr<1)
       throw MyError("Illegal frequency number");
     // VARTRACE(15,getNDofs());
-    vc res(nCells+2);
-    res=getValue(v,2*freqnr-1)+I*getValue(v,2*freqnr);
+    vc res=(1.0+0.0*I)*getValue(v,2*freqnr-1);
+    res+=I*getValue(v,2*freqnr);
     return res;
   }
-  vd Tube::getErrorAt(us eqnr,us freqnr) const throw(std::exception){
+  vd Tube::getErrorAt(us eqnr,us freqnr) const {
     const us& nCells=getNCells();
     vd er(nCells,fillwith::zeros);
     assert(eqnr<getNDofs());
@@ -205,7 +199,6 @@ namespace tube {
       dmtotdx_(rhodof)=(*cell)->vVf;
     }
   }
-
   // vd Tube::Htot() const throw(std::exception){
   //   TRACE(15,"Tube::Htot()");
     
@@ -303,106 +296,14 @@ namespace tube {
       firstdof+=celldofs;
     }
   }
-
   // Various set and get methods
   void Tube::setResVar(Varnr v,us i,us freqnr,d value){
     WARN("Func does nothing!");
   }
   void Tube::setResVar(Varnr v,us freqnr,const vd& vals){
-    TRACE(15,"Tube::setResVar()");
-    if(v==Varnr::p){
-      assert(vals.size()==geom().nCells()+1);
-    }
-    else{
-      assert(vals.size()==geom().nCells()+2);
-    }
-      
-    for(auto v=cells.begin();v!=cells.end();v++){
-
-    }
+    WARN("Func does nothing!");
   }
 
-  void Tube::setRes(const Seg& otherseg){
-    TRACE(20,"Tube::setRes(othertube)");
-    const Tube& other=asTube_const(otherseg);
-    // Sanity checks
-    assert(cells.size()!=0);
-    // Necessary to let it work
-    assert(gc->Ns()==other.gc->Ns());
-
-  
-    for(auto v=cells.begin();v!=cells.end();v++){
-      Cell& thiscell=*(*v);
-      d vx=thiscell.vx;
-      d xL=thiscell.xL;
-      thiscell.setResVar(Varnr::rho,other.interpolateResMid(Varnr::rho,vx));
-      thiscell.setResVar(Varnr::U,other.interpolateResMid(Varnr::U,vx));
-      thiscell.setResVar(Varnr::T,other.interpolateResMid(Varnr::T,vx));
-      thiscell.setResVar(Varnr::Ts,other.interpolateResMid(Varnr::Ts,vx));
-      thiscell.setResVar(Varnr::p,other.interpolateResStaggered(Varnr::p,xL));
-      WARN("boundaries todo");
-      // if(v==(cells.end()-1)){
-      //   if(bcRight){
-      //     Cell& othercell=*static_cast<Cell*>(*(other.cells.end()-1));          
-      //     thiscell.setpR(othercell.pR());
-      //     TRACE(5,"Copying pR");          
-      //   }
-      // }
-    } // for
-
-  }
-  vd Tube::interpolateResStaggered(Varnr v,d x) const{
-    TRACE(2,"Tube::interpolateResStaggered("<<v<<","<<x<<")");
-    WARN("out of order!");
-    us leftpos=0;
-    assert(x>=0);
-    us iright=0,ileft;
-    while(geom().x(iright)<=x && iright<geom().nCells()-1)
-      iright++;
-    VARTRACE(5,iright);
-    if(iright>0)
-      ileft=iright-1;
-    else{
-      ileft=0;
-      iright=1;
-    }
-    VARTRACE(2,ileft);
-    VARTRACE(2,iright);
-    // vd left=leftcell.getRes(v)();
-    // vd right=rightcell.getRes(v)();
-    // d xleft=leftcell.xL;
-    // d xright=rightcell.xL;
-    // d relpos=(x-xleft)/(xright-xleft);
-    // VARTRACE(5,relpos);
-    // return math_common::linearInterpolate(left,right,relpos);
-  }
-
-  vd Tube::interpolateResMid(Varnr v,d x) const{
-    TRACE(2,"Tube::interpolateResMid("<<v<<","<<x<<")");
-    us leftpos=0;
-    assert(x>=0);
-    us iright=0,ileft;
-    while(geom().vx(iright)<=x && iright<geom().nCells()-1)
-      iright++;
-    VARTRACE(5,iright);
-    if(iright>0)
-      ileft=iright-1;
-    else{
-      ileft=0;
-      iright=1;
-    }
-    VARTRACE(2,ileft);
-    VARTRACE(2,iright);
-    const Cell& leftcell=*cells[ileft];
-    const Cell& rightcell=*cells[iright];
-    // vd left=leftcell.getRes(v)();
-    // vd right=rightcell.getRes(v)();
-    // d xleft=leftcell.vx;
-    // d xright=rightcell.vx;
-    // d relpos=(x-xleft)/(xright-xleft);
-    // VARTRACE(5,relpos);
-    // return math_common::linearInterpolate(left,right,relpos);
-  }
 
 } /* namespace tube */
 

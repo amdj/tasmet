@@ -69,11 +69,9 @@ namespace tube{
   vd Geom::vx_vec() const{
     TRACE(10,"Geom::vx_vec()");
     VARTRACE(5,nCells());
-    vd vx(nCells()+2);
+    vd vx(nCells());
     for(us i=0;i<nCells();i++)
-      vx(i+1)=this->vx(i);
-    vx(0)=0;
-    vx(nCells()+1)=grid().getL();
+      vx(i)=this->vx(i);
     return vx;
   }
 

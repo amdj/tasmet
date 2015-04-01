@@ -265,19 +265,19 @@ namespace tasystem{
     }
     return res;
   }
-  void TaSystem::setRes(const TaSystem& other){
-    TRACE(25,"TaSystem::setRes(TaSystem)");
-    WARN("This only works for Tube segments so far");
-    if(!checkInit())
-      return;
-    us nsegs=nSegs();
-    assert(other.nSegs()==nsegs);
-    WARN("Not yet available, testing should be done in ")
-    for(us i=0;i<nsegs;i++) {
-      getSeg(i)->setRes(*other.getSeg(i));
-    }
-    gc_=other.gc_;
-  }
+  // void TaSystem::setRes(const TaSystem& other){
+  //   TRACE(25,"TaSystem::setRes(TaSystem)");
+  //   WARN("This only works for Tube segments so far");
+  //   if(!checkInit())
+  //     return;
+  //   us nsegs=nSegs();
+  //   assert(other.nSegs()==nsegs);
+  //   WARN("Not yet available, testing should be done in ")
+  //   for(us i=0;i<nsegs;i++) {
+  //     getSeg(i)->setRes(*other.getSeg(i));
+  //   }
+  //   gc_=other.gc_;
+  // }
   void TaSystem::resetHarmonics(){
     if(!checkInit())
       return;

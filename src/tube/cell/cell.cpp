@@ -185,12 +185,14 @@ namespace tube{
     case Varnr::rho: // Density
       return rho()(freqnr);
       break;
+    case Varnr::m:
+      return getValue(m)(freqnr);
+      break;
     case Varnr::U:                 // Volume flown
-      // return U()(freqnr);
-      throw MyError("Not yet implemented");
+      return getValue(U)(freqnr);
       break;
     case Varnr::p:                   // Pressure
-      return p_()(freqnr);
+      return p()(freqnr);
       break;
     case Varnr::T:                 // Temp
       return T()(freqnr);
@@ -234,20 +236,22 @@ namespace tube{
       switch(v) {
       case Varnr::rho: // Density
         return rho();
-          break;
+        break;
       case Varnr::m:                 // Volume flown
-        WARN("Not good!");
-        // return U();
-          break;
+        return 0.5*(mL()+mR());
+        break;
       case Varnr::p:                   // Pressure
-          return p();
-          break;
+        return p();
+        break;
       case Varnr::T:                 // Temp
         return T();
-          break;
+        break;
       case Varnr::Ts:                 // Tempc
         return Ts();
-          break;
+        break;
+      case Varnr::U:
+        return getValue(Varnr::m)/getValue(Varnr::rho);
+        break;
       }
       // Default:
       return rho();

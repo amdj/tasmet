@@ -18,13 +18,14 @@ namespace variable {
 
   class var;			// Forward declaration
   ostream& operator<< (ostream& out,var& v);
-  var operator*(const double& d1,const var& var2);
+  var operator*(const double&,const var&);
   // var operator+(const d&,const var&);
 
   #endif
 
 
   class var {
+    friend var operator*(const double&,const var&);
     int dofnr=-1;
     const tasystem::Globalconf* gc_=nullptr;
     vd tdata_,adata_;

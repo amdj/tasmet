@@ -35,7 +35,6 @@ namespace segment{
     virtual vd getRes() const=0; // Get a result vector
     virtual void domg(vd&) const=0;	// Derivative of error w.r.t. base frequency.
     virtual void setRes(const vd& res)=0;  // Setting result vector
-    virtual void setRes(const Seg& res)=0; // Copying contents
     virtual void dmtotdx(vd&) const=0; // Derivative of current fluid mass in
     // system to all dofs.
     #endif

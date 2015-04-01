@@ -72,7 +72,7 @@ namespace tube{
              U
   };
 
-  enum physquant{massFlow,
+  enum Physquant{massFlow,
                  momentumFlow,
                  energyFlow,
                  heatFlow,

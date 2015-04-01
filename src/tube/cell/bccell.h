@@ -17,13 +17,12 @@ namespace tube{
   class Tube;
 
   class BcCell:public Cell{
-    segment::Connector* con=nullptr;
   public:
     BcCell(us i,const Tube& t);
     virtual ~BcCell(){}
     virtual Pos getPos() const=0;
-    vd extrapolateQuant(physquant) const;
-    tasystem::JacRow dExtrapolateQuant(physquant) const;
+    vd extrapolateQuant(Physquant) const;
+    tasystem::JacRow dExtrapolateQuant(Physquant) const;
     // virtual d getValueBc(Varnr,us freqnr) const=0;
     Equation* Eq(us i) {return eqs.at(i);}
     virtual const variable::var& mbc() const=0; // Return mass flow at the

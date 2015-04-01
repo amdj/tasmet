@@ -98,13 +98,13 @@ namespace tube{
     }    
     // Compute error on state eq derivative
     vd stateer=(*pb)(); stateer(0)+=gc->p0();
-    stateer+=-cell->extrapolateQuant(physquant::rhoRT);
+    stateer+=-cell->extrapolateQuant(Physquant::rhoRT);
     VARTRACE(30,stateer);
     // Add all individual error parts to vector
     error.subvec(0,Ns-1)=Uiszero.error();
     error.subvec(Ns,2*Ns-1)=Tbc.error();
     error.subvec(2*Ns,3*Ns-1)=Tsbc.error();
-    // error.subvec(3*Ns,4*Ns-1)=cell->extrapolateQuant(physquant::massFlow);
+    // error.subvec(3*Ns,4*Ns-1)=cell->extrapolateQuant(Physquant::massFlow);
     error.subvec(3*Ns,4*Ns-1)=stateer;
     return error;
   }
@@ -127,7 +127,7 @@ namespace tube{
     // Derivative extrapolated state equation
     JacRow stateeq(firsteqnr+3*Ns,6);
     stateeq+=JacCol(*pb,eye<dmat>(gc->Ns(),gc->Ns()));
-    stateeq+=(cell->dExtrapolateQuant(physquant::rhoRT)*=-1);
+    stateeq+=(cell->dExtrapolateQuant(Physquant::rhoRT)*=-1);
 
 
     // Put them into jacobian
