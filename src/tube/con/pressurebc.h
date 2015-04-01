@@ -22,12 +22,14 @@ namespace tube{
 
   class PressureBc:public TubeBc {
     us firsteqnr;
-    PrescribeQty prescribep;			// Pressure boundary condition
-    PrescribeQty prescribeT;			// Temperature boundary condition
-    PrescribeQty prescribeTs;			// Solid temperature boundary condition
-    
-    PressureBc& operator=(const PressureBc&);
+    variable::var p_prescribed;
+    variable::var T_prescribed;
+
+    // PrescribeQty prescribep;			// Pressure boundary condition
+    // PrescribeQty prescribeT;			// Temperature boundary condition
+    // PrescribeQty prescribeTs;			// Solid temperature boundary condition
   public:
+    PressureBc& operator=(const PressureBc&)=delete;
     // Set all variables
     PressureBc(const variable::var& p,const variable::var& T,const variable::var& Ts,us segnr,Pos position);
     // Assume solid temperature constant at gc.T0;
@@ -48,13 +50,16 @@ namespace tube{
     // ------------------------------
     virtual void show(us i) const;
   private:
-    static variable::var adiabatictemp(const variable::var& pres); // Return adiabatic compression
-    // amplitude values
     #endif // SWIG    
   };
 
 } // namespace tube
 
 #endif /* _PRESSUREBC_H_ */
+
+
+
+
+
 
 

@@ -14,7 +14,6 @@
 #include "gas.h"
 #include <exception>
 
-void setLogger(int loglevel);
 
 namespace tasystem{
 

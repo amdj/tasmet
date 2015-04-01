@@ -2,13 +2,6 @@
 #include "constants.h"
 #include "exception.h"
 
-
-
-void setLogger(int loglevel){
-  TRACE(10,"Setlogger");
-  TRACERNAME=loglevel;
-}
-
 namespace tasystem{
   Globalconf Globalconf::airSTP(us Nf_,d freq) throw(std::exception){
     return Globalconf(Nf_,freq,"air",constants::T0,constants::p0);

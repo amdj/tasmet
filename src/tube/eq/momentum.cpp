@@ -34,6 +34,7 @@ namespace tube{
     // cout << "WpL    : " << WpL << "\n";
     // cout << "WpR    : " << WpR << "\n";    
   }
+  Momentum::~Momentum(){TRACE(0,"~Momentum()");}
   void Momentum::init()
   {
     TRACE(5,"Momentum::init(tube)");

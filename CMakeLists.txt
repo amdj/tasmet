@@ -36,7 +36,8 @@ AUX_SOURCE_DIRECTORy(src/tube/cell cell)
 
 # AUX_SOURCE_DIRECTORy(src/tube/con con)
 set(condir src/tube/con)
-set(con ${condir}/tubebc.cpp ${condir}/adiabaticwall.cpp ${condir}/prescribeqty.cpp)
+set(con ${condir}/tubebc.cpp ${condir}/adiabaticwall.cpp ${condir}/prescribeqty.cpp
+  ${condir}/pressurebc.cpp)
 # set (nonlinear_SRC ${tubesources} ${varsources} ${segsources}
 #   ${syssources}  ${geomsources} ${solsources}
 #   ${varsources} ${commonsources}

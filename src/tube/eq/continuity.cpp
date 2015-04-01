@@ -17,6 +17,7 @@ namespace tube{
     cout << "-------------- Continuity equation\n";
     cout << "Wddt : " << Wddt << "\n";
   }
+  Continuity::~Continuity(){TRACE(0,"~Continuity()");}
   void Continuity::init(){
     TRACE(8,"Continuity::init(tube)");
     Wddt=v.vVf;

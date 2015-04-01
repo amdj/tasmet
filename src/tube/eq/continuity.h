@@ -16,6 +16,7 @@ namespace tube{
     d Wddt=0;
   public:
     Continuity(const Cell& v):Equation(v){TRACE(15,"Continuity()");}
+    ~Continuity();
     virtual void init();
     virtual enum EqType getType() const { return EqType::Con;}
     virtual void show() const;

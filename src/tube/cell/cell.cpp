@@ -79,6 +79,7 @@ namespace tube{
     TRACE(25,"Cell::~Cell()");
     for(auto eq=eqs.begin();eq!=eqs.end();eq++)
       delete *eq;
+    // WARN("No garbage collection");
   }
   d Cell::getCurrentMass() const{
     return rho_(0)*vVf;
@@ -125,10 +126,10 @@ namespace tube{
   }
   void Cell::setIsentropic(){
     TRACE(15,"Cell::setIsentropic()");
-    Isentropic* is=new Isentropic(*this);
-    is->setDofNr(eqs.at(2)->getDofNr());
-    delete eqs[2];
-    eqs[2]=is;
+    // Isentropic* is=new Isentropic(*this);
+    // is->setDofNr(eqs.at(2)->getDofNr());
+    // delete eqs[2];
+    // eqs[2]=is;
   }
   
   vd Cell::errorAt(us eqnr) const{

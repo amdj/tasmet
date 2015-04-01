@@ -23,6 +23,7 @@ namespace tube{
     d Wddt=0,Wpi=0,Wpim1=0;
 
     Momentum(const Cell& v):Equation(v){}
+    ~Momentum();
     virtual void init();
     virtual tasystem::JacRow jac() const;
     virtual enum EqType getType() const { return EqType::Mom;}    

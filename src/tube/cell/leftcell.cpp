@@ -23,8 +23,8 @@ namespace tube{
 
     // Remove momentum equation from list. Put equation for Mu in
     // place of momentum eq.
-    eqs[1]=eqs[5];
-    delete eqs.back();
+    delete eqs[1];
+    eqs[1]=eqs.back();
     eqs.pop_back();
 
   }
