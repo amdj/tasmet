@@ -43,6 +43,7 @@ namespace tasystem{
   %catches(std::exception,...) TaSystem::TaSystem();
   %catches(std::exception,...) TaSystem::TaSystem(const Globalconf&);
   %catches(std::exception,...) TaSystem::Error();
+  %catches(std::exception,...) TaSystem::init();
   %catches(std::exception,...) TaSystem::operator+=(const segment::Seg&);
   %catches(std::exception,...) TaSystem::operator+=(const segment::Connector&);
   #endif // SWIG
@@ -74,7 +75,7 @@ namespace tasystem{
     TaSystem& operator+=(const segment::Seg& s);	// Add a segment to the
     // system. It creates a copy
 
-    void showJac(bool force=false);
+    dmat showJac();
     vd Error() {return math_common::EigenToArma(error());}// Total error vector
     virtual void show(us detailnr=0);
     virtual void init();
@@ -87,7 +88,7 @@ namespace tasystem{
     void setRes(const evd& res);
     #endif
     virtual void setRes(const vd& resvec);	// Set result vector
-
+    vd GetRes();			// Extract result vector
     void setNf(us);
 
     // Reset amplitude data in higher harmonics

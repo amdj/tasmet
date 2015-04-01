@@ -59,19 +59,19 @@ namespace tube {
   us Tube::getNCells() const {return geom().nCells();}
   const Geom& Tube::geom() const {return *geom_;}
   void Tube::setDofNrs(us firstdof){
-    TRACE(13,"Tube::setDofNrs()");
+    TRACE(13,"Tube::setDofNrs("<<firstdof<<")");
     assert(cells.size()>0);
     for(auto cell=cells.begin();cell!=cells.end();cell++){
       (*cell)->setDofNrs(firstdof);
       firstdof+=(*cell)->getNDofs();
     }
   }
-  void Tube::setEqNrs(us firstdof){
-    TRACE(13,"Tube::setDofNrs()");
+  void Tube::setEqNrs(us firsteq){
+    TRACE(13,"Tube::SetEqNrs("<<firsteq<<")");
     assert(cells.size()>0);
     for(auto cell=cells.begin();cell!=cells.end();cell++){
-      (*cell)->setEqNrs(firstdof);
-      firstdof+=(*cell)->getNEqs();
+      (*cell)->setEqNrs(firsteq);
+      firsteq+=(*cell)->getNEqs();
     }
   }
   
@@ -140,14 +140,15 @@ namespace tube {
       (*v)->updateNf();
     }
   }
-  const BcCell& Tube::leftCell() const{
-    TRACE(3,"Tube::leftCell()");
-    assert(cells[0]);
-    return static_cast<const BcCell&>(*cells[0]);
-  }
-  const BcCell& Tube::rightCell() const{
-    TRACE(3,"Tube::rightCell()");
-    return static_cast<const BcCell&>(**(cells.end()-1));
+  const BcCell& Tube::bcCell(Pos p) const{
+    TRACE(3,"Tube::bcCell()");
+    if(p==Pos::left){
+      assert(cells[0]);
+      return static_cast<const BcCell&>(*cells[0]);
+    }
+    else{
+      return static_cast<const BcCell&>(**(cells.end()-1));
+    }
   }
   vd Tube::getx() const {
     TRACE(10,"Tube::getx()");
@@ -167,8 +168,8 @@ namespace tube {
     for(us i=0;i<nCells;i++){
       res(i+1)=cells[i]->getValue(v,freqnr);
     }
-    res(0)=leftCell().getValueBc(v,freqnr);
-    res(nCells+1)=rightCell().getValueBc(v,freqnr);
+    // res(0)=bcCell(Pos::left).getValueBc(v,freqnr);
+    // res(nCells+1)=bcCell(Pos::right).getValueBc(v,freqnr);
     return res;
   }
   vc Tube::getValueC(Varnr v,us freqnr) const throw(std::exception) {

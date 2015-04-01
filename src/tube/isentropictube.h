@@ -32,7 +32,7 @@ namespace tube{
     virtual const HeatSource& getHeatSource() const {return noheat;}
     virtual void init(const tasystem::TaSystem&);
     void cleanup();
-    #endif
+    #endif  // ifndef SWIG
   };
   
 } /* namespace tube */

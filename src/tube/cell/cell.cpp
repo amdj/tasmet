@@ -7,6 +7,7 @@
 
 #include "continuity.h"
 #include "momentum.h"
+#include "mu.h"
 // #include "energy.h"
 #include "state.h"
 #include "solidenergy.h"
@@ -51,28 +52,28 @@ namespace tube{
     T_=var(*gc);
     p_=var(*gc);
     Ts_=var(*gc);
-
+    mu_=var(*gc);
     // Initialize temperature and density variables to something sane
-    T_.set(0,gc->T0());
-    Ts_.set(0,gc->T0());
-    rho_.set(0,gc->rho0());    
+    T_.setadata(0,gc->T0());
+    Ts_.setadata(0,gc->T0());
+    rho_.setadata(0,gc->rho0());    
 
-    // Fill vars vector
-    vars.resize(constants::nvars);
-    vars.at(constants::rho)=&rho_;
-    vars.at(constants::m)=&mL_;
-    vars.at(constants::T)=&T_;
-    vars.at(constants::p)=&p_;
-    vars.at(constants::Ts)=&Ts_;    
-
-    // Fill eqs vector
-    eqs.resize(constants::neqs);
+    vars.reserve(constants::nvars);
+    vars.push_back(&rho_);
+    vars.push_back(&mL_);
+    vars.push_back(&T_);
+    vars.push_back(&p_);
+    vars.push_back(&Ts_);
+    vars.push_back(&mu_);
+ 
+    eqs.reserve(constants::neqs);
     eqs.push_back(new Continuity(*this));
     eqs.push_back(new Momentum(*this));
     // eqs.push_back(new Energy(*this));
     eqs.push_back(new Isentropic(*this));
     eqs.push_back(new State(*this));
     eqs.push_back(new SolidTPrescribed(*this));    
+    eqs.push_back(new Mu(*this));    
   }
   Cell::~Cell(){
     TRACE(25,"Cell::~Cell()");
@@ -100,22 +101,23 @@ namespace tube{
     return eqs.size()*gc->Ns();
   }
   void Cell::setDofNrs(us firstdof){
-    TRACE(5,"Cell::setDofNrs()");
+    TRACE(5,"Cell::setDofNrs("<<firstdof<<")");
     us nvars=vars.size();        // This makes it safe to exclude dofs
     // in the vars vector
-    for(us i=0;i<nvars;i++){
-      vars.at(i)->setDofNr(firstdof);
+    for (auto var = vars.begin(); var != vars.end(); ++var) { 
+      (*var)->setDofNr(firstdof); 
       firstdof+=gc->Ns();
     }
   }
   void Cell::setEqNrs(us firsteq){
-    TRACE(5,"Cell::setDofNrs()");
+    TRACE(5,"Cell::setEqNrs("<<firsteq<<")");
     us neqs=eqs.size();        // This makes it safe to exclude dofs
     // in the vars vector
-    for(us i=0;i<neqs;i++){
-      eqs.at(i)->setDofNr(firsteq);
+    for (auto eq = eqs.begin(); eq != eqs.end(); ++eq) {
+      (*eq)->setDofNr(firsteq);
       firsteq+=gc->Ns();
     }
+  
   }
   void Cell::resetHarmonics() throw(std::exception) {
     for(auto var=vars.begin();var!=vars.end();var++)
@@ -203,20 +205,20 @@ namespace tube{
     TRACE(15,"Cell::setResVar(Varnr,vd)");
     switch(v) {
     case Varnr::rho: // Density
-      rho_.set(res);
+      rho_.setadata(res);
       break;
     case Varnr::U:                 // Volume flown
       WARN("Todo!");
-      // U_.set(res);
+      // U_.setadata(res);
       break;
     case Varnr::T:                 // Temp
-      T_.set(res);
+      T_.setadata(res);
       break;
     case Varnr::p:                   // Pressure
-      p_.set(res);
+      p_.setadata(res);
       break;
     case Varnr::Ts:                 // Temp
-      Ts_.set(res);
+      Ts_.setadata(res);
       break;
     default:
       WARN("Varnr" << v << " not handled!");
@@ -228,12 +230,11 @@ namespace tube{
   }
   var Cell::getValue(Varnr v) const{
     TRACE(4,"Cell::getValue()");
-    TRACE(4,"Cell::getValue()");
       switch(v) {
       case Varnr::rho: // Density
         return rho();
           break;
-      case Varnr::rhoU:                 // Volume flown
+      case Varnr::m:                 // Volume flown
         WARN("Not good!");
         // return U();
           break;
@@ -262,7 +263,7 @@ namespace tube{
     us nvars=vars.size();        // Only put in for number of equations
     assert(res.size()==getNDofs());
     for(us k=0;k<nvars;k++){
-      vars[k]->set(res.subvec(k*gc->Ns(),k*Ns+Ns-1));
+      vars[k]->setadata(res.subvec(k*gc->Ns(),k*Ns+Ns-1));
     }
     TRACE(10,"Cell::setRes() exiting, i="<< i);    
   }

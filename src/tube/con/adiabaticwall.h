@@ -3,7 +3,7 @@
 #define _ADIABATICWALL_H__
 
 #include "tubebc.h"
-
+#include "prescribeqty.h"
 
 namespace tasystem{
   class TaSystem;
@@ -13,7 +13,8 @@ namespace tube{
 
  // Adiabatic wall boundary
   class AdiabaticWall:public TubeBc {
-    us firsteqnr;
+    bool isentropic=false;
+    PrescribeQty massflowzero;
   public:
     AdiabaticWall& operator=(const AdiabaticWall&)=delete;
     AdiabaticWall(us segnr,Pos position): TubeBc(segnr,position){}
@@ -23,6 +24,7 @@ namespace tube{
     virtual string getType() const {return string("AdiabaticWall");}
 
     #ifndef SWIG
+    us getNEqs() const;
     virtual vd error() const;
     virtual void init(const tasystem::TaSystem&);
     virtual void updateNf();

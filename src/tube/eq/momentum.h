@@ -1,8 +1,14 @@
+// momentum.h
+//
+// Author: J.A. de Jong 
+//
+// Description:
+//
+//////////////////////////////////////////////////////////////////////
 #pragma once
-
+#ifndef MOMENTUM_H
+#define MOMENTUM_H
 #include "tubeequation.h"
-
-
 
 namespace tube{
   SPOILNAMESPACE
@@ -14,8 +20,7 @@ namespace tube{
   {
     const DragResistance* drag=nullptr;
   public:
-    d Wddt=0,Wpi=0,Wpim1=0,
-      Wmim1,Wmi;
+    d Wddt=0,Wpi=0,Wpim1=0;
 
     Momentum(const Cell& v):Equation(v){}
     virtual void init();
@@ -24,10 +29,9 @@ namespace tube{
     virtual vd error() const;			// Error in momentum equation at node i
     virtual void show() const;
     virtual void domg(vd& domg) const;
-  private:
 
   };
 }
 
-
-
+#endif // MOMENTUM_H
+//////////////////////////////////////////////////////////////////////

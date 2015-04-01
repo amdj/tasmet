@@ -19,7 +19,7 @@ namespace segment{
   {/* Copy constructor */
   }
   void SegConBase::init(const TaSystem& sys){
-    TRACE(13,"Seg::init()");
+    TRACE(13,"SegConBase::init()");
     this->gc=&sys.gc();
   }
   void SegConBase::setNumber(us number) {

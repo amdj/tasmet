@@ -1,3 +1,4 @@
+#include "heat.h"
 #include "cell.h"
 
 namespace tube{

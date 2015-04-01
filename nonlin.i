@@ -29,7 +29,7 @@
   #include "tubebc.h"
   #include "tubeconnector.h"
 
-  #include "pressurebc.h"
+  // #include "pressurebc.h"
   #include "adiabaticwall.h"  
 
   // Segments
@@ -39,14 +39,15 @@
   #include "grid.h"
   #include "tube.h"
   #include "isentropictube.h"
-  #include "laminarduct.h"
-  #include "hopkinslaminarduct.h"
+  // #include "laminarduct.h"
+  // #include "hopkinslaminarduct.h"
 
   // Solver
   #include "solver.h"
   %}
 using std::string;
 typedef std::complex<double> c;
+
 
 %include "std_string.i"
 %include "std_complex.i"
@@ -73,10 +74,10 @@ typedef std::complex<double> c;
  // Connectors
 %include "connector.h"
 %include "tubebc.h"
-%include "tubeconnector.h"
+// %include "tubeconnector.h"
  // Other connectors
 // %include "pressurebc.h"
-// %include "adiabaticwall.h"  
+%include "adiabaticwall.h"  
 
  // Segments
 %include "seg.h"

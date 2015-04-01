@@ -76,14 +76,18 @@ namespace tasystem{
 
     for(auto seg=segs.begin();seg!=segs.end();seg++) {
       // Set the dofnrs
+      VARTRACE(10,firstdof);
+      VARTRACE(10,firsteq);
       (*seg)->setDofNrs(firstdof);
       (*seg)->setEqNrs(firsteq);
       firstdof+=(*seg)->getNDofs();
       firsteq+=(*seg)->getNEqs();
     }
     for(auto con=connectors.begin();con!=connectors.end();con++) {
+      VARTRACE(10,firsteq)
       (*con)->setEqNrs(firsteq);
       firsteq+=(*con)->getNEqs();
+
     }
 
   }
@@ -109,7 +113,7 @@ namespace tasystem{
     // Do some post-sanity checks
     us Ndofs=getNDofs();
 
-    TRACE(10,"Segment initialization done. Total NDofs:"<< Ndofs);
+    TRACE(10,"Segments initialization done. Total NDofs:"<< Ndofs);
     if(Ndofs>constants::maxndofs)      {
       throw MyError("Way too many DOFS required. Initialization failed.");
     }
@@ -133,23 +137,25 @@ namespace tasystem{
 
     setDofEqNrs();
   }
-
   
   us TaSystem::getNDofs() const  {
-    TRACE(14,"TaSystem::getNDofs()");
+    TRACE(0,"TaSystem::getNDofs()");
     us Ndofs=0;
-    for(us i=0;i<nSegs();i++)
-      Ndofs+=segs.at(i)->getNDofs();
+    for (auto seg = segs.begin(); seg != segs.end(); ++seg) {
+      Ndofs+=(*seg)->getNDofs();
+    }  
     return Ndofs;
   }
   us TaSystem::getNEqs() const  {
-    TRACE(14,"TaSystem::getNDofs()");
+    TRACE(0,"TaSystem::getNDofs()");
     us Neqs=0;
-    for(us i=0;i<nSegs();i++)
-      Neqs+=segs.at(i)->getNEqs();
-    for(us i=0;i<nConnectors();i++)
-      Neqs+=connectors.at(i)->getNEqs();
 
+    for (auto seg = segs.begin(); seg != segs.end(); ++seg) {
+      Neqs+=(*seg)->getNEqs();
+    }
+    for (auto con = connectors.begin(); con != connectors.end(); ++con) {
+      Neqs+=(*con)->getNEqs();
+    }
     return Neqs;
   }
   void TaSystem::show(us detailnr){
@@ -318,30 +324,19 @@ namespace tasystem{
     } // for loop
     return mass;
   }
-  void TaSystem::showJac(bool force){
+  dmat TaSystem::showJac(){
     TRACE(15,"TaSystem::showJac()");
-    if(!checkInit())
-      return;
-    esdmat jac=this->jac();
-    if(force || jac.cols()<50){
-      Eigen::IOFormat CleanFmt(2,0," ",";\n","","","[","]");
-      Eigen::MatrixXd jacd(jac);
-      cout << "Jacobian: \n" << jacd.format(CleanFmt) << "\n";
-      cout << "Determinant of jacobian:" <<jacd.determinant() << "\n";
-    }
-    else if(jac.cols()<1000){
-      Eigen::MatrixXd jacd(jac);
-      cout << "Jacobian too large to show, but determinant of jacobian is:" << jacd.determinant() << "\n";      
-    }
-    else 
-      cout << "Jacobian size is too large to show.\n";
-    cout << "Number of columns in Jacobian: " << jac.cols() << "\n";
-    cout << "Number of rows    in Jacobian: " << jac.rows() << "\n";    
+    checkInit();
+    Eigen::MatrixXd jacd(jac());
+    TRACE(15,"Eigen matrix built");
+    return math_common::EigenToArma(jacd);
   }
   TaSystem::~TaSystem() {
     TRACE(25,"~TaSystem()");
     cleanup();
   }
-
+  vd TaSystem::GetRes(){
+    return math_common::EigenToArma(getRes());
+  }
 } // namespace tasystem
 

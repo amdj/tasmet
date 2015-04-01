@@ -12,7 +12,7 @@ namespace tube{
   SPOILNAMESPACE;
   class Cell;
 
-  class PrescribeQty{
+  class  PrescribeQty{
     const variable::var* toprescribe;
     variable::var vals;
     us eqnr;

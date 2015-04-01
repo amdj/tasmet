@@ -51,7 +51,7 @@ namespace tube{
     const Geom& geom() const;
 
     // Return the time-average total enthalpy flow (Watts)
-    vd Htot() const throw(std::exception);
+    // vd Htot() const throw(std::exception);
 
     // Set individual at certain location for certain harmonic number
     void setResVar(Varnr,us i,us freqnr,d value);
@@ -104,8 +104,7 @@ namespace tube{
                                                    // coefficient
 
     const Cell& operator[](us i) const;
-    const BcCell& leftCell() const;
-    const BcCell& rightCell() const;
+    const BcCell& bcCell(Pos) const;
     const Cell& getCell(us i) const;
     virtual void jac(tasystem::Jacobian& tofill) const;
     virtual const DragResistance& getDragResistance() const=0;

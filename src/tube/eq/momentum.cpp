@@ -7,9 +7,8 @@
 #include "var.h"
 #include "momentum.h"
 
-#ifndef NODRAG
+
 #include "drag.h"
-#endif
 
 #ifdef NODRAG
 #warning Drag is turned off!
@@ -46,8 +45,6 @@ namespace tube{
       Wddt=v.vx-v.left()->vx;;
       Wpi=v.SfL;
       Wpim1=-v.SfL;
-      Wmim1=-1/(v.left()->vSf);
-      Wmi=1/(v.left()->vSf);
     }
   }
   vd Momentum::error() const {		// Error in momentum equation
@@ -55,33 +52,26 @@ namespace tube{
 
     // Solve momentum equation only for interior walls
     assert(v.i>0);
-
     
     vd error=zeros();
     const vd& rhoti=v.rho().tdata();
 
     error+=Wddt*DDTfd*v.mL()();
 
-    // Pressure terms    
+    // Pressure right
     error+=Wpi*v.p()();
     d vSf=v.vSf;
-
-    // (m)^2 in time domain at i
-    vd m_sq_i_td=pow(0.5*(v.mL().tdata()+v.mR().tdata()),2);
-    vd mi=fDFT*(Wmi*m_sq_i_td/(v.rho().tdata()));
-
-    // Minus what comes in
-    error+=Wpim1*v.left()->p()();
-    const var& rhoim1=v.left()->rho();
     d vSfL=v.left()->vSf;
+    // Pressure left
+    error+=Wpim1*v.left()->p()();
 
-    // (m)^2 in time domain at i-1
-    vd m_sq_im1_td=pow(0.5*(v.left()->mL().tdata()+v.mL().tdata()),2);
-    vd mim1=fDFT*(Wmim1*m_sq_im1_td/(rhoim1.tdata()));
+    error+=v.mu()();
+    error-=v.left()->mu()();
+    // (m)^2 in time domain at i
 
     // Drag term
-    assert(drag!=nullptr);
     #ifndef NODRAG
+    assert(drag!=nullptr);
     error+=Wddt*drag->drag(v);
     #endif
     // (Boundary) source term
@@ -95,40 +85,14 @@ namespace tube{
     // Solve momentum equation only for interior walls
     assert(v.i>0);
 
-
     // Time-derivative of mass flow
     jac+=JacCol(v.mL(),Wddt*DDTfd);
 
     jac+=JacCol(v.p(),Wpi*eye());
     jac+=JacCol(v.left()->p(),Wpim1*eye());
+    jac+=JacCol(v.mu(),eye());
+    jac+=JacCol(v.left()->mu(),-eye());
 
-    // Mass flow at node i-1 in time domain [kg/s]
-    vd m_im1_td=0.5*(v.left()->mL().tdata()+v.mL().tdata());
-    // Mass flow at node i-1 in time domain squared
-    vd m_sq_im1_td=pow(m_im1_td,2);
-
-    // Same for at node i
-    vd m_i_td=0.5*(v.mL().tdata()+v.mR().tdata());
-    vd m_sq_i_td=pow(m_i_td,2);    
-
-    const var& rhoL=v.left()->rho();
-    const var& rho=v.rho();    
-    jac+=JacCol(v.rho(),-Wmi*fDFT*diagmat(m_sq_i_td/pow(rho.tdata(),2))*iDFT);
-    jac+=JacCol(v.left()->rho(),-Wmim1*fDFT*diagmat(m_sq_im1_td/pow(rhoL.tdata(),2))*iDFT);                
-
-    jac+=JacCol(v.mL(),fDFT*diagmat(Wmi*m_i_td/rho.tdata())*iDFT);
-    jac+=JacCol(v.mL(),fDFT*diagmat(Wmim1*m_im1_td/rho.tdata())*iDFT);
-
-    jac+=JacCol(v.left()->mL(),fDFT*diagmat(Wmim1*m_im1_td/rho.tdata())*iDFT);    
-    jac+=JacCol(v.mR(),fDFT*diagmat(Wmi*m_i_td/rho.tdata())*iDFT);    
-    // jac+=drho();
-    // jac+=dU();
-    // jac+=dpL();
-    // jac+=dpR();
-    // jac+=drhoL();
-    // jac+=dUL();
-    // jac+=drhoR();
-    // jac+=dUR();
  
     #ifndef NODRAG
     jac+=JacCol(v.U(),Wddt*drag->dUi(v));
@@ -145,64 +109,5 @@ namespace tube{
     domg_.subvec(dofnr,dofnr+v.gc->Ns()-1)=domg_full;
     TRACE(0,"Momentum::domg() done");
   }
-  // JacCol Momentum::dU() const {
-  //   TRACE(0,"Momentum::dU()");
-  //   JacCol dU(v.U());
-  //   dU+=Wddt*v.gc->DDTfd*fDFT*v.rho().diagt()*iDFT; // Time-derivative term
-  //   dU+=2.0*Wu*fDFT*(v.rho().diagt()*v.U().diagt())*iDFT;
-  //   assert(drag!=nullptr);
-
-  //   #ifndef NODRAG
-  //   dU+=Wddt*drag->dUi(v);
-  //   #endif
-
-  //   return dU;
-  // }
-  // JacCol Momentum::drho() const {
-  //   TRACE(0,"Momentum::drho()");
-  //   JacCol drho(v.rho());
-  //   drho+=Wddt*v.gc->DDTfd*fDFT*v.U().diagt()*iDFT;
-  //   drho+=Wu*fDFT*v.U().diagt()*v.U().diagt()*iDFT;
-  //   return drho;
-  // }
-  // JacCol Momentum::drhoL() const {
-  //   TRACE(0,"Momentum::drhoL()");
-  //   JacCol drhoL(v.rhoL());
-  //   drhoL+=WuL*fDFT*v.UL().diagt()*v.UL().diagt()*iDFT;
-  //   return drhoL;
-  // }
-  // JacCol Momentum::dUL() const {
-  //   TRACE(0,"Momentum::dUL()");    // Todo: add this term!;
-
-  //   JacCol dUL(v.UL());
-  //   dUL+=2.0*WuL*fDFT*v.rhoL().diagt()*v.UL().diagt()*iDFT;
-  //   return dUL;
-  // }
-  // JacCol Momentum::drhoR() const {
-  //   TRACE(0,"Momentum::dhoR()");    // Todo: add this term!;
-  //   JacCol drhoR(v.rhoR());
-  //   drhoR+=WuR*fDFT*v.UR().diagt()*v.UR().diagt()*iDFT;
-  //   return drhoR;
-  // }
-  // JacCol Momentum::dUR() const {
-  //   TRACE(0,"Momentum::dUR()"); // Todo: add this term!;
-  //   JacCol dUR(v.UR());
-  //   dUR+=2.0*WuR*fDFT*v.rhoR().diagt()*v.UR().diagt()*iDFT;
-  //   return dUR;
-  // }
-  // JacCol Momentum::dpi() const {
-  //   TRACE(0,"Momentum::dpi()");
-  //   return JacCol(v.p(),Wpi*eye());
-  // }
-  // JacCol Momentum::dpim1() const {
-  //   TRACE(0,"Momentum::dpim1()");
-  //   return JacCol(v.left()->p(),Wpim1*eye());
-  // }
-  // JacCol Momentum::dpL() const {
-  //   TRACE(0,"Momentum::dpR()");
-  //   dmat I(v.gc->Ns(),v.gc->Ns(),fillwith::eye);
-  //   JacCol dpL(v.pL(),WpL*I);
-  //   return dpL;
-  // }
 
 } // namespace tube

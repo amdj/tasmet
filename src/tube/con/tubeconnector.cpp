@@ -10,7 +10,7 @@
 #include "tubeconnector.h"
 #include "tasystem.h"
 #include "tube.h"
-#include "tubebccell.h"
+#include "bccell.h"
 #include "constants.h"
 #include "leftcell.h"
 #include "rightcell.h"

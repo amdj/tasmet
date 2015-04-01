@@ -18,9 +18,5 @@ namespace tube{
       throw;
     }
   } // init
-  us TubeBc::getNEqs() const {
-      TRACE(10,"TubeBc::getNEqs()");
-      return 4*gc->Ns();
-    }
 
 } // namespace tube

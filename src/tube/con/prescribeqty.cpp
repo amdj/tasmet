@@ -17,6 +17,8 @@ namespace tube{
     TRACE(15,"PrescribeQty::set()");
     this->toprescribe=&toprescribe;
     this->eqnr=eqnr;
+    vals.setGc(toprescribe);
+    vals.settdata(0);
   }
   void PrescribeQty::setVals(const var& vals){
     this->vals=vals;

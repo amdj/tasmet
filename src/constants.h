@@ -65,7 +65,7 @@ namespace tube{
   typedef segment::Pos Pos;
 
   enum Varnr{rho=constants::rho,
-             rhoU=constants::m,
+             m=constants::m,
              T=constants::T,
              p=constants::p,
              Ts=constants::Ts,
@@ -88,7 +88,9 @@ namespace tube{
     Ise=3,			// Isentropic
     Sta=4,			// State
     Sol=5,			// SolidEnergy
-    Non				// None
+    Non,				// None
+    Mu_is_m_u                  // momentumflow is massflow_squared div
+                        // density*cs_area
   };
   #endif  
 

@@ -25,13 +25,14 @@ namespace tube {
     const Cell* left_=nullptr;
     const Cell* right_=nullptr;
 
-    variable::var rho_;		// Density
+    variable::var rho_;         // Density at vertex
     variable::var mL_;		// Mass flow at left cell wall
+    variable::var mu_;      // Momentum flow at vertex
     variable::var T_;		// Temperature
     variable::var p_;      // Pressure at left cell wall
     variable::var Ts_;		// Solid temperature
 
-    vector<variable::var*> vars={&rho_,&mL_,&T_,&p_,&Ts_};
+    vector<variable::var*> vars;
     vector<Equation*> eqs; // Vector of pointers to the equations
 
   public:
@@ -70,6 +71,8 @@ namespace tube {
     const Tube& getTube() const {return *tube;}
     us geti() const {return i;}
 
+    // Momentum flow at vertex position
+    const variable::var& mu() const {return mu_;}
     const variable::var& mL() const {return mL_;}
     virtual const variable::var& mR() const {assert(right_); return right_->mL();}
     const variable::var& p() const{return p_;}
