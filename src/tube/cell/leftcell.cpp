@@ -13,30 +13,36 @@ namespace tube{
   using tasystem::JacRow;
   using tasystem::JacCol;
 
-  // Extrapolate momentum flow left side
-  vd2 weightfactors(const Tube& t){
-    d vxi=t[0].vx;
-    d vxip1=t[1].vx;
-
-    // Compute weight factors
-    d wL0=vxip1/(vxip1-vxi);
-    d wL1=-vxi/(vxip1-vxi);
-    VARTRACE(25,wL0);
-    VARTRACE(25,wL1);
-    return vd2({wL0,wL1});
-  }
+  // These functions should stay internal to this unit
+  namespace {
   
-  vd extrapolateMomentumFlow(const Tube& t){
-    vd2 w=weightfactors(t); d wL0=w(0),wL1=w(1);
-    return wL0*t[0].mu()()+wL1*t[1].mu()();
-  }
-  JacRow dExtrapolateMomentumFlow(const Tube& t){
-    vd2 w=weightfactors(t); d wL0=w(0),wL1=w(1);
-    JacRow jacrow(2);
-    jacrow+=JacCol(t[0].mu(),wL0*eye);
-    jacrow+=JacCol(t[1].mu(),wL1*eye);
-    return jacrow;
-  }
+    vd2 weightfactors(const Tube& t){
+      d vxi=t[0].vx;
+      d vxip1=t[1].vx;
+
+      // Compute weight factors
+      d wL0=vxip1/(vxip1-vxi);
+      d wL1=-vxi/(vxip1-vxi);
+      // VARTRACE(25,wL0);
+      // VARTRACE(25,wL1);
+
+      return vd2({wL0,wL1});
+    }
+  
+    vd extrapolateMomentumFlow(const Tube& t){
+      vd2 w=weightfactors(t); d wL0=w(0),wL1=w(1);
+      return wL0*t[0].mu()()+wL1*t[1].mu()();
+    }
+    JacRow dExtrapolateMomentumFlow(const Tube& t){
+      vd2 w=weightfactors(t); d wL0=w(0),wL1=w(1);
+      JacRow jacrow(2);
+      jacrow+=JacCol(t[0].mu(),wL0*eye);
+      jacrow+=JacCol(t[1].mu(),wL1*eye);
+      return jacrow;
+    }
+  
+  } // namespace 
+  // Extrapolate momentum flow left side
 
 
   

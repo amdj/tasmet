@@ -82,7 +82,6 @@ namespace tube{
     TRACE(15,"PressureBc::error()");
     vd error(getNEqs(),fillwith::zeros);
     const BcCell& cell=t->bcCell(pos);
-    WARN("imcomplete!");
     us Ns=gc->Ns();
 
     if(pos==Pos::left)    {
@@ -97,9 +96,9 @@ namespace tube{
       d Wddt=cell.xR-cell.vx;
       error+=Wddt*DDTfd*cell.mbc()();
       error-=cell.vSf*cell.p()();
-      error=cell.SfL*p_prescribed();
-
-      WARN("Not yet implemented")
+      error+=cell.SfR*p_prescribed();
+      error-=cell.mu()();
+      error+=cell.extrapolateQuant(Physquant::momentumFlow);      
     }      
 
     return error;
@@ -110,14 +109,24 @@ namespace tube{
     const BcCell& cell=t->bcCell(pos);
     if(pos==Pos::left)    {
       d Wddt=cell.vx;
-      JacRow jacr(firsteqnr,5);
+      VARTRACE(25,Wddt);
+      JacRow jacr(firsteqnr,4);
       jacr+=JacCol(cell.mbc(),Wddt*DDTfd);
       jacr+=JacCol(cell.p(),cell.vSf*eye(Ns,Ns));
       jacr+=JacCol(cell.mu(),eye(Ns,Ns));
       jacr+=-cell.dExtrapolateQuant(Physquant::momentumFlow);
       jac+=jacr;
     }
-
+    else{
+      d Wddt=cell.xR-cell.vx;
+      VARTRACE(25,Wddt);
+      JacRow jacr(firsteqnr,4);
+      jacr+=JacCol(cell.mbc(),Wddt*DDTfd);
+      jacr+=JacCol(cell.p(),-cell.vSf*eye(Ns,Ns));
+      jacr+=JacCol(cell.mu(),-eye(Ns,Ns));
+      jacr+=cell.dExtrapolateQuant(Physquant::momentumFlow);
+      jac+=jacr;
+    }
   }
   void PressureBc::show(us detailnr) const {
     TRACE(5,"PressureBc::show()");

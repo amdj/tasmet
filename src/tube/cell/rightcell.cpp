@@ -1,17 +1,54 @@
 #include "rightcell.h"
 #include "weightfactors.h"
 #include "jacrow.h"
+#include "tube.h"
 
 #define iDFT (gc->iDFT)
 #define fDFT (gc->fDFT)
-
+#define eye eye(t.Gc().Ns(),t.Gc().Ns())
 
 namespace tube{
   using variable::var;
   using tasystem::JacRow;
   using tasystem::JacCol;
 
-  RightCell::RightCell(us i,const Tube& t):
+
+  // These functions should stay internal to this unit
+  namespace {
+    
+    vd2 weightfactors(const Tube& t){
+      us nCells=t.getNCells();
+      d xR=t[nCells-1].xR;
+      d vxm1=t[nCells-1].vx;
+      d vxm2=t[nCells-2].vx;
+
+      // Compute weight factors
+      d wRNm1=(vxm2-xR)/(vxm2-vxm1);
+      d wRNm2=(xR-vxm1)/(vxm2-vxm1);
+
+      VARTRACE(25,wRNm1);
+      VARTRACE(25,wRNm2);
+      return vd2({wRNm1,wRNm2});
+    }
+   // Extrapolate momentum flow left side  
+    vd extrapolateMomentumFlow(const Tube& t){
+      us nCells=t.getNCells();
+      vd2 w=weightfactors(t); d wRNm1=w(0),wRNm2=w(1);
+      return wRNm1*t[nCells-1].mu()()+wRNm2*t[nCells-2].mu()();
+    }
+    JacRow dExtrapolateMomentumFlow(const Tube& t){
+      us nCells=t.getNCells();
+      vd2 w=weightfactors(t); d wRNm1=w(0),wRNm2=w(1);
+
+      JacRow jacrow(2);
+      jacrow+=JacCol(t[nCells-1].mu(),wRNm1*eye);
+      jacrow+=JacCol(t[nCells-2].mu(),wRNm2*eye);
+      return jacrow;
+    }
+    
+  } // namespace Namespace
+
+ RightCell::RightCell(us i,const Tube& t):
     BcCell(i,t)
   {
     const tasystem::Globalconf& gc=*(this->gc);
@@ -33,11 +70,27 @@ namespace tube{
 
   vd RightCell::extrapolateQuant(Physquant p) const {
     TRACE(5,"RightCell::extrapolateQuant()");
+    switch(p){
+    case Physquant::momentumFlow:
+      return extrapolateMomentumFlow(getTube());      
+      break;
+    default:
+      WARN("This is not yet implemented!");
+      assert(false);
+    }
 
   }
   JacRow RightCell::dExtrapolateQuant(Physquant p) const {
     TRACE(5,"RightCell::dExtrapolateQuant()");
+    switch(p){
+    case Physquant::momentumFlow:
+      return dExtrapolateMomentumFlow(getTube());      
+      break;
+    default:
+      WARN("This is not yet implemented!");
+      assert(false);
 
+    }
   }
 
   // void RightCell::setResVar(Varnr v,const vd& res){

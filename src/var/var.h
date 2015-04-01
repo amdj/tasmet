@@ -25,7 +25,9 @@ namespace variable {
 
 
   class var {
+    #ifndef SWIG
     friend var operator*(const double&,const var&);
+    #endif
     int dofnr=-1;
     const tasystem::Globalconf* gc_=nullptr;
     vd tdata_,adata_;
