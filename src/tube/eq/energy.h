@@ -16,7 +16,7 @@ namespace tube{
     d Wddt=0,Wddtkin=0;
     d WRr=0,WRl=0,WLr=0,WLl=0;
     d WcLl=0,WcLr=0,WcRl=0,WcRr=0; // Conduction weight factors
-    d WkinLl=0,WkinLr=0,WkinRl=0,WkinRr=0;
+    // d WkinLl=0,WkinLr=0,WkinRl=0,WkinRr=0;
   public:
     Energy(const Cell& v):Equation(v){}
     d Htot() const;             // Total enthalpy flow through this node
@@ -38,24 +38,13 @@ namespace tube{
     tasystem::JacRow dExtrapolateEnergyFlow() const;
     tasystem::JacRow dExtrapolateHeatFlow() const;
   private:
-    vd ddtEtherm() const;
-    tasystem::JacRow dddtEtherm() const;
-    vd ddtEtot() const;
-    tasystem::JacRow dddtEtot() const;
 
-    vd EkinR() const;
-    vd EkinL() const;
+    // Total enthalpy flow through left cell wall
+    vd HL() const;
 
-    vd hL() const;              // Static enthalpy flowing through
-    // left cell wall
-    vd hR() const;              // Static enthalpy flowing through
-    // right cell wall
-    vd HL() const;              // Total enthalpy flow through left
-                                // cell wall
-    vd HR() const;              // Total enthalpy flow through righ
-                                // cell wall
-    tasystem::JacRow dhL() const;
-    tasystem::JacRow dhR() const;
+    // Total enthalpy flow through righ cell wall
+    vd HR() const;
+
     tasystem::JacRow dHL() const;
     tasystem::JacRow dHR() const;
 

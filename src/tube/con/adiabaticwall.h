@@ -14,6 +14,7 @@ namespace tube{
  // Adiabatic wall boundary
   class AdiabaticWall:public TubeBc {
     bool isentropic=false;
+    us firsteqnr;
     PrescribeQty massflowzero;
   public:
     AdiabaticWall& operator=(const AdiabaticWall&)=delete;

@@ -3,6 +3,8 @@
 #include "jacrow.h"
 #include "tube.h"
 
+#include "energy.h"
+
 #define iDFT (gc->iDFT)
 #define fDFT (gc->fDFT)
 
@@ -57,6 +59,9 @@ namespace tube{
     assert(!left);
     assert(right);
 
+    TL_=var(*gc);
+    TL_.setadata(0,gc->T0());
+    vars.push_back(&TL_);
     // Remove momentum equation from list. Put equation for Mu in
     // place of momentum eq.
     delete eqs[1];
@@ -74,6 +79,13 @@ namespace tube{
     case Physquant::momentumFlow:
       return extrapolateMomentumFlow(getTube());      
       break;
+    case Physquant::heatFlow:
+      {
+        Energy e(*this);
+        e.init();
+        return e.extrapolateHeatFlow();
+        break;
+      }
     default:
       WARN("This is not yet implemented!");
       assert(false);
@@ -86,6 +98,13 @@ namespace tube{
     case Physquant::momentumFlow:
       return dExtrapolateMomentumFlow(getTube());      
       break;
+    case Physquant::heatFlow:
+      {
+        Energy e(*this);
+        e.init();
+        return e.dExtrapolateHeatFlow();
+        break;
+      }
     default:
       WARN("This is not yet implemented!");
       assert(false);

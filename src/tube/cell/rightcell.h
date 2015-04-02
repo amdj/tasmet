@@ -8,7 +8,7 @@
 namespace tube{
 
   class RightCell:public BcCell{
-    variable::var mR_;
+    variable::var mR_,TR_;
   public:
     RightCell(us i,const Tube& t);
     virtual ~RightCell(){}
@@ -18,7 +18,9 @@ namespace tube{
 
     const variable::var& mbc() const{return mR_;}
     virtual const variable::var& mR() const { return mR_;}
-    
+    virtual const variable::var& TR() const { return TR_;}    
+    virtual const variable::var& Tbc() const { return TR_;}
+
     // OVerloaded virtuals from BcCell
     vd extrapolateQuant(Physquant) const;
     tasystem::JacRow dExtrapolateQuant(Physquant) const;

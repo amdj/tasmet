@@ -15,6 +15,7 @@ namespace tube{
   }    
   dmat Equation::eye() const {return arma::eye(v.gc->Ns(),v.gc->Ns());}
   vd Equation::zeros() const {return vd(v.gc->Ns(),fillwith::zeros);}
+
   // Artificial viscosity matrices
   // vd eps(const vd& nu,d kappa) {
   //   TRACE(5,"eps()");

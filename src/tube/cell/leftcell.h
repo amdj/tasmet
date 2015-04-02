@@ -7,6 +7,7 @@
 namespace tube{
 
   class LeftCell:public BcCell{
+    variable::var TL_;          // Temperature at cell wall
   public:
     LeftCell(us i,const Tube& t);
     virtual void init(const Cell* left,const Cell* right);
@@ -18,7 +19,8 @@ namespace tube{
     // virtual const variable::var& pL() const {return pL_;}
     virtual void show(us detailnr=1) const;
     const variable::var& mbc() const {return mL_;}
-
+    virtual const variable::var& TL() const { return TL_;}
+    virtual const variable::var& Tbc() const {return TL_;}
     // OVerloaded virtuals from BcCell
     vd extrapolateQuant(Physquant) const;
     tasystem::JacRow dExtrapolateQuant(Physquant) const;
@@ -27,3 +29,5 @@ namespace tube{
 } // namespace tube
 
 #endif /* _LEFTCELL_H_ */
+
+

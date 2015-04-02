@@ -23,7 +23,7 @@ namespace tube{
       return 2*mu/pow(rh,2);
     }
     d zerodrag_blapprox(d mu,d rh){
-      TRACE(20,"zerodrag_blapprox");
+      TRACE(0,"zerodrag_blapprox");
       return zerodrag_circ(mu,rh);
     }
     d zerodrag_inviscid(d mu,d rh){ return 0; }

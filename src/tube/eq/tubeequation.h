@@ -48,6 +48,7 @@ namespace tube{
     // dmat d_l() const;			// Artificial viscosity pre-factor
                                 // left size
     vd getp0t() const;
+    vd getT0t() const;
     virtual ~Equation(){}
   private:
     vd nu(const Cell&) const;			// Function of d^2p/dx^2

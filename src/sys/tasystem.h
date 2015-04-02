@@ -105,14 +105,7 @@ namespace tasystem{
     segment::Seg* getSeg(us i) const; // Easier for cython wrapping
     #endif
     d getCurrentMass();	// Return current mass in system [kg]
-    bool checkInit(){		// Often called simple method: inline
-      if(!hasInit){
-        init();
-        return true;
-      }
-      else
-        return hasInit;
-    }
+    void checkInit();
   protected:
     void jacTriplets(TripletList&);
     void setDofEqNrs();

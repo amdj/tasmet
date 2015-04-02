@@ -27,6 +27,7 @@ namespace tube{
     Equation* Eq(us i) {return eqs.at(i);}
     virtual const variable::var& mbc() const=0; // Return mass flow at the
                                         // cell wall
+    virtual const variable::var& Tbc() const=0;
   private:
   };
 

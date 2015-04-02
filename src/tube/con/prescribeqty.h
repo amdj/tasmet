@@ -18,7 +18,9 @@ namespace tube{
     us eqnr;
   public:
     PrescribeQty(){}
-    PrescribeQty(const variable::var& vals){setVals(vals);}
+    // Vals: variables to coerce to
+    PrescribeQty(const variable::var& vals){setVals(vals);} // 
+    // toprescribe: a reference to the variable which has to be prescribed
     void set(us eqnr,const variable::var& toprescribe,const variable::var& vals);
     void set(us eqnr,const variable::var& toprescribe);
     void setVals(const variable::var& vals);

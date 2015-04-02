@@ -8,7 +8,7 @@
 #include "continuity.h"
 #include "momentum.h"
 #include "mu.h"
-// #include "energy.h"
+#include "energy.h"
 #include "state.h"
 #include "solidenergy.h"
 #include "isentropic.h"
@@ -69,14 +69,14 @@ namespace tube{
     eqs.reserve(constants::neqs);
     eqs.push_back(new Continuity(*this));
     eqs.push_back(new Momentum(*this));
-    // eqs.push_back(new Energy(*this));
-    eqs.push_back(new Isentropic(*this));
+    eqs.push_back(new Energy(*this));
+    // eqs.push_back(new Isentropic(*this));
     eqs.push_back(new State(*this));
     eqs.push_back(new SolidTPrescribed(*this));    
     eqs.push_back(new Mu(*this));    
   }
   Cell::~Cell(){
-    TRACE(25,"Cell::~Cell()");
+    TRACE(15,"Cell::~Cell()");
     for(auto eq=eqs.begin();eq!=eqs.end();eq++)
       delete *eq;
     // WARN("No garbage collection");
@@ -126,10 +126,10 @@ namespace tube{
   }
   void Cell::setIsentropic(){
     TRACE(15,"Cell::setIsentropic()");
-    // Isentropic* is=new Isentropic(*this);
-    // is->setDofNr(eqs.at(2)->getDofNr());
-    // delete eqs[2];
-    // eqs[2]=is;
+    Isentropic* is=new Isentropic(*this);
+    is->setDofNr(eqs.at(2)->getDofNr());
+    delete eqs[2];
+    eqs[2]=is;
   }
   
   vd Cell::errorAt(us eqnr) const{
