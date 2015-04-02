@@ -36,8 +36,7 @@ namespace tube{
     // this heat source. Later on, AnneLaminarTube implements another
     // version of the heat source. This version is more applicable to
     // wide tubes for arbitrary cross-sectional geometries.
-    void cleanup();
-    virtual vd dragCoefVec(us freqnr=1) const;
+
     #endif
   };
 

@@ -34,7 +34,7 @@ namespace tube {
     TRACE(13,"LaminarDuct constructor()...");
   }
   LaminarDuct::LaminarDuct(const LaminarDuct& o):Tube(o),
-						 laminardrag(o.laminardrag)	\
+						 laminardrag(*this)	\
 						,heat(o.heat)
   {
     TRACE(13,"LaminarDuct copy constructor()...");
@@ -46,17 +46,17 @@ namespace tube {
   LaminarDuct::~LaminarDuct(){
     TRACE(15,"~LaminarDuct()");
   }
-  vd LaminarDuct::dragCoefVec(us freqnr) const{
-    TRACE(15,"LaminarDuct::drag_vec()");
-    vd dragcoef(getNCells());
-    var drag_varcoef(*gc);
-    for(us i=0;i<dragcoef.size();i++){
-      const Cell& cell=getCell(i);
-      drag_varcoef.set(laminardrag.ComplexResistancecoef(cell));
-      dragcoef(i)=drag_varcoef(freqnr);
-    }
-    return dragcoef;
-  }
+  // vd LaminarDuct::dragCoefVec(us freqnr) const{
+  //   TRACE(15,"LaminarDuct::drag_vec()");
+  //   vd dragcoef(getNCells());
+  //   var drag_varcoef(*gc);
+  //   for(us i=0;i<dragcoef.size();i++){
+  //     const Cell& cell=getCell(i);
+  //     drag_varcoef.setadata(laminardrag.ComplexResistancecoef(cell));
+  //     dragcoef(i)=drag_varcoef(freqnr);
+  //   }
+  //   return dragcoef;
+  // }
   
 } /* namespace tube */
 

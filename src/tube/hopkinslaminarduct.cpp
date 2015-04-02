@@ -48,7 +48,7 @@ namespace tube{
       T=Tmirror(i);
       Cell& ccell=*cells[i];
       variable::var Tvar(*gc);
-      Tvar.set(0,T);
+      Tvar.setadata(0,T);
       ccell.setResVar(Varnr::T,Tvar);
       ccell.setResVar(Varnr::Ts,Tvar);
     }

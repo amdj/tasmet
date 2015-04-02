@@ -115,19 +115,21 @@ namespace tube{
     vd heat(v.gc->Ns(),fillwith::zeros);
     variable::var htcoefH(*v.gc);
     variable::var htcoefQ(*v.gc);
-    htcoefH.set(HeatTransferCoefH(v));
-    htcoefQ.set(HeatTransferCoefQ(v));    
+    htcoefH.setadata(HeatTransferCoefH(v));
+    htcoefQ.setadata(HeatTransferCoefQ(v));    
     // TRACE(100,"TminTs:\n"<<v.T()-v.Ts());
     // if(v.i==0)
       // TRACE(25,"H freqmultiplymat:"<< htcoefQ.freqMultiplyMat());
-    heat+=htcoefH.freqMultiplyMat()*(v.T()()-v.Ts()());
-    heat+=htcoefQ.freqMultiplyMat()*(v.U()()/v.vSf);    
+
+    WARN("These two commands are commented!");
+    // heat+=htcoefH.freqMultiplyMat()*(v.T()()-v.Ts()());
+    // heat+=htcoefQ.freqMultiplyMat()*(v.U()()/v.vSf);    
     return heat;    
   }
   dmat HopkinsHeatSource::dTi(const Cell& v) const{
     TRACE(5,"HopkinsHeatSource::dTi(v)");
     variable::var htcoefH(*v.gc);
-    htcoefH.set(HeatTransferCoefH(v));
+    htcoefH.setadata(HeatTransferCoefH(v));
     dmat dTi(v.gc->Ns(),v.gc->Ns(),fillwith::zeros);
     dTi=htcoefH.freqMultiplyMat();
     return dTi;
@@ -135,7 +137,7 @@ namespace tube{
   dmat HopkinsHeatSource::dUi(const Cell& v) const{
     TRACE(5,"HopkinsHeatSource::dUi(v)");
     variable::var htcoefQ(*v.gc);
-    htcoefQ.set(HeatTransferCoefQ(v));
+    htcoefQ.setadata(HeatTransferCoefQ(v));
     dmat dUi(v.gc->Ns(),v.gc->Ns(),fillwith::zeros);
     dUi=htcoefQ.freqMultiplyMat()/v.vSf;
     return dUi;

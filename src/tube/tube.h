@@ -116,7 +116,7 @@ namespace tube{
     // ******************** End overloaded virtuals
 
     // return drag coefficient
-    virtual vd dragCoefVec(us) const=0;
+    // virtual vd dragCoefVec(us) const=0;
 
     // Get reference to one of the boundary Cells
     const BcCell& bcCell(Pos) const;

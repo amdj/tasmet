@@ -10,7 +10,7 @@ namespace tube{
   class DragResistance{
   public:
     virtual vd drag(const Cell& v) const;
-    virtual dmat dUi(const Cell& v) const;
+    virtual dmat dm(const Cell& v) const;
     // virtual dmat drhoi(const Cell& v) const;
     // virtual dmat dpi(const Cell& v) const;
 

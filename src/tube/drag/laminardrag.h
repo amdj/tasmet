@@ -1,35 +1,32 @@
 #include "drag.h"
 #include "rottfuncs.h"
-#include "globalconf.h"
 
 namespace tube{
   SPOILNAMESPACE
+  namespace  {
+    class ZeroFreqDrag;    
+  } // namespace 
 
   
-  namespace laminardrag{
-    // Resistance force for laminar flow for the zero-frequency. 
-    class ZeroFreqDrag{
-    public:
-      ZeroFreqDrag(const Tube& t);
-      d operator()(d mu,d rh,d U) const ; // Full resistance in Newtons
-      d operator()(d mu,d rh) const;	// Resistance coefficient
-    private:
-      d (*zerodrag_funptr)(d,d);
-    };
-  } // namespace laminardrag
-
-
-
   class LaminarDragResistance:public DragResistance
   {
+    ZeroFreqDrag* zfd;
+    rottfuncs::RottFuncs rf;
   public:
     LaminarDragResistance(const Tube& t);
-    d fnu(us i) const;
-    virtual vd drag(const Cell& cell) const;
-    virtual dmat dUi(const Cell&) const;		// Derivative of drag resistance to volume flow
-    vc ComplexResistancecoef(const Cell&) const; // Returns a complex vector of size Ns with drag resistance coefficients for every nonzero frequency (1..Nf)
+    LaminarDragResistance(const LaminarDragResistance&)=delete;
+    LaminarDragResistance& operator=(const LaminarDragResistance&)=delete;
+    ~LaminarDragResistance();
+
+    // Overloaded virtuals
+    vd drag(const Cell& cell) const;
+    dmat dm(const Cell&) const;		// Derivative of drag resistance
+                                    // to volume flow
+    
   private:
-    laminardrag::ZeroFreqDrag zfd;
-    rottfuncs::RottFuncs rf;
+    // Returns a complex vector of size Ns with drag resistance
+    // coefficients for every nonzero frequency (1..Nf)
+    vc ComplexResistancecoef(const Cell&) const;
+
   };
 } // namespace tube

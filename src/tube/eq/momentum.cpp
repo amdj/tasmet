@@ -96,7 +96,7 @@ namespace tube{
 
  
     #ifndef NODRAG
-    jac+=JacCol(v.U(),Wddt*drag->dUi(v));
+    jac+=JacCol(v.mL(),Wddt*drag->dm(v));
     #endif
    
     return jac;

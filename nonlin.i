@@ -42,8 +42,8 @@
   #include "grid.h"
   #include "tube.h"
   #include "isentropictube.h"
-  // #include "laminarduct.h"
-  // #include "hopkinslaminarduct.h"
+  #include "laminarduct.h"
+  #include "hopkinslaminarduct.h"
 
   // Solver
   #include "solver.h"
@@ -102,8 +102,8 @@ extern int nltracer;
  // Tubes
 %include "tube.h"
 %include "isentropictube.h"
-// %include "laminarduct.h"
-// %include "hopkinslaminarduct.h"
+%include "laminarduct.h"
+%include "hopkinslaminarduct.h"
 
  // System
 %include "tasystem.h"
