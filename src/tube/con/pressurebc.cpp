@@ -91,6 +91,7 @@ namespace tube{
       error-=cell.SfL*p_prescribed();
       error+=cell.mu()();       // 
       error-=cell.extrapolateQuant(Physquant::momentumFlow);
+      error+=Wddt*(t->getDragResistance().drag(cell));
     }
     else{
       d Wddt=cell.xR-cell.vx;
@@ -99,6 +100,7 @@ namespace tube{
       error+=cell.SfR*p_prescribed();
       error-=cell.mu()();
       error+=cell.extrapolateQuant(Physquant::momentumFlow);      
+      error+=Wddt*(t->getDragResistance().drag(cell));
     }      
 
     return error;
@@ -115,6 +117,7 @@ namespace tube{
       jacr+=JacCol(cell.p(),cell.vSf*eye(Ns,Ns));
       jacr+=JacCol(cell.mu(),eye(Ns,Ns));
       jacr+=-cell.dExtrapolateQuant(Physquant::momentumFlow);
+      jacr+=JacCol(cell.mL(),Wddt*(t->getDragResistance().dm(cell)));
       jac+=jacr;
     }
     else{
@@ -125,6 +128,7 @@ namespace tube{
       jacr+=JacCol(cell.p(),-cell.vSf*eye(Ns,Ns));
       jacr+=JacCol(cell.mu(),-eye(Ns,Ns));
       jacr+=cell.dExtrapolateQuant(Physquant::momentumFlow);
+      jacr+=JacCol(cell.mR(),Wddt*(t->getDragResistance().dm(cell)));
       jac+=jacr;
     }
   }

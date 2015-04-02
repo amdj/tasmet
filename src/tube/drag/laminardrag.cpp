@@ -19,29 +19,37 @@ namespace tube{
       return 3*mu/pow(rh,2);
     }
     d zerodrag_circ(d mu,d rh){
+      TRACE(0,"zerodrag_circ");
       return 2*mu/pow(rh,2);
     }
     d zerodrag_blapprox(d mu,d rh){
-      // return 0;
+      TRACE(20,"zerodrag_blapprox");
       return zerodrag_circ(mu,rh);
     }
     d zerodrag_inviscid(d mu,d rh){ return 0; }
     
     ZeroFreqDrag::ZeroFreqDrag(const Tube& t){
       TRACE(0,"ZeroFreqDrag::ZeroFreqDrag()");
-      if(t.geom().shape().compare("vert")==0)
-        zerodrag_funptr=&zerodrag_vert;
-      else if(t.geom().shape().compare("circ")==0)
-        zerodrag_funptr=&zerodrag_circ;
-      else if(t.geom().shape().compare("blapprox")==0)
+      if(t.geom().isBlApprox()){
+        TRACE(25,"Blapprox is on");
         zerodrag_funptr=&zerodrag_blapprox;
-      else if(t.geom().shape().compare("inviscid")==0)
-        zerodrag_funptr=&zerodrag_inviscid;
-      else
-        {
-          WARN("Warning: tube.geom.shape unknown for ZeroFreqDrag. Aborting...");
-          abort();
+      }
+      else{
+        TRACE(25,"Blapprox is off");
+        if(t.geom().shape().compare("vert")==0)
+          zerodrag_funptr=&zerodrag_vert;
+        else if(t.geom().shape().compare("circ")==0){
+          TRACE(20,"Circular pore chosen");
+          zerodrag_funptr=&zerodrag_circ;
         }
+        else if(t.geom().shape().compare("inviscid")==0)
+          zerodrag_funptr=&zerodrag_inviscid;
+        else
+          {
+            WARN("Warning: tube.geom.shape unknown for ZeroFreqDrag. Aborting...");
+            abort();
+          }
+      }
     }
     d ZeroFreqDrag::operator()(d mu,d rh,d U) const {
       return (*zerodrag_funptr)(mu,rh)*U;
@@ -56,7 +64,10 @@ namespace tube{
   {
     TRACE(10,"LaminarDragResistanc::LaminarDragResistance()");
     TRACE(11,"Entering redefinition of Rottfuncs");
-    rf=rottfuncs::RottFuncs(t.geom().shape()); // Reinitialize thermoviscous functions with right shape
+    if(t.geom().isBlApprox())
+      rf=rottfuncs::RottFuncs("blapprox");
+    else
+      rf=rottfuncs::RottFuncs(t.geom().shape()); // Reinitialize thermoviscous functions with right shape
     TRACE(11,"Exiting redefinition of Rottfuncs");
     zfd=new ZeroFreqDrag(t);
   }
