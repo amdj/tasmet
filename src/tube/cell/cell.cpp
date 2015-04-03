@@ -53,6 +53,7 @@ namespace tube{
     p_=var(*gc);
     Ts_=var(*gc);
     mu_=var(*gc);
+    mHL_=var(*gc);
     // Initialize temperature and density variables to something sane
     T_.setadata(0,gc->T0());
     Ts_.setadata(0,gc->T0());
@@ -64,6 +65,7 @@ namespace tube{
     vars.push_back(&T_);
     vars.push_back(&p_);
     vars.push_back(&Ts_);
+    vars.push_back(&mHL_);
     vars.push_back(&mu_);
  
     eqs.reserve(constants::neqs);

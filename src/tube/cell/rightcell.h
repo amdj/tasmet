@@ -8,7 +8,7 @@
 namespace tube{
 
   class RightCell:public BcCell{
-    variable::var mR_,TR_;
+    variable::var mR_,mHR_,TR_;
   public:
     RightCell(us i,const Tube& t);
     virtual ~RightCell(){}
@@ -17,7 +17,9 @@ namespace tube{
     virtual void show(us detailnr=1) const;
 
     const variable::var& mbc() const{return mR_;}
+    const variable::var& mHbc() const{return mHR_;}
     virtual const variable::var& mR() const { return mR_;}
+    virtual const variable::var& mHR() const { return mHR_;}
     virtual const variable::var& TR() const { return TR_;}    
     virtual const variable::var& Tbc() const { return TR_;}
 

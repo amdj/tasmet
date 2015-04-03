@@ -18,6 +18,7 @@
 #define iDFT (v.gc->iDFT)
 #define fDFT (v.gc->fDFT)
 #define DDTfd (v.gc->DDTfd)
+
 namespace tube{
   using tasystem::Jacobian;
   using tasystem::JacRow;
@@ -50,6 +51,7 @@ namespace tube{
     d xR=v.xR;    
 
     Wddt=v.vVf;
+    // VARTRACE(25,v.vVf);
     // Difference of factor half
     Wddtkin=0.5*(v.xR-v.xL);
 
@@ -123,7 +125,7 @@ namespace tube{
 
     // Time derivative of static enthalpy in cell
     d gamma=this->gamma();
-    vd error=Wddt*DDTfd*v.p()()/(gamma-1.0);
+    vd error=(Wddt*DDTfd*v.p()())/(gamma-1.0);
     // Time derivative of total energy
     // error+=Wddtkin*DDTfd*v.mu()();
 
@@ -144,17 +146,20 @@ namespace tube{
     #endif
 
     // (Boundary source term)
-    error+=v.esource();
-    return ENERGY_SCALE*error;
+    // error+=v.esource();
+    return error;
   }
   JacRow Energy::jac() const{
     TRACE(6,"Energy::jac()");
     JacRow jac(dofnr,12);
     d gamma=this->gamma();
-    jac+=JacCol(v.p(),Wddt*DDTfd/(gamma-1.0));
+    // Time-derivative of internal energy
+    jac+=JacCol(v.p(),(Wddt*DDTfd)/(gamma-1.0));
     jac+=JacCol(v.mu(),Wddtkin*DDTfd);
-    jac+=(dHL()*=-1);
+
+    // Enthalpy flow out minus in
     jac+=dHR();
+    jac+=(dHL()*=-1);
 
     // Heat conduction part
     jac+=dQR();
@@ -166,7 +171,7 @@ namespace tube{
     jac+=JacCol(v.T(),Wddt*heat->dTi(v));
     #endif
 
-    jac*=ENERGY_SCALE;
+    // jac*=ENERGY_SCALE;
     return jac;    
   }
   namespace 
@@ -181,42 +186,62 @@ namespace tube{
 
     // ******************** Static enthalpy part
     d cp0=cp(v);
-    
     // Time domain temperature at left cell wall
-    vd dTmidt=(WLl*v.TL().tdata()+WLr*v.T().tdata());
-    vd HL=cp0*fDFT*(v.mL().tdata()%dTmidt);
+    vd dTmidt=WLl*v.TL().tdata() + WLr*v.T().tdata();
+    vd HL=fDFT*(cp0*dTmidt%v.mL().tdata());
+    // ******************** Kinetic energy part
+
+    
     return HL;
+  }
+  vd Energy::HR() const{
+    TRACE(2,"Energy::HR()");
+    // ******************** Static enthalpy part    
+    d cp0=cp(v);
+    // Time domain temperature at left cell wall
+    vd dTmidt=WRr*v.TR().tdata() + WRl*v.T().tdata();
+    vd HR=fDFT*(cp0*dTmidt%v.mR().tdata());
+    // ******************** Kinetic energy part
+
+    // Time domain mu/(rho*Sf)
+    // vd mu_ov_rhoSf_t=wRl*v.mu().tdata()/(v.SfR*v.rho().tdata())+
+      // wRr*v.mu().tdata()/(v.SfR*v.rho().tdata())+
+    
+    return HR;
   }
   JacRow Energy::dHL() const{
     TRACE(5,"Energy::dHL()");
 
     JacRow dHL(8);
     d cp0=cp(v);
-    vd dTmidt=(cp0*WLl*v.TL().tdata()+WLr*v.T().tdata());
-    
-    dHL+=JacCol(v.mL(),fDFT*diagmat(cp0*(dTmidt))*iDFT);
-    dHL+=JacCol(v.TL(),fDFT*diagmat(cp0*WLl*v.mL().tdata())*iDFT);
-    dHL+=JacCol(v.T(),fDFT*diagmat(cp0*WLr*v.mL().tdata())*iDFT);
+    vd dTmidt=WLl*v.TL().tdata()+
+      WLr*v.T().tdata();
+
+    // ******************** Static enthalpy part    
+    const vd& mLtdata=v.mL().tdata();
+    dHL+=JacCol(v.mL(),fDFT*diagmat(cp0*dTmidt)*iDFT );
+    dHL+=JacCol(v.TL(),fDFT*diagmat(cp0*WLl*mLtdata)*iDFT );
+    dHL+=JacCol(v.T(),fDFT*diagmat(cp0*WLr*mLtdata)*iDFT );
+    // ******************** Kinetic energy part
 
     return dHL;
   }
-  vd Energy::HR() const{
-    TRACE(2,"Energy::HR()");
-    d cp0=cp(v);
-    
-    // Time domain temperature at left cell wall
-    vd dTmidt=(WRr*v.TR().tdata()+WRl*v.T().tdata());
-    vd HR=cp0*fDFT*(v.mL().tdata()%dTmidt);
-    return HR;
-  }
   JacRow Energy::dHR() const{
     JacRow dHR(8);
+
+    // ******************** Static enthalpy part    
     d cp0=cp(v);
+
     // Time domain temperature at left cell wall
-    vd dTmidt=(WRr*v.TR().tdata()+WRl*v.T().tdata());
-    dHR+=JacCol(v.mR(),fDFT*diagmat(cp0*(dTmidt))*iDFT);
-    dHR+=JacCol(v.TR(),fDFT*diagmat(cp0*WRr*v.mR().tdata())*iDFT);
-    dHR+=JacCol(v.T(),fDFT*diagmat(cp0*WRl*v.mR().tdata())*iDFT);
+    vd dTmidt=WRr*v.TR().tdata()
+      +WRl*v.T().tdata();
+    
+    const vd& mRtdata=v.mR().tdata();
+    dHR+=JacCol(v.mR(),fDFT*diagmat(cp0*dTmidt)*iDFT);
+    dHR+=JacCol(v.TR(),fDFT*diagmat(cp0*WRr*mRtdata)*iDFT);
+    dHR+=JacCol(v.T(),fDFT*diagmat(cp0*WRl*mRtdata)*iDFT);
+    // ******************** Kinetic energy part
+
     return dHR;
   }
   vd Energy::QL() const{

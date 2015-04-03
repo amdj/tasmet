@@ -65,9 +65,11 @@ namespace tube{
     TR_=var(*gc);
     TR_.setadata(0,gc->T0());
     mR_=var(*gc);
-
+    mHR_=var(*gc);
     vars.push_back(&mR_);
+    vars.push_back(&mHR_);
     vars.push_back(&TR_);
+    
   }
   void RightCell::show(us detailnr) const{
     cout << "------------- RightCell ---------\n";

@@ -27,6 +27,7 @@ namespace tube {
 
     variable::var rho_;         // Density at vertex
     variable::var mL_;		// Mass flow at left cell wall
+    variable::var mHL_;		// Total enthalpy flow at left cell wall
     variable::var mu_;      // Momentum flow at vertex
     variable::var T_;		// Temperature
     variable::var p_;      // Pressure at left cell wall
@@ -74,7 +75,9 @@ namespace tube {
     // Momentum flow at vertex position
     const variable::var& mu() const {return mu_;}
     const variable::var& mL() const {return mL_;}
+    const variable::var& mHL() const {return mHL_;}
     virtual const variable::var& mR() const {assert(right_); return right_->mL();}
+    virtual const variable::var& mHR() const {assert(right_); return right_->mHL();}
     const variable::var& p() const{return p_;}
 
     // These are variables for the left and right vertices, but are on

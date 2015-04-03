@@ -25,9 +25,13 @@ namespace tube{
     virtual tasystem::JacRow dExtrapolateQuant(Physquant) const=0;
     // virtual d getValueBc(Varnr,us freqnr) const=0;
     Equation* Eq(us i) {return eqs.at(i);}
-    virtual const variable::var& mbc() const=0; // Return mass flow at the
-                                        // cell wall
+
+    // Return mass flow at the cell wall
+    virtual const variable::var& mbc() const=0;
+    // Return temperature at the cell wall
     virtual const variable::var& Tbc() const=0;
+    // Return total enthalpy flow at the cell wall
+    virtual const variable::var& mHbc() const=0;
   private:
   };
 
