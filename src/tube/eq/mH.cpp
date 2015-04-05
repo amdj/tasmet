@@ -58,7 +58,7 @@ namespace tube {
     const vd& mut=v.mu().tdata();
     d vSf=v.vSf;
     vd half_u_sq_td=0.5*mut/(rhot*vSf);
-
+    WARN("Incomplete! Missing terms of kinetic energy. In Jacobian as well");
     // error+=fDFT*(v.mL().tdata()%
                  // (WLl*half_u_sq_l_td+WLr*half_u_sq_td));
 
