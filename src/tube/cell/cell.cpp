@@ -2,7 +2,6 @@
 #include "cell.h"
 #include "geom.h"
 #include "globalconf.h"
-#include "weightfactors.h"
 #include "jacobian.h"
 
 #include "continuity.h"
@@ -12,7 +11,8 @@
 #include "state.h"
 #include "solidenergy.h"
 #include "isentropic.h"
-
+#include "mH.h"
+#include "utils.h"
 
 namespace tube{
   using variable::var;
@@ -59,7 +59,7 @@ namespace tube{
     Ts_.setadata(0,gc->T0());
     rho_.setadata(0,gc->rho0());    
 
-    vars.reserve(constants::nvars);
+    vars.reserve(constants::nvars_reserve);
     vars.push_back(&rho_);
     vars.push_back(&mL_);
     vars.push_back(&T_);
@@ -68,20 +68,19 @@ namespace tube{
     vars.push_back(&mHL_);
     vars.push_back(&mu_);
  
-    eqs.reserve(constants::neqs);
-    eqs.push_back(new Continuity(*this));
-    eqs.push_back(new Momentum(*this));
-    eqs.push_back(new Energy(*this));
-    // eqs.push_back(new Isentropic(*this));
-    eqs.push_back(new State(*this));
-    eqs.push_back(new SolidTPrescribed(*this));    
-    eqs.push_back(new Mu(*this));    
+    eqs.insert({EqType::Con,new Continuity(*this)});
+    eqs.insert({EqType::Mom,new Momentum(*this)});
+    eqs.insert({EqType::Ene,new Energy(*this)});
+    // eqs.insert(new Isentropic(*this));
+    eqs.insert({EqType::Sta,new State(*this)});
+    eqs.insert({EqType::Sol,new SolidTPrescribed(*this)});    
+    eqs.insert({EqType::Mu_is_m_u,new Mu(*this)});    
+    eqs.insert({EqType::mH_is_m_H,new mH(*this)});    
+
   }
   Cell::~Cell(){
     TRACE(15,"Cell::~Cell()");
-    for(auto eq=eqs.begin();eq!=eqs.end();eq++)
-      delete *eq;
-    // WARN("No garbage collection");
+    utils::purge(eqs);
   }
   d Cell::getCurrentMass() const{
     return rho_(0)*vVf;
@@ -92,8 +91,8 @@ namespace tube{
     this->left_=left;
     this->right_=right;
 
-    for (auto eq = eqs.begin(); eq != eqs.end(); eq++) {
-      (*eq)->init();
+    for (auto& eq : eqs) {
+      eq.second->init();
     }
   }
   us Cell::getNDofs() const{
@@ -107,8 +106,8 @@ namespace tube{
     TRACE(5,"Cell::setDofNrs("<<firstdof<<")");
     us nvars=vars.size();        // This makes it safe to exclude dofs
     // in the vars vector
-    for (auto var = vars.begin(); var != vars.end(); ++var) { 
-      (*var)->setDofNr(firstdof); 
+    for (auto& var : vars) { 
+      var->setDofNr(firstdof); 
       firstdof+=gc->Ns();
     }
   }
@@ -116,28 +115,31 @@ namespace tube{
     TRACE(5,"Cell::setEqNrs("<<firsteq<<")");
     us neqs=eqs.size();        // This makes it safe to exclude dofs
     // in the vars vector
-    for (auto eq = eqs.begin(); eq != eqs.end(); ++eq) {
-      (*eq)->setDofNr(firsteq);
+    for (auto& eq : eqs) {
+      eq.second->setDofNr(firsteq);
       firsteq+=gc->Ns();
     }
   
   }
-  void Cell::resetHarmonics() throw(std::exception) {
-    for(auto var=vars.begin();var!=vars.end();var++)
-      (*var)->resetHarmonics();
+  void Cell::resetHarmonics() {
+    for(var* v : vars)
+      v->resetHarmonics();
   }
   void Cell::setIsentropic(){
     TRACE(15,"Cell::setIsentropic()");
+    // Replace energy equation with isentropic energy equation
+    assert(eqs.find(EqType::Ene)!=eqs.end());
     Isentropic* is=new Isentropic(*this);
-    is->setDofNr(eqs.at(2)->getDofNr());
-    delete eqs[2];
-    eqs[2]=is;
+    delete eqs.at(EqType::Ene);
+    eqs.at(EqType::Ene)=is;
   }
   
   vd Cell::errorAt(us eqnr) const{
     TRACE(10,"Cell::errorAt()");
-    assert(eqnr<eqs.size());
-    return eqs.at(eqnr)->error();
+    // assert(eqnr<eqs.size());
+    WARN("Broken function");
+    abort();
+    // return eqs.at(eqnr)->error();
   }
   vd Cell::error() const
   {
@@ -149,8 +151,10 @@ namespace tube{
     us Neq=eqs.size();
     us Neqfull=getNEqs();
     vd error(Neqfull);
-    for(us k=0;k<Neq;k++){
-      error.subvec(k*Ns,(k+1)*Ns-1)=errorAt(k);
+    us k=0;
+    for(const auto& eq : eqs){
+      error.subvec(k*Ns,(k+1)*Ns-1)=eq.second->error();
+      k++;
     }
     TRACE(4,"Cell::error() i="<<i<<" done.");
     return error;
@@ -162,9 +166,8 @@ namespace tube{
     TRACE(4,"Assignment of Ns survived:"<< Ns);
     us neqs=eqs.size();
 
-    for(us k=0;k<neqs;k++) {
-      eqs[k]->domg(domg_);
-    }
+    for(const auto& eq : eqs)
+      eq.second->domg(domg_);
   }
   vd Cell::getRes() const {			// Get current result vector
     TRACE(4,"Cell::GetRes()");
@@ -277,9 +280,9 @@ namespace tube{
   void Cell::jac(Jacobian& tofill) const {		// Return Jacobian
     TRACE(5,"Cell::Jac() for cell "<< i<< ".");
     us neqs=eqs.size();    
-    for(us k=0;k<neqs;k++){
-      tofill+=eqs[k]->jac();
-      TRACE(5,"Equation "<< k <<"... succesfully obtained Jacobian");
+    for(auto &eq : eqs){
+      tofill+=eq.second->jac();
+      // TRACE(5,"Equation "<< k <<"... succesfully obtained Jacobian");
     }
   }  
   vd Cell::csource() const {
@@ -297,8 +300,8 @@ namespace tube{
     cout << "----------------- Cell " << i << "----\n";
     if(detailnr>=2){
       cout << "Showing weight factors of equations...\n";
-      for (auto eq = eqs.begin(); eq != eqs.end(); ++eq) {
-        (*eq)->show();
+      for (auto& eq : eqs) {
+        eq.second->show();
       }
     }
     cout <<"Showing LocalGeom data..\n";

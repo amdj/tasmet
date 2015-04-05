@@ -48,8 +48,8 @@ namespace constants {
   const int p=3;
   const int Ts=4;
   // Number of variables
-  const int nvars=5;
-  const int neqs=5;
+  const int nvars_reserve=7;
+  const int neqs_reserve=7;
   #endif
 
   
@@ -81,16 +81,19 @@ namespace tube{
   };
 
   #ifndef SWIG
+
+
+  
   enum EqType{
     Con=0,			// Continuity
     Mom=1,			// Momentum
-    Ene=2,			// Energy
+    Ene=2,			// Energy-like equation
     Ise=3,			// Isentropic
     Sta=4,			// State
     Sol=5,			// SolidEnergy
-    Non,				// None
-    Mu_is_m_u                  // momentumflow is massflow_squared div
-                        // density*cs_area
+    Mu_is_m_u,      // momentumflow is massflow_squared div
+    // density*cs_area
+    mH_is_m_H
   };
   #endif  
 

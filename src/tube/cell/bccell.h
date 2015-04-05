@@ -24,7 +24,7 @@ namespace tube{
     virtual vd extrapolateQuant(Physquant) const=0;
     virtual tasystem::JacRow dExtrapolateQuant(Physquant) const=0;
     // virtual d getValueBc(Varnr,us freqnr) const=0;
-    Equation* Eq(us i) {return eqs.at(i);}
+    Equation* Eq(EqType et) {return eqs.at(et);}
 
     // Return mass flow at the cell wall
     virtual const variable::var& mbc() const=0;

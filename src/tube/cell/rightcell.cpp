@@ -1,5 +1,4 @@
 #include "rightcell.h"
-#include "weightfactors.h"
 #include "jacrow.h"
 #include "tube.h"
 #include "energy.h"

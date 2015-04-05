@@ -4,6 +4,7 @@
 #include "seg.h"
 #include "connector.h"
 #include "tube.h"
+#include "utils.h"
 
 namespace tasystem{
   using segment::Seg;
@@ -34,15 +35,8 @@ namespace tasystem{
     hasInit=false;
   }
   void TaSystem::cleanup(){
-    for(auto it=segs.begin();it!=segs.end();it++)
-      if(*it)
-        delete *it;
-    for(auto it=connectors.begin();it!=connectors.end();it++)
-      if(*it)
-        delete *it;
-
-    segs.clear();
-    connectors.clear();
+    utils::purge(segs);
+    utils::purge(connectors);
     hasInit=false;
   }
   TaSystem& TaSystem::operator+=(const Seg& seg){

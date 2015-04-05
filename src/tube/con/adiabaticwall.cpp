@@ -44,26 +44,29 @@ namespace tube{
   }
   us AdiabaticWall::getNEqs() const {
     TRACE(15,"AdiabaticWall::getNEqs()");
-    return 2*Ns;
+    return 3*Ns;
   }
   void AdiabaticWall::setEqNrs(us firsteqnr){
     TRACE(2,"AdiabaticWall::setEqNrs()");
     this->firsteqnr=firsteqnr;
     massflowzero.set(firsteqnr,t->bcCell(pos).mbc());
+    enthalpyflowzero.set(firsteqnr+Ns,t->bcCell(pos).mHbc());
   }
   vd AdiabaticWall::error() const {
     TRACE(4,"AdiabaticWall::error()");
     const BcCell& cell=t->bcCell(pos);
     vd error(getNEqs());
     error.subvec(0,Ns-1)=massflowzero.error();
-    error.subvec(Ns,2*Ns-1)=cell.extrapolateQuant(Physquant::heatFlow);
+    error.subvec(Ns,2*Ns-1)=enthalpyflowzero.error();
+    error.subvec(2*Ns,3*Ns-1)=cell.extrapolateQuant(Physquant::heatFlow);
     return error;
   }
   void AdiabaticWall::jac(Jacobian& jac) const {
     TRACE(4,"AdiabaticWall::jac()");
     const BcCell& cell=t->bcCell(pos);
     jac+=massflowzero.jac();
-    JacRow heatflowjac(firsteqnr+Ns,2);
+    jac+=enthalpyflowzero.jac();
+    JacRow heatflowjac(firsteqnr+2*Ns,2);
     VARTRACE(20,firsteqnr);
     heatflowjac+=cell.dExtrapolateQuant(Physquant::heatFlow);
     jac+=heatflowjac;

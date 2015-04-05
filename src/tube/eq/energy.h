@@ -40,13 +40,13 @@ namespace tube{
   private:
 
     // Total enthalpy flow through left cell wall
-    vd HL() const;
+    // vd HL() const;
 
     // Total enthalpy flow through righ cell wall
-    vd HR() const;
+    // vd HR() const;
 
-    tasystem::JacRow dHL() const;
-    tasystem::JacRow dHR() const;
+    // tasystem::JacRow dHL() const;
+    // tasystem::JacRow dHR() const;
 
     vd QL() const;              // Heat conduction trough left wall
     vd QR() const;              // Heat conduction trough right wall

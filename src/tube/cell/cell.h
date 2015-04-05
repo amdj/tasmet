@@ -5,7 +5,7 @@
 
 #include "var.h"
 #include "tubeequation.h"
-
+#include <map>
 #include "constants.h"
 
 namespace tasystem{class Jacobian;}
@@ -34,7 +34,7 @@ namespace tube {
     variable::var Ts_;		// Solid temperature
 
     vector<variable::var*> vars;
-    vector<Equation*> eqs; // Vector of pointers to the equations
+    std::map<EqType,Equation*> eqs; // Vector of pointers to the equations
 
   public:
     // Geometric data ********************
@@ -103,7 +103,7 @@ namespace tube {
     void setIsentropic();
 
     // Resets all higher harmonics. Can throw
-    void resetHarmonics() throw (std::exception);
+    void resetHarmonics();
 
     void setDofNrs(us firstdofnr);
     void setEqNrs(us firsteqnr);    

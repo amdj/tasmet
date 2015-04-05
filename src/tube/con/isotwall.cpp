@@ -3,7 +3,7 @@
 #include "tasystem.h"
 #include "bccell.h"
 #include "tube.h"
-#include "weightfactors.h"
+
 
 #define iDFT (gc->iDFT)
 #define fDFT (gc->fDFT)

@@ -1,59 +1,40 @@
 #include "weightfactors.h"
 #include "cell.h"
-#include "tube.h"
 
 namespace tube{
 
-
-  WeightFactors::WeightFactors(const Cell& v):
-    LocalGeom(v.getTube().geom(),v.geti())
-  {
-    TRACE(15,"WeightFactors::WeightFactors()");
+  std::tuple<d,d,d,d> WeightFactors(const Cell& v) {
+    TRACE(15,"WeightFactors()");
     const Cell* left=v.left();
     const Cell* right=v.right();
 
-    if(left) {   
-      TRACE(15,"left present");
-      const LocalGeom llg=LocalGeom(*left);
-      vSfL=llg.vSf;
-      vxm1=llg.vx;
-      wLl=(vx-xL)/(vx-vxm1);
-      wLr=1-wLl;
-      if(!right){
-        vxp1=xR;
-        wRNm1=(vxm1-xR)/(llg.vx-vx);
-        wRNm2=(xR-vx)/(llg.vx-vx);
-      } // !right
-    }   // if left
-    if(right){
-      TRACE(15,"Right present");
-      const LocalGeom rlg=LocalGeom(*right);
-      vSfR=rlg.vSf;
-      vxp1=rlg.vx;
-      wRr=(xR-vx)/(vxp1-vx);
-      wRl=1-wRr;
-      if(!left){
-        vxm1=xL;
-        wL0=vxp1/(vxp1-vx);
-        wL1=-vx/(rlg.vx-vx);
-      } // !left
-    }   // if right
-  } // WeightFactors()
-  void WeightFactors::show() const {
-    LocalGeom::show();
-    cout <<"Showing WeightFactors data..\n";    
-    cout << "wLl   :"<<wLl<<"\n";
-    cout << "wLr   :"<<wLr<<"\n";
-    cout << "wRl   :"<<wRl<<"\n";
-    cout << "wRr   :"<<wRr<<"\n";
-    cout << "Special weight function:\n";
-    cout << "wL0   :"<<wL0<<"\n";
-    cout << "wL1   :"<<wL1<<"\n";
-    cout << "wRNm1 :"<<wRNm1<<"\n";
-    cout << "wRNm2 :"<<wRNm2<<"\n";
-    cout << "vSfL  :"<<vSfL<<"\n";
-    cout << "vSfR  :"<<vSfR<<"\n";
-    cout << "SfL   :"<<SfL<<"\n";
-    cout << "SfR   :"<<SfR<<"\n";
+    d vx=v.vx;
+    d xL=v.xL;
+    d xR=v.xR;
+
+    d WRr=0,WRl=0,WLr=0,WLl=0;
+    
+    if(v.left()){
+      d vxim1=v.left()->vx;
+      WLl=(vx-xL)/(vx-vxim1);
+      WLr=1-WLl;
+    }
+    else{
+      WLl=1;
+      WLr=0;
+    }
+    if(v.right()){    
+      d vxip1=v.right()->vx;
+      WRr=(xR-vx)/(vxip1-vx);
+      WRl=1-WRr;
+    }
+    else{
+      WRl=0;
+      WRr=1;
+    }
+    return std::make_tuple(WLl,WLr,WRl,WRr);
   }
 } // namespace tube
+
+
+

@@ -19,6 +19,7 @@ namespace tube{
     // virtual const variable::var& pL() const {return pL_;}
     virtual void show(us detailnr=1) const;
     const variable::var& mbc() const {return mL_;}
+    const variable::var& mHbc() const {return mHL_;}
     virtual const variable::var& TL() const { return TL_;}
     virtual const variable::var& Tbc() const {return TL_;}
     // OVerloaded virtuals from BcCell

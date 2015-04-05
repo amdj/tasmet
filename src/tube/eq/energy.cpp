@@ -19,6 +19,7 @@
 #define fDFT (v.gc->fDFT)
 #define DDTfd (v.gc->DDTfd)
 
+
 namespace tube{
   using tasystem::Jacobian;
   using tasystem::JacRow;
@@ -45,7 +46,7 @@ namespace tube{
     TRACE(8,"Energy::init(tube)");
     const Tube& t=v.getTube();
     heat=&t.getHeatSource();
-
+    std::tie(WLl,WLr,WRl,WRr)=WeightFactors(v);
     d vx=v.vx;
     d xL=v.xL;
     d xR=v.xR;    
@@ -71,8 +72,6 @@ namespace tube{
 
     if(v.left()){
       d vxim1=v.left()->vx;
-      WLl=(vx-xL)/(vx-vxim1);
-      WLr=1-WLl;
       WcLl=v.SfL/(vx-vxim1);
       //   d vSfLsq=pow(w.vSfL,2);
       //   WkinLl=0.5*w.wLl/vSfLsq;
@@ -84,15 +83,11 @@ namespace tube{
       WcLr=-WcLl;
       //   WkinLl=0.5/SfLsq;
       //   WkinLr=0;
-      WLl=1;
-      WLr=0;
     }
     WcLr=-WcLl;
     
     if(v.right()){    
       d vxip1=v.right()->vx;
-      WRr=(xR-vx)/(vxip1-vx);
-      WRl=1-WRr;
       //   d vSfRsq=pow(w.vSfR,2);
 
       WcRl=v.SfR/(vxip1-vx);
@@ -108,8 +103,6 @@ namespace tube{
       WcRl=v.SfR/(v.xR-vx);
     //   WkinRl=0;
     //   WkinRr=0.5/SfRsq;
-      WRl=0;
-      WRr=1;
     }
     WcRr=-WcRl;
   }
@@ -128,13 +121,10 @@ namespace tube{
     vd error=(Wddt*DDTfd*v.p()())/(gamma-1.0);
     // Time derivative of total energy
     // error+=Wddtkin*DDTfd*v.mu()();
-
     // Total enthalpy flux
-    error+=HR()-HL();
-    // error+=hR()-hL();
+    error+=v.mHR()()-v.mHL()();
+
     error+=QR()-QL();
-    // VARTRACE(25,QR());
-    // VARTRACE(25,QL());
 
     // External heat    
     assert(heat!=nullptr);
@@ -158,8 +148,8 @@ namespace tube{
     jac+=JacCol(v.mu(),Wddtkin*DDTfd);
 
     // Enthalpy flow out minus in
-    jac+=dHR();
-    jac+=(dHL()*=-1);
+    jac+=JacCol(v.mHR(),eye());
+    jac+=JacCol(v.mHL(),-eye());
 
     // Heat conduction part
     jac+=dQR();
@@ -174,76 +164,7 @@ namespace tube{
     // jac*=ENERGY_SCALE;
     return jac;    
   }
-  namespace 
-  {
-    inline d cp(const Cell& c) {
-      return c.gc->gas().cp(c.gc->T0());
-    }
-  } // namespace 
-  
-  vd Energy::HL() const{
-    TRACE(2,"Energy::HL()");
 
-    // ******************** Static enthalpy part
-    d cp0=cp(v);
-    // Time domain temperature at left cell wall
-    vd dTmidt=WLl*v.TL().tdata() + WLr*v.T().tdata();
-    vd HL=fDFT*(cp0*dTmidt%v.mL().tdata());
-    // ******************** Kinetic energy part
-
-    
-    return HL;
-  }
-  vd Energy::HR() const{
-    TRACE(2,"Energy::HR()");
-    // ******************** Static enthalpy part    
-    d cp0=cp(v);
-    // Time domain temperature at left cell wall
-    vd dTmidt=WRr*v.TR().tdata() + WRl*v.T().tdata();
-    vd HR=fDFT*(cp0*dTmidt%v.mR().tdata());
-    // ******************** Kinetic energy part
-
-    // Time domain mu/(rho*Sf)
-    // vd mu_ov_rhoSf_t=wRl*v.mu().tdata()/(v.SfR*v.rho().tdata())+
-      // wRr*v.mu().tdata()/(v.SfR*v.rho().tdata())+
-    
-    return HR;
-  }
-  JacRow Energy::dHL() const{
-    TRACE(5,"Energy::dHL()");
-
-    JacRow dHL(8);
-    d cp0=cp(v);
-    vd dTmidt=WLl*v.TL().tdata()+
-      WLr*v.T().tdata();
-
-    // ******************** Static enthalpy part    
-    const vd& mLtdata=v.mL().tdata();
-    dHL+=JacCol(v.mL(),fDFT*diagmat(cp0*dTmidt)*iDFT );
-    dHL+=JacCol(v.TL(),fDFT*diagmat(cp0*WLl*mLtdata)*iDFT );
-    dHL+=JacCol(v.T(),fDFT*diagmat(cp0*WLr*mLtdata)*iDFT );
-    // ******************** Kinetic energy part
-
-    return dHL;
-  }
-  JacRow Energy::dHR() const{
-    JacRow dHR(8);
-
-    // ******************** Static enthalpy part    
-    d cp0=cp(v);
-
-    // Time domain temperature at left cell wall
-    vd dTmidt=WRr*v.TR().tdata()
-      +WRl*v.T().tdata();
-    
-    const vd& mRtdata=v.mR().tdata();
-    dHR+=JacCol(v.mR(),fDFT*diagmat(cp0*dTmidt)*iDFT);
-    dHR+=JacCol(v.TR(),fDFT*diagmat(cp0*WRr*mRtdata)*iDFT);
-    dHR+=JacCol(v.T(),fDFT*diagmat(cp0*WRl*mRtdata)*iDFT);
-    // ******************** Kinetic energy part
-
-    return dHR;
-  }
   vd Energy::QL() const{
     TRACE(4,"Energy::QL()");
     const vd& Tt=v.T().tdata();

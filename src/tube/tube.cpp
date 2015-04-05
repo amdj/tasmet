@@ -13,7 +13,7 @@
 #include "globalconf.h"
 #include "geom.h"
 #include "exception.h"
-
+#include "utils.h"
 // Tried to keep the method definition a bit in order in which a
   // tube is created, including all its components. First a tube is
   // created, which has a geometry and a global
@@ -38,18 +38,12 @@ namespace tube {
   Tube::Tube(const Tube& other):
     Seg(other),
     geom_(other.geom().copy()){
-
+    
   }
   Tube::~Tube(){
     TRACE(25,"~Tube()");
     delete geom_;
-    cleanup_cells();
-  }
-  void Tube::cleanup_cells(){
-    TRACE(25,"Tube::cleanup_cells()");
-    for(auto v=cells.begin();v!=cells.end();v++)
-      delete *v;
-    cells.clear();
+    utils::purge(cells);
   }
   const Cell& Tube::getCell(us i) const{
     return *cells.at(i);
@@ -62,9 +56,9 @@ namespace tube {
   void Tube::setDofNrs(us firstdof){
     TRACE(13,"Tube::setDofNrs("<<firstdof<<")");
     assert(cells.size()>0);
-    for(auto cell=cells.begin();cell!=cells.end();cell++){
-      (*cell)->setDofNrs(firstdof);
-      firstdof+=(*cell)->getNDofs();
+    for(Cell* cell: cells){
+      cell->setDofNrs(firstdof);
+      firstdof+=cell->getNDofs();
     }
   }
   void Tube::setEqNrs(us firsteq){
@@ -94,8 +88,7 @@ namespace tube {
   void Tube::init(const tasystem::TaSystem& sys){
     TRACE(13,"Tube::Init()");
     Seg::init(sys);
-
-    cleanup_cells();
+    utils::purge(cells);
     TRACE(13,"Filling vertices. Current size:"<<cells.size());
       // Left *probable* boundary condition
       // cells.emplace_back(new LeftCell(0,g));

@@ -1,5 +1,4 @@
 #include "leftcell.h"
-#include "weightfactors.h"
 #include "jacrow.h"
 #include "tube.h"
 
@@ -64,9 +63,14 @@ namespace tube{
     vars.push_back(&TL_);
     // Remove momentum equation from list. Put equation for Mu in
     // place of momentum eq.
-    delete eqs[1];
-    eqs[1]=eqs.back();
-    eqs.pop_back();
+    // WARN("HERE SOME EQS NEED TO BE DELETED");
+    assert(eqs.find(EqType::Mom)!=eqs.end());
+    Equation* mom=eqs.at(EqType::Mom);
+    delete mom;
+    eqs.erase(EqType::Mom);
+    Equation* mH=eqs.at(EqType::mH_is_m_H);
+    delete mH;
+    eqs.erase(EqType::mH_is_m_H);
 
   }
   void LeftCell::show(us detailnr) const{

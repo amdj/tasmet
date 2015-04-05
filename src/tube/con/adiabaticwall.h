@@ -16,6 +16,7 @@ namespace tube{
     bool isentropic=false;
     us firsteqnr;
     PrescribeQty massflowzero;
+    PrescribeQty enthalpyflowzero;
   public:
     AdiabaticWall& operator=(const AdiabaticWall&)=delete;
     AdiabaticWall(us segnr,Pos position): TubeBc(segnr,position){}

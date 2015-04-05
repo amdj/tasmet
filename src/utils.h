@@ -9,6 +9,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 #include <vector>
+#include <map>
 #include "tracer.h"
 
 namespace utils {
@@ -23,7 +24,18 @@ namespace utils {
     }
     vec.clear();
   }
+  // Purge a vector of components
+  template<typename Key,typename T>
+  void purge(std::map<Key,T>& map){
+    TRACE(10,"purge(map)");
+    for (auto& it: map){
+      delete it.second;
+      it.second=nullptr;
+    }
+    map.clear();
+  }
   
+    
   
   
 } // namespace utils
