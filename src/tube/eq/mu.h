@@ -21,16 +21,17 @@ namespace tube {
   class Tube;
   class WeightFactors;
 
-  class Mu: public Equation{
+  class MuEq: public Equation{
   public:
-    Mu(const Cell& v):Equation(v){}
+    MuEq(const Cell& v):Equation(v){}
     vd error() const;
 
     tasystem::JacRow jac() const;		// Returns the local Jacobian
                                         // of this equation
     void init(){}
+    void show() const;
     EqType getType() const {return EqType::Mu_is_m_u;}
-    ~Mu(){}
+    ~MuEq(){}
   };
   
   

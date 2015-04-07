@@ -17,12 +17,15 @@ namespace tube{
     // For the pressure, we only do not assert that a cell is
     // located on the left...
     // virtual const variable::var& pL() const {return pL_;}
+
+    // OVerloaded virtuals from BcCell
     virtual void show(us detailnr=1) const;
     const variable::var& mbc() const {return mL_;}
     const variable::var& mHbc() const {return mHL_;}
     virtual const variable::var& TL() const { return TL_;}
     virtual const variable::var& Tbc() const {return TL_;}
-    // OVerloaded virtuals from BcCell
+
+
     vd extrapolateQuant(Physquant) const;
     tasystem::JacRow dExtrapolateQuant(Physquant) const;
   };  

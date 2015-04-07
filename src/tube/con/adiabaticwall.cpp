@@ -19,23 +19,21 @@ namespace tube{
   void AdiabaticWall::init(const TaSystem& sys){
     TRACE(15,"AdiabaticWall::init()");
     TubeBc::init(sys);
-    try{
-      if(dynamic_cast<const IsentropicTube*>(t))
-        isentropic=true;
+    if(dynamic_cast<const IsentropicTube*>(t)){
+      isentropic=true;
       TRACE(40,"Tube is isentropic");
     }
-    catch(std::bad_cast&){}
     setInit(true);
   }
   void AdiabaticWall::updateNf(){
     TRACE(15,"AdiabaticWall::updateNf()");
     massflowzero.updateNf();
-    
+    enthalpyflowzero.updateNf(); 
   }
   void AdiabaticWall::show(us i) const {
     TRACE(5,"AdiabaticWall::show()");
     checkInit();
-    string side;
+    const char* side;
     if(pos==Pos::left)
       side="left";
     else

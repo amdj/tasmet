@@ -23,7 +23,6 @@ namespace tube{
   class PressureBc:public TubeBc {
     us firsteqnr;
     variable::var p_prescribed;
-
     // PrescribeQty prescribep;			// Pressure boundary condition
     PrescribeQty prescribeT;			// Temperature boundary condition
     // PrescribeQty prescribeTs;			// Solid temperature boundary condition
@@ -41,7 +40,7 @@ namespace tube{
     virtual ~PressureBc(){}
     virtual string getType() const {return string("PressureBc");}
     #ifndef SWIG
-    us getNEqs() const {return 2*gc->Ns();}    
+    us getNEqs() const {return 3*gc->Ns();}    
     virtual void init(const tasystem::TaSystem&);
     virtual void updateNf();
     virtual void setEqNrs(us firstdofnr);    

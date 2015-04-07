@@ -193,17 +193,6 @@ namespace tube {
       dmtotdx_(rhodof)=(*cell)->vVf;
     }
   }
-  // vd Tube::Htot() const throw(std::exception){
-  //   TRACE(15,"Tube::Htot()");
-    
-  //   us ncell=cells.size();
-  //   vd Htot(ncell);
-  //   for(us i=0;i<ncell;i++){
-  //     Htot(i)=cells[i]->Htot();
-  //   }
-  //   return Htot;
-  // }
-
   void Tube::show(us detailnr) const {
     cout << "++++++++++++Tube name: "<< getName() << " ++++++++++++++++\n";
     cout << "Type: " << getType() <<" with number "<<getNumber()<< ".\n";

@@ -19,6 +19,7 @@ namespace tube{
   public:
     State(const Cell& v):Equation(v){}
     virtual void init(){}
+    void show() const;
     tasystem::JacRow jac() const;
     vd error() const;
     EqType getType() const {return EqType::Sta;}

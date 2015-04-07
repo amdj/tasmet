@@ -21,7 +21,10 @@ namespace tube{
     jac+=drho();
     return jac;
   }
-  vd Isentropic::error() const {
+  void Isentropic::show() const{
+    cout << "----------------- Isentropic\n";
+  }
+ vd Isentropic::error() const {
     TRACE(6,"Isentropic::Error()");
     vd err(v.gc->Ns(),fillwith::zeros);
     d T0=v.gc->T0();

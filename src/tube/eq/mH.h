@@ -1,4 +1,4 @@
-// mH.h
+// mHEq.h
 //
 // Author: J.A. de Jong 
 //
@@ -22,10 +22,10 @@ namespace tube {
   class Cell;
   class Tube;
 
-  class mH: public Equation{
-    d WRr=0,WRl=0,WLr=0,WLl=0;
+  class mHEq: public Equation{
+    d WLr=0,WLl=0;
   public:
-    mH(const Cell& v):Equation(v){}
+    mHEq(const Cell& v):Equation(v){}
     vd error() const;
 
     tasystem::JacRow jac() const;		// Returns the local Jacobian
@@ -33,7 +33,7 @@ namespace tube {
     void init();
     void show() const;
     EqType getType() const {return EqType::mH_is_m_H;}
-    ~mH(){}
+    ~mHEq(){}
   };
   
   

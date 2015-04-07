@@ -2,11 +2,10 @@
 #ifndef _ENERGYEQ_H_
 #define _ENERGYEQ_H_
 #include "tubeequation.h"
-#include "heat.h"
 
 namespace tube{
   SPOILNAMESPACE
-
+  class HeatSource;
   
   class Energy:public Equation
   {
@@ -33,9 +32,9 @@ namespace tube{
     // boundary of the cell
     d gamma() const;			// Time-avg ratio of specific heats
 
-    vd extrapolateEnergyFlow() const;
+    vd extrapolateEnthalpyFlow() const;
     vd extrapolateHeatFlow() const;
-    tasystem::JacRow dExtrapolateEnergyFlow() const;
+    tasystem::JacRow dExtrapolateEnthalpyFlow() const;
     tasystem::JacRow dExtrapolateHeatFlow() const;
   private:
 

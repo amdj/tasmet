@@ -48,7 +48,9 @@ namespace tube{
 
     return jac;
   }
-
+  void State::show() const {
+    cout << "----------------- State equation\n";
+  }
 } // namespace tube
 
 

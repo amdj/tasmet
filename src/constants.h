@@ -69,15 +69,15 @@ namespace tube{
              T=constants::T,
              p=constants::p,
              Ts=constants::Ts,
-             U
+             U,
+             mH
   };
 
   enum Physquant{massFlow,
                  momentumFlow,
-                 energyFlow,
+                 enthalpyFlow,
                  heatFlow,
                  solidHeatFlow,
-                 rhoRT,
   };
 
   #ifndef SWIG

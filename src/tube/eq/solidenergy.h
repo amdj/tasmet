@@ -29,6 +29,7 @@ namespace tube{
     void setTs(d Ts) {Tsmirror=Ts;}
     vd kappaL() const;
     vd kappaR() const;
+    void show() const;
   private:
     tasystem::JacCol dTsi() const;
     

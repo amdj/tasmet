@@ -65,13 +65,19 @@ namespace tube{
     // place of momentum eq.
     // WARN("HERE SOME EQS NEED TO BE DELETED");
     assert(eqs.find(EqType::Mom)!=eqs.end());
-    Equation* mom=eqs.at(EqType::Mom);
-    delete mom;
-    eqs.erase(EqType::Mom);
-    Equation* mH=eqs.at(EqType::mH_is_m_H);
-    delete mH;
-    eqs.erase(EqType::mH_is_m_H);
-
+    // If these elements are already deleted, we do nothing
+    try{
+      Equation* mom=eqs.at(EqType::Mom);
+      delete mom;
+      eqs.erase(EqType::Mom);
+    }
+    catch(std::out_of_range&){}
+    try{
+      Equation* mH=eqs.at(EqType::mH_is_m_H);
+      delete mH;
+      eqs.erase(EqType::mH_is_m_H);
+    }
+    catch(std::out_of_range&){}
   }
   void LeftCell::show(us detailnr) const{
     cout << "------------- LeftCell ----------\n";
@@ -88,6 +94,13 @@ namespace tube{
         Energy e(*this);
         e.init();
         return e.extrapolateHeatFlow();
+        break;
+      }
+    case Physquant::enthalpyFlow:
+      {
+        Energy e(*this);
+        e.init();
+        return e.extrapolateEnthalpyFlow();
         break;
       }
     default:
@@ -109,6 +122,13 @@ namespace tube{
         return e.dExtrapolateHeatFlow();
         break;
       }
+    case Physquant::enthalpyFlow:
+      {
+        Energy e(*this);
+        e.init();
+        return e.dExtrapolateEnthalpyFlow();
+        break;
+      }
     default:
       WARN("This is not yet implemented!");
       assert(false);
@@ -116,7 +136,7 @@ namespace tube{
     }
   }
 
-  // void LeftCell::setResVar(Varnr v,const vd& res){
+  // void LeftCell::setResVar(Varnr v,cont vd& res){
   //   TRACE(15,"LeftCell::setResVar()");
     // switch(v){
     // case Varnr::rhoL:

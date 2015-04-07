@@ -12,6 +12,7 @@
 #define DDTfd (gc->DDTfd)
 
 #define Ns (gc->Ns())
+#define eye (eye(Ns,Ns))
 
 namespace tube{
   using variable::var;
@@ -105,19 +106,23 @@ namespace tube{
     }      
     error.subvec(0,Ns-1)=errorM;
     error.subvec(Ns,2*Ns-1)=prescribeT.error();
+    error.subvec(2*Ns,3*Ns-1)=cell.mHbc()()-cell.extrapolateQuant(Physquant::enthalpyFlow);
+    VARTRACE(20,error);
     return error;
   }
   void PressureBc::jac(Jacobian& jac) const{
     TRACE(8,"PressureBc::jac()");
 
     const BcCell& cell=t->bcCell(pos);
+
+
     if(pos==Pos::left)    {
       d Wddt=cell.vx;
       VARTRACE(25,Wddt);
       JacRow jacr(firsteqnr,4);
       jacr+=JacCol(cell.mbc(),Wddt*DDTfd);
-      jacr+=JacCol(cell.p(),cell.vSf*eye(Ns,Ns));
-      jacr+=JacCol(cell.mu(),eye(Ns,Ns));
+      jacr+=JacCol(cell.p(),cell.vSf*eye);
+      jacr+=JacCol(cell.mu(),eye);
       jacr+=-cell.dExtrapolateQuant(Physquant::momentumFlow);
       jacr+=JacCol(cell.mL(),Wddt*(t->getDragResistance().dm(cell)));
       jac+=jacr;
@@ -127,18 +132,22 @@ namespace tube{
       VARTRACE(25,Wddt);
       JacRow jacr(firsteqnr,4);
       jacr+=JacCol(cell.mbc(),Wddt*DDTfd);
-      jacr+=JacCol(cell.p(),-cell.vSf*eye(Ns,Ns));
-      jacr+=JacCol(cell.mu(),-eye(Ns,Ns));
+      jacr+=JacCol(cell.p(),-cell.vSf*eye);
+      jacr+=JacCol(cell.mu(),-eye);
       jacr+=cell.dExtrapolateQuant(Physquant::momentumFlow);
       jacr+=JacCol(cell.mR(),Wddt*(t->getDragResistance().dm(cell)));
       jac+=jacr;
     }
+    JacRow enthalpy_extrapolated_jac(firsteqnr+2*Ns,3);
+    enthalpy_extrapolated_jac+=JacCol(cell.mHbc(),eye);
+    enthalpy_extrapolated_jac+=-cell.dExtrapolateQuant(Physquant::enthalpyFlow);
+    jac+=enthalpy_extrapolated_jac;
     jac+=prescribeT.jac();
   }
   void PressureBc::show(us detailnr) const {
     TRACE(5,"PressureBc::show()");
     checkInit();
-    string side;
+    const char* side;
     if(pos==Pos::left)
       side="left";
     else

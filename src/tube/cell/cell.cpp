@@ -74,8 +74,8 @@ namespace tube{
     // eqs.insert(new Isentropic(*this));
     eqs.insert({EqType::Sta,new State(*this)});
     eqs.insert({EqType::Sol,new SolidTPrescribed(*this)});    
-    eqs.insert({EqType::Mu_is_m_u,new Mu(*this)});    
-    eqs.insert({EqType::mH_is_m_H,new mH(*this)});    
+    eqs.insert({EqType::Mu_is_m_u,new MuEq(*this)});    
+    eqs.insert({EqType::mH_is_m_H,new mHEq(*this)});    
 
   }
   Cell::~Cell(){
@@ -184,30 +184,8 @@ namespace tube{
   //   return (0.5*(rhoUL()+rhoUR())/rho_)();
   // }
   d Cell::getValue(Varnr v,us freqnr) const{
-    TRACE(4,"Cell::getValue()");
-    TRACE(4,"Cell::getValue()");
-    switch(v) {
-    case Varnr::rho: // Density
-      return rho()(freqnr);
-      break;
-    case Varnr::m:
-      return getValue(m)(freqnr);
-      break;
-    case Varnr::U:                 // Volume flown
-      return getValue(U)(freqnr);
-      break;
-    case Varnr::p:                   // Pressure
-      return p()(freqnr);
-      break;
-    case Varnr::T:                 // Temp
-      return T()(freqnr);
-      break;
-    case Varnr::Ts:                 // Temp
-      return Ts()(freqnr);
-      break;
-    default:
-      return 0;
-    }
+    TRACE(4,"Cell::getValue(Varnr,freqnr)");
+    return getValue(v)(freqnr);
   }
   void Cell::setResVar(Varnr v,const vd& res){
     TRACE(15,"Cell::setResVar(Varnr,vd)");
@@ -237,7 +215,7 @@ namespace tube{
       setResVar(v,res());
   }
   var Cell::getValue(Varnr v) const{
-    TRACE(4,"Cell::getValue()");
+    TRACE(4,"Cell::getValue(Varnr)");
       switch(v) {
       case Varnr::rho: // Density
         return rho();
@@ -245,7 +223,11 @@ namespace tube{
       case Varnr::m:                 // Volume flown
         return 0.5*(mL()+mR());
         break;
+      case Varnr::mH:                 // Volume flown
+        return 0.5*(mHL()+mHR());
+        break;
       case Varnr::p:                   // Pressure
+        TRACE(15,"getValue: pressure");
         return p();
         break;
       case Varnr::T:                 // Temp
@@ -298,13 +280,7 @@ namespace tube{
   }    
   void Cell::show(us detailnr) const{
     cout << "----------------- Cell " << i << "----\n";
-    if(detailnr>=2){
-      cout << "Showing weight factors of equations...\n";
-      for (auto& eq : eqs) {
-        eq.second->show();
-      }
-    }
-    cout <<"Showing LocalGeom data..\n";
+    cout <<"Showing LocalGeom data...\n";
     cout <<"i     :" << i<<"\n";
     cout <<"vx    :" << vx<<"\n";
     cout <<"vSf   :" << vSf<<"\n";
@@ -314,6 +290,12 @@ namespace tube{
     cout <<"vrh   :" << vrh<<"\n";
     cout <<"xL    :" << xL<<"\n";            
     cout <<"xR    :" << xR<<"\n";
+    if(detailnr>=2){
+      cout << "Showing weight factors of equations...\n";
+      for (auto& eq : eqs) {
+        eq.second->show();
+      }
+    }
     // cout << "Number of eqs :" << getNEqs() << "\n";
     // cout << "Number of dofs:" << getNDofs() << "\n";    
     // cout << "Dofnr rho: " << rho.getDofNr() << "\n";

@@ -16,6 +16,9 @@ namespace tube{
     TRACE(6,"SolidTPrescribed::init(t)");
 
   }
+  void SolidTPrescribed::show() const {
+    cout << "----------------- SolidTPrescribed\n";
+  }
   JacRow SolidTPrescribed::jac() const{
     TRACE(6,"SolidTPrescribed::jac()");
     JacRow jac(dofnr,1);

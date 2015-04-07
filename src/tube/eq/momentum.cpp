@@ -27,12 +27,9 @@ namespace tube{
 
   void Momentum::show() const{
     cout << "----------------- Momentum equation\n";
-    // cout << "Wddt   : " << Wddt << "\n";
-    // cout << "WuL  : " << WuL << "\n";
-    // cout << "Wu    : " << Wu << "\n";
-    // cout << "WuR  : " << WuR << "\n";
-    // cout << "WpL    : " << WpL << "\n";
-    // cout << "WpR    : " << WpR << "\n";    
+    cout << "Wddt   : " << Wddt << "\n";
+    cout << "Wpi    : " << Wpi << "\n";
+    cout << "Wpm1    : " << Wpim1 << "\n";    
   }
   Momentum::~Momentum(){TRACE(0,"~Momentum()");}
   void Momentum::init()

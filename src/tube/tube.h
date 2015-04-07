@@ -51,19 +51,12 @@ namespace tube{
     // Return a reference to the Geometry instance
     const Geom& geom() const;
 
-    // Return the time-average total enthalpy flow (Watts)
-    // vd Htot() const throw(std::exception);
-
     // Set individual at certain location for certain harmonic number
     void setResVar(Varnr,us i,us freqnr,d value);
     void setResVar(Varnr,us freqnr,const vd& value);
     
-    // Return a vector of all dof positions, including the DOFS at the
-    // ends.
+    // Return a vector of all vertex positions
     vd getx() const;
-    
-    // Return a value in form of an array with length equal to the
-    // length returned with getx(). 
 
     // Extract a result vector for given variable number
     // (rho,U,T,p,Ts) and frequency number.

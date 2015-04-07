@@ -1,24 +1,34 @@
+// energy.cpp
+//
+// last-edit-by: J.A. de Jong 
+// 
+// Description:
+//
+//////////////////////////////////////////////////////////////////////
+
 // #define TRACERPLUS 20
 // #define ENERGY_SCALE (1/v.gc->rho0/v.gc->c0)
 // #define ENERGY_SCALE (1.0/v.gc->p0)
 // #define ENERGY_SCALE (1.0/100)
 #define ENERGY_SCALE (1.0)
-
+#define TRACERPLUS 15
 #ifdef NOHEAT
 #error Noheat already defined!
 #endif
-#define NOHEAT
+
 
 #include "cell.h"
 #include "weightfactors.h"
 #include "tube.h"
 #include "jacrow.h"
 #include "energy.h"
+#include <tuple>
+#define NOHEAT
 
 #define iDFT (v.gc->iDFT)
 #define fDFT (v.gc->fDFT)
 #define DDTfd (v.gc->DDTfd)
-
+#define Ns (v.gc->Ns())
 
 namespace tube{
   using tasystem::Jacobian;
@@ -91,12 +101,8 @@ namespace tube{
       //   d vSfRsq=pow(w.vSfR,2);
 
       WcRl=v.SfR/(vxip1-vx);
-
       //   WkinRl=0.5*(w.wRl/vSfsq);
       //   WkinRr=0.5*(w.wRr/vSfRsq);
-
-      //   WRl= w.wRl;
-      //   WRr= w.wRr;
     }
     else{
     //   d SfRsq=pow(w.SfR,2);
@@ -113,7 +119,7 @@ namespace tube{
     return 0;
   }
   vd Energy::error() const {		// Error in momentum equation
-    TRACE(6,"Energy::Error(), i="<<v.geti());
+    TRACE(15,"Energy::Error(), i="<<v.geti());
     assert(v.gc!=nullptr);
 
     // Time derivative of static enthalpy in cell
@@ -145,7 +151,7 @@ namespace tube{
     d gamma=this->gamma();
     // Time-derivative of internal energy
     jac+=JacCol(v.p(),(Wddt*DDTfd)/(gamma-1.0));
-    jac+=JacCol(v.mu(),Wddtkin*DDTfd);
+    // jac+=JacCol(v.mu(),Wddtkin*DDTfd);
 
     // Enthalpy flow out minus in
     jac+=JacCol(v.mHR(),eye());
@@ -169,7 +175,7 @@ namespace tube{
     TRACE(4,"Energy::QL()");
     const vd& Tt=v.T().tdata();
     const vd& Ttl=v.TL().tdata();
-    VARTRACE(15,fDFT*(kappaLt()%(WcLl*Ttl+WcLr*Tt)));
+    // VARTRACE(15,fDFT*(kappaLt()%(WcLl*Ttl+WcLr*Tt)));
     return fDFT*(kappaLt()%(WcLl*Ttl+WcLr*Tt));
   }
   JacRow Energy::dQL() const{
@@ -218,11 +224,74 @@ namespace tube{
     domg_full+=Wddtkin*DDTfd*v.mu()()/v.gc->getomg();                                                        // enthalpy
                                                              // term
     // domg_.subvec(dofnr+1,dofnr+2)=domg_full.subvec(1,2);
-    domg_.subvec(dofnr,dofnr+v.gc->Ns()-1)=domg_full;
+    domg_.subvec(dofnr,dofnr+Ns-1)=domg_full;
   }
-  vd Energy::extrapolateHeatFlow() const{
+  namespace{
+    using std::make_tuple;
+    std::tuple<d,d> weightfactors(const Cell& v){
+      TRACE(15,"anonymous weightfactors for extrapolation of mH");
+      assert((!v.left() && v.right()) || (v.left() && !v.right()));
+      if(!v.left()){
+        // Leftmost node
+        d xL=0;
+        d xR=v.xR;
+        d xRR=v.right()->xR;
+
+        // W0: weight factor for contribution of quantity at right
+        // cell wall for something at the left cell wall
+        d W0=xRR/(xRR-xR); 
+        // W1: weight factor for contribution of quantity at right
+        // cell wall of neighbouring cell to what happens at the left
+        // cell wall of this cell
+        d W1=-xR/(xRR-xR);
+        VARTRACE(40,W0);
+        VARTRACE(40,W1);
+        return make_tuple(W0,W1);
+      }
+      else{
+        d xR=v.xR;
+        d xL=v.xL;
+        d xLL=v.left()->xL;
+        d WR1=(xL-xR)/(xLL-xL);
+        d WR2=(xR-xL)/(xLL-xL);
+        VARTRACE(40,WR1);
+        VARTRACE(40,WR2);
+        return make_tuple(WR1,WR2);
+      }
+    }
+  }
+
+  vd Energy::extrapolateEnthalpyFlow() const{
+    TRACE(15,"Energy::extrapolateEnthalpyFlow()");
+    // Can only be called for leftmost or rightmost node
+    assert((!v.left() && v.right()) || (v.left() && !v.right()));
+    if(!v.left()){
+      d W0,W1; std::tie(W0,W1)=weightfactors(v);
+      return W0*v.mHR()()+W1*v.right()->mHR()();
+    }
+    else{
+      d WR1,WR2; std::tie(WR1,WR2)=weightfactors(v);
+      return WR1*v.mHL()()+WR2*v.left()->mHL()();
+    }
+  }
+  JacRow Energy::dExtrapolateEnthalpyFlow() const {
+    TRACE(15,"Energy::dExtrapolateEnthalpyFlow()");
+    JacRow jac(2);
+    if(!v.left()){
+      d W0,W1; std::tie(W0,W1)=weightfactors(v);
+      jac+=JacCol(v.mHR(),W0*eye());
+      jac+=JacCol(v.right()->mHR(),W1*eye());
+    }
+    else{
+      d WR1,WR2; std::tie(WR1,WR2)=weightfactors(v);
+      jac+=JacCol(v.mHL(),WR1*eye());
+      jac+=JacCol(v.left()->mHL(),WR2*eye());
+    }
+    return jac;
+  }
+  vd Energy::extrapolateHeatFlow() const {
     TRACE(5,"Energy::extrapolateHeatFlow()");
-    vd Qb(v.gc->Ns());
+    vd Qb(Ns);
     if(!v.left()){
       vd kappaLt=this->kappaLt();
       Qb=fDFT*(kappaLt%(WcLl*v.TL().tdata()+WcLr*v.T().tdata()));
@@ -267,3 +336,6 @@ namespace tube{
 
 
 } // namespace tube
+
+//////////////////////////////////////////////////////////////////////
+

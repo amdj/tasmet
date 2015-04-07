@@ -88,6 +88,13 @@ namespace tube{
         return e.extrapolateHeatFlow();
         break;
       }
+    case Physquant::enthalpyFlow:
+      {
+        Energy e(*this);
+        e.init();
+        return e.extrapolateEnthalpyFlow();
+        break;
+      }
     default:
       WARN("This is not yet implemented!");
       assert(false);
@@ -105,6 +112,13 @@ namespace tube{
         Energy e(*this);
         e.init();
         return e.dExtrapolateHeatFlow();
+        break;
+      }
+    case Physquant::enthalpyFlow:
+      {
+        Energy e(*this);
+        e.init();
+        return e.dExtrapolateEnthalpyFlow();
         break;
       }
     default:

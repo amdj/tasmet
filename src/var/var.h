@@ -46,7 +46,7 @@ namespace variable {
     // var operator()(const var&); //Copy constructor
     // Get methods
     const tasystem::Globalconf& gc() const {return *gc_;}
-    const d& operator()(us i) const;				   // Extract amplitude data result at specific frequency    
+    d operator()(us i) const;				   // Extract amplitude data result at specific frequency    
 
 
     // Extract data

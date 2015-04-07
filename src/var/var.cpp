@@ -6,7 +6,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 #include "var.h"
-
+#include "exception.h"
 #define Ns (gc_->Ns())
 #define Nf (gc_->Nf())
 #define fDFT (gc_->fDFT)
@@ -79,7 +79,8 @@ namespace variable {
     tdata_=iDFT*adata_;
   }
   var::var(const var& other){
-    // Nope, we do not adjust gc_
+    TRACE(0,"var::var(const var& other)");
+    this->gc_=other.gc_;
     this->tdata_=other.tdata_;
     this->adata_=other.adata_;
   }
@@ -120,9 +121,10 @@ namespace variable {
     }
   }
   // Get methods (which require implementation)
-  const d& var::operator()(us i) const {//Extract result at specific frequency
+  d var::operator()(us i) const {//Extract result at specific frequency
     TRACE(-2,"var::operator()("<<i<<"), Ns: "<< Ns);
-    assert(i<Ns);
+    if(i>=Ns)
+      throw MyError("Invalid frequency number!");
     TRACE(-1,"adata_: "<<adata_);
     return adata_(i);
   }  
