@@ -69,12 +69,14 @@ namespace tube{
     try{
       Equation* mom=eqs.at(EqType::Mom);
       delete mom;
+      TRACE(25,"MOm eq deleted");
       eqs.erase(EqType::Mom);
     }
     catch(std::out_of_range&){}
     try{
       Equation* mH=eqs.at(EqType::mH_is_m_H);
       delete mH;
+      TRACE(25,"mH eq deleted");
       eqs.erase(EqType::mH_is_m_H);
     }
     catch(std::out_of_range&){}
@@ -124,6 +126,7 @@ namespace tube{
       }
     case Physquant::enthalpyFlow:
       {
+        TRACE(25,"Enthalpy");
         Energy e(*this);
         e.init();
         return e.dExtrapolateEnthalpyFlow();

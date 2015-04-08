@@ -70,6 +70,7 @@ namespace tube{
              p=constants::p,
              Ts=constants::Ts,
              U,
+             mu,
              mH
   };
 

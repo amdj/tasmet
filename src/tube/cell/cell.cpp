@@ -230,6 +230,9 @@ namespace tube{
         TRACE(15,"getValue: pressure");
         return p();
         break;
+      case Varnr::mu:                   // Pressure
+        return mu();
+        break;
       case Varnr::T:                 // Temp
         return T();
         break;

@@ -17,12 +17,8 @@ namespace tube{
     virtual void show(us detailnr=1) const;
 
     const variable::var& mbc() const{return mR_;}
-    const variable::var& mHbc() const{
-      VARTRACE(25,mHR_());
-      return mHR_;}
-    virtual const variable::var& Tbc() const { 
-      VARTRACE(25,TR_());
-      return TR_;}
+    const variable::var& mHbc() const{ return mHR_;}
+    virtual const variable::var& Tbc() const { return TR_;}
 
     virtual const variable::var& mR() const { return mR_;}
     virtual const variable::var& mHR() const { return mHR_;}

@@ -244,8 +244,8 @@ namespace tube{
         // cell wall of this cell
         d W1=-xR/(xRR-xR);
         d W0=1-W1;
-        VARTRACE(40,W0);
-        VARTRACE(40,W1);
+        // VARTRACE(40,W0);
+        // VARTRACE(40,W1);
         return make_tuple(W0,W1);
       }
       else{
@@ -265,6 +265,8 @@ namespace tube{
     assert((!v.left() && v.right()) || (v.left() && !v.right()));
     if(!v.left()){
       d W0,W1; std::tie(W0,W1)=weightfactors(v);
+      VARTRACE(40,W0);
+      VARTRACE(40,W1);
       return W0*v.mHR()()+W1*v.right()->mHR()();
     }
     else{
@@ -279,6 +281,8 @@ namespace tube{
     JacRow jac(2);
     if(!v.left()){
       d W0,W1; std::tie(W0,W1)=weightfactors(v);
+      VARTRACE(40,W0);
+      VARTRACE(40,W1);
       jac+=JacCol(v.mHR(),W0*eye());
       jac+=JacCol(v.right()->mHR(),W1*eye());
     }

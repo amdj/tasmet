@@ -65,7 +65,6 @@ namespace tube{
     jac+=massflowzero.jac();
     jac+=enthalpyflowzero.jac();
     JacRow heatflowjac(firsteqnr+2*Ns,2);
-    VARTRACE(20,firsteqnr);
     heatflowjac+=cell.dExtrapolateQuant(Physquant::heatFlow);
     jac+=heatflowjac;
   }

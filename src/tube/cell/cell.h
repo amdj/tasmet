@@ -77,7 +77,7 @@ namespace tube {
     const variable::var& mL() const {return mL_;}
     const variable::var& mHL() const {return mHL_;}
     virtual const variable::var& mR() const {assert(right_); return right_->mL();}
-    virtual const variable::var& mHR() const {assert(right_); return right_->mHL();}
+    virtual const variable::var& mHR() const { assert(right_); return right_->mHL();}
     const variable::var& p() const{return p_;}
 
     // These are variables for the left and right vertices, but are on

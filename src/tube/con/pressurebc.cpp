@@ -123,7 +123,6 @@ namespace tube{
     // VARTRACE(30,cp(cell));
     // error.subvec(2*Ns,3*Ns-1)=-cell.mHbc()();
     // error.subvec(2*Ns,3*Ns-1)+=cell.extrapolateQuant(Physquant::enthalpyFlow);
-    VARTRACE(20,error);
     return error;
   }
   void PressureBc::jac(Jacobian& jac) const{
@@ -135,7 +134,6 @@ namespace tube{
     // Momentum equation Jacobian
     if(pos==Pos::left)    {
       d Wddt=cell.vx;
-      VARTRACE(25,Wddt);
       JacRow jacr(firsteqnr,4);
       jacr+=JacCol(cell.mbc(),Wddt*DDTfd);
       jacr+=JacCol(cell.p(),cell.vSf*eye);
