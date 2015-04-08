@@ -2,7 +2,7 @@
 #include "jacrow.h"
 #include "tube.h"
 #include "energy.h"
-
+#include <tuple>
 #define iDFT (gc->iDFT)
 #define fDFT (gc->fDFT)
 #define eye eye(t.Gc().Ns(),t.Gc().Ns())
@@ -16,7 +16,7 @@ namespace tube{
   // These functions should stay internal to this unit
   namespace {
     
-    vd2 weightfactors(const Tube& t){
+    std::tuple<d,d> weightfactors(const Tube& t){
       us nCells=t.getNCells();
       d xR=t[nCells-1].xR;
       d vxm1=t[nCells-1].vx;
@@ -28,17 +28,17 @@ namespace tube{
 
       VARTRACE(25,wRNm1);
       VARTRACE(25,wRNm2);
-      return vd2({wRNm1,wRNm2});
+      return std::make_tuple(wRNm1,wRNm2);
     }
    // Extrapolate momentum flow left side  
     vd extrapolateMomentumFlow(const Tube& t){
       us nCells=t.getNCells();
-      vd2 w=weightfactors(t); d wRNm1=w(0),wRNm2=w(1);
+      d wRNm1,wRNm2; std::tie(wRNm1,wRNm2)=weightfactors(t);
       return wRNm1*t[nCells-1].mu()()+wRNm2*t[nCells-2].mu()();
     }
     JacRow dExtrapolateMomentumFlow(const Tube& t){
       us nCells=t.getNCells();
-      vd2 w=weightfactors(t); d wRNm1=w(0),wRNm2=w(1);
+      d wRNm1,wRNm2; std::tie(wRNm1,wRNm2)=weightfactors(t);
 
       JacRow jacrow(2);
       jacrow+=JacCol(t[nCells-1].mu(),wRNm1*eye);

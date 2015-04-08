@@ -75,12 +75,12 @@ namespace tube {
     JacRow jac(dofnr,4);
     d cp0=cp(v);
 
-    jac+=JacCol(v.mHL(),-eye());
 
     const vd& mLt=v.mL().tdata();
     // TL time domain
     vd TLt=TLt_(v,WLl,WLr);
 
+    jac+=JacCol(v.mHL(),-eye());
     jac+=JacCol(v.TL(),fDFT*diagmat(cp0*WLl*mLt)*iDFT);
     jac+=JacCol(v.T(),fDFT*diagmat(cp0*WLr*mLt)*iDFT);
     jac+=JacCol(v.mL(),fDFT*diagmat(cp0*TLt)*iDFT);

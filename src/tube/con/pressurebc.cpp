@@ -80,6 +80,12 @@ namespace tube{
     this->firsteqnr=firsteqnr;
     prescribeT.set(firsteqnr+Ns,cell.Tbc());
   }
+  namespace 
+  {
+    inline d cp(const Cell& c) {
+      return c.gc->gas().cp(c.gc->T0());
+    }
+  } // namespace 
   vd PressureBc::error() const {
     TRACE(15,"PressureBc::error()");
     vd error(getNEqs(),fillwith::zeros);
@@ -93,7 +99,9 @@ namespace tube{
       errorM-=cell.SfL*p_prescribed();
       errorM+=cell.mu()();       // 
       errorM-=cell.extrapolateQuant(Physquant::momentumFlow);
+      #ifndef NODRAG
       errorM+=Wddt*(t->getDragResistance().drag(cell));
+      #endif
     }
     else{
       d Wddt=cell.xR-cell.vx;
@@ -102,11 +110,19 @@ namespace tube{
       errorM+=cell.SfR*p_prescribed();
       errorM-=cell.mu()();
       errorM+=cell.extrapolateQuant(Physquant::momentumFlow);      
+      #ifndef NODRAG
       errorM+=Wddt*(t->getDragResistance().drag(cell));
+      #endif
     }      
     error.subvec(0,Ns-1)=errorM;
     error.subvec(Ns,2*Ns-1)=prescribeT.error();
-    error.subvec(2*Ns,3*Ns-1)=cell.mHbc()()-cell.extrapolateQuant(Physquant::enthalpyFlow);
+
+    error.subvec(2*Ns,3*Ns-1)=-cell.mHbc()()
+      +fDFT*(cp(cell)*cell.mbc().tdata()%cell.Tbc().tdata());
+    // VARTRACE(30,cell.Tbc()());
+    // VARTRACE(30,cp(cell));
+    // error.subvec(2*Ns,3*Ns-1)=-cell.mHbc()();
+    // error.subvec(2*Ns,3*Ns-1)+=cell.extrapolateQuant(Physquant::enthalpyFlow);
     VARTRACE(20,error);
     return error;
   }
@@ -114,8 +130,9 @@ namespace tube{
     TRACE(8,"PressureBc::jac()");
 
     const BcCell& cell=t->bcCell(pos);
-
-
+    // Prescribed temperature Jacobian part
+    jac+=prescribeT.jac();
+    // Momentum equation Jacobian
     if(pos==Pos::left)    {
       d Wddt=cell.vx;
       VARTRACE(25,Wddt);
@@ -124,7 +141,9 @@ namespace tube{
       jacr+=JacCol(cell.p(),cell.vSf*eye);
       jacr+=JacCol(cell.mu(),eye);
       jacr+=-cell.dExtrapolateQuant(Physquant::momentumFlow);
+      #ifndef NODRAG
       jacr+=JacCol(cell.mL(),Wddt*(t->getDragResistance().dm(cell)));
+      #endif  // NODRAG
       jac+=jacr;
     }
     else{
@@ -135,14 +154,20 @@ namespace tube{
       jacr+=JacCol(cell.p(),-cell.vSf*eye);
       jacr+=JacCol(cell.mu(),-eye);
       jacr+=cell.dExtrapolateQuant(Physquant::momentumFlow);
+      #ifndef NODRAG
       jacr+=JacCol(cell.mR(),Wddt*(t->getDragResistance().dm(cell)));
+      #endif  // NODRAG
       jac+=jacr;
     }
+    // Prescribed enthalpy flow.
     JacRow enthalpy_extrapolated_jac(firsteqnr+2*Ns,3);
-    enthalpy_extrapolated_jac+=JacCol(cell.mHbc(),eye);
-    enthalpy_extrapolated_jac+=-cell.dExtrapolateQuant(Physquant::enthalpyFlow);
+
+    // enthalpy_extrapolated_jac+=cell.dExtrapolateQuant(Physquant::enthalpyFlow);
+    enthalpy_extrapolated_jac+=JacCol(cell.mHbc(),-eye);
+    enthalpy_extrapolated_jac+=JacCol(cell.mbc(),fDFT*diagmat(cp(cell)*cell.Tbc().tdata())*iDFT);
+    enthalpy_extrapolated_jac+=JacCol(cell.Tbc(),fDFT*diagmat(cp(cell)*cell.mbc().tdata())*iDFT);
     jac+=enthalpy_extrapolated_jac;
-    jac+=prescribeT.jac();
+
   }
   void PressureBc::show(us detailnr) const {
     TRACE(5,"PressureBc::show()");

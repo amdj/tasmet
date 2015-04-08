@@ -11,17 +11,16 @@
 // #define ENERGY_SCALE (1.0/v.gc->p0)
 // #define ENERGY_SCALE (1.0/100)
 #define ENERGY_SCALE (1.0)
-#define TRACERPLUS 15
+// #define TRACERPLUS 15
 #ifdef NOHEAT
 #error Noheat already defined!
 #endif
 
-
+#include "energy.h"
 #include "cell.h"
 #include "weightfactors.h"
 #include "tube.h"
 #include "jacrow.h"
-#include "energy.h"
 #include <tuple>
 #define NOHEAT
 
@@ -135,7 +134,7 @@ namespace tube{
     // External heat    
     assert(heat!=nullptr);
     #ifndef NOHEAT
-    error+=Wddt*heat->heat(v);
+    // error+=Wddt*heat->heat(v);
     #else
     if(v.geti()==0)
       WARN("Applying no heat coupling");
@@ -163,8 +162,8 @@ namespace tube{
 
     // Transverse heat transver
     #ifndef NOHEAT
-    jac+=JacCol(v.U(),Wddt*heat->dUi(v));
-    jac+=JacCol(v.T(),Wddt*heat->dTi(v));
+    // jac+=JacCol(v.U(),Wddt*heat->dUi(v));
+    // jac+=JacCol(v.T(),Wddt*heat->dTi(v));
     #endif
 
     // jac*=ENERGY_SCALE;
@@ -239,11 +238,12 @@ namespace tube{
 
         // W0: weight factor for contribution of quantity at right
         // cell wall for something at the left cell wall
-        d W0=xRR/(xRR-xR); 
+
         // W1: weight factor for contribution of quantity at right
         // cell wall of neighbouring cell to what happens at the left
         // cell wall of this cell
         d W1=-xR/(xRR-xR);
+        d W0=1-W1;
         VARTRACE(40,W0);
         VARTRACE(40,W1);
         return make_tuple(W0,W1);
@@ -252,10 +252,8 @@ namespace tube{
         d xR=v.xR;
         d xL=v.xL;
         d xLL=v.left()->xL;
-        d WR1=(xL-xR)/(xLL-xL);
         d WR2=(xR-xL)/(xLL-xL);
-        VARTRACE(40,WR1);
-        VARTRACE(40,WR2);
+        d WR1=1-WR2;
         return make_tuple(WR1,WR2);
       }
     }
@@ -271,6 +269,8 @@ namespace tube{
     }
     else{
       d WR1,WR2; std::tie(WR1,WR2)=weightfactors(v);
+      VARTRACE(40,WR1);
+      VARTRACE(40,WR2);
       return WR1*v.mHL()()+WR2*v.left()->mHL()();
     }
   }
