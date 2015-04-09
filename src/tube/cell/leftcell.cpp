@@ -58,8 +58,6 @@ namespace tube{
     assert(!left);
     assert(right);
 
-    // mHL_=var(*gc);
-
     // vars.push_back(&mHL_);
     // Remove momentum equation from list. Put equation for Mu in
     // place of momentum eq.
@@ -71,13 +69,6 @@ namespace tube{
       delete mom;
       TRACE(25,"MOm eq deleted");
       eqs.erase(EqType::Mom);
-    }
-    catch(std::out_of_range&){}
-    try{
-      Equation* mH=eqs.at(EqType::mH_is_m_H);
-      delete mH;
-      TRACE(25,"mH eq deleted");
-      eqs.erase(EqType::mH_is_m_H);
     }
     catch(std::out_of_range&){}
   }

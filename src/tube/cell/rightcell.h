@@ -17,10 +17,8 @@ namespace tube{
     virtual void show(us detailnr=1) const;
 
     const variable::var& mbc() const{return mR_;}
-    // const variable::var& mHbc() const{ return mHR_;}
-
-    virtual const variable::var& mR() const { return mR_;}
-    virtual const variable::var& TR() const { return Tbc_;}    
+    const variable::var& mR() const { return mR_;}
+    const variable::var& TR() const { return Tbc_;}    
 
 
     // OVerloaded virtuals from BcCell

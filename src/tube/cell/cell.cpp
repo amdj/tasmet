@@ -65,19 +65,17 @@ namespace tube{
     vars.push_back(&T_);
     vars.push_back(&p_);
     vars.push_back(&Ts_);
-    // vars.push_back(&mHL_);
     vars.push_back(&mu_);
  
     eqs.insert({EqType::Con,new Continuity(*this)});
     eqs.insert({EqType::Mom,new Momentum(*this)});
     eqs.insert({EqType::Ene,new Energy(*this)});
-    // eqs.insert(new Isentropic(*this));
     eqs.insert({EqType::Sta,new State(*this)});
     eqs.insert({EqType::Sol,new SolidTPrescribed(*this)});    
     eqs.insert({EqType::Mu_is_m_u,new MuEq(*this)});    
     // eqs.insert({EqType::mH_is_m_H,new mHEq(*this)});    
-    WARN("Set on ISENTROPIC!!");
-    setIsentropic();
+    // WARN("Set on ISENTROPIC!!");
+    // setIsentropic();
   }
   Cell::~Cell(){
     TRACE(15,"Cell::~Cell()");

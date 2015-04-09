@@ -213,20 +213,24 @@ namespace tube{
   }
   JacRow Energy::dmHL() const{
     TRACE(5,"Energy::dHL()");
+    if(v.left()){
+      JacRow dHL(8);
+      d cp0=cp(v);
+      vd dTmidt=WLl*v.TL().tdata()+
+        WLr*v.T().tdata();
 
-    JacRow dHL(8);
-    d cp0=cp(v);
-    vd dTmidt=WLl*v.TL().tdata()+
-      WLr*v.T().tdata();
+      // ******************** Static enthalpy part    
+      const vd& mLtdata=v.mL().tdata();
+      dHL+=JacCol(v.mL(),fDFT*diagmat(cp0*dTmidt)*iDFT );
+      dHL+=JacCol(v.TL(),fDFT*diagmat(cp0*WLl*mLtdata)*iDFT );
+      dHL+=JacCol(v.T(),fDFT*diagmat(cp0*WLr*mLtdata)*iDFT );
+      // ******************** Kinetic energy part
 
-    // ******************** Static enthalpy part    
-    const vd& mLtdata=v.mL().tdata();
-    dHL+=JacCol(v.mL(),fDFT*diagmat(cp0*dTmidt)*iDFT );
-    dHL+=JacCol(v.TL(),fDFT*diagmat(cp0*WLl*mLtdata)*iDFT );
-    dHL+=JacCol(v.T(),fDFT*diagmat(cp0*WLr*mLtdata)*iDFT );
-    // ******************** Kinetic energy part
+      return dHL;
+    }
+    else
+      return JacRow(JacCol(static_cast<const BcCell&>(v).mHbc(),eye()));
 
-    return dHL;
   }
   JacRow Energy::dmHR() const{
     if(v.right()){
@@ -247,7 +251,8 @@ namespace tube{
 
       return dHR;
     }
-    
+    else
+      return JacRow(JacCol(static_cast<const BcCell&>(v).mHbc(),eye()));
   }
   vd Energy::QL() const{
     TRACE(4,"Energy::QL()");

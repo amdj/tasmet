@@ -19,6 +19,7 @@ namespace tube{
     Tbc_.setadata(0,gc->T0());
 
     vars.push_back(&Tbc_);
+    vars.push_back(&mHbc_);
   }
 }                // namespace tube
 

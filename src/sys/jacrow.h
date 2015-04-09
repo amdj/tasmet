@@ -22,6 +22,7 @@ namespace tasystem{
     JacRow operator-() const;
 
     vector<JacCol> jaccols;     // Column blocks
+    JacRow(const JacCol&);
     JacRow(int rowdofnr,us cols=6);
     JacRow(us cols=2):JacRow(-1,cols){}
     void addCol(const JacCol& jaccol);

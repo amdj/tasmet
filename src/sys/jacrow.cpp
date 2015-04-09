@@ -7,6 +7,11 @@ namespace tasystem{
   JacRow::JacRow(int rowdofnr,us nrofcols): rowdof_(rowdofnr){
     jaccols.reserve(nrofcols);
   }  
+  JacRow::JacRow(const JacCol& j):
+    JacRow(-1,1)
+  {
+    addCol(j);
+  }
   void JacRow::addCol(const JacCol& jaccol){
     if(jaccol.isToAdd())
       jaccols.push_back(jaccol);

@@ -18,10 +18,9 @@ namespace tube{
     // virtual const variable::var& pL() const {return pL_;}
 
     // OVerloaded virtuals from BcCell
-    virtual void show(us detailnr=1) const;
+    void show(us detailnr=1) const;
     const variable::var& mbc() const {return mL_;}
-    // const variable::var& mHbc() const {return mHL_;}
-    virtual const variable::var& TL() const { return Tbc_;}
+    const variable::var& TL() const { return Tbc_;}
 
     vd extrapolateQuant(Physquant) const;
     tasystem::JacRow dExtrapolateQuant(Physquant) const;

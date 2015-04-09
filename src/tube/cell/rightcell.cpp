@@ -62,9 +62,7 @@ namespace tube{
     BcCell::init(left,right);
 
     mR_=var(*gc);
-    // mHR_=var(*gc);
     vars.push_back(&mR_);
-    // vars.push_back(&mHR_);
 
     
   }
