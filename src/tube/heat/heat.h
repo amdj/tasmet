@@ -10,7 +10,7 @@ namespace tube{
   class HeatSource{
   public:
     virtual vd heat(const Cell& v) const;
-    virtual dmat dUi(const Cell& v) const;
+    virtual dmat dmi(const Cell& v) const;
     virtual dmat dTi(const Cell& v) const;
     // virtual dmat drhoi(const Cell& v) const;
     // virtual dmat dpi(const Cell& v) const;

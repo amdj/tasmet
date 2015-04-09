@@ -223,7 +223,11 @@ namespace tube{
         return 0.5*(mL()+mR());
         break;
       case Varnr::mH:                 // Volume flown
-        // return 0.5*(mHL()+mHR());
+        return 0.5*var(*gc,(Energy::mHL(*this)+Energy::mHR(*this)));
+        break;
+      case Varnr::Q:                 // Volume flown
+        // return var(*gc,(Energy::QL(*this)));
+        return 0.5*var(*gc,(Energy::QL(*this)+Energy::QR(*this)));
         break;
       case Varnr::p:                   // Pressure
         TRACE(15,"getValue: pressure");
@@ -243,7 +247,7 @@ namespace tube{
         break;
       }
       // Default:
-      return rho();
+      throw MyError("Unknown varnr");
   }
 
   void Cell::updateNf(){

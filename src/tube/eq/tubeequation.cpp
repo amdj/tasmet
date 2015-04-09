@@ -10,6 +10,9 @@ namespace tube{
   dmat Equation::eye() const {
     TRACE(15,"Equation::eye()");
     return arma::eye(v.gc->Ns(),v.gc->Ns());}
+  dmat Equation::eye(const Cell& v) {
+    TRACE(15,"Equation::eye()");
+    return arma::eye(v.gc->Ns(),v.gc->Ns());}
   vd Equation::zeros() const {return vd(v.gc->Ns(),fillwith::zeros);}
 
   // Artificial viscosity matrices

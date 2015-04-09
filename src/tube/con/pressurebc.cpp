@@ -80,6 +80,7 @@ namespace tube{
     this->firsteqnr=firsteqnr;
     prescribeT.set(firsteqnr+Ns,cell.Tbc());
   }
+
   namespace 
   {
     inline d cp(const Cell& c) {
@@ -117,12 +118,12 @@ namespace tube{
     error.subvec(0,Ns-1)=errorM;
     error.subvec(Ns,2*Ns-1)=prescribeT.error();
 
-    error.subvec(2*Ns,3*Ns-1)=-cell.mHbc()()
-      +fDFT*(cp(cell)*cell.mbc().tdata()%cell.Tbc().tdata());
+    // error.subvec(2*Ns,3*Ns-1)=-cell.mHbc()()
+      // +fDFT*(cp(cell)*cell.mbc().tdata()%cell.Tbc().tdata());
     // VARTRACE(30,cell.Tbc()());
     // VARTRACE(30,cp(cell));
-    // error.subvec(2*Ns,3*Ns-1)=-cell.mHbc()();
-    // error.subvec(2*Ns,3*Ns-1)+=cell.extrapolateQuant(Physquant::enthalpyFlow);
+    error.subvec(2*Ns,3*Ns-1)=-cell.mHbc()();
+    error.subvec(2*Ns,3*Ns-1)+=cell.extrapolateQuant(Physquant::enthalpyFlow);
     return error;
   }
   void PressureBc::jac(Jacobian& jac) const{
@@ -160,10 +161,10 @@ namespace tube{
     // Prescribed enthalpy flow.
     JacRow enthalpy_extrapolated_jac(firsteqnr+2*Ns,3);
 
-    // enthalpy_extrapolated_jac+=cell.dExtrapolateQuant(Physquant::enthalpyFlow);
+    enthalpy_extrapolated_jac+=cell.dExtrapolateQuant(Physquant::enthalpyFlow);
     enthalpy_extrapolated_jac+=JacCol(cell.mHbc(),-eye);
-    enthalpy_extrapolated_jac+=JacCol(cell.mbc(),fDFT*diagmat(cp(cell)*cell.Tbc().tdata())*iDFT);
-    enthalpy_extrapolated_jac+=JacCol(cell.Tbc(),fDFT*diagmat(cp(cell)*cell.mbc().tdata())*iDFT);
+    // enthalpy_extrapolated_jac+=JacCol(cell.mbc(),fDFT*diagmat(cp(cell)*cell.Tbc().tdata())*iDFT);
+    // enthalpy_extrapolated_jac+=JacCol(cell.Tbc(),fDFT*diagmat(cp(cell)*cell.mbc().tdata())*iDFT);
     jac+=enthalpy_extrapolated_jac;
 
   }

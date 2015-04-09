@@ -2,8 +2,10 @@
 #include "cell.h"
 
 namespace tube{
+  using std::tuple;
+  using std::make_tuple;
 
-  std::tuple<d,d,d,d> WeightFactors(const Cell& v) {
+  WeightFactors::WeightFactors(const Cell& v) {
     TRACE(15,"WeightFactors()");
     const Cell* left=v.left();
     const Cell* right=v.right();
@@ -12,8 +14,6 @@ namespace tube{
     d xL=v.xL;
     d xR=v.xR;
 
-    d WRr=0,WRl=0,WLr=0,WLl=0;
-    
     if(v.left()){
       d vxim1=v.left()->vx;
       WLl=(vx-xL)/(vx-vxim1);
@@ -32,8 +32,38 @@ namespace tube{
       WRl=0;
       WRr=1;
     }
-    return std::make_tuple(WLl,WLr,WRl,WRr);
   }
+  tuple<d,d> BcWeightFactors(const Cell& v){
+    TRACE(15,"anonymous weightfactors for extrapolation of mH");
+    assert((!v.left() && v.right()) || (v.left() && !v.right()));
+    if(!v.left()){
+      // Leftmost node
+      d xL=0;
+      d xR=v.xR;
+      d xRR=v.right()->xR;
+
+      // W0: weight factor for contribution of quantity at right
+      // cell wall for something at the left cell wall
+
+      // W1: weight factor for contribution of quantity at right
+      // cell wall of neighbouring cell to what happens at the left
+      // cell wall of this cell
+      d W1=-xR/(xRR-xR);
+      d W0=1-W1;
+      // VARTRACE(40,W0);
+      // VARTRACE(40,W1);
+      return make_tuple(W0,W1);
+    }
+    else{
+      d xR=v.xR;
+      d xL=v.xL;
+      d xLL=v.left()->xL;
+      d WR2=(xR-xL)/(xLL-xL);
+      d WR1=1-WR2;
+      return make_tuple(WR1,WR2);
+    }
+  }
+
 } // namespace tube
 
 

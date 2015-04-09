@@ -40,7 +40,7 @@ namespace tube{
       return 0;
     }
   }
-  namespace Q{
+  namespace heatQ{
     d zeroheat_vert(d kappa,d rh){
       return 3*kappa/pow(rh,2);
     }

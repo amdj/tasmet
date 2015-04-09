@@ -71,7 +71,8 @@ namespace tube{
              Ts=constants::Ts,
              U,
              mu,
-             mH
+             mH,
+             Q
   };
 
   enum Physquant{massFlow,

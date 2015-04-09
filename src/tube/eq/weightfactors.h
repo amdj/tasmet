@@ -14,7 +14,14 @@
 namespace tube{
   SPOILNAMESPACE
   class Cell;
-  std::tuple<d,d,d,d> WeightFactors(const Cell& c);
+
+
+  class WeightFactors{
+  public:
+    d WRr=0,WRl=0,WLr=0,WLl=0;
+    WeightFactors(const Cell& c);
+  };
+  std::tuple<d,d> BcWeightFactors(const Cell& c);
 }
 #endif /* _WEIGHTFACTORS_H_ */
 

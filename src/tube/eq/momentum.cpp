@@ -7,7 +7,6 @@
 #include "var.h"
 #include "momentum.h"
 
-
 #include "drag.h"
 
 #ifdef NODRAG

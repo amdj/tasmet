@@ -37,6 +37,7 @@ namespace tube{
 
     // Return an eye of the right size:
     dmat eye() const;
+    static dmat eye(const Cell&);
     vd zeros() const;
     virtual tasystem::JacRow jac() const=0;		// Returns the local Jacobian of this equation
     virtual vd error() const=0;
