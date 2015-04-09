@@ -14,7 +14,6 @@
 #include <memory>
 #include "vtypes.h"
 #include "globalconf.h"
-#include "segconnection.h"
 #include "arma_eigen.h"
 
 #ifndef SWIG
