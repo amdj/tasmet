@@ -17,7 +17,7 @@
 #endif
 
 #include "energy.h"
-#include "cell.h"
+#include "bccell.h"
 #include "weightfactors.h"
 #include "tube.h"
 #include "jacrow.h"
@@ -127,7 +127,7 @@ namespace tube{
     // Time derivative of total energy
     // error+=Wddtkin*DDTfd*v.mu()();
     // Total enthalpy flow in and out
-    error+=v.mHR()()-v.mHL()();
+    error+=mHR()-mHL();
 
     error+=QR()-QL();
 
@@ -153,8 +153,10 @@ namespace tube{
     // jac+=JacCol(v.mu(),Wddtkin*DDTfd);
 
     // Enthalpy flow out minus in
-    jac+=JacCol(v.mHR(),eye());
-    jac+=JacCol(v.mHL(),-eye());
+    jac+=dmHR();
+    jac+=(dmHL()*=-1);
+    // jac+=JacCol(v.mHR(),eye());
+    // jac+=JacCol(v.mHL(),-eye());
 
     // Heat conduction part
     jac+=dQR();
@@ -169,7 +171,84 @@ namespace tube{
     // jac*=ENERGY_SCALE;
     return jac;    
   }
+  namespace 
+  {
+    inline d cp(const Cell& c) {
+      return c.gc->gas().cp(c.gc->T0());
+    }
+  } // namespace 
+  
+  vd Energy::mHL() const{
+    TRACE(2,"Energy::HL()");
+    if(v.left()) {
+      // ******************** Static enthalpy part
+      d cp0=cp(v);
+      // Time domain temperature at left cell wall
+      vd dTmidt=WLl*v.TL().tdata() + WLr*v.T().tdata();
+      vd HL=fDFT*(cp0*dTmidt%v.mL().tdata());
+      // ******************** Kinetic energy part
+      return HL;
+    }
+    else
+      return static_cast<const BcCell&>(v).mHbc()();
+  }
+  vd Energy::mHR() const{
+    if(v.right()){
+      TRACE(2,"Energy::HR()");
+      // ******************** Static enthalpy part    
+      d cp0=cp(v);
+      // Time domain temperature at left cell wall
+      vd dTmidt=WRr*v.TR().tdata() + WRl*v.T().tdata();
+      vd HR=fDFT*(cp0*dTmidt%v.mR().tdata());
+      // ******************** Kinetic energy part
 
+      // Time domain mu/(rho*Sf)
+      // vd mu_ov_rhoSf_t=wRl*v.mu().tdata()/(v.SfR*v.rho().tdata())+
+      // wRr*v.mu().tdata()/(v.SfR*v.rho().tdata())+
+    
+      return HR;
+    }
+    else
+      return static_cast<const BcCell&>(v).mHbc()();
+  }
+  JacRow Energy::dmHL() const{
+    TRACE(5,"Energy::dHL()");
+
+    JacRow dHL(8);
+    d cp0=cp(v);
+    vd dTmidt=WLl*v.TL().tdata()+
+      WLr*v.T().tdata();
+
+    // ******************** Static enthalpy part    
+    const vd& mLtdata=v.mL().tdata();
+    dHL+=JacCol(v.mL(),fDFT*diagmat(cp0*dTmidt)*iDFT );
+    dHL+=JacCol(v.TL(),fDFT*diagmat(cp0*WLl*mLtdata)*iDFT );
+    dHL+=JacCol(v.T(),fDFT*diagmat(cp0*WLr*mLtdata)*iDFT );
+    // ******************** Kinetic energy part
+
+    return dHL;
+  }
+  JacRow Energy::dmHR() const{
+    if(v.right()){
+      JacRow dHR(8);
+
+      // ******************** Static enthalpy part    
+      d cp0=cp(v);
+
+      // Time domain temperature at left cell wall
+      vd dTmidt=WRr*v.TR().tdata()
+        +WRl*v.T().tdata();
+    
+      const vd& mRtdata=v.mR().tdata();
+      dHR+=JacCol(v.mR(),fDFT*diagmat(cp0*dTmidt)*iDFT);
+      dHR+=JacCol(v.TR(),fDFT*diagmat(cp0*WRr*mRtdata)*iDFT);
+      dHR+=JacCol(v.T(),fDFT*diagmat(cp0*WRl*mRtdata)*iDFT);
+      // ******************** Kinetic energy part
+
+      return dHR;
+    }
+    
+  }
   vd Energy::QL() const{
     TRACE(4,"Energy::QL()");
     const vd& Tt=v.T().tdata();
@@ -267,13 +346,13 @@ namespace tube{
       d W0,W1; std::tie(W0,W1)=weightfactors(v);
       VARTRACE(40,W0);
       VARTRACE(40,W1);
-      return W0*v.mHR()()+W1*v.right()->mHR()();
+      // return W0*v.mHR()()+W1*v.right()->mHR()();
     }
     else{
       d WR1,WR2; std::tie(WR1,WR2)=weightfactors(v);
       VARTRACE(40,WR1);
       VARTRACE(40,WR2);
-      return WR1*v.mHL()()+WR2*v.left()->mHL()();
+      // return WR1*v.mHL()()+WR2*v.left()->mHL()();
     }
   }
   JacRow Energy::dExtrapolateEnthalpyFlow() const {
@@ -283,13 +362,13 @@ namespace tube{
       d W0,W1; std::tie(W0,W1)=weightfactors(v);
       VARTRACE(40,W0);
       VARTRACE(40,W1);
-      jac+=JacCol(v.mHR(),W0*eye());
-      jac+=JacCol(v.right()->mHR(),W1*eye());
+      // jac+=JacCol(v.mHR(),W0*eye());
+      // jac+=JacCol(v.right()->mHR(),W1*eye());
     }
     else{
       d WR1,WR2; std::tie(WR1,WR2)=weightfactors(v);
-      jac+=JacCol(v.mHL(),WR1*eye());
-      jac+=JacCol(v.left()->mHL(),WR2*eye());
+      // jac+=JacCol(v.mHL(),WR1*eye());
+      // jac+=JacCol(v.left()->mHL(),WR2*eye());
     }
     return jac;
   }

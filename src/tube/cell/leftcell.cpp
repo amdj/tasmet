@@ -54,13 +54,13 @@ namespace tube{
   }
   void LeftCell::init(const Cell* left,const Cell* right){
     TRACE(10,"LeftCell::init()");
-    Cell::init(left,right);
+    BcCell::init(left,right);
     assert(!left);
     assert(right);
 
-    TL_=var(*gc);
-    TL_.setadata(0,gc->T0());
-    vars.push_back(&TL_);
+    // mHL_=var(*gc);
+
+    // vars.push_back(&mHL_);
     // Remove momentum equation from list. Put equation for Mu in
     // place of momentum eq.
     // WARN("HERE SOME EQS NEED TO BE DELETED");

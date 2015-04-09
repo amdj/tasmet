@@ -40,7 +40,7 @@ namespace tube{
     virtual ~PressureBc(){}
     virtual string getType() const {return string("PressureBc");}
     #ifndef SWIG
-    us getNEqs() const {return 3*gc->Ns();}    
+    us getNEqs() const {return 2*gc->Ns();}    
     virtual void init(const tasystem::TaSystem&);
     virtual void updateNf();
     virtual void setEqNrs(us firstdofnr);    

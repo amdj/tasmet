@@ -11,7 +11,7 @@
 #include "state.h"
 #include "solidenergy.h"
 #include "isentropic.h"
-#include "mH.h"
+
 #include "utils.h"
 
 namespace tube{
@@ -53,7 +53,7 @@ namespace tube{
     p_=var(*gc);
     Ts_=var(*gc);
     mu_=var(*gc);
-    mHL_=var(*gc);
+    // mHL_=var(*gc);
     // Initialize temperature and density variables to something sane
     T_.setadata(0,gc->T0());
     Ts_.setadata(0,gc->T0());
@@ -65,7 +65,7 @@ namespace tube{
     vars.push_back(&T_);
     vars.push_back(&p_);
     vars.push_back(&Ts_);
-    vars.push_back(&mHL_);
+    // vars.push_back(&mHL_);
     vars.push_back(&mu_);
  
     eqs.insert({EqType::Con,new Continuity(*this)});
@@ -75,8 +75,9 @@ namespace tube{
     eqs.insert({EqType::Sta,new State(*this)});
     eqs.insert({EqType::Sol,new SolidTPrescribed(*this)});    
     eqs.insert({EqType::Mu_is_m_u,new MuEq(*this)});    
-    eqs.insert({EqType::mH_is_m_H,new mHEq(*this)});    
-
+    // eqs.insert({EqType::mH_is_m_H,new mHEq(*this)});    
+    WARN("Set on ISENTROPIC!!");
+    setIsentropic();
   }
   Cell::~Cell(){
     TRACE(15,"Cell::~Cell()");
@@ -224,7 +225,7 @@ namespace tube{
         return 0.5*(mL()+mR());
         break;
       case Varnr::mH:                 // Volume flown
-        return 0.5*(mHL()+mHR());
+        // return 0.5*(mHL()+mHR());
         break;
       case Varnr::p:                   // Pressure
         TRACE(15,"getValue: pressure");
