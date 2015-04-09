@@ -43,7 +43,7 @@ namespace tube{
   {
     
     TRACE(8,"PressureBc full constructor");
-    VARTRACE(30,temp());
+
   }
   PressureBc::PressureBc(const var& pres,const var& temp,us segnr,Pos position):
     PressureBc(pres,temp,coldtemp(pres),segnr,position)

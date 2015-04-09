@@ -41,7 +41,12 @@ namespace tube {
     return WLl*v.TL().tdata()+WLr*v.T().tdata();
   }
 
-  
+  inline vd half_u_sq_td(const Cell& v){
+    const vd& rhot=v.rho().tdata();
+    const vd& mut=v.mu().tdata();
+    d vSf=v.vSf;
+    return 0.5*pow(mut/(rhot*vSf),2);
+  }
   vd mHEq::error() const{
     TRACE(15,"mHEq::error()");
     assert(v.left());
@@ -52,30 +57,27 @@ namespace tube {
     error+=cp0*fDFT*(v.mL().tdata()%TLt);
 
     // Weighted average of kinetic energy flow
-    // 0.5*u^2 left:
-    // const vd& rhotL=v.left()->rho().tdata();
-    // const vd& muLt=v.left()->mu().tdata();
-    // d vSfL=v.left()->vSf;
-    // vd half_u_sq_l_td=0.5*muLt/(rhotL*vSfL);
+    // .5*u^2 left:
 
-    // // 0.5*u^2 here
-    // const vd& rhot=v.rho().tdata();
-    // const vd& mut=v.mu().tdata();
-    // d vSf=v.vSf;
-    // vd half_u_sq_td=0.5*mut/(rhot*vSf);
+    // // u here
     if(v.i==1)
       WARN("Incomplete! Missing terms of kinetic energy. In Jacobian as well");
-    // error+=fDFT*(v.mL().tdata()%
-                 // (WLl*half_u_sq_l_td+WLr*half_u_sq_td));
+    error+=fDFT*(v.mL().tdata()%
+                 (
+                  WLl*half_u_sq_td(*v.left()) // From left side
+                  +WLr*half_u_sq_td(v)        // From this side
+                  )
+                 );
 
     return error;
   }
   tasystem::JacRow mHEq::jac() const {
     TRACE(15,"mHEq::jac()");
+    assert(v.left());
     JacRow jac(dofnr,4);
     d cp0=cp(v);
 
-
+    // Static enthalpy terms
     const vd& mLt=v.mL().tdata();
     // TL time domain
     vd TLt=TLt_(v,WLl,WLr);
@@ -84,7 +86,13 @@ namespace tube {
     jac+=JacCol(v.TL(),fDFT*diagmat(cp0*WLl*mLt)*iDFT);
     jac+=JacCol(v.T(),fDFT*diagmat(cp0*WLr*mLt)*iDFT);
     jac+=JacCol(v.mL(),fDFT*diagmat(cp0*TLt)*iDFT);
-    
+
+    // Kinetic energy terms
+    vd halfu_sq_td=WLl*half_u_sq_td(*v.left()) // From left side
+      +WLr*half_u_sq_td(v); // From this side
+
+    jac+=JacCol(v.mL(),fDFT*diagmat(halfu_sq_td)*iDFT);
+
     return jac;
   }
   

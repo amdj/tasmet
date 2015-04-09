@@ -126,7 +126,7 @@ namespace tube{
     vd error=(Wddt*DDTfd*v.p()())/(gamma-1.0);
     // Time derivative of total energy
     // error+=Wddtkin*DDTfd*v.mu()();
-    // Total enthalpy flux
+    // Total enthalpy flow in and out
     error+=v.mHR()()-v.mHL()();
 
     error+=QR()-QL();
