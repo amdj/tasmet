@@ -28,9 +28,9 @@ namespace tube{
     HopkinsHeatSource& operator=(const HopkinsHeatSource&);
     HopkinsHeatSource(const HopkinsHeatSource& o);
     void setdTwdx(const Geom& g,const vd& dTwdx);
-    virtual vd heat(const Cell& v) const;
-    virtual dmat dUi(const Cell& v) const;
-    virtual dmat dTi(const Cell& v) const;
+    vd heat(const Cell& v) const;
+    dmat dmi(const Cell& v) const;
+    dmat dTi(const Cell& v) const;
   private:
     void setZeroFreq(const string&);
     vc HeatTransferCoefH(const Cell&) const;

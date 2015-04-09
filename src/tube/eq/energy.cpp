@@ -22,7 +22,7 @@
 #include "tube.h"
 #include "jacrow.h"
 #include <tuple>
-#define NOHEAT
+
 
 #define iDFT (v.gc->iDFT)
 #define fDFT (v.gc->fDFT)
@@ -119,8 +119,9 @@ namespace tube{
 
     // Transverse heat transver
     #ifndef NOHEAT
-    // jac+=JacCol(v.U(),Wddt*heat->dUi(v));
-    // jac+=JacCol(v.T(),Wddt*heat->dTi(v));
+    jac+=JacCol(v.mL(),0.5*Wddt*heat->dmi(v));
+    jac+=JacCol(v.mR(),0.5*Wddt*heat->dmi(v));
+    jac+=JacCol(v.T(),Wddt*heat->dTi(v));
     #endif
 
     // jac*=ENERGY_SCALE;
