@@ -1,0 +1,3 @@
+* When exceptions are thrown, objects are not deleted.
+* HopkinsLaminarTube needs thorough check of heat addition term with dTwdx
+* TaSystem needs map instead of vector for segments and not numbers, but names for refering to different segments

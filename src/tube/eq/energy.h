@@ -9,8 +9,7 @@ namespace tube{
   
   class Energy:public Equation
   {
-    const HeatSource* heat=nullptr;
-
+    const Tube* t=nullptr;
   public:
     d Wddt=0,Wddtkin=0;
 

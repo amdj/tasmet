@@ -42,7 +42,8 @@ namespace tube{
 
   protected:
     // Copy constructor
-    Tube(const Tube& other);
+    Tube(const Tube& other)=delete;
+    Tube(const Tube& other,const tasystem::TaSystem& sys);
     Tube(const Geom& geom);
     Tube& operator=(const Tube&)=delete; // no copies allowed
   public:
@@ -76,7 +77,6 @@ namespace tube{
     // Methods not exposed to swig
     #ifndef SWIG
     virtual vd error() const;
-    virtual void init(const tasystem::TaSystem&);
     void show(us showvertices=0) const;
 
 

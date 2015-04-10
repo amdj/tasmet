@@ -14,6 +14,8 @@
 #include "geom.h"
 #include "exception.h"
 #include "utils.h"
+#include <typeinfo>
+
 // Tried to keep the method definition a bit in order in which a
   // tube is created, including all its components. First a tube is
   // created, which has a geometry and a global
@@ -35,11 +37,37 @@ namespace tube {
   {
     TRACE(13,"Tube constructor()...");
   }
-  Tube::Tube(const Tube& other):
-    Seg(other),
+  Tube::Tube(const Tube& other,const TaSystem& sys):
+    Seg(other,sys),
     geom_(other.geom().copy()){
-    
-  }
+
+    TRACE(13,"Filling vertices. Current size:"<<cells.size());
+      // Left *probable* boundary condition
+      // cells.emplace_back(new LeftCell(0,g));
+    // WARN("Lot wrong here");
+    cells.emplace_back(new LeftCell(0,*this));
+    us i;
+    for(i=1;i<getNCells()-1;i++)
+      cells.emplace_back(new Cell(i,*this));
+    cells.emplace_back(new RightCell(getNCells()-1,*this));
+
+    us nCell=cells.size();    
+    assert(nCell==getNCells());
+    // And initialize again.
+    for(i=0;i<cells.size();i++){
+      TRACE(13,"Starting intialization of Cell "<< i);
+      Cell* thiscell=cells[i];
+      Cell* left=nullptr;
+      Cell* right=nullptr;
+      if(i<nCell-1)
+        right=cells[i+1];
+      if(i>0)
+        left=cells[i-1];
+      TRACE(15,"Initializing tube");
+      thiscell->init(left,right);
+    } // for
+  } // Tube::Tube(copy)
+
   Tube::~Tube(){
     TRACE(25,"~Tube()");
     delete geom_;
@@ -85,36 +113,6 @@ namespace tube {
     return ndofs;
   }  
 
-  void Tube::init(const tasystem::TaSystem& sys){
-    TRACE(13,"Tube::Init()");
-    Seg::init(sys);
-    utils::purge(cells);
-    TRACE(13,"Filling vertices. Current size:"<<cells.size());
-      // Left *probable* boundary condition
-      // cells.emplace_back(new LeftCell(0,g));
-    // WARN("Lot wrong here");
-    cells.emplace_back(new LeftCell(0,*this));
-    us i;
-    for(i=1;i<getNCells()-1;i++)
-      cells.emplace_back(new Cell(i,*this));
-    cells.emplace_back(new RightCell(getNCells()-1,*this));
-
-    us nCell=cells.size();    
-    assert(nCell==getNCells());
-    // And initialize again.
-    for(i=0;i<cells.size();i++){
-      TRACE(13,"Starting intialization of Cell "<< i);
-      Cell* thiscell=cells[i];
-      Cell* left=nullptr;
-      Cell* right=nullptr;
-      if(i<nCell-1)
-        right=cells[i+1];
-      if(i>0)
-        left=cells[i-1];
-      TRACE(15,"Initializing tube");
-      thiscell->init(left,right);
-    } // for
-  } // Tube::init(gc)
   d Tube::getCurrentMass() const{
     TRACE(8,"Tube::getCurrentMass()");
     assert(cells.size()>0);
@@ -195,7 +193,7 @@ namespace tube {
   }
   void Tube::show(us detailnr) const {
     cout << "++++++++++++Tube name: "<< getName() << " ++++++++++++++++\n";
-    cout << "Type: " << getType() <<" with number "<<getNumber()<< ".\n";
+    cout << "Type: " << typeid(*this).name() <<" with number "<<getNumber()<< ".\n";
     cout << "********************************************************************************\n";
     cout << "Geometry: \n";
     assert(cells.size()!=0);

@@ -6,26 +6,20 @@
 #include "vtypes.h"
 #include "segconbase.h"
 
-#ifndef SWIG
-namespace tasystem {
-  class TaSystem;
-} // namespace tasystem
-#endif
 namespace segment{
 
   class Seg:public SegConBase{
   protected:
     Seg();
-    Seg(const Seg& o);
+    Seg(const Seg& o,const tasystem::TaSystem& s): SegConBase(o,s){}
+    Seg(const Seg& o)=delete;
     Seg& operator=(const Seg&)=delete;
   public:
+    virtual segment::Seg* copy(const tasystem::TaSystem&) const=0;
     virtual ~Seg(){}            // We do not own the gc instance
-    virtual segment::Seg* copy() const=0;
     #ifndef SWIG
     // Pure virtual functions
-    void init(const tasystem::TaSystem& sys);
     virtual void resetHarmonics()=0;
-    virtual std::string getType() const=0;		   // This param is
     // important for connecting the segments
     // ------------------------------ config methods
     virtual void setDofNrs(us firstdofnr)=0;

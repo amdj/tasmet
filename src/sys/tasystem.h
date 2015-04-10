@@ -45,8 +45,8 @@ namespace tasystem{
   %catches(std::exception,...) TaSystem::init();
   %catches(std::exception,...) TaSystem::showJac();
   %catches(std::exception,...) TaSystem::show(us detailnr=0);
-  %catches(std::exception,...) TaSystem::operator+=(const segment::Seg&);
   %catches(std::exception,...) TaSystem::operator+=(const segment::Connector&);
+  %catches(std::exception,...) TaSystem::operator+=(const segment::Seg&);
   #endif // SWIG
 
   class TaSystem{
@@ -55,7 +55,6 @@ namespace tasystem{
     vector<segment::Seg*> segs;		
     vector<segment::Connector*> connectors;    // Yes, connectors are just like segments
     bool driven=true;
-  protected:
     Globalconf gc_;             // Global configuration parameters
   public:
     void setGc(const Globalconf& gc); // Reset globalconf configuration

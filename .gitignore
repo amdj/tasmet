@@ -2,7 +2,7 @@ CMakeCache.txt
 CMakeFiles
 Makefile
 *.so
-TATwentePYTHON_wrap.cxx
+nonlinPYTHON_wrap.cxx
 *.a
 __pycache__
 TATwente.py

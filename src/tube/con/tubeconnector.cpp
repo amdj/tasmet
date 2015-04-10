@@ -43,20 +43,17 @@ namespace tube {
     pos[0]=pos1;
     pos[1]=pos2;
   }
-  SimpleTubeConnector::SimpleTubeConnector(const SimpleTubeConnector& other):
-    Connector(other),
+  SimpleTubeConnector::SimpleTubeConnector(const SimpleTubeConnector& other,const TaSystem& sys):
+    Connector(other,sys),
     segnrs(other.segnrs),
     pos(other.pos)
   {
-    TRACE(15,"SimpleTubeConnector::SimpleTubeConnector(copy)"); 
-  }
-  void SimpleTubeConnector::init(const TaSystem& sys){
-    TRACE(15,"SimpleTubeConnector::init()");
-    Connector::init(sys);
+
     tubes[0]=&sys.getTube(segnrs[0]);
     tubes[1]=&sys.getTube(segnrs[1]);
     setInit(true);
   }
+
   vd SimpleTubeConnector::error() const{
     TRACE(10,"SimpleTubeConnector::error()");
 

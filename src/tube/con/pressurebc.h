@@ -34,14 +34,13 @@ namespace tube{
     PressureBc(const variable::var& p,const variable::var& T,us segnr,Pos position); 
     // Assume above and adiabatic compresion/expansion
     PressureBc(const variable::var& p,us segnr,Pos position);
-    PressureBc(const PressureBc& other);
-    virtual segment::Connector* copy() const { return new PressureBc(*this);}
+    PressureBc(const PressureBc& other)=delete;
+    PressureBc(const PressureBc& other,const tasystem::TaSystem&);
+    segment::Connector* copy(const tasystem::TaSystem& s) const { return new PressureBc(*this,s);}
     virtual vd error() const;
     virtual ~PressureBc(){}
-    virtual string getType() const {return string("PressureBc");}
     #ifndef SWIG
     us getNEqs() const {return 3*gc->Ns();}    
-    virtual void init(const tasystem::TaSystem&);
     virtual void updateNf();
     virtual void setEqNrs(us firstdofnr);    
     virtual void jac(tasystem::Jacobian&) const;

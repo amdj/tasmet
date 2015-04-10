@@ -20,17 +20,16 @@ namespace tube{
     DragResistance nodrag;
     HeatSource noheat;
     IsentropicTube& operator=(const IsentropicTube&) =delete;    
+    IsentropicTube(const IsentropicTube&)=delete;
+    IsentropicTube(const IsentropicTube&,const tasystem::TaSystem&);
   public:
     IsentropicTube(const Geom& geom);
-    IsentropicTube(const IsentropicTube&);
-    virtual segment::Seg* copy() const {TRACE(10,"IsentropicTube copy()");return new IsentropicTube(*this);}
+    virtual segment::Seg* copy(const tasystem::TaSystem&) const;
     virtual ~IsentropicTube();
-    virtual string getType() const {return "IsentropicTube";}
     #ifndef SWIG
     vd dragCoefVec(us i) const;
     virtual const DragResistance& getDragResistance() const {return nodrag;}
     virtual const HeatSource& getHeatSource() const {return noheat;}
-    virtual void init(const tasystem::TaSystem&);
     void cleanup();
     #endif  // ifndef SWIG
   };

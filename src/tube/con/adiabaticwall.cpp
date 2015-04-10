@@ -4,7 +4,6 @@
 #include "bccell.h"
 #include "tube.h"
 #include "isentropictube.h"
-
 #define Ns (gc->Ns())
 
 namespace tube{
@@ -16,9 +15,10 @@ namespace tube{
   using tasystem::JacRow;
   using tasystem::JacCol;
 
-  void AdiabaticWall::init(const TaSystem& sys){
+  AdiabaticWall::AdiabaticWall(const AdiabaticWall& o,const TaSystem& sys):
+    TubeBc(o,sys)
+  {
     TRACE(15,"AdiabaticWall::init()");
-    TubeBc::init(sys);
     if(dynamic_cast<const IsentropicTube*>(t)){
       isentropic=true;
       TRACE(40,"Tube is isentropic");
@@ -39,6 +39,9 @@ namespace tube{
     else
       side="right";
     cout << "AdiabaticWall boundary condition set at "<<side <<" side of segment "<<segnr<<".\n";
+  }
+  segment::Connector* AdiabaticWall::copy(const tasystem::TaSystem& sys) const {
+    return new AdiabaticWall(*this,sys);
   }
   us AdiabaticWall::getNEqs() const {
     TRACE(15,"AdiabaticWall::getNEqs()");

@@ -4,12 +4,6 @@
 #include "connector.h"
 #include "constants.h"
 
-#ifndef SWIG
-namespace tasystem{
-  class TaSystem;
-}
-#endif
-
 namespace tube{
 
   #ifndef SWIG
@@ -23,18 +17,12 @@ namespace tube{
   protected:
     const Tube* t=nullptr;
     const tasystem::TaSystem* sys=nullptr;
-
+    TubeBc(const TubeBc& other,const tasystem::TaSystem& sys);
     TubeBc(us segnr,Pos position):segnr(segnr),pos(position){}
-    TubeBc(const TubeBc& other):
-      Connector(other),
-      segnr(other.segnr),
-      pos(other.pos)
-    {}
   public:
     virtual ~TubeBc(){}
     #ifndef SWIG
     us getNEqs() const=0;
-    virtual void init(const tasystem::TaSystem&);
     #endif
   };
 

@@ -21,22 +21,15 @@ namespace tube{
   class LaminarDuct:public Tube
   {
     LaminarDragResistance laminardrag;
-    HeatSource heat;
   protected:
     LaminarDuct(const Geom& geom);
-    LaminarDuct(const LaminarDuct&);
+    LaminarDuct(const LaminarDuct&)=delete;
+    LaminarDuct(const LaminarDuct&,const tasystem::TaSystem&);
     LaminarDuct& operator=(const LaminarDuct&)=delete;
-    virtual ~LaminarDuct();
   public:
     #ifndef SWIG
-    virtual void init(const tasystem::TaSystem&);
+    virtual ~LaminarDuct();
     virtual const DragResistance& getDragResistance() const {return laminardrag;}
-    virtual const HeatSource& getHeatSource() const=0; // Yup,
-    // abstract class. HopkinsLaminarTube implements  one version of
-    // this heat source. Later on, AnneLaminarTube implements another
-    // version of the heat source. This version is more applicable to
-    // wide tubes for arbitrary cross-sectional geometries.
-
     #endif
   };
 

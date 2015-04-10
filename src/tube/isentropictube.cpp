@@ -27,16 +27,18 @@ namespace tube {
     // Fill vector of gridpoints with data:
     TRACE(13,"IsentropicTube constructor()...");
   }
-  IsentropicTube::IsentropicTube(const IsentropicTube& other):Tube(other){
-    TRACE(23,"IsentropicTube copy cc");
-  }
-  void IsentropicTube::init(const TaSystem& sys){
-    Tube::init(sys);
+  IsentropicTube::IsentropicTube(const IsentropicTube& other,const TaSystem& sys):
+    Tube(other,sys){
+    TRACE(23,"IsentropicTube copy");
+
     for(auto cell=cells.begin();cell!=cells.end();cell++){
       Cell& ccell=**cell;
       ccell.setIsentropic();
     }
     setInit(true);
+  }
+  segment::Seg* IsentropicTube::copy(const tasystem::TaSystem& sys) const {
+    return new IsentropicTube(*this,sys);
   }
   vd IsentropicTube::dragCoefVec(us i) const {
     return zeros<vd>(geom().nCells());

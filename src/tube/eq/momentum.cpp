@@ -34,10 +34,7 @@ namespace tube{
   void Momentum::init()
   {
     TRACE(5,"Momentum::init(tube)");
-    const Tube& t=v.getTube();
-    #ifndef NODRAG
-    drag=&t.getDragResistance();
-    #endif
+    t=&v.getTube();
     if(v.left()){
       Wddt=v.vx-v.left()->vx;;
       Wpi=v.SfL;
@@ -68,8 +65,8 @@ namespace tube{
 
     // Drag term
     #ifndef NODRAG
-    assert(drag!=nullptr);
-    error+=Wddt*drag->drag(v);
+    assert(t);
+    error+=Wddt*t->getDragResistance().drag(v);
     #endif
     // (Boundary) source term
     error+=v.msource();
@@ -92,7 +89,7 @@ namespace tube{
 
  
     #ifndef NODRAG
-    jac+=JacCol(v.mL(),Wddt*drag->dm(v));
+    jac+=JacCol(v.mL(),Wddt*t->getDragResistance().dm(v));
     #endif
    
     return jac;

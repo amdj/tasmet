@@ -6,4 +6,4 @@ Created on March 31, 2014
 '''
 from .post import *
 from .TATwente import *
-from .math_common import *
+from .common import *

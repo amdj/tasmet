@@ -20,18 +20,14 @@ namespace tube{
     this->Tl=Tl;
     this->Tr=Tr;
   }  
-  HopkinsLaminarDuct::HopkinsLaminarDuct(const HopkinsLaminarDuct& o):LaminarDuct(o),
-                                                                      hopkinsheat(o.hopkinsheat),
-                                                                      Tl(o.Tl),
-                                                                      Tr(o.Tr)
+  HopkinsLaminarDuct::HopkinsLaminarDuct(const HopkinsLaminarDuct& o,
+                                         const TaSystem& sys):
+    LaminarDuct(o,sys),
+    hopkinsheat(o.hopkinsheat),
+    Tl(o.Tl),
+    Tr(o.Tr)
   {
     TRACE(15,"HopkinsLaminarDuct::HopkinsLaminarDuct(other)");
-
-  }
-  
-  void HopkinsLaminarDuct::init(const TaSystem& sys){
-    TRACE(15,"HopkinsLaminarDuct::init(gc)");
-    LaminarDuct::init(sys);
 
     // Set time-avg data to make solving bit easier
     assert(cells.size()>0);
@@ -54,7 +50,12 @@ namespace tube{
     }
     hopkinsheat.setdTwdx(geom(),dTwdx);
     setInit(true);
+
   }
+  segment::Seg* HopkinsLaminarDuct::copy(const TaSystem& sys) const{
+    TRACE(20,"HopkinsLaminarDuct::copy()");
+    return new HopkinsLaminarDuct(*this,sys);
+  }  
   
 }
 

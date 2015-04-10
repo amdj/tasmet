@@ -11,6 +11,9 @@
 #include "laminarduct.h"
 #include "hopkinsheat.h"
 
+namespace tasystem{
+  class TaSystem;
+}
 namespace tube{
   #ifdef SWIG
   %feature("notabstract") HopkinsLaminarDuct;
@@ -20,16 +23,15 @@ namespace tube{
     d Tl,Tr;
     vd dTwdx;
     bool Tset=false;
+    HopkinsLaminarDuct(const HopkinsLaminarDuct& o)=delete;
+    HopkinsLaminarDuct& operator=(const HopkinsLaminarDuct&)=delete;
   public:
     vd Tmirror;
+    HopkinsLaminarDuct(const HopkinsLaminarDuct& o,const tasystem::TaSystem&);
     HopkinsLaminarDuct(const Geom& geom,d Tl);
     HopkinsLaminarDuct(const Geom& geom,d Tl,d Tr);
-    HopkinsLaminarDuct(const HopkinsLaminarDuct& o);
-    HopkinsLaminarDuct& operator=(const HopkinsLaminarDuct&)=delete;
-    virtual segment::Seg* copy() const{return new HopkinsLaminarDuct(*this);}
-    virtual string getType() const {return "HopkinsLaminarDuct";}
+    segment::Seg* copy(const tasystem::TaSystem&) const;
     #ifndef SWIG
-    virtual void init(const tasystem::TaSystem& gc);
     virtual const HeatSource& getHeatSource() const { return hopkinsheat;}
     #endif
   };

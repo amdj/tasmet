@@ -33,16 +33,13 @@ namespace tube {
     // Fill vector of gridpoints with data:
     TRACE(13,"LaminarDuct constructor()...");
   }
-  LaminarDuct::LaminarDuct(const LaminarDuct& o):Tube(o),
-						 laminardrag(*this)	\
-						,heat(o.heat)
+  LaminarDuct::LaminarDuct(const LaminarDuct& o,const TaSystem& sys):
+    Tube(o,sys),
+    laminardrag(*this)                          
   {
     TRACE(13,"LaminarDuct copy constructor()...");
   }
 
-  void LaminarDuct::init(const TaSystem& sys){
-    Tube::init(sys);
-  }
   LaminarDuct::~LaminarDuct(){
     TRACE(15,"~LaminarDuct()");
   }

@@ -8,7 +8,10 @@
 namespace tasystem{
   class TaSystem;
 }
-
+namespace utils{
+  template<typename SegType,typename Sys>
+  SegType* copySeg(const SegType& t,const Sys& sys);
+}
 namespace tube{
 
  // Adiabatic wall boundary
@@ -17,23 +20,24 @@ namespace tube{
     us firsteqnr;
     PrescribeQty massflowzero;
     PrescribeQty enthalpyflowzero;
+    AdiabaticWall(const AdiabaticWall& o)=delete;
   public:
     AdiabaticWall& operator=(const AdiabaticWall&)=delete;
     AdiabaticWall(us segnr,Pos position): TubeBc(segnr,position){}
-    AdiabaticWall(const AdiabaticWall& o): TubeBc(o) {}
+    AdiabaticWall(const AdiabaticWall& o,const tasystem::TaSystem& sys);
     virtual ~AdiabaticWall(){}
-    virtual segment::Connector* copy() const {return new AdiabaticWall(*this);}
-    virtual string getType() const {return string("AdiabaticWall");}
+    virtual segment::Connector* copy(const tasystem::TaSystem&) const;
 
     #ifndef SWIG
     us getNEqs() const;
     virtual vd error() const;
-    virtual void init(const tasystem::TaSystem&);
     virtual void updateNf();
     virtual void setEqNrs(us firstdofnr);    
     virtual void jac(tasystem::Jacobian&) const;
     // ------------------------------
     virtual void show(us i) const;
+    template<typename SegType,typename Sys>
+    friend SegType* copySeg(const SegType& t,const Sys& sys);
     #endif
   };
 

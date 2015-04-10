@@ -17,15 +17,15 @@ namespace segment{
   class Connector:public SegConBase{
   protected:
     Connector():SegConBase(){}
-    Connector(const Connector& o):
-      SegConBase(o)
-    {}
+    Connector(const Connector&)=delete;
+    Connector& operator=(const Connector&)=delete;
+    Connector(const Connector& o,const tasystem::TaSystem& sys):SegConBase(o,sys){}
   public:
     virtual ~Connector(){}
-    virtual Connector* copy() const=0;
+    virtual Connector* copy(const tasystem::TaSystem&) const=0;
     #ifndef SWIG
     // 100% Forwarding
-    virtual void init(const tasystem::TaSystem& sys){ SegConBase::init(sys);}
+
     #endif
   };
 

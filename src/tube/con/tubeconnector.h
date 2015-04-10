@@ -28,8 +28,9 @@ namespace tube{
     std::array<const Tube*,2> tubes;
   public:
     SimpleTubeConnector(us seg1,Pos pos1,us seg2,Pos pos2);
-    SimpleTubeConnector(const SimpleTubeConnector&);
-    virtual segment::Connector* copy() const {return new SimpleTubeConnector(*this);}
+    SimpleTubeConnector(const SimpleTubeConnector&)=delete;
+    SimpleTubeConnector(const SimpleTubeConnector&,const tasystem::TaSystem&);    
+    virtual segment::Connector* copy(const tasystem::TaSystem& s) const {return new SimpleTubeConnector(*this,s);}
     virtual string getType() const {return "SimpleTubeConnector";}
 
     #ifndef SWIG

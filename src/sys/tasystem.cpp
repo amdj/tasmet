@@ -35,6 +35,7 @@ namespace tasystem{
     hasInit=false;
   }
   void TaSystem::cleanup(){
+    TRACE(25,"TaSystem::cleanup()");
     utils::purge(segs);
     utils::purge(connectors);
     hasInit=false;
@@ -42,14 +43,14 @@ namespace tasystem{
   TaSystem& TaSystem::operator+=(const Seg& seg){
     TRACE(14,"TaSystem::operator+=(Seg)");
     hasInit=false;
-    segs.emplace_back(seg.copy());
+    segs.emplace_back(seg.copy(*this));
     segs[nSegs()-1]->setNumber(nSegs()-1);
     return *this;
   }
   TaSystem& TaSystem::operator+=(const Connector& con){
     TRACE(24,"TaSystem::operator+=(Connector)");
     hasInit=false;
-    connectors.emplace_back(con.copy());
+    connectors.emplace_back(con.copy(*this));
     connectors[nConnectors()-1]->setNumber(nConnectors()-1);
     return *this;
   }
@@ -98,10 +99,10 @@ namespace tasystem{
     // Quite some assumptions are done where the order of this
     // initialization depends on. So first the segs, then the connectors.
     for(auto seg=segs.begin();seg!=segs.end();seg++) {
-      (*seg)->init(*this);
+      // (*seg)->init(*this);
     }
     for(auto con=connectors.begin();con!=connectors.end();con++) {
-      (*con)->init(*this);
+      // (*con)->init(*this);
     }
 
     // Set all dofs and equation numbers

@@ -3,7 +3,7 @@
 // Author: J.A. de Jong 
 //
 // Description:
-// Some generic utils which safes typing code
+// Some generic utils.
 //////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef UTILS_H
@@ -11,9 +11,11 @@
 #include <vector>
 #include <map>
 #include "tracer.h"
+#include <typeinfo>
+#include <exception>
 
 namespace utils {
-  
+  SPOILNAMESPACE
   // Purge a vector of components
   template<typename T>
   void purge(std::vector<T>& vec){
@@ -42,7 +44,14 @@ namespace utils {
   const T& max(const T& x,const T& y)  {
     return x<=y? y : x;
   }
-    
+  template<typename SegType,typename Sys>
+  SegType* copySeg(const SegType& t,const Sys& sys) {
+    SegType* newt=new SegType(t);
+    if(!newt){
+      WARN("Copying " << typeid(t).name() << "failed!");
+    }
+    return newt;
+  } // copySeg
   
   
 } // namespace utils
@@ -50,3 +59,4 @@ namespace utils {
 
 #endif // UTILS_H
 //////////////////////////////////////////////////////////////////////
+

@@ -38,7 +38,8 @@ namespace segment{
   protected:
     const tasystem::Globalconf* gc=nullptr;	// Global configuration of the system
     SegConBase();
-    SegConBase(const SegConBase&);
+    SegConBase(const SegConBase&,const tasystem::TaSystem&);
+    SegConBase(const SegConBase&)=delete;
     SegConBase& operator=(const SegConBase&)=delete;
   public:
     virtual ~SegConBase(){}
@@ -49,7 +50,7 @@ namespace segment{
 
     // This function determines whether a class is abstract or not for SWIG
     // Return error from internal equations
-    virtual string getType() const=0;
+
     #ifndef SWIG
     virtual vd error() const=0;
     virtual void setEqNrs(us firstdofnr)=0;    
@@ -66,7 +67,7 @@ namespace segment{
     // Initialize the Segment or connecter. Should only be done once
     // it is part of a TaSystem. Not doing this will result in
     // SegFaults, as pointers to this TaSystem will be saved.
-    virtual void init(const tasystem::TaSystem&); // Implementation updates gc
+
     void setInit(bool init){init_=init;}
     bool isInit() const{return init_;}
     void checkInit() const {if(!isInit()) throw MyError("Not initialized"); }

@@ -55,8 +55,8 @@ namespace tube{
   }
   void Energy::init(){
     TRACE(8,"Energy::init(tube)");
-    const Tube& t=v.getTube();
-    heat=&t.getHeatSource();
+    t=&v.getTube();
+
     d vx=v.vx;
     d xL=v.xL;
     d xR=v.xR;    
@@ -89,9 +89,9 @@ namespace tube{
     error+=QR(v)-QL(v);
 
     // External heat    
-    assert(heat!=nullptr);
     #ifndef NOHEAT
-    error+=Wddt*heat->heat(v);
+    assert(t);
+    error+=Wddt*t->getHeatSource().heat(v);
     #else
     if(v.geti()==0)
       WARN("Applying no heat coupling");
@@ -119,9 +119,9 @@ namespace tube{
 
     // Transverse heat transver
     #ifndef NOHEAT
-    jac+=JacCol(v.mL(),0.5*Wddt*heat->dmi(v));
-    jac+=JacCol(v.mR(),0.5*Wddt*heat->dmi(v));
-    jac+=JacCol(v.T(),Wddt*heat->dTi(v));
+    jac+=JacCol(v.mL(),0.5*Wddt*t->getHeatSource().dmi(v));
+    jac+=JacCol(v.mR(),0.5*Wddt*t->getHeatSource().dmi(v));
+    jac+=JacCol(v.T(),Wddt*t->getHeatSource().dTi(v));
     #endif
 
     // jac*=ENERGY_SCALE;

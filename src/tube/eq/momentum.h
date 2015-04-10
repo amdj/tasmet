@@ -18,7 +18,7 @@ namespace tube{
 
   class Momentum:public Equation
   {
-    const DragResistance* drag=nullptr;
+    const Tube* t=nullptr;
   public:
     d Wddt=0,Wpi=0,Wpim1=0;
 

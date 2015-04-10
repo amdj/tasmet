@@ -51,28 +51,23 @@ namespace tube{
   PressureBc::PressureBc(const var& pres,us segnr,Pos position):
     PressureBc(pres,adiabatictemp(pres),segnr,position)
   {}
-  PressureBc::PressureBc(const PressureBc& other):
-    TubeBc(other),
+  PressureBc::PressureBc(const PressureBc& other,const TaSystem& sys):
+    TubeBc(other,sys),
     p_prescribed(other.p_prescribed),
     prescribeT(other.prescribeT)
   {
     TRACE(8,"PressureBc copy constructor");
-  }
- 
-  void PressureBc::updateNf(){
-    p_prescribed.updateNf();
-    prescribeT.updateNf();
-  }
-  void PressureBc::init(const TaSystem& sys)
-  {
-    TRACE(8,"PressureBc::init()");
-    TubeBc::init(sys);
     assert(gc);
 
     // Decouple from old globalconf pointer
     p_prescribed.setGc(*gc);
     prescribeT.setGc(*gc);
     setInit(true);
+  }
+ 
+  void PressureBc::updateNf(){
+    p_prescribed.updateNf();
+    prescribeT.updateNf();
   }
   void PressureBc::setEqNrs(us firsteqnr){
     TRACE(2,"Pressure::setEqNrs()");
