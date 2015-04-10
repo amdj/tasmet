@@ -59,15 +59,15 @@ namespace tube{
     }
 
   }// namespace 
-
+  using rottfuncs::RottFuncs;
   LaminarDragResistance::LaminarDragResistance(const Tube& t)
   {
     TRACE(10,"LaminarDragResistanc::LaminarDragResistance()");
     TRACE(11,"Entering redefinition of Rottfuncs");
     if(t.geom().isBlApprox())
-      rf=rottfuncs::RottFuncs("blapprox");
+      rf=RottFuncs("blapprox");
     else
-      rf=rottfuncs::RottFuncs(t.geom().shape()); // Reinitialize thermoviscous functions with right shape
+      rf=RottFuncs(t.geom().shape()); // Reinitialize thermoviscous functions with right shape
     TRACE(11,"Exiting redefinition of Rottfuncs");
     zfd=new ZeroFreqDrag(t);
   }

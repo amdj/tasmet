@@ -64,24 +64,15 @@ namespace tube{
   
   using rottfuncs::RottFuncs;
   HopkinsHeatSource::HopkinsHeatSource(const Tube& t):
-    cshape(t.geom().shape()),
-    rf(cshape)
+    cshape(t.geom().shape())
   {
     TRACE(10,"HopkinsHeatSource::HopKinsHeatSource(Tube)");
     setZeroFreq(cshape);
-  }
-  HopkinsHeatSource::HopkinsHeatSource(const HopkinsHeatSource& o){
-    TRACE(10,"HopkinsHeatSource::HopKinsHeatSource()");
-    cshape=o.cshape;
-    rf=RottFuncs(cshape);
-    setZeroFreq(cshape);
-  }
-  HopkinsHeatSource& HopkinsHeatSource::operator=(const HopkinsHeatSource& o){
-    TRACE(10,"HopkinsHeatSource::operator=()");
-    cshape=o.cshape;
-    rf=RottFuncs(cshape);
-    setZeroFreq(cshape);
-    return *this;
+    if(t.geom().isBlApprox())
+      rf=RottFuncs("blapprox");
+    else
+      rf=RottFuncs(t.geom().shape()); // Reinitialize thermoviscous functions with right shape
+    TRACE(11,"Exiting redefinition of Rottfuncs");
   }
   void HopkinsHeatSource::setZeroFreq(const string& shape){
     TRACE(10,"HopkinsHeatSource::setZeroFreq()");

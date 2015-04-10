@@ -2,6 +2,7 @@
 #include "jacrow.h"
 #include "var.h"
 #include "continuity.h"
+#include "weightfactors.h"
 
 #define iDFT (v.gc->iDFT)
 #define fDFT (v.gc->fDFT)
@@ -52,14 +53,29 @@ namespace tube{
     TRACE(15,"Continuity::extrapolateMassFlow(const Cell& v)");
     assert((!v.left() && v.right()) || (!v.right() && v.left()));
     if(!v.left()){
-
+      d W0,W1; std::tie(W0,W1)=BcWeightFactors(v);
+      return W0*v.mR()()+W1*v.right()->mR()();
     }
-      
+    else{
+      d WR1,WR2; std::tie(WR1,WR2)=BcWeightFactors(v);
+      return WR1*v.mL()()+WR2*v.left()->mL()();
+    }
   }
-JacRow Continuity::dExtrapolateMassFlow(const Cell& v){
+  JacRow Continuity::dExtrapolateMassFlow(const Cell& v){
     TRACE(15,"Continuity::dExtrapolateMassFlow(const Cell& v)");
     assert((!v.left() && v.right()) || (!v.right() && v.left()));
-
+    JacRow jac(2);
+    if(!v.left()){
+      d W0,W1; std::tie(W0,W1)=BcWeightFactors(v);
+      jac+=JacCol(v.mR(),W0*eye(v));
+      jac+=JacCol(v.right()->mR(),W1*eye(v));
+    }
+    else{
+      d WR1,WR2; std::tie(WR1,WR2)=BcWeightFactors(v);
+      jac+=JacCol(v.mL(),WR1*eye(v));
+      jac+=JacCol(v.left()->mL(),WR2*eye(v));
+    }
+    return jac;
   }
 
 } // Namespace tube

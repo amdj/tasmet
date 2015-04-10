@@ -23,7 +23,7 @@ namespace tube{
   HopkinsLaminarDuct::HopkinsLaminarDuct(const HopkinsLaminarDuct& o,
                                          const TaSystem& sys):
     LaminarDuct(o,sys),
-    hopkinsheat(o.hopkinsheat),
+    hopkinsheat(*this),
     Tl(o.Tl),
     Tr(o.Tr)
   {

@@ -1,5 +1,6 @@
 #include "bccell.h"
 #include "var.h"
+#include "continuity.h"
 #include "momentum.h"
 #include "energy.h"
 #include "jacrow.h"
@@ -24,6 +25,8 @@ namespace tube{
   vd BcCell::extrapolateQuant(Physquant p) const {
     TRACE(5,"LeftCell::extrapolateQuant()");
     switch(p){
+    case Physquant::massFlow:
+      return Continuity::extrapolateMassFlow(*this);            
     case Physquant::momentumFlow:
       return Momentum::extrapolateMomentumFlow(*this);      
       break;
@@ -42,6 +45,8 @@ namespace tube{
   JacRow BcCell::dExtrapolateQuant(Physquant p) const {
     TRACE(5,"LeftCell::dExtrapolateQuant()");
     switch(p){
+    case Physquant::massFlow:
+      return Continuity::dExtrapolateMassFlow(*this);            
     case Physquant::momentumFlow:
       return Momentum::dExtrapolateMomentumFlow(*this);      
       break;
