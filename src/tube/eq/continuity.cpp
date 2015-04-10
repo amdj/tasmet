@@ -48,5 +48,19 @@ namespace tube{
     // domg_.subvec(dofnr+1,dofnr+2)=domg_full.subvec(1,2); 
     domg_.subvec(dofnr,dofnr+v.gc->Ns()-1)=domg_full;     
   }
+  vd Continuity::extrapolateMassFlow(const Cell& v){
+    TRACE(15,"Continuity::extrapolateMassFlow(const Cell& v)");
+    assert((!v.left() && v.right()) || (!v.right() && v.left()));
+    if(!v.left()){
+
+    }
+      
+  }
+JacRow Continuity::dExtrapolateMassFlow(const Cell& v){
+    TRACE(15,"Continuity::dExtrapolateMassFlow(const Cell& v)");
+    assert((!v.left() && v.right()) || (!v.right() && v.left()));
+
+  }
+
 } // Namespace tube
 

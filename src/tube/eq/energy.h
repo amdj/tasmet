@@ -29,10 +29,10 @@ namespace tube{
     // boundary of the cell
     d gamma() const;			// Time-avg ratio of specific heats
 
-    vd extrapolateEnthalpyFlow() const;
-    vd extrapolateHeatFlow() const;
-    tasystem::JacRow dExtrapolateEnthalpyFlow() const;
-    tasystem::JacRow dExtrapolateHeatFlow() const;
+    static vd extrapolateEnthalpyFlow(const Cell&);
+    static vd extrapolateHeatFlow(const Cell&); 
+    static tasystem::JacRow dExtrapolateEnthalpyFlow(const Cell&);
+    static tasystem::JacRow dExtrapolateHeatFlow(const Cell&);
 
     // Total enthalpy flow through left cell wall
     static vd mHL(const Cell&);

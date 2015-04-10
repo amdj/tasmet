@@ -15,18 +15,18 @@
 #include "leftcell.h"
 #include "rightcell.h"
 
+#define fDFT (gc->fDFT)
+#define iDFT (gc->iDFT)
+#define DDTfd (gc->DDTfd)
+
+#define Ns (gc->Ns())
+#define eye (eye(Ns,Ns))
+
 namespace tube {
   using tasystem::TaSystem;
 
   // Number of equations corresponding to this connection:
-  const int Neq=8;
-  inline const RightCell& rtv(const Tube& t){
-    return static_cast<const RightCell&>(t.rightCell());
-  }
-  inline const LeftCell& ltv(const Tube& t){
-    return static_cast<const LeftCell&>(t.leftCell());
-  }
-
+  const int Neq=6;
 
   SimpleTubeConnector::SimpleTubeConnector(us seg1,Pos pos1,\
                                            us seg2,Pos pos2)
@@ -48,7 +48,6 @@ namespace tube {
     segnrs(other.segnrs),
     pos(other.pos)
   {
-
     tubes[0]=&sys.getTube(segnrs[0]);
     tubes[1]=&sys.getTube(segnrs[1]);
     setInit(true);
@@ -56,23 +55,27 @@ namespace tube {
 
   vd SimpleTubeConnector::error() const{
     TRACE(10,"SimpleTubeConnector::error()");
+    d out0=1,out1=1;
+    if(pos[0]==Pos::left)
+      out0=-1;
+    if(pos[1]==Pos::left)
+      out1=-1;
 
-    vd error(Neq*gc->Ns());
-    vd errorMf(gc->Ns(),fillwith::zeros);
-    vd errorMom(gc->Ns(),fillwith::zeros);
-    if(pos[0]==Pos::right){
-      errorMf+=tubes[0]->rightCell().extrapolateQuant(massFlow);
-    }
-    else{
-      errorMf-=tubes[0]->leftCell().extrapolateQuant(massFlow);
-    }
+    vd error(Neq*Ns);
+    vd errorMf(Ns,fillwith::zeros);
+    vd errorMfint(Ns,fillwith::zeros);    
+    vd errorMom(Ns,fillwith::zeros);
+
+    errorMfint+=out0*tubes[0]->bcCell(pos[0]).extrapolateQuant(massFlow);
+    errorMfint+=out1*tubes[1]->bcCell(pos[1]).extrapolateQuant(massFlow);
+
     if(pos[1]==Pos::right){
-      errorMf+=tubes[1]->rightCell().continuity().massFlow();
+      // errorMf+=tubes[1]->rightCell().massFlow();
     }
     if(pos[1]==Pos::left){
-      errorMf-=tubes[1]->leftCell().continuity().massFlow();
+      // errorMf-=tubes[1]->leftCell().continuity().massFlow();
     }
-    error.subvec(0,gc->Ns()-1)=errorMf;
+    error.subvec(0,Ns-1)=errorMfint;
     return error;
   }
   void SimpleTubeConnector::setEqNrs(us firstdofnr){
@@ -81,18 +84,18 @@ namespace tube {
   }
   us SimpleTubeConnector::getNEqs() const {
     TRACE(15,"SimpleTubeConnector::getNEqs()");
-    return Neq*gc->Ns();
+    return Neq*Ns;
   }
   void SimpleTubeConnector::show(us) const{
     TRACE(15,"SimpleTubeConnector::show()");
     checkInit();
   }
   void SimpleTubeConnector::jac(tasystem::Jacobian&) const {
-
+    TRACE(15,"SimpleTubeconnector::jac()");
+    WARN("Does nothing");
   }
   void SimpleTubeConnector::updateNf(){
     TRACE(15,"SimpleTubeConnector::updateNf()");
-
   }
 
 } // namespace tube

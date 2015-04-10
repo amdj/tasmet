@@ -87,7 +87,7 @@ AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/heat heat)
 # AUX_SOURCE_DIRECTORy(src/tube/con con)
 set(condir ${PROJECT_SOURCE_DIR}/src/tube/con)
 set(con ${condir}/tubebc.cpp ${condir}/adiabaticwall.cpp ${condir}/prescribeqty.cpp
-  ${condir}/pressurebc.cpp)
+  ${condir}/pressurebc.cpp ${condir}/tubeconnector.cpp)
 
 set (nonlinear_SRC
   ${src}

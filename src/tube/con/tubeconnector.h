@@ -31,12 +31,9 @@ namespace tube{
     SimpleTubeConnector(const SimpleTubeConnector&)=delete;
     SimpleTubeConnector(const SimpleTubeConnector&,const tasystem::TaSystem&);    
     virtual segment::Connector* copy(const tasystem::TaSystem& s) const {return new SimpleTubeConnector(*this,s);}
-    virtual string getType() const {return "SimpleTubeConnector";}
-
+    ~SimpleTubeConnector(){}
     #ifndef SWIG
     virtual vd error() const;
-    virtual void init(const tasystem::TaSystem& sys);
-
     virtual void setEqNrs(us firstdofnr);
     virtual us getNEqs() const;    
     virtual void show(us) const;

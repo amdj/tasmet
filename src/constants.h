@@ -94,8 +94,7 @@ namespace tube{
     Sta=4,			// State
     Sol=5,			// SolidEnergy
     Mu_is_m_u,      // momentumflow is massflow_squared div
-    // density*cs_area
-    mH_is_m_H
+                    // density*cs_area
   };
   #endif  
 

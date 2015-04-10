@@ -1,9 +1,7 @@
 #pragma once
 #ifndef _RIGHTCELL_H_
 #define _RIGHTCELL_H_
-#include "constants.h"
 #include "bccell.h"
-#include "state.h"
 
 namespace tube{
 
@@ -19,11 +17,6 @@ namespace tube{
     const variable::var& mbc() const{return mR_;}
     const variable::var& mR() const { return mR_;}
     const variable::var& TR() const { return Tbc_;}    
-
-
-    // OVerloaded virtuals from BcCell
-    vd extrapolateQuant(Physquant) const;
-    tasystem::JacRow dExtrapolateQuant(Physquant) const;
 
 
   };  

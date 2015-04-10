@@ -24,8 +24,8 @@ namespace tube{
     virtual ~BcCell(){}
     virtual Pos getPos() const=0;
     virtual void init(const Cell* left,const Cell* right);
-    virtual vd extrapolateQuant(Physquant) const=0;
-    virtual tasystem::JacRow dExtrapolateQuant(Physquant) const=0;
+    vd extrapolateQuant(Physquant) const;
+    tasystem::JacRow dExtrapolateQuant(Physquant) const;
     // virtual d getValueBc(Varnr,us freqnr) const=0;
     Equation* Eq(EqType et) {return eqs.at(et);}
 
@@ -35,7 +35,8 @@ namespace tube{
     virtual const variable::var& Tbc() const {return Tbc_;}
     // Return total enthalpy flow at the cell wall
     virtual const variable::var& mHbc() const {return mHbc_;}
-  private:
+  protected:
+    
   };
 
 } // namespace tube

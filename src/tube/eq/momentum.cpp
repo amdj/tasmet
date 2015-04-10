@@ -104,4 +104,80 @@ namespace tube{
     TRACE(0,"Momentum::domg() done");
   }
 
+  #define eye (arma::eye(v.gc->Ns(),v.gc->Ns()))
+  namespace LEFT {
+  
+   static vd2 weightfactors(const Cell& v){
+      d vxi=v.vx;
+      d vxip1=v.right()->vx;
+
+      // Compute weight factors
+      d wL0=vxip1/(vxip1-vxi);
+      d wL1=-vxi/(vxip1-vxi);
+      // VARTRACE(25,wL0);
+      // VARTRACE(25,wL1);
+
+      return vd2({wL0,wL1});
+    }
+  
+    static vd extrapolateMomentumFlow(const Cell& v){
+      vd2 w=weightfactors(v); d wL0=w(0),wL1=w(1);
+      return wL0*v.mu()()+wL1*v.right()->mu()();
+    }
+    static JacRow dExtrapolateMomentumFlow(const Cell& v){
+      vd2 w=weightfactors(v); d wL0=w(0),wL1=w(1);
+      JacRow jacrow(2);
+      jacrow+=JacCol(v.mu(),wL0*eye);
+      jacrow+=JacCol(v.right()->mu(),wL1*eye);
+      return jacrow;
+    }
+  } // namespace LEFT
+  namespace RIGHT {
+   static std::tuple<d,d> weightfactors(const Cell& v){
+      d xR=v.xR;
+      d vxm1=v.vx;
+      d vxm2=v.left()->vx;
+
+      // Compute weight factors
+      d wRNm1=(vxm2-xR)/(vxm2-vxm1);
+      d wRNm2=(xR-vxm1)/(vxm2-vxm1);
+
+      VARTRACE(25,wRNm1);
+      VARTRACE(25,wRNm2);
+      return std::make_tuple(wRNm1,wRNm2);
+    }
+   // Extrapolate momentum flow left side  
+   static vd extrapolateMomentumFlow(const Cell& v){
+      d wRNm1,wRNm2; std::tie(wRNm1,wRNm2)=weightfactors(v);
+      return wRNm1*v.mu()()+wRNm2*v.left()->mu()();
+    }
+   static JacRow dExtrapolateMomentumFlow(const Cell& v){
+      d wRNm1,wRNm2; std::tie(wRNm1,wRNm2)=weightfactors(v);
+
+      JacRow jacrow(2);
+      jacrow+=JacCol(v.mu(),wRNm1*eye);
+      jacrow+=JacCol(v.left()->mu(),wRNm2*eye);
+      return jacrow;
+    }
+  } // namespace RIGHT
+  vd Momentum::extrapolateMomentumFlow(const Cell& v){
+    TRACE(15,"Momentum::extrapolateMomentumFlow(const Cell& v)");
+    assert((!v.left() && v.right()) || (!v.right() && v.left()));
+    if(!v.left() && v.right())
+      return LEFT::extrapolateMomentumFlow(v);
+    else
+      return RIGHT::extrapolateMomentumFlow(v);
+  }
+  JacRow Momentum::dExtrapolateMomentumFlow(const Cell& v){
+    TRACE(15,"Momentum::dExtrapolateMomentumFlow(const Cell& v)");
+    assert((!v.left() && v.right()) || (!v.right() && v.left()));
+    if(!v.left() && v.right())
+      return LEFT::dExtrapolateMomentumFlow(v);
+    else
+      return RIGHT::dExtrapolateMomentumFlow(v);
+  }
+
+
+
+
 } // namespace tube

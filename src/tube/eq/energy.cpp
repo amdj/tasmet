@@ -325,7 +325,7 @@ namespace tube{
     domg_.subvec(dofnr,dofnr+Ns-1)=domg_full;
   }
 
-  vd Energy::extrapolateEnthalpyFlow() const{
+  vd Energy::extrapolateEnthalpyFlow(const Cell& v) {
     TRACE(15,"Energy::extrapolateEnthalpyFlow()");
     // Can only be called for leftmost or rightmost node
     assert((!v.left() && v.right()) || (v.left() && !v.right()));
@@ -338,7 +338,7 @@ namespace tube{
       return WR1*mHL(v)+WR2*mHL(*v.left());
     }
   }
-  JacRow Energy::dExtrapolateEnthalpyFlow() const {
+  JacRow Energy::dExtrapolateEnthalpyFlow(const Cell& v) {
     TRACE(15,"Energy::dExtrapolateEnthalpyFlow()");
     JacRow jac(2);
     if(!v.left()){
@@ -353,16 +353,16 @@ namespace tube{
     }
     return jac;
   }
-  vd Energy::extrapolateHeatFlow() const {
+  vd Energy::extrapolateHeatFlow(const Cell& v) {
     TRACE(5,"Energy::extrapolateHeatFlow()");
     const heatW w(v);
     vd Qb(Ns);
     if(!v.left()){
-      vd kappaLt=this->kappaLt(v);
+      vd kappaLt=Energy::kappaLt(v);
       Qb=fDFT*(kappaLt%(w.WcLl*v.TL().tdata()+w.WcLr*v.T().tdata()));
     }
     else if(!v.right()){
-      vd kappaRt=this->kappaRt(v);
+      vd kappaRt=Energy::kappaRt(v);
       Qb=fDFT*(kappaRt%(w.WcRl*v.T().tdata()+w.WcRr*v.TR().tdata()));
     }
     else{
@@ -371,19 +371,19 @@ namespace tube{
     }
     return Qb;
   }
-  JacRow Energy::dExtrapolateHeatFlow() const{
+  JacRow Energy::dExtrapolateHeatFlow(const Cell& v){
     TRACE(5,"Energy::dExtrapolateHeatFlow()");
     JacRow dQb(2);
     const heatW w(v);
     // VARTRACE(30,kappaLt)      ;
     // VARTRACE(30,kappaRt);
     if(!v.left()){
-      vd kappaLt=this->kappaLt(v);
+      vd kappaLt=Energy::kappaLt(v);
       dQb+=JacCol(v.T(),fDFT*diagmat(w.WcLr*kappaLt)*iDFT);
       dQb+=JacCol(v.TL(),fDFT*diagmat(w.WcLl*kappaLt)*iDFT);
     }
     else if(!v.right()){
-      vd kappaRt=this->kappaRt(v);
+      vd kappaRt=Energy::kappaRt(v);
       dQb+=JacCol(v.T(),fDFT*diagmat(w.WcRl*kappaRt)*iDFT);
       dQb+=JacCol(v.TR(),fDFT*diagmat(w.WcRr*kappaRt)*iDFT);
     }

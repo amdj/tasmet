@@ -1,8 +1,8 @@
 #include "bccell.h"
 #include "var.h"
+#include "momentum.h"
+#include "energy.h"
 #include "jacrow.h"
-#include "weightfactors.h"
-
 
 namespace tube{
   using tasystem::JacRow;
@@ -21,5 +21,42 @@ namespace tube{
     vars.push_back(&Tbc_);
     vars.push_back(&mHbc_);
   }
+  vd BcCell::extrapolateQuant(Physquant p) const {
+    TRACE(5,"LeftCell::extrapolateQuant()");
+    switch(p){
+    case Physquant::momentumFlow:
+      return Momentum::extrapolateMomentumFlow(*this);      
+      break;
+    case Physquant::heatFlow:
+      return Energy::extrapolateHeatFlow(*this);
+      break;
+    case Physquant::enthalpyFlow:
+      return Energy::extrapolateEnthalpyFlow(*this);
+      break;
+    default:
+      WARN("This is not yet implemented!");
+      assert(false);
+    }
+
+  }
+  JacRow BcCell::dExtrapolateQuant(Physquant p) const {
+    TRACE(5,"LeftCell::dExtrapolateQuant()");
+    switch(p){
+    case Physquant::momentumFlow:
+      return Momentum::dExtrapolateMomentumFlow(*this);      
+      break;
+    case Physquant::heatFlow:
+      return Energy::dExtrapolateHeatFlow(*this);
+      break;
+    case Physquant::enthalpyFlow:
+      return Energy::dExtrapolateEnthalpyFlow(*this);
+      break;
+    default:
+      WARN("This is not yet implemented!");
+      assert(false);
+
+    }
+  }
+
 }                // namespace tube
 

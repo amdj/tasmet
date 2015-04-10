@@ -21,9 +21,6 @@ namespace tube{
     void show(us detailnr=1) const;
     const variable::var& mbc() const {return mL_;}
     const variable::var& TL() const { return Tbc_;}
-
-    vd extrapolateQuant(Physquant) const;
-    tasystem::JacRow dExtrapolateQuant(Physquant) const;
   };  
 
 } // namespace tube

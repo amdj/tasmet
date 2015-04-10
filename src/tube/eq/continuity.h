@@ -24,8 +24,11 @@ namespace tube{
     virtual vd error() const;			// Error in this equation at this node
     virtual void domg(vd&) const;
     // vd massFlow() const;
+    static vd extrapolateMassFlow(const Cell&);
+    static tasystem::JacRow dExtrapolateMassFlow(const Cell&);
   };				// Continuity class
-}				// Namespace tube
+  
+} // Namespace tube
 
 #endif // CONTINUITY_H
 //////////////////////////////////////////////////////////////////////

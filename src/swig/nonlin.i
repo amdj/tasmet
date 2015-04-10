@@ -84,7 +84,7 @@ extern int nltracer;
  // Connectors
 %include "connector.h"
 %include "tubebc.h"
-// %include "tubeconnector.h"
+%include "tubeconnector.h"
 
 // Other connectors
 %include "pressurebc.h"
