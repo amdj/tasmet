@@ -1,0 +1,3 @@
+[submodule "math_common"]
+	path = math_common
+	url = ./math_common

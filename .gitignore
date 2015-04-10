@@ -1,0 +1,8 @@
+CMakeCache.txt
+CMakeFiles
+Makefile
+*.so
+nonlinPYTHON_wrap.cxx
+*.a
+nonlin.py
+cmake_install.cmake
