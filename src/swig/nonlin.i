@@ -1,4 +1,4 @@
-%module(docstring="TMTubes nonlinear thermoacoustic code") nonlin
+%module(docstring="TATwente nonlinear thermoacoustic code") TATwente
 %{
   #define PY_ARRAY_UNIQUE_SYMBOL npy_array
   #define SWIG_FILE_WITH_INIT

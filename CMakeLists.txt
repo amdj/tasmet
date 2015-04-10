@@ -1,11 +1,10 @@
 # CMakeList.txt for linear code
 cmake_minimum_required (VERSION 3.1)
-project(NLFD)
+project(TATwente)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/math_common/cmake_tools)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/common/cmake_tools)
 
 # CMakeList.txt for nonlinear code
-add_definitions(-DTRACERNAME=nltracer)
 
 # Eigen
 find_package(Eigen3 REQUIRED)
@@ -16,6 +15,18 @@ find_package(PythonLibs REQUIRED)
 # Initialize swig
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
+
+# Boost libraries
+find_package(Boost COMPONENTS system REQUIRED)
+find_package(Boost COMPONENTS thread REQUIRED)
+link_directories( ${Boost_LIBRARY_DIR})
+
+
+add_subdirectory(${PROJECT_SOURCE_DIR}/common)
+
+# It is of importance that this definition is done AFTER subdirectory common is built
+add_definitions(-DTRACERNAME=nltracer)
+
 
 ############################## Optimized code flags
 # set(CMAKE_CXX_FLAGS " -O3 ")
@@ -52,10 +63,13 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pipe -fPIC -Wall \
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CLANG}")
 add_definitions(-DNPY_NO_DEPRECATED_API=NPY_1_4_API_VERSION)
 
-
+SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache) 
 
 # SET(CMAKE_SWIG_FLAGS "-py3")
 SET(CMAKE_SWIG_FLAGS -py3 -Wall -DSWIG_PYTHON)
+
+############################## End compiler settings
 
 AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/ src)
 AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/seg seg)
@@ -96,8 +110,8 @@ include_directories(
   ${EIGEN3_INCLUDE_DIR}
   ${ARMADILLO_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIR}  
-  ${PROJECT_SOURCE_DIR}/math_common/src
-  ${PROJECT_SOURCE_DIR}/math_common/src/swig
+  ${PROJECT_SOURCE_DIR}/common/src
+  ${PROJECT_SOURCE_DIR}/common/src/swig
   ${PROJECT_SOURCE_DIR}/src
   ${PROJECT_SOURCE_DIR}/src/sys
   ${PROJECT_SOURCE_DIR}/src/sol
@@ -112,23 +126,23 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/src/tube/eq
   ${PROJECT_SOURCE_DIR}/src/tube/heat
   )
-link_directories(${PROJECT_SOURCE_DIR}/math_common)
+link_directories(${PROJECT_SOURCE_DIR}/common)
 # add_library(nonlin_lib SHARED ${nonlinear_SRC})
 add_library(nonlin_lib  ${nonlinear_SRC})
 
-target_link_libraries(nonlin_lib math_common ${Boost_THREAD_LIBRARY}
+target_link_libraries(nonlin_lib common ${Boost_THREAD_LIBRARY}
   ${Boost_SYSTEM_LIBRARY} ${ARMADILLO_LIBRARY})
 
 set_source_files_properties(${PROJECT_SOURCE_DIR}/src/swig/nonlin.i
   PROPERTIES CPLUSPLUS ON)
 
-swig_add_module(nonlin python src/swig/nonlin.i)
+swig_add_module(TATwente python src/swig/nonlin.i)
 
 set(SWIG_MODULE_nonlin_FILE_nonlin_EXTRA_DEPS
   ${PROJECT_SOURCE_DIR}/src/common/swig_files/arma_numpy.i
 )
 
-swig_link_libraries(nonlin nonlin_lib math_common ${PYTHON_LIBRARIES}
+swig_link_libraries(TATwente nonlin_lib common ${PYTHON_LIBRARIES}
   ${ARMADILLO_LIBRARIES})
 set_source_files_properties( ${swig_generated_file_fullname}
       PROPERTIES COMPILE_FLAGS "-Wno-missing-field-initializers -Wno-self-assign -Wno-#warnings")
@@ -141,12 +155,12 @@ set_source_files_properties( ${swig_generated_file_fullname}
 #add_custom_target(testtest COMMAND test)
 
 #Install library to library directory
-#install(TARGETS math_common DESTINATION lib)
+#install(TARGETS common DESTINATION lib)
 # Install headers to include directory
-#install(FILES ${math_common_HEADERS}  DESTINATION include)
+#install(FILES ${common_HEADERS}  DESTINATION include)
 
 # add_executable(test123 test123.cpp)
-# target_link_libraries(test123 nonlin_lib math_common armadillo)
+# target_link_libraries(test123 nonlin_lib common armadillo)
 
 # add_definitions(-DNODRAG)
 
