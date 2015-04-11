@@ -4,18 +4,27 @@
 
 namespace tasystem{
 
-  JacRow::JacRow(int rowdofnr,us nrofcols): rowdof_(rowdofnr){
-    jaccols.reserve(nrofcols);
-  }  
   JacRow::JacRow(const JacCol& j):
     JacRow(-1,1)
   {
-    addCol(j);
+    (*this)+=j;
   }
-  void JacRow::addCol(const JacCol& jaccol){
-    if(jaccol.isToAdd())
-      jaccols.push_back(jaccol);
-  }  
+  // JacRow& JacRow::operator+=(JacCol&& j){
+  //   TRACE(45,"JacRow::operator+=(JacCol&& j)");
+  //   jaccols.emplace_back(std::move(j));
+  // }
+  JacRow& JacRow::operator+=(const JacCol& j){
+    TRACE(10,"JacRow::operator+=(const JacCol& j)");
+    if(j.isToAdd())
+      jaccols.emplace_back(j);
+    return *this;
+  }
+    
+  // JacRow& JacRow::addCol(const JacCol& jaccol){
+  //   if(jaccol.isToAdd())
+  //     jaccols.push_back(jaccol);
+  //   return *this;
+  // }  
   JacRow& JacRow::operator*=(const d& val){
     TRACE(2,"Jacobian::operator*=()");
     for(auto col=jaccols.begin();col!=jaccols.end();col++)

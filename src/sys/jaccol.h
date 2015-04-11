@@ -24,6 +24,10 @@ namespace tasystem{
     JacCol(us coldof,const tasystem::Globalconf*);
     JacCol(us coldof,const dmat&);    
     JacCol(const variable::var&,const dmat&);
+    // JacCol(JacCol&&);           // Move data
+    JacCol(const JacCol&);
+    JacCol& operator=(const JacCol&);
+    JacCol& operator=(JacCol&&);
     // Negate all terms
     JacCol operator-();
     bool isToAdd() const {return tobeadded;}

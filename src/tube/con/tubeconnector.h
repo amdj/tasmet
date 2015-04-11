@@ -17,6 +17,7 @@ namespace tube{
 
   #ifndef SWIG
   class Tube;
+  class BcCell;
   #endif
   #ifdef SWIG
   %catches(std::exception,...) SimpleTubeConnector::SimpleTubeConnector(us,Pos,us,Pos);
@@ -25,7 +26,8 @@ namespace tube{
   class SimpleTubeConnector:public segment::Connector{
     std::array<us,2> segnrs;
     std::array<Pos,2> pos;
-    std::array<const Tube*,2> tubes;
+    std::array<const BcCell*,2> bccells;
+    us firsteqnr;
   public:
     SimpleTubeConnector(us seg1,Pos pos1,us seg2,Pos pos2);
     SimpleTubeConnector(const SimpleTubeConnector&)=delete;

@@ -76,12 +76,6 @@ namespace tube{
     prescribeT.set(firsteqnr+Ns,cell.Tbc());
   }
 
-  namespace 
-  {
-    inline d cp(const Cell& c) {
-      return c.gc->gas().cp(c.gc->T0());
-    }
-  } // namespace 
   vd PressureBc::error() const {
     TRACE(15,"PressureBc::error()");
     vd error(getNEqs(),fillwith::zeros);

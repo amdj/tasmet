@@ -64,6 +64,14 @@ namespace segment{
 namespace tube{
   typedef segment::Pos Pos;
 
+  #ifndef SWIG
+  inline const char* posWord(Pos p){
+    if(p==Pos::left)
+      return "left";
+    else
+      return "right";
+  }
+  #endif
   enum Varnr{rho=constants::rho,
              m=constants::m,
              T=constants::T,

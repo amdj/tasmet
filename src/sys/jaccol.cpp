@@ -28,6 +28,34 @@ namespace tasystem{
     coldof_(thevar.getDofNr()),
     data_(data)
   {  }
+  // JacCol::JacCol(JacCol&& j):
+  //   tobeadded(std::move(j.tobeadded)),
+  //   coldof_(j.coldof_),
+  //   data_(std::move(j.data_))
+  // {
+  //   TRACE(45,"JacCol::JacCol(JacCol&&)");
+  // }
+  JacCol::JacCol(const JacCol& j):
+    coldof_(j.coldof_),
+    tobeadded(j.tobeadded),
+    data_(j.data_)
+  {
+    TRACE(15,"JacCol::JacCol(const JacCol& j)");
+  }
+  JacCol& JacCol::operator=(const JacCol& j){
+    TRACE(10,"JacCol::operator=(const JacCol& j)");
+    data_=j.data_;
+    coldof_=j.coldof_;
+    tobeadded=j.tobeadded;
+    return *this;
+  }
+  // JacCol& JacCol::operator=(JacCol&& j){
+  //   TRACE(45,"JacCol::operator=(const JacCol& j)");
+  //   data_=std::move(j.data_);
+  //   coldof_=j.coldof_;
+  //   tobeadded=j.tobeadded;
+  //   return *this;
+  // }
   
   JacCol& JacCol::operator+=(const dmat& data){
     data_+=data;

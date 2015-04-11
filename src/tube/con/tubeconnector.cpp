@@ -12,19 +12,20 @@
 #include "tube.h"
 #include "bccell.h"
 #include "constants.h"
-#include "leftcell.h"
-#include "rightcell.h"
+#include "jacrow.h"
+#include "jacobian.h"
 
 #define fDFT (gc->fDFT)
 #define iDFT (gc->iDFT)
 #define DDTfd (gc->DDTfd)
 
 #define Ns (gc->Ns())
-#define eye (eye(Ns,Ns))
+#define eye (arma::eye(Ns,Ns))
 
 namespace tube {
   using tasystem::TaSystem;
-
+  using tasystem::JacRow;
+  using tasystem::JacCol;
   // Number of equations corresponding to this connection:
   const int Neq=6;
 
@@ -48,8 +49,8 @@ namespace tube {
     segnrs(other.segnrs),
     pos(other.pos)
   {
-    tubes[0]=&sys.getTube(segnrs[0]);
-    tubes[1]=&sys.getTube(segnrs[1]);
+    bccells[0]=&sys.getTube(segnrs[0]).bcCell(pos[0]);
+    bccells[1]=&sys.getTube(segnrs[1]).bcCell(pos[1]);
     setInit(true);
   }
 
@@ -62,25 +63,115 @@ namespace tube {
       out1=-1;
 
     vd error(Neq*Ns);
-    vd errorMf(Ns,fillwith::zeros);
-    vd errorMfint(Ns,fillwith::zeros);    
-    vd errorMom(Ns,fillwith::zeros);
+    {
+      vd errorm(Ns,fillwith::zeros);
+      vd errormint(Ns,fillwith::zeros);    
 
-    errorMfint+=out0*tubes[0]->bcCell(pos[0]).extrapolateQuant(massFlow);
-    errorMfint+=out1*tubes[1]->bcCell(pos[1]).extrapolateQuant(massFlow);
+      errorm=out0*bccells[0]->mbc()();
+      errorm+=out1*bccells[1]->mbc()();
+      // Interpolation: mass flow is average of extrapolated mf
+      errormint+=0.5*out0*bccells[0]->extrapolateQuant(massFlow);
+      errormint+=0.5*out1*bccells[1]->extrapolateQuant(massFlow);
+      errormint-=out0*bccells[0]->mbc()();
 
-    if(pos[1]==Pos::right){
-      // errorMf+=tubes[1]->rightCell().massFlow();
+      error.subvec(0,Ns-1)=errorm;
+      error.subvec(Ns,2*Ns-1)=errormint;
     }
-    if(pos[1]==Pos::left){
-      // errorMf-=tubes[1]->leftCell().continuity().massFlow();
+    {
+      
+      vd errormH(Ns,fillwith::zeros);
+      vd errormHint(Ns,fillwith::zeros);    
+
+      errormH+=out0*bccells[0]->mHbc()();
+      errormH+=out1*bccells[1]->mHbc()();
+      
+      errormHint+=0.5*out0*bccells[0]->extrapolateQuant(enthalpyFlow);
+      errormHint+=0.5*out1*bccells[1]->extrapolateQuant(enthalpyFlow);
+      errormHint-=out0*bccells[0]->mHbc()();
+      
+      error.subvec(2,3*Ns-1)=errormH;
+      error.subvec(3*Ns,4*Ns-1)=errormHint;
+
     }
-    error.subvec(0,Ns-1)=errorMfint;
+    {
+      
+      vd errorQ(Ns,fillwith::zeros);
+      vd errorT(Ns,fillwith::zeros);    
+
+      errorQ+=out0*bccells[0]->extrapolateQuant(heatFlow);
+      errorQ+=out1*bccells[1]->extrapolateQuant(heatFlow);
+
+      errorT+=bccells[0]->Tbc()();
+      errorT-=bccells[1]->Tbc()();
+      
+      error.subvec(4,5*Ns-1)=errorQ;
+      error.subvec(5*Ns,6*Ns-1)=errorT;
+
+    }    
+
     return error;
   }
-  void SimpleTubeConnector::setEqNrs(us firstdofnr){
-    TRACE(15,"SimpleTubeConnector::setEqNrs()");
+  void SimpleTubeConnector::jac(tasystem::Jacobian& jac) const {
+    TRACE(15,"SimpleTubeconnector::jac()");
+    d out0=1,out1=1;
+    us eqnr=firsteqnr;
+    
+    if(pos[0]==Pos::left)
+      out0=-1;
+    if(pos[1]==Pos::left)
+      out1=-1;
+    {
+      JacRow mjac(eqnr,2);
+      eqnr+=Ns;
+      mjac+=JacCol(bccells[0]->mbc(),out0*eye);
+      mjac+=JacCol(bccells[1]->mbc(),out1*eye);
+      
+      jac+=mjac;
+      JacRow mjacint(eqnr,5);
+      eqnr+=Ns;
+      // // Interpolation: mass flow is average of extrapolated mf
+      mjacint+=(bccells[0]->dExtrapolateQuant(massFlow)*=0.5*out0);
+      mjacint+=(bccells[1]->dExtrapolateQuant(massFlow)*=0.5*out1);
+      mjacint+=JacCol(bccells[0]->mbc(),-out0*eye);
 
+      jac+=mjacint;
+    }
+    {
+      JacRow mHjac(eqnr,2);
+      eqnr+=Ns;
+      mHjac+=JacCol(bccells[0]->mHbc(),out0*eye);
+      mHjac+=JacCol(bccells[1]->mHbc(),out1*eye);
+      
+      jac+=mHjac;
+      JacRow mHjacint(eqnr,5);
+      eqnr+=Ns;
+
+      // // Interpolation: mass flow is average of extrapolated mf
+      mHjacint+=(bccells[0]->dExtrapolateQuant(enthalpyFlow)*=0.5*out0);
+      mHjacint+=(bccells[1]->dExtrapolateQuant(enthalpyFlow)*=0.5*out1);
+      mHjacint+=JacCol(bccells[0]->mHbc(),-out0*eye);
+
+      jac+=mHjacint;
+    }    
+    {
+      JacRow Qjac(eqnr,5);
+      eqnr+=Ns;
+
+      Qjac+=(bccells[0]->dExtrapolateQuant(heatFlow)*=out0);
+      Qjac+=(bccells[1]->dExtrapolateQuant(heatFlow)*=out1);
+      jac+=Qjac;
+
+      JacRow Tjac(eqnr,2);
+      // eqnr+=Ns; // Not needed no row below
+      Tjac+=JacCol(bccells[0]->Tbc(),eye);
+      Tjac+=JacCol(bccells[1]->Tbc(),-eye);
+      jac+=Tjac;
+    }    
+
+  }
+  void SimpleTubeConnector::setEqNrs(us firsteqnr){
+    TRACE(15,"SimpleTubeConnector::setEqNrs()");
+    this->firsteqnr=firsteqnr;
   }
   us SimpleTubeConnector::getNEqs() const {
     TRACE(15,"SimpleTubeConnector::getNEqs()");
@@ -89,10 +180,10 @@ namespace tube {
   void SimpleTubeConnector::show(us) const{
     TRACE(15,"SimpleTubeConnector::show()");
     checkInit();
-  }
-  void SimpleTubeConnector::jac(tasystem::Jacobian&) const {
-    TRACE(15,"SimpleTubeconnector::jac()");
-    WARN("Does nothing");
+    
+    cout << "SimpleTubeConnector which connects tube " << segnrs[0] <<
+      " at the " << posWord(pos[0]) << " side to tube " << segnrs[1] <<
+      " on the " << posWord(pos[1]) << " side.\n";
   }
   void SimpleTubeConnector::updateNf(){
     TRACE(15,"SimpleTubeConnector::updateNf()");

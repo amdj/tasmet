@@ -30,11 +30,6 @@ namespace tube{
     d zeroheat_circ(d kappa,d rh){
       return 2*kappa/pow(rh,2);
     }
-    d zeroheat_blapprox(d kappa,d rh){
-      TRACE(2,"zeroheat_blapprox");
-      return 2*kappa/pow(rh,2);
-      // return 0;
-    }
     d zeroheat_inviscid(d dummy,d dummy2){
       TRACE(2,"zeroheat_inviscid");
       return 0;
@@ -84,8 +79,8 @@ namespace tube{
       zeroheatH_funptr=&H::zeroheat_circ;
       zeroheatQ=1/3;      
     }
-    else if(shape.compare("blapprox")==0){
-      zeroheatH_funptr=&H::zeroheat_blapprox;
+    else if(shape.compare("vert")==0){
+      zeroheatH_funptr=&H::zeroheat_vert;
       zeroheatQ=0;
     }
     else if(shape.compare("inviscid")==0){
@@ -173,7 +168,7 @@ namespace tube{
     d omg=v.gc->getomg();
     vc htcoefH(Nf+1,fillwith::zeros);
     // Checked, this is correct
-    htcoefH(0)=(*zeroheatH_funptr)(kappa0,rh);
+    htcoefH(0)=(*zeroheatH_funptr)(kappa0,rh)/rho0;
     if(Nf>0){
       vd omgvec=omg*linspace(1,Nf,Nf);
       vd deltak=sqrt(2*kappa0/(rho0*cp0*omgvec));

@@ -16,39 +16,31 @@ namespace tube{
 
     // Resistance force for laminar flow for the zero-frequency. 
     d zerodrag_vert(d mu,d rh){
+      TRACE(5,"zerodrag_vert");
       return 3*mu/pow(rh,2);
     }
     d zerodrag_circ(d mu,d rh){
-      TRACE(0,"zerodrag_circ");
+      TRACE(5,"zerodrag_circ");
       return 2*mu/pow(rh,2);
     }
-    d zerodrag_blapprox(d mu,d rh){
-      TRACE(0,"zerodrag_blapprox");
-      return zerodrag_circ(mu,rh);
+    d zerodrag_inviscid(d mu,d rh){
+      TRACE(5,"zerodrag_inviscid");
+      return 0;
     }
-    d zerodrag_inviscid(d mu,d rh){ return 0; }
     
     ZeroFreqDrag::ZeroFreqDrag(const Tube& t){
       TRACE(0,"ZeroFreqDrag::ZeroFreqDrag()");
-      if(t.geom().isBlApprox()){
-        TRACE(25,"Blapprox is on");
-        zerodrag_funptr=&zerodrag_blapprox;
+      if(t.geom().shape().compare("vert")==0)
+        zerodrag_funptr=&zerodrag_vert;
+      else if(t.geom().shape().compare("circ")==0){
+        TRACE(20,"Circular pore chosen");
+        zerodrag_funptr=&zerodrag_circ;
       }
-      else{
-        TRACE(25,"Blapprox is off");
-        if(t.geom().shape().compare("vert")==0)
-          zerodrag_funptr=&zerodrag_vert;
-        else if(t.geom().shape().compare("circ")==0){
-          TRACE(20,"Circular pore chosen");
-          zerodrag_funptr=&zerodrag_circ;
-        }
-        else if(t.geom().shape().compare("inviscid")==0)
-          zerodrag_funptr=&zerodrag_inviscid;
-        else
-          {
-            WARN("Warning: tube.geom.shape unknown for ZeroFreqDrag. Aborting...");
-            abort();
-          }
+      else if(t.geom().shape().compare("inviscid")==0)
+        zerodrag_funptr=&zerodrag_inviscid;
+      else {
+        WARN("Warning: tube.geom.shape unknown for ZeroFreqDrag. Aborting...");
+        abort();
       }
     }
     d ZeroFreqDrag::operator()(d mu,d rh,d U) const {
@@ -99,7 +91,7 @@ namespace tube{
     const d& rh=v.vrh;
     d omg=v.gc->getomg();
     vc rescoef(Nf+1);
-    rescoef(0)=(*zfd)(mu0,rh);	// Zero frequency drag divided by zero-frequency velocity
+    rescoef(0)=(*zfd)(mu0,rh)/rho0;	// Zero frequency drag divided by zero-frequency velocity
     if(Nf>0){
       vd omgvec=omg*linspace(1,Nf,Nf);
       // TRACE(100,"omgvec:\n"<<omgvec);

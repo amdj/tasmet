@@ -3,3 +3,4 @@
 * TaSystem needs map instead of vector for segments and not numbers, but names for refering to different segments
 * Store pointer in gc for variables that need updating when gc is updated
 * Early init for cells in a tube (if possible?)
+* Rvalue references for jacobian stuff
