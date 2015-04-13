@@ -1,3 +1,12 @@
+// hopkinsheat.cpp
+//
+// last-edit-by: J.A. de Jong 
+// 
+// Description:
+// 
+//////////////////////////////////////////////////////////////////////
+
+
 #include "hopkinsheat.h"
 #include "cell.h"
 #include "tube.h"
@@ -24,36 +33,19 @@
 namespace tube{
   namespace H{
     SPOILNAMESPACE
-    d zeroheat_vert(d kappa,d rh){
-      return 3*kappa/pow(rh,2);
+    namespace{ 
+      d zeroheat_vert(d kappa,d rh){
+        return 3*kappa/pow(rh,2);
+      }
+      d zeroheat_circ(d kappa,d rh){
+        return 2*kappa/pow(rh,2);
+      }
+      d zeroheat_inviscid(d,d){
+        TRACE(2,"zeroheat_inviscid");
+        return 0;
+      }
     }
-    d zeroheat_circ(d kappa,d rh){
-      return 2*kappa/pow(rh,2);
-    }
-    d zeroheat_inviscid(d dummy,d dummy2){
-      TRACE(2,"zeroheat_inviscid");
-      return 0;
-    }
-  }
-  namespace heatQ{
-    d zeroheat_vert(d kappa,d rh){
-      return 3*kappa/pow(rh,2);
-    }
-    d zeroheat_circ(d kappa,d rh){
-      return 2*kappa/pow(rh,2);
-    }
-    d zeroheat_blapprox(d kappa,d rh){
-      TRACE(2,"zeroheat_blapprox");
-      // return 2*kappa/pow(rh,2);
-      return 0;
-    }
-    d zeroheat_inviscid(d dummy,d dummy2){
-      TRACE(2,"zeroheat_inviscid");
-      return 0;
-    }
-
-
-  }
+  } // namespace H
 
   
   
@@ -180,4 +172,6 @@ namespace tube{
   }
 
   
-}
+} // namespace tube
+
+//////////////////////////////////////////////////////////////////////
