@@ -17,7 +17,7 @@ namespace tube{
   
   class HopkinsHeatSource:public HeatSource{
     string cshape;
-    d (*zeroheatH_funptr)(d,d);
+    d (*zeroheatH_funptr)(d,d)=nullptr;
     d zeroheatQ=0;
     rottfuncs::RottFuncs rf;
     // This function computes for all nonzero frequencies the heat

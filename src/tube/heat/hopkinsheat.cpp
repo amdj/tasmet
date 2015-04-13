@@ -121,6 +121,7 @@ namespace tube{
     return dUi;
   }  
   vc HopkinsHeatSource::HeatTransferCoefQ(const Cell& v) const{
+    TRACE(10,"HopkinsHeatSource::HeatTransferCoefQ(const Cell& v)");
     const us& Nf=v.gc->Nf();
     vc htcoefQ(Nf+1,fillwith::zeros);
 
@@ -149,6 +150,7 @@ namespace tube{
   }
   vc HopkinsHeatSource::HeatTransferCoefH(const Cell& v) const{
     TRACE(8,"HopkinsHeatSource::HeatTransferCoefH()");
+    assert(zeroheatH_funptr);
     const us& Nf=v.gc->Nf();
     d T0=v.T()(0);	// Time-averaged temperature
     d kappa0=v.gc->gas().kappa(T0);
