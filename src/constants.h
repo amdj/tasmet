@@ -88,6 +88,7 @@ namespace tube{
                  enthalpyFlow,
                  heatFlow,
                  solidHeatFlow,
+                 pressure,
   };
 
   #ifndef SWIG
@@ -103,6 +104,7 @@ namespace tube{
     Sol=5,			// SolidEnergy
     Mu_is_m_u,      // momentumflow is massflow_squared div
                     // density*cs_area
+    BcEq,
   };
   #endif  
 

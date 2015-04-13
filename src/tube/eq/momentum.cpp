@@ -120,6 +120,11 @@ namespace tube{
       return vd2({wL0,wL1});
     }
   
+    static vd extrapolatePressure(const Cell& v){
+      vd2 w=weightfactors(v); d wL0=w(0),wL1=w(1);
+      assert(v.right());
+      return wL0*v.p()()+wL1*v.right()->p()();
+    }
     static vd extrapolateMomentumFlow(const Cell& v){
       vd2 w=weightfactors(v); d wL0=w(0),wL1=w(1);
       return wL0*v.mu()()+wL1*v.right()->mu()();
@@ -129,6 +134,13 @@ namespace tube{
       JacRow jacrow(2);
       jacrow+=JacCol(v.mu(),wL0*eye);
       jacrow+=JacCol(v.right()->mu(),wL1*eye);
+      return jacrow;
+    }
+    static JacRow dExtrapolatePressure(const Cell& v){
+      vd2 w=weightfactors(v); d wL0=w(0),wL1=w(1);
+      JacRow jacrow(2);
+      jacrow+=JacCol(v.p(),wL0*eye);
+      jacrow+=JacCol(v.right()->p(),wL1*eye);
       return jacrow;
     }
   } // namespace LEFT
@@ -149,14 +161,28 @@ namespace tube{
    // Extrapolate momentum flow left side  
    static vd extrapolateMomentumFlow(const Cell& v){
       d wRNm1,wRNm2; std::tie(wRNm1,wRNm2)=weightfactors(v);
+      assert(v.left());
       return wRNm1*v.mu()()+wRNm2*v.left()->mu()();
+    }
+   static vd extrapolatePressure(const Cell& v){
+      d wRNm1,wRNm2; std::tie(wRNm1,wRNm2)=weightfactors(v);
+      assert(v.left());
+      return wRNm1*v.p()()+wRNm2*v.left()->p()();
     }
    static JacRow dExtrapolateMomentumFlow(const Cell& v){
       d wRNm1,wRNm2; std::tie(wRNm1,wRNm2)=weightfactors(v);
-
+      assert(v.left());
       JacRow jacrow(2);
       jacrow+=JacCol(v.mu(),wRNm1*eye);
       jacrow+=JacCol(v.left()->mu(),wRNm2*eye);
+      return jacrow;
+    }
+   static JacRow dExtrapolatePressure(const Cell& v){
+      d wRNm1,wRNm2; std::tie(wRNm1,wRNm2)=weightfactors(v);
+      assert(v.left());
+      JacRow jacrow(2);
+      jacrow+=JacCol(v.p(),wRNm1*eye);
+      jacrow+=JacCol(v.left()->p(),wRNm2*eye);
       return jacrow;
     }
   } // namespace RIGHT
@@ -175,6 +201,22 @@ namespace tube{
       return LEFT::dExtrapolateMomentumFlow(v);
     else
       return RIGHT::dExtrapolateMomentumFlow(v);
+  }
+  vd Momentum::extrapolatePressure(const Cell& v){
+    TRACE(15,"Momentum::extrapolatePressure(const Cell& v)");
+    assert((!v.left() && v.right()) || (!v.right() && v.left()));
+    if(!v.left() && v.right())
+      return LEFT::extrapolatePressure(v);
+    else
+      return RIGHT::extrapolatePressure(v);
+  }
+  JacRow Momentum::dExtrapolatePressure(const Cell& v){
+    TRACE(15,"Momentum::dExtrapolatePressure(const Cell& v)");
+    assert((!v.left() && v.right()) || (!v.right() && v.left()));
+    if(!v.left() && v.right())
+      return LEFT::dExtrapolatePressure(v);
+    else
+      return RIGHT::dExtrapolatePressure(v);
   }
 
 

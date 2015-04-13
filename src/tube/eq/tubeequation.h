@@ -41,7 +41,7 @@ namespace tube{
     vd zeros() const;
     virtual tasystem::JacRow jac() const=0;		// Returns the local Jacobian of this equation
     virtual vd error() const=0;
-    virtual void show() const { cout << "Empty equation description. From equation.h.\n";}
+    virtual void show() const=0;
     virtual void domg(vd&) const {/* Placeholder */}
     // The definition of these factors is the original definition of d_j+/-1/2 of Wesseling:
     // Wesseling: d_j+/-1/2 = r_j+/-0.5 * epsilon_j+/-0.5

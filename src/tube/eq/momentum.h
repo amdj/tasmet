@@ -31,6 +31,8 @@ namespace tube{
     virtual void show() const;
     virtual void domg(vd& domg) const;
 
+    static vd extrapolatePressure(const Cell&);
+    static tasystem::JacRow dExtrapolatePressure(const Cell&);
     // Put in leftmost or rightmost cell and you obtain an
     // extrapolation of the momentumflow to the closest side
     static vd extrapolateMomentumFlow(const Cell&);

@@ -1,14 +1,24 @@
+#include "utils.h"
+#include "vtypes.h"
 #include "bccell.h"
 #include "var.h"
+#include "tubeequation.h"
 #include "continuity.h"
 #include "momentum.h"
 #include "energy.h"
 #include "jacrow.h"
 
+#define iDFT (v.gc->iDFT)
+#define fDFT (v.gc->fDFT)
+#define DDTfd (v.gc->DDTfd)
+#define Ns (v.gc->Ns())
+
 namespace tube{
+
   using tasystem::JacRow;
   using tasystem::JacCol;
   using variable::var;
+
   BcCell::BcCell(us i,const Tube& t):
     Cell(i,t)
   {}
@@ -30,6 +40,9 @@ namespace tube{
     case Physquant::momentumFlow:
       return Momentum::extrapolateMomentumFlow(*this);      
       break;
+    case Physquant::pressure:
+      return Momentum::extrapolatePressure(*this);      
+      break;
     case Physquant::heatFlow:
       return Energy::extrapolateHeatFlow(*this);
       break;
@@ -49,6 +62,9 @@ namespace tube{
       return Continuity::dExtrapolateMassFlow(*this);            
     case Physquant::momentumFlow:
       return Momentum::dExtrapolateMomentumFlow(*this);      
+      break;
+    case Physquant::pressure:
+      return Momentum::dExtrapolatePressure(*this);      
       break;
     case Physquant::heatFlow:
       return Energy::dExtrapolateHeatFlow(*this);

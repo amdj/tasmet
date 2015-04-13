@@ -14,6 +14,8 @@
 
 #include "utils.h"
 
+#define Ns (gc->Ns())
+
 namespace tube{
   using variable::var;
   using tasystem::Jacobian;
@@ -96,27 +98,26 @@ namespace tube{
   }
   us Cell::getNDofs() const{
     TRACE(5,"Cell::getNDofs()");
-    return vars.size()*gc->Ns();
+    return vars.size()*Ns;
   }
   us Cell::getNEqs() const{
-    return eqs.size()*gc->Ns();
+    return eqs.size()*Ns;
   }
   void Cell::setDofNrs(us firstdof){
-    TRACE(5,"Cell::setDofNrs("<<firstdof<<")");
+    TRACE(20,"Cell::setDofNrs("<<firstdof<<")");
     us nvars=vars.size();        // This makes it safe to exclude dofs
     // in the vars vector
     for (auto& var : vars) { 
       var->setDofNr(firstdof); 
-      firstdof+=gc->Ns();
+      firstdof+=Ns;
     }
   }
   void Cell::setEqNrs(us firsteq){
     TRACE(5,"Cell::setEqNrs("<<firsteq<<")");
-    us neqs=eqs.size();        // This makes it safe to exclude dofs
     // in the vars vector
     for (auto& eq : eqs) {
       eq.second->setDofNr(firsteq);
-      firsteq+=gc->Ns();
+      firsteq+=Ns;
     }
   
   }
@@ -145,11 +146,9 @@ namespace tube{
     TRACE(4,"Cell::error() for Cell "<< i << ".");
     // TRACE(4,"Check for position i>0 && i<gp-1...");
     // assert(i>0 && i<seg.geom().gp-1);
-    const us& Ns=gc->Ns();
+
     TRACE(4,"Assignment of Ns survived:"<< Ns);
-    us Neq=eqs.size();
-    us Neqfull=getNEqs();
-    vd error(Neqfull);
+    vd error(getNEqs());
     us k=0;
     for(const auto& eq : eqs){
       error.subvec(k*Ns,(k+1)*Ns-1)=eq.second->error();
@@ -161,7 +160,6 @@ namespace tube{
   void Cell::domg(vd& domg_) const
   {
     TRACE(4,"Cell::domg() for Cell "<< i << ".");
-    const us& Ns=gc->Ns();
     TRACE(4,"Assignment of Ns survived:"<< Ns);
     us neqs=eqs.size();
 
@@ -170,7 +168,6 @@ namespace tube{
   }
   vd Cell::getRes() const {			// Get current result vector
     TRACE(4,"Cell::GetRes()");
-    const us& Ns=gc->Ns();
     us nvars=vars.size();        // Only return for number of equations
     vd res(getNDofs());
 
@@ -257,11 +254,13 @@ namespace tube{
   }
   void Cell::setRes(const vd& res){
     TRACE(10,"Cell::setRes(), i="<< i);
-    const us& Ns=gc->Ns();
+
     us nvars=vars.size();        // Only put in for number of equations
     assert(res.size()==getNDofs());
-    for(us k=0;k<nvars;k++){
-      vars[k]->setadata(res.subvec(k*gc->Ns(),k*Ns+Ns-1));
+    us k=0;
+    for(var*& v: vars) {
+      v->setadata(res.subvec(k*Ns,k*Ns+Ns-1));
+      k++;
     }
     TRACE(10,"Cell::setRes() exiting, i="<< i);    
   }
@@ -275,13 +274,13 @@ namespace tube{
   }  
   vd Cell::csource() const {
     TRACE(4,"Cell::csource()");
-    return zeros(gc->Ns());}
+    return zeros(Ns);}
   vd Cell::msource() const {
     TRACE(4,"Cell::msource()");
-    return zeros(gc->Ns());}
+    return zeros(Ns);}
   vd Cell::esource() const {
     TRACE(4,"Cell::esource()");
-    vd esource=zeros(gc->Ns());
+    vd esource=zeros(Ns);
     return esource;
   }    
   void Cell::show(us detailnr) const{

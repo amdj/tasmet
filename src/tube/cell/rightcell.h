@@ -14,6 +14,7 @@ namespace tube{
     virtual Pos getPos() const {return Pos::right;}
     virtual void show(us detailnr=1) const;
 
+    const d& Sfbc() const {return SfR;}
     const variable::var& mbc() const{return mR_;}
     const variable::var& mR() const { return mR_;}
     const variable::var& TR() const { return Tbc_;}    

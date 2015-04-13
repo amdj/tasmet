@@ -24,13 +24,11 @@ namespace tube{
     // WARN("HERE SOME EQS NEED TO BE DELETED");
     assert(eqs.find(EqType::Mom)!=eqs.end());
     // If these elements are already deleted, we do nothing
-    try{
-      Equation* mom=eqs.at(EqType::Mom);
-      delete mom;
-      TRACE(25,"MOm eq deleted");
-      eqs.erase(EqType::Mom);
-    }
-    catch(std::out_of_range&){}
+    Equation* mom=eqs.at(EqType::Mom);
+    delete mom;
+    TRACE(25,"MOm eq deleted");
+    eqs.erase(EqType::Mom);
+
   }
   void LeftCell::show(us detailnr) const{
     cout << "------------- LeftCell ----------\n";

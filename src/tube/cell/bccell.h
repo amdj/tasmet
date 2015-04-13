@@ -29,6 +29,9 @@ namespace tube{
     // virtual d getValueBc(Varnr,us freqnr) const=0;
     Equation* Eq(EqType et) {return eqs.at(et);}
 
+    // Fluid cross-sectional area at bc
+    virtual  const d& Sfbc() const=0;
+
     // Return mass flow at the cell wall
     virtual const variable::var& mbc() const=0;
     // Return temperature at the cell wall

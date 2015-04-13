@@ -17,6 +17,7 @@ namespace tube{
     // located on the left...
     // virtual const variable::var& pL() const {return pL_;}
 
+    const d& Sfbc() const {return SfL;}
     // OVerloaded virtuals from BcCell
     void show(us detailnr=1) const;
     const variable::var& mbc() const {return mL_;}

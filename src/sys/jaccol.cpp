@@ -36,11 +36,11 @@ namespace tasystem{
   //   TRACE(45,"JacCol::JacCol(JacCol&&)");
   // }
   JacCol::JacCol(const JacCol& j):
-    coldof_(j.coldof_),
     tobeadded(j.tobeadded),
+    coldof_(j.coldof_),
     data_(j.data_)
   {
-    TRACE(15,"JacCol::JacCol(const JacCol& j)");
+    TRACE(5,"JacCol::JacCol(const JacCol& j)");
   }
   JacCol& JacCol::operator=(const JacCol& j){
     TRACE(10,"JacCol::operator=(const JacCol& j)");

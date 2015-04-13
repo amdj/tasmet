@@ -26,6 +26,7 @@ namespace tasystem{
     JacCol(const variable::var&,const dmat&);
     // JacCol(JacCol&&);           // Move data
     JacCol(const JacCol&);
+    void prePostMultiply(const dmat& pre,const dmat& post){ data_=pre*data_*post;}
     JacCol& operator=(const JacCol&);
     JacCol& operator=(JacCol&&);
     // Negate all terms

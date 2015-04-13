@@ -11,11 +11,13 @@
 #include <vector>
 #include <map>
 #include "tracer.h"
+#include "vtypes.h"
 #include <typeinfo>
 #include <exception>
+#include <cmath>
 
 namespace utils {
-  SPOILNAMESPACE
+
   // Purge a vector of components
   template<typename T>
   void purge(std::vector<T>& vec){
@@ -52,7 +54,12 @@ namespace utils {
     }
     return newt;
   } // copySeg
-  
+  template<typename T>
+  void makeNormal(T& c) {
+    for(auto& val: c)
+      if(!std::isnormal(val))
+         val=0;
+  }
   
 } // namespace utils
 

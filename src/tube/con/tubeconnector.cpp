@@ -95,17 +95,15 @@ namespace tube {
     }
     {
       
-      vd errorQ(Ns,fillwith::zeros);
-      vd errorT(Ns,fillwith::zeros);    
-
-      errorQ+=out0*bccells[0]->extrapolateQuant(heatFlow);
+      vd errorQ=out0*bccells[0]->extrapolateQuant(heatFlow);
       errorQ+=out1*bccells[1]->extrapolateQuant(heatFlow);
 
-      errorT+=bccells[0]->Tbc()();
-      errorT-=bccells[1]->Tbc()();
-      
+      // d Sfgem=0.5*(bccells[0]->Sfbc()+bccells[1]->Sfbc());
+      vd errorM=(bccells[0]->extrapolateQuant(pressure)-
+                 bccells[1]->extrapolateQuant(pressure));
+
       error.subvec(4,5*Ns-1)=errorQ;
-      error.subvec(5*Ns,6*Ns-1)=errorT;
+      error.subvec(5*Ns,6*Ns-1)=errorM;
 
     }    
 
@@ -161,11 +159,11 @@ namespace tube {
       Qjac+=(bccells[1]->dExtrapolateQuant(heatFlow)*=out1);
       jac+=Qjac;
 
-      JacRow Tjac(eqnr,2);
+      JacRow pjac(eqnr,2);
       // eqnr+=Ns; // Not needed no row below
-      Tjac+=JacCol(bccells[0]->Tbc(),eye);
-      Tjac+=JacCol(bccells[1]->Tbc(),-eye);
-      jac+=Tjac;
+      pjac+=bccells[0]->dExtrapolateQuant(pressure);
+      pjac+=(bccells[1]->dExtrapolateQuant(pressure)*=-1);
+      jac+=pjac;
     }    
 
   }
