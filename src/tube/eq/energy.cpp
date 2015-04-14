@@ -294,6 +294,8 @@ namespace tube{
   }
   vd Energy::kappaRt(const Cell& v) {		// Returns thermal conductivity time domain data
     TRACE(5,"Energy::kappaRt()");
+    if(v.i==0)
+      WARN("Thermal conductivity computed at T0");
     const WeightFactors w=WeightFactors(v);
     const vd& Tt=v.T().tdata();
     const vd& TtR=v.TR().tdata();

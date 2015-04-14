@@ -104,7 +104,7 @@ namespace tube{
     error.subvec(0,Ns-1)=Uiszero.error();
     error.subvec(Ns,2*Ns-1)=Tbc.error();
     error.subvec(2*Ns,3*Ns-1)=Tsbc.error();
-    // error.subvec(3*Ns,4*Ns-1)=cell->extrapolateQuant(Physquant::massFlow);
+    // error.subvec(3*Ns,4*Ns-1)=cell->extrapolateQuant(Physquant::MassFlow);
     error.subvec(3*Ns,4*Ns-1)=stateer;
     return error;
   }

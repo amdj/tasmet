@@ -61,50 +61,38 @@ namespace tube {
       out0=-1;
     if(pos[1]==Pos::left)
       out1=-1;
-
+    us nr=0;
     vd error(Neq*Ns);
     {
-      vd errorm(Ns,fillwith::zeros);
-      vd errormint(Ns,fillwith::zeros);    
+      vd errorm=out0*bccells[0]->mbc()();
+      +out1*bccells[1]->mbc()();
+      error.subvec(Ns*nr,Ns*(nr+1)-1)=errorm; nr++;
+    }
+    {
+      vd errormH=out0*bccells[0]->mHbc()()
+        +out1*bccells[1]->mHbc()();
 
-      errorm=out0*bccells[0]->mbc()();
-      errorm+=out1*bccells[1]->mbc()();
+      error.subvec(Ns*nr,Ns*(nr+1)-1)=errormH;  nr++;
+    }
+    {
       // Interpolation: mass flow is average of extrapolated mf
-      errormint+=0.5*out0*bccells[0]->extrapolateQuant(massFlow);
-      errormint+=0.5*out1*bccells[1]->extrapolateQuant(massFlow);
-      errormint-=out0*bccells[0]->mbc()();
-
-      error.subvec(0,Ns-1)=errorm;
-      error.subvec(Ns,2*Ns-1)=errormint;
+      vd errormHint=0.5*out0*bccells[0]->extrapolateQuant(EnthalpyFlow)
+      +0.5*out1*bccells[1]->extrapolateQuant(EnthalpyFlow)
+      -out0*bccells[0]->mHbc()();
+      error.subvec(Ns*nr,Ns*(nr+1)-1)=errormHint; nr++;
     }
     {
-      
-      vd errormH(Ns,fillwith::zeros);
-      vd errormHint(Ns,fillwith::zeros);    
+      vd errorQ=out0*bccells[0]->extrapolateQuant(HeatFlow)
+        +out1*bccells[1]->extrapolateQuant(HeatFlow);
 
-      errormH+=out0*bccells[0]->mHbc()();
-      errormH+=out1*bccells[1]->mHbc()();
-      
-      errormHint+=0.5*out0*bccells[0]->extrapolateQuant(enthalpyFlow);
-      errormHint+=0.5*out1*bccells[1]->extrapolateQuant(enthalpyFlow);
-      errormHint-=out0*bccells[0]->mHbc()();
-      
-      error.subvec(2,3*Ns-1)=errormH;
-      error.subvec(3*Ns,4*Ns-1)=errormHint;
-
+      error.subvec(Ns*nr,Ns*(nr+1)-1)=errorQ; nr++;
     }
     {
-      
-      vd errorQ=out0*bccells[0]->extrapolateQuant(heatFlow);
-      errorQ+=out1*bccells[1]->extrapolateQuant(heatFlow);
-
       // d Sfgem=0.5*(bccells[0]->Sfbc()+bccells[1]->Sfbc());
-      vd errorM=(bccells[0]->extrapolateQuant(pressure)-
-                 bccells[1]->extrapolateQuant(pressure));
+      vd errorp=(bccells[0]->extrapolateQuant(Pressure)
+                 -bccells[1]->extrapolateQuant(Pressure));
 
-      error.subvec(4,5*Ns-1)=errorQ;
-      error.subvec(5*Ns,6*Ns-1)=errorM;
-
+      error.subvec(Ns*nr,Ns*(nr+1)-1)=errorp; nr++;
     }    
 
     return error;
@@ -118,18 +106,20 @@ namespace tube {
       out0=-1;
     if(pos[1]==Pos::left)
       out1=-1;
-    {
+    {                           // Mass flow continuity
       JacRow mjac(eqnr,2);
       eqnr+=Ns;
       mjac+=JacCol(bccells[0]->mbc(),out0*eye);
       mjac+=JacCol(bccells[1]->mbc(),out1*eye);
-      
       jac+=mjac;
+    }
+    {
       JacRow mjacint(eqnr,5);
       eqnr+=Ns;
+
       // // Interpolation: mass flow is average of extrapolated mf
-      mjacint+=(bccells[0]->dExtrapolateQuant(massFlow)*=0.5*out0);
-      mjacint+=(bccells[1]->dExtrapolateQuant(massFlow)*=0.5*out1);
+      mjacint+=(bccells[0]->dExtrapolateQuant(MassFlow)*=0.5*out0);
+      mjacint+=(bccells[1]->dExtrapolateQuant(MassFlow)*=0.5*out1);
       mjacint+=JacCol(bccells[0]->mbc(),-out0*eye);
 
       jac+=mjacint;
@@ -141,28 +131,28 @@ namespace tube {
       mHjac+=JacCol(bccells[1]->mHbc(),out1*eye);
       
       jac+=mHjac;
-      JacRow mHjacint(eqnr,5);
+    }
+    {
+      JacRow Tjac(eqnr,2);
       eqnr+=Ns;
+      Tjac+=JacCol(bccells[0]->Tbc(),eye);
+      Tjac+=JacCol(bccells[1]->Tbc(),-eye);
+      jac+=Tjac;
 
-      // // Interpolation: mass flow is average of extrapolated mf
-      mHjacint+=(bccells[0]->dExtrapolateQuant(enthalpyFlow)*=0.5*out0);
-      mHjacint+=(bccells[1]->dExtrapolateQuant(enthalpyFlow)*=0.5*out1);
-      mHjacint+=JacCol(bccells[0]->mHbc(),-out0*eye);
-
-      jac+=mHjacint;
     }    
     {
       JacRow Qjac(eqnr,5);
       eqnr+=Ns;
 
-      Qjac+=(bccells[0]->dExtrapolateQuant(heatFlow)*=out0);
-      Qjac+=(bccells[1]->dExtrapolateQuant(heatFlow)*=out1);
+      Qjac+=(bccells[0]->dExtrapolateQuant(HeatFlow)*=out0);
+      Qjac+=(bccells[1]->dExtrapolateQuant(HeatFlow)*=out1);
       jac+=Qjac;
-
+    }
+    {
       JacRow pjac(eqnr,2);
       // eqnr+=Ns; // Not needed no row below
-      pjac+=bccells[0]->dExtrapolateQuant(pressure);
-      pjac+=(bccells[1]->dExtrapolateQuant(pressure)*=-1);
+      pjac+=bccells[0]->dExtrapolateQuant(Pressure);
+      pjac+=(bccells[1]->dExtrapolateQuant(Pressure)*=-1);
       jac+=pjac;
     }    
 

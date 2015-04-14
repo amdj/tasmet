@@ -18,12 +18,9 @@ namespace tube{
     assert(!left);
     assert(right);
 
-    // vars.push_back(&mHL_);
     // Remove momentum equation from list. Put equation for Mu in
     // place of momentum eq.
-    // WARN("HERE SOME EQS NEED TO BE DELETED");
     assert(eqs.find(EqType::Mom)!=eqs.end());
-    // If these elements are already deleted, we do nothing
     Equation* mom=eqs.at(EqType::Mom);
     delete mom;
     TRACE(25,"MOm eq deleted");

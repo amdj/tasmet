@@ -83,12 +83,14 @@ namespace tube{
              Q
   };
 
-  enum Physquant{massFlow,
-                 momentumFlow,
-                 enthalpyFlow,
-                 heatFlow,
-                 solidHeatFlow,
-                 pressure,
+
+  enum Physquant{MassFlow,
+                 MomentumFlow,
+                 EnthalpyFlow,
+                 Enthalpy,
+                 HeatFlow,
+                 SolidHeatFlow,
+                 Pressure,
   };
 
   #ifndef SWIG
@@ -102,7 +104,7 @@ namespace tube{
     Ise=3,			// Isentropic
     Sta=4,			// State
     Sol=5,			// SolidEnergy
-    Mu_is_m_u,      // momentumflow is massflow_squared div
+    Mu_is_m_u=6,      // momentumflow is massflow_squared div
                     // density*cs_area
     BcEq,
   };
