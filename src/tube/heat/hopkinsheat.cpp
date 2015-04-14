@@ -38,7 +38,6 @@ namespace tube{
         return 3*kappa/pow(rh,2);
       }
       d zeroheat_circ(d kappa,d rh){
-        WARN("Wrong!");
         return 0;
         return 2*kappa/pow(rh,2);
       }
@@ -70,6 +69,8 @@ namespace tube{
       zeroheatQ=0.2;      
     }
     else if(shape.compare("circ")==0){
+      WARN("This function is set Wrong!");
+
       zeroheatH_funptr=&H::zeroheat_circ;
       zeroheatQ=1/3;      
     }

@@ -71,15 +71,19 @@ namespace tube {
     {
       vd errormH=out0*bccells[0]->mHbc()()
         +out1*bccells[1]->mHbc()();
-
       error.subvec(Ns*nr,Ns*(nr+1)-1)=errormH;  nr++;
     }
     {
       // Interpolation: mass flow is average of extrapolated mf
-      vd errormHint=0.5*out0*bccells[0]->extrapolateQuant(EnthalpyFlow)
-      +0.5*out1*bccells[1]->extrapolateQuant(EnthalpyFlow)
-      -out0*bccells[0]->mHbc()();
+      // vd errormint=0.5*out0*bccells[0]->extrapolateQuant(MassFlow)
+      // +0.5*out1*bccells[1]->extrapolateQuant(MassFlow)
+      // -out0*bccells[0]->mbc()();
+      vd errormHint=bccells[0]->extrapolateQuant(EnthalpyFlow)
+        -bccells[0]->mHbc()();
       error.subvec(Ns*nr,Ns*(nr+1)-1)=errormHint; nr++;
+    }
+    {
+
     }
     {
       vd errorQ=out0*bccells[0]->extrapolateQuant(HeatFlow)
@@ -114,17 +118,6 @@ namespace tube {
       jac+=mjac;
     }
     {
-      JacRow mjacint(eqnr,5);
-      eqnr+=Ns;
-
-      // // Interpolation: mass flow is average of extrapolated mf
-      mjacint+=(bccells[0]->dExtrapolateQuant(MassFlow)*=0.5*out0);
-      mjacint+=(bccells[1]->dExtrapolateQuant(MassFlow)*=0.5*out1);
-      mjacint+=JacCol(bccells[0]->mbc(),-out0*eye);
-
-      jac+=mjacint;
-    }
-    {
       JacRow mHjac(eqnr,2);
       eqnr+=Ns;
       mHjac+=JacCol(bccells[0]->mHbc(),out0*eye);
@@ -133,12 +126,23 @@ namespace tube {
       jac+=mHjac;
     }
     {
-      JacRow Tjac(eqnr,2);
+      JacRow mjacint(eqnr,5);
       eqnr+=Ns;
-      Tjac+=JacCol(bccells[0]->Tbc(),eye);
-      Tjac+=JacCol(bccells[1]->Tbc(),-eye);
-      jac+=Tjac;
 
+      // // Interpolation: mass flow is average of extrapolated mf
+      mjacint+=(bccells[0]->dExtrapolateQuant(MassFlow));
+      mjacint+=JacCol(bccells[0]->mbc(),-eye);
+      // mjacint+=(bccells[1]->dExtrapolateQuant(MassFlow)*=0.5*out1);
+      // mjacint+=JacCol(bccells[0]->mbc(),-out0*eye);
+
+      jac+=mjacint;
+    }
+    {
+      JacRow Hjacint(eqnr,5);
+      eqnr+=Ns;
+      Hjacint+=bccells[0]->dExtrapolateQuant(Enthalpy);
+      Hjacint+=(bccells[1]->dExtrapolateQuant(Enthalpy)*=-1);
+      jac+=Hjacint;
     }    
     {
       JacRow Qjac(eqnr,5);

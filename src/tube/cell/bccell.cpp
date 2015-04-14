@@ -49,6 +49,9 @@ namespace tube{
     case Physquant::EnthalpyFlow:
       return Energy::extrapolateEnthalpyFlow(*this);
       break;
+    case Physquant::Enthalpy:
+      return Energy::extrapolateEnthalpy(*this);
+      break;
     default:
       WARN("This is not yet implemented!");
       assert(false);
@@ -71,6 +74,9 @@ namespace tube{
       break;
     case Physquant::EnthalpyFlow:
       return Energy::dExtrapolateEnthalpyFlow(*this);
+      break;
+    case Physquant::Enthalpy:
+      return Energy::dExtrapolateEnthalpy(*this);
       break;
     default:
       WARN("This is not yet implemented!");
