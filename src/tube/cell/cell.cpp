@@ -220,11 +220,12 @@ namespace tube{
         return 0.5*(mL()+mR());
         break;
       case Varnr::mH:                 // Volume flown
-        return 0.5*var(*gc,(Energy::mHL(*this)+Energy::mHR(*this)));
+        return var(*gc,0.5*(Energy::mHL(*this)+Energy::mHR(*this)));
         break;
       case Varnr::Q:                 // Volume flown
+        // TRACE(15,"getValue: Q");
         // return var(*gc,(Energy::QL(*this)));
-        return 0.5*var(*gc,(Energy::QL(*this)+Energy::QR(*this)));
+        return var(*gc,0.5*(Energy::QL(*this)+Energy::QR(*this)));
         break;
       case Varnr::p:                   // Pressure
         TRACE(15,"getValue: pressure");

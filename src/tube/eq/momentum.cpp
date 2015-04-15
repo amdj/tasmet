@@ -154,8 +154,8 @@ namespace tube{
       d wRNm1=(vxm2-xR)/(vxm2-vxm1);
       d wRNm2=(xR-vxm1)/(vxm2-vxm1);
 
-      VARTRACE(25,wRNm1);
-      VARTRACE(25,wRNm2);
+      // VARTRACE(25,wRNm1);
+      // VARTRACE(25,wRNm2);
       return std::make_tuple(wRNm1,wRNm2);
     }
    // Extrapolate momentum flow left side  

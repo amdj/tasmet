@@ -136,7 +136,7 @@ namespace tube{
     }
     else{
       d Wddt=cell.xR-cell.vx;
-      VARTRACE(25,Wddt);
+      // VARTRACE(25,Wddt);
       JacRow jacr(firsteqnr,4);
       jacr+=JacCol(cell.mbc(),Wddt*DDTfd);
       jacr+=JacCol(cell.p(),-cell.vSf*eye);
