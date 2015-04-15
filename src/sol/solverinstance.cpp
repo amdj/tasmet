@@ -5,7 +5,7 @@
 #include "solverconfiguration.h"
 
 namespace tasystem{
-  typedef tuple<d,d> dtuple;
+  typedef std::tuple<d,d> dtuple;
 
 
   SolverInstance::SolverInstance(Solver& sol):

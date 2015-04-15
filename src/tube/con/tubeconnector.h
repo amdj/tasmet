@@ -27,7 +27,9 @@ namespace tube{
     std::array<us,2> segnrs;
     std::array<Pos,2> pos;
     std::array<const BcCell*,2> bccells;
+    std::array<d,2> out={{1.0f, 1.0f}};
     us firsteqnr;
+    d dx=0;
   public:
     SimpleTubeConnector(us seg1,Pos pos1,us seg2,Pos pos2);
     SimpleTubeConnector(const SimpleTubeConnector&)=delete;
@@ -41,6 +43,8 @@ namespace tube{
     virtual void show(us) const;
     virtual void jac(tasystem::Jacobian&) const;
     virtual void updateNf();
+  private:
+    vd kappaSft() const;
     #endif
   };
 

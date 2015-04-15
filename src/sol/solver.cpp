@@ -7,7 +7,7 @@
 
 namespace tasystem{
   
-  
+  typedef std::tuple<d,d> dtuple;  
   using Eigen::ComputationInfo;
   
   evd solvesys_eigen(const esdmat& K,const evd& f) {
@@ -71,7 +71,7 @@ namespace tasystem{
     }
   }
 
-  typedef tuple<d,d> dtuple;
+
   void Solver::solve(us maxiter,d funtol,d reltol,d mindampfac,d maxdampfac,bool wait){
     TRACE(20,"Solver started.");
     sys().checkInit();
@@ -89,7 +89,7 @@ namespace tasystem{
     }
 
   }
-  tuple<d,d> Solver::doIter(d dampfac){
+  std::tuple<d,d> Solver::doIter(d dampfac){
     TRACE(15,"Solver::doIter("<<dampfac<<")");
     if(dampfac>0 && dampfac<=1.0) // if dampfac is legal value, use that
       sc.dampfac=dampfac;

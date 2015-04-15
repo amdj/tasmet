@@ -9,10 +9,12 @@
 #include <boost/atomic.hpp>
 #include "vtypes.h"
 
+
 namespace tasystem{
 
+
+
   #ifndef SWIG
-  using std::tuple;
   class TaSystem;
 
   evd solvesys_eigen(const esdmat& K,const evd& f);
@@ -46,9 +48,7 @@ namespace tasystem{
 
     // Start a solver thread. 
     void solve(us maxiter=5000,d funtol=1e-8,d reltol=1e-6,d mindampfac=1e-2,d maxdampfac=1,bool wait=true);
-    #ifndef SWIG
-    tuple<d,d> doIter(d dampfac=-1);
-    #endif
+    std::tuple<d,d> doIter(d dampfac=-1);
     ~Solver();
   };
 
