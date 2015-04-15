@@ -23,14 +23,14 @@ namespace tasystem{
     us i,j;
     // WARN("Dangerous setting");
 
-    for(auto row=jacrows.begin();row!=jacrows.end();row++){
-      insertrow=row->getRowDof();
-      for(auto col=row->jaccols.begin();col<row->jaccols.end();col++){
-        insertcol=col->getColDof();
+    for(const JacRow& row: jacrows) {
+      insertrow=row.getRowDof();
+      for(const JacCol& col: row.jaccols){
+        insertcol=col.getColDof();
         if(insertcol>=0){
-          const dmat& data=col->const_data();
-          for(us i=0;i<size;i++){
-            for(us j=0;j<size;j++){
+          const dmat& data=col.const_data();
+          for(i=0;i<size;i++){
+            for(j=0;j<size;j++){
               if(data(i,j)!=0)
             // TRACE(20,"abs data:" << std::abs(data(i,j)));
             // if(std::abs(data(i,j))>1e-15)

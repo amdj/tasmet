@@ -180,11 +180,11 @@ namespace tasystem{
     TRACE(14,"TaSystem::jacTriplets()");
     Jacobian jnew;
     us Nsegs=nSegs();
-    for(auto seg=segs.begin();seg!=segs.end();seg++){
-      (*seg)->jac(jnew);
+    for(const Seg* seg :segs){
+      seg->jac(jnew);
     } // end for loop
-    for(auto con=connectors.begin();con!=connectors.end();con++){
-      (*con)->jac(jnew);
+    for(auto con: connectors){
+      con->jac(jnew);
     } // end for loop
 
     // TRACE(25,"Jac\n"<<jac);

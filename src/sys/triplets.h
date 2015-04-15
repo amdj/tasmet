@@ -28,24 +28,15 @@ namespace tasystem{
 
 
 
-  class TripletList {
+  class TripletList: public vector<Triplet> {
     bool valid=true;
     void setValid_();                                    // Do this if invalid
   public:
-    vector<Triplet> trlist;
     TripletList(){}
-
+    TripletList(const esdmat& mat);
     virtual ~TripletList(){}
     void setValid(){ if(!valid) setValid_();}            // Updates trlist to remove invalid elements
 
-    void push_back(const Triplet& t){trlist.push_back(t);}
-    void reserve(us n) {trlist.reserve(n);}
-    int size() const { return trlist.size();}
-    Triplet& operator[](int n){return trlist[n];}
-    Triplet& at(us n){assert(n<trlist.size()); return trlist[n];}
-
-    vector<Triplet>::iterator begin() { return trlist.begin();}
-    vector<Triplet>::iterator end() {return trlist.end();}
     void show() const;
     void zeroOutRow(us rownr);
     void multiplyTriplets(const d& multiplicationfactor);
