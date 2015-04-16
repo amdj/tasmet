@@ -17,6 +17,8 @@ namespace tasystem{
 namespace tube{
   #ifdef SWIG
   %feature("notabstract") HopkinsLaminarDuct;
+  %catches(std::exception,...) HopkinsLaminarDuct::HopkinsLaminarDuct(const Geom&,d Tl);
+  %catches(std::exception,...) HopkinsLaminarDuct::HopkinsLaminarDuct(const Geom&,d Tl,d Tr);
   #endif
   class HopkinsLaminarDuct:public LaminarDuct{
     HopkinsHeatSource hopkinsheat;

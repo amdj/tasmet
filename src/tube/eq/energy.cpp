@@ -341,15 +341,15 @@ namespace tube{
   }
   vd Energy::kappaRt(const Cell& v) {		// Returns thermal conductivity time domain data
     TRACE(5,"Energy::kappaRt()");
-    if(v.i==0)
-      WARN("Thermal conductivity computed at T0");
+    // if(v.i==0)
+      // WARN("Thermal conductivity computed at T0");
     const WeightFactors w=WeightFactors(v);
     const vd& Tt=v.T().tdata();
     const vd& TtR=v.TR().tdata();
     // VARTRACE(25,v.gc->gas().kappa(WRr*TtR+WRl*Tt));
-    // return v.gc->gas().kappa(w.WRr*TtR+w.WRl*Tt);
+    return v.gc->gas().kappa(w.WRr*TtR+w.WRl*Tt);
 
-    return ones(Ns)*v.gc->gas().kappa(v.gc->T0());
+    // return ones(Ns)*v.gc->gas().kappa(v.gc->T0());
   }
   vd Energy::kappaLt(const Cell& v) {		// Returns thermal conductivity time domain data
     TRACE(5,"Energy::kappaRt()");
@@ -357,8 +357,8 @@ namespace tube{
     const vd& Tt=v.T().tdata();
     const vd& TtL=v.TL().tdata();    
     // VARTRACE(25,v.gc->gas().kappa(WLl*TtL+WLr*Tt));
-    // return v.gc->gas().kappa(w.WLl*TtL+w.WLr*Tt);
-    return ones(Ns)*v.gc->gas().kappa(v.gc->T0());
+    return v.gc->gas().kappa(w.WLl*TtL+w.WLr*Tt);
+    // return ones(Ns)*v.gc->gas().kappa(v.gc->T0());
   }
   void Energy::domg(vd& domg_) const {
     TRACE(0,"Energy::domg()");

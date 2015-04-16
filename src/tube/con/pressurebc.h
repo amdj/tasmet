@@ -17,7 +17,9 @@ namespace tube{
   variable::var coldtemp(const variable::var&);
   #endif
   #ifdef SWIG
-  // %feature("notabstract") PressureBc;
+  %catches(std::exception,...) PressureBc::PressureBc(const variable::var& p,const variable::var& T,const variable::var& Ts,us segnr,Pos position);
+  %catches(std::exception,...) PressureBc::PressureBc(const variable::var& p,const variable::var& T,us segnr,Pos position); 
+  %catches(std::exception,...) PressureBc::PressureBc(const variable::var& p,us segnr,Pos position);  // %feature("notabstract") PressureBc;
   #endif // SWIG
 
   class PressureBc:public TubeBc {

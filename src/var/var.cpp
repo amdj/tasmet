@@ -56,6 +56,9 @@ namespace variable {
     :var(gc)
   { // Create a variable and fill it with time data.
     TRACE(0,"var::var(gc,tdata_)");
+    if(data.size()!=adata_.size())
+      throw MyError("Wrong size of amplitude vector given. Does the"
+                    "vector size correspond to Ns?");
     if(adata){
       this->adata_=data;
       tdata_=iDFT*adata_;

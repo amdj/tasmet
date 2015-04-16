@@ -22,8 +22,11 @@ namespace variable {
   // var operator+(const d&,const var&);
 
   #endif
-
-
+  #ifdef SWIG
+  %catches(std::exception,...) var::var(const tasystem::Globalconf&); 
+  %catches(std::exception,...) var::var(const tasystem::Globalconf&,double); 
+  %catches(std::exception,...) var::var(const tasystem::Globalconf&,const vd& data,bool adata=true);
+  #endif
   class var {
     #ifndef SWIG
     friend var operator*(const double&,const var&);
