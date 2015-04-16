@@ -119,8 +119,9 @@ namespace tube {
     {
       // Simple variant. Should later be expanded to average of left
       // and right
-      vd errormHint=bccells[0]->extrapolateQuant(EnthalpyFlow)
-        -bccells[0]->mHbc()();
+      vd errormHint=0.5*out[0]*bccells[0]->extrapolateQuant(EnthalpyFlow)
+        -0.5*out[1]*bccells[1]->extrapolateQuant(EnthalpyFlow)
+        -out[0]*bccells[0]->mHbc()();
       error.subvec(Ns*nr,Ns*(nr+1)-1)=errormHint; nr++;
     }
     {
@@ -172,8 +173,9 @@ namespace tube {
       JacRow mHjacint(eqnr,5);
       eqnr+=Ns;
 
-      mHjacint+=(bccells[0]->dExtrapolateQuant(EnthalpyFlow));
-      mHjacint+=JacCol(bccells[0]->mHbc(),-eye);
+      mHjacint+=(bccells[0]->dExtrapolateQuant(EnthalpyFlow)*=0.5*out[0]);
+      mHjacint+=(bccells[1]->dExtrapolateQuant(EnthalpyFlow)*=-0.5*out[1]);
+      mHjacint+=JacCol(bccells[0]->mHbc(),-out[0]*eye);
 
       jac+=mHjacint;
     }

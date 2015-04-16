@@ -87,7 +87,6 @@ namespace tube{
   enum Physquant{MassFlow,
                  MomentumFlow,
                  EnthalpyFlow,
-                 Enthalpy,
                  HeatFlow,
                  SolidHeatFlow,
                  Pressure,

@@ -12,7 +12,22 @@
 
 namespace tasystem{
 
-
+  struct ErrorVals{
+    d funer;
+    d reler;
+    ErrorVals(d fe,d re): funer(fe),reler(re){}
+    #ifndef SWIG                // Swig does not know about
+                                // initializer lists
+    ErrorVals(std::initializer_list<d> il)
+    {
+      assert(il.size()==2);
+      auto it=il.begin();
+      funer=*it++;
+      reler=*it;
+    }
+    #endif
+    ~ErrorVals(){ TRACE(20,"~ErrorVals()"); }
+  };
 
   #ifndef SWIG
   class TaSystem;
@@ -48,7 +63,7 @@ namespace tasystem{
 
     // Start a solver thread. 
     void solve(us maxiter=5000,d funtol=1e-8,d reltol=1e-6,d mindampfac=1e-2,d maxdampfac=1,bool wait=true);
-    std::tuple<d,d> doIter(d dampfac=-1);
+    ErrorVals doIter(d dampfac=-1);
     ~Solver();
   };
 

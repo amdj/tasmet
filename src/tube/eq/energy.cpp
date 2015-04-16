@@ -8,7 +8,7 @@
 
 // #define TRACERPLUS 20
 // #define ENERGY_SCALE (1/v.gc->rho0/v.gc->c0)
-// #define ENERGY_SCALE (1.0/v.gc->p0)
+// #define ENERGY_SCALE (1.0/v.gc->p0())
 // #define ENERGY_SCALE (1.0/100)
 #define ENERGY_SCALE (1.0)
 // #define TRACERPLUS 15
@@ -85,7 +85,7 @@ namespace tube{
     error+=Wddtkin*DDTfd*v.mu()();
     // Total enthalpy flow in and out
     error+=mHR(v)-mHL(v);
-
+    // Heat flow in and out
     error+=QR(v)-QL(v);
 
     // External heat    
@@ -99,7 +99,7 @@ namespace tube{
 
     // (Boundary source term)
     // error+=v.esource();
-    return error;
+    return error*ENERGY_SCALE;
   }
   JacRow Energy::jac() const{
     TRACE(6,"Energy::jac()");
@@ -124,7 +124,7 @@ namespace tube{
     jac+=JacCol(v.T(),Wddt*t->getHeatSource().dTi(v));
     #endif
 
-    // jac*=ENERGY_SCALE;
+    jac*=ENERGY_SCALE;
     return jac;    
   }
   
@@ -139,54 +139,82 @@ namespace tube{
     return w.WRr*v.TR().tdata() + w.WRl*v.T().tdata();
   }
   inline vd EkinLt(const Cell& v,const WeightFactors& w) {
-    // returns 0.5*u^2
+    TRACE(15,"EkinLt(v,w)");
     assert(v.left());
     const vd& rhot=v.rho().tdata();
     d vSf=v.vSf;
-    const vd& rhoLt=v.left()->rho().tdata();
+    const vd& rhoLt=v.rhoL().tdata();
     d vSfL=v.left()->vSf;
-    return 0.5*pow(v.mL().tdata()/(w.WLl*(rhoLt*vSfL)+w.WLr*(rhot*vSf)),2);
-  }
-  inline JacRow dEkinL(const Cell& v,const WeightFactors& w){
-    const vd& rhot=v.rho().tdata();
-    d vSf=v.vSf;
-    const vd& rhoLt=v.left()->rho().tdata();
-    d vSfL=v.left()->vSf;
-    JacRow dEkinL(-1,1);
-    vd one_ov_rhoLt_sq=1/pow(w.WLl*(rhoLt*vSfL)+w.WLr*(rhot*vSf),2);
-    dEkinL+=JacCol(v.mL(),fDFT*diagmat(v.mL().tdata()%one_ov_rhoLt_sq)*iDFT);
-    return dEkinL;
+    return 0.5*pow(
+                   v.mL().tdata()/(w.WLl*(rhoLt*vSfL)+w.WLr*(rhot*vSf))
+                   ,2);
   }
   inline vd EkinRt(const Cell& v,const WeightFactors& w) {
+    TRACE(15,"EkinRt(v,w)");
     // returns 0.5*u^2 right
     assert(v.right());
     const vd& rhoRt=v.right()->rho().tdata();
     const vd& rhot=v.rho().tdata();
     d vSfR=v.right()->vSf;
     d vSf=v.vSf;
-    return 0.5*pow(v.mR().tdata()/(w.WRr*(rhoRt*vSfR)+w.WRl*(rhot*vSf)),2);
+    return 0.5*pow(
+                   v.mR().tdata()/(w.WRr*(rhoRt*vSfR)+w.WRl*(rhot*vSf))
+                   ,2);
   }
-  inline JacRow dEkinR(const Cell& v,const WeightFactors& w){
+  inline vd mEkinL(const Cell& v,const WeightFactors& w) {
+    TRACE(15,"mEkinL()");
+    return fDFT*(v.mL().tdata()%EkinLt(v,w));
+  }
+  inline vd mEkinR(const Cell& v,const WeightFactors& w) {
+    TRACE(15,"mEkinR()");
+    return fDFT*(v.mR().tdata()%EkinRt(v,w));
+  }  
+  inline JacRow dmEkinL(const Cell& v,const WeightFactors& w){
+    TRACE(15,"dmEkinL()");
+    JacRow dmEkinL(-1,4);
+
     const vd& rhot=v.rho().tdata();
     d vSf=v.vSf;
-    const vd& rhoRt=v.right()->rho().tdata();
+    const vd& rhoLt=v.rhoL().tdata();
+    d vSfL=v.left()->vSf;
+    JacRow dEkinL(-1,1);
+    vd one_ov_rhoSfLt_sq=1/pow(w.WLl*(rhoLt*vSfL)+w.WLr*(rhot*vSf),2);
+    vd one_ov_rhoSfLt_tr=1/pow(w.WLl*(rhoLt*vSfL)+w.WLr*(rhot*vSf),3);
+
+    dmEkinL+=JacCol(v.mL(),fDFT*diagmat(1.5*pow(v.mL().tdata(),2)%one_ov_rhoSfLt_sq)*iDFT);
+    // dmEkinL+=JacCol(v.rho(),-fDFT*diagmat(vSf*w.WLr*pow(v.mL().tdata(),3)%one_ov_rhoSfLt_tr)*iDFT);
+    // dmEkinL+=JacCol(v.rhoL(),-fDFT*diagmat(vSfL*w.WLl*pow(v.mL().tdata(),3)%one_ov_rhoSfLt_tr)*iDFT);
+    
+    return dmEkinL;
+  }
+  inline JacRow dmEkinR(const Cell& v,const WeightFactors& w){
+    TRACE(15,"dmEkinR()");
+    JacRow dmEkinR(-1,3);
+    const vd& rhot=v.rho().tdata();
+    d vSf=v.vSf;
+    const vd& rhoRt=v.rhoR().tdata();
     d vSfR=v.right()->vSf;
-    JacRow dEkinR(-1,1);
-    vd one_ov_rhoRt_sq=1/pow(w.WRr*(rhoRt*vSfR)+w.WRl*(rhot*vSf),2);
-    dEkinR+=JacCol(v.mR(),fDFT*diagmat(v.mR().tdata()%one_ov_rhoRt_sq)*iDFT);
-    return dEkinR;
+    vd one_ov_rhoSfRt_sq=1/pow(w.WRr*(rhoRt*vSfR)+w.WRl*(rhot*vSf),2);
+    vd one_ov_rhoSfRt_tr=1/pow(w.WRr*(rhoRt*vSfR)+w.WRl*(rhot*vSf),3);      
+    dmEkinR+=JacCol(v.mR(),fDFT*diagmat(1.5*pow(v.mR().tdata(),2)%one_ov_rhoSfRt_sq)*iDFT);
+
+    // dmEkinR+=JacCol(v.rho(),-fDFT*diagmat(vSf*w.WRl*pow(v.mR().tdata(),3)%one_ov_rhoSfRt_tr)*iDFT);
+    // dmEkinR+=JacCol(v.rhoR(),-fDFT*diagmat(vSfR*w.WRr*pow(v.mR().tdata(),3)%one_ov_rhoSfRt_tr)*iDFT);
+      
+
+    return dmEkinR;
   }
   vd Energy::mHL(const Cell& v) {
     TRACE(15,"Energy::mHL()");
-    const WeightFactors w=WeightFactors(v);
 
     if(v.left()) {
+      const WeightFactors w=WeightFactors(v);
       // ******************** Static enthalpy part
       d cp0=cp(v);
-      // TRACE(20,TmidLt(v));
+      // TRACE(20,TmidLt(v,w));
       vd mHL=fDFT*(cp0*TmidLt(v,w)%v.mL().tdata());
       // ******************** Kinetic energy part
-      mHL+=fDFT*(v.mL()()%EkinLt(v,w));
+      // mHL+=mEkinL(v,w);
       return mHL;
     }
     else
@@ -197,12 +225,11 @@ namespace tube{
     if(v.right()){
       const WeightFactors w=WeightFactors(v);
       // ******************** Static enthalpy part    
-      // TRACE(20,TmidRt(v));
+      // TRACE(20,TmidRt(v,w));
       d cp0=cp(v);
-
       vd mHR=fDFT*(cp0*TmidRt(v,w)%v.mR().tdata());
       // ******************** Kinetic energy part
-      mHR+=fDFT*(v.mR()()%EkinRt(v,w));
+      // mHR+=mEkinR(v,w);
     
       return mHR;
     }
@@ -212,72 +239,43 @@ namespace tube{
   JacRow Energy::dmHL(const Cell& v){
     TRACE(15,"Energy::dmHL()");
     if(v.left()){
-      JacRow dmHL(8);
+      JacRow dmHL(-1,3);
       const WeightFactors w=WeightFactors(v);
       // ******************** Static enthalpy part    
-      
+      // TRACE(20,TmidLt(v,w));      
       d cp0=cp(v);
-      vd dTmidt=TmidLt(v,w);
       const vd& mLtdata=v.mL().tdata();
-      dmHL+=JacCol(v.mL(),fDFT*diagmat(cp0*dTmidt)*iDFT );
-      dmHL+=JacCol(v.TL(),fDFT*diagmat(cp0*w.WLl*mLtdata)*iDFT );
+      dmHL+=JacCol(v.mL(),fDFT*diagmat(cp0*TmidLt(v,w))*iDFT );
       dmHL+=JacCol(v.T(),fDFT*diagmat(cp0*w.WLr*mLtdata)*iDFT );
+      dmHL+=JacCol(v.TL(),fDFT*diagmat(cp0*w.WLl*mLtdata)*iDFT );
       // ******************** Kinetic energy part
-      dmHL+=JacCol(v.mL(),fDFT*diagmat(EkinLt(v,w))*iDFT);
+      // dmHL+=dmEkinL(v,w);
       return dmHL;
     }
     else
       return JacRow(JacCol(static_cast<const BcCell&>(v).mHbc(),eye(v)));
 
   }
-  JacRow Energy::dHL(const Cell& v){
-    TRACE(15,"Energy::dmHL()");
-    JacRow dHL(8);
-    const WeightFactors w=WeightFactors(v);
-    // ******************** Static enthalpy part    
-      
-    d cp0=cp(v);
-    dHL+=JacCol(v.TL(),cp0*w.WLl*eye(v));
-    dHL+=JacCol(v.T(),cp0*w.WLr*eye(v));
-    // ******************** Kinetic energy part
-    dHL+=dEkinL(v,w);
-    return dHL;
-  }
   JacRow Energy::dmHR(const Cell& v) {
     TRACE(15,"Energy::dmHR(const Cell& v)");
 
     if(v.right()){
-      JacRow dmHR(8);
+      JacRow dmHR(-1,3);
       const WeightFactors w=WeightFactors(v);
       // ******************** Static enthalpy part    
-
+      // TRACE(20,TmidRt(v,w));
       d cp0=cp(v);
-      vd Tmidt=TmidRt(v,w);
       const vd& mRtdata=v.mR().tdata();
-      dmHR+=JacCol(v.mR(),fDFT*diagmat(cp0*Tmidt)*iDFT);
-      dmHR+=JacCol(v.TR(),fDFT*diagmat(cp0*w.WRr*mRtdata)*iDFT);
+      dmHR+=JacCol(v.mR(),fDFT*diagmat(cp0*TmidRt(v,w))*iDFT);
+
       dmHR+=JacCol(v.T(),fDFT*diagmat(cp0*w.WRl*mRtdata)*iDFT);
+      dmHR+=JacCol(v.TR(),fDFT*diagmat(cp0*w.WRr*mRtdata)*iDFT);
       // ******************** Kinetic energy part
-      dmHR+=JacCol(v.mR(),fDFT*diagmat(EkinRt(v,w))*iDFT);
+      // dmHR+=dmEkinR(v,w);
       return dmHR;
     }
     else
       return JacRow(JacCol(static_cast<const BcCell&>(v).mHbc(),eye(v)));
-  }
-  JacRow Energy::dHR(const Cell& v) {
-    TRACE(15,"Energy::dmHR(const Cell& v)");
-    JacRow dHR(8);
-    const WeightFactors w=WeightFactors(v);
-    // ******************** Static enthalpy part    
-
-    d cp0=cp(v);
-    vd Tmidt=TmidRt(v,w);
-    const vd& mRtdata=v.mR().tdata();
-    dHR+=JacCol(v.TR(),cp0*w.WRr*eye(v));
-    dHR+=JacCol(v.T(),cp0*w.WRl*eye(v));
-    // ******************** Kinetic energy part
-    dHR+=dEkinR(v,w);
-    return dHR;
   }
   class heatW{
   public:
@@ -328,7 +326,7 @@ namespace tube{
     const vd& Tt=v.T().tdata();
     const vd& Ttr=v.TR().tdata();
 
-    VARTRACE(15,fDFT*(kappaRt(v)%(w.WcRl*Tt+w.WcRr*Ttr)));
+    VARTRACE(5,fDFT*(kappaRt(v)%(w.WcRl*Tt+w.WcRr*Ttr)));
     return fDFT*(kappaRt(v)%(w.WcRl*Tt+w.WcRr*Ttr));
   }
   JacRow Energy::dQR(const Cell& v) {
@@ -399,47 +397,6 @@ namespace tube{
       d WR1,WR2; std::tie(WR1,WR2)=BcWeightFactors(v);
       jac+=(dmHL(v)*=WR1);
       jac+=(dmHL(*v.left())*=WR2);
-    }
-    return jac;
-  }
-  vd Energy::extrapolateEnthalpy(const Cell& v) {
-    TRACE(15,"Energy::extrapolateEnthalpy()");
-    // Can only be called for leftmost or rightmost node
-    assert((!v.left() && v.right()) || (v.left() && !v.right()));
-    const WeightFactors w=WeightFactors(v);
-    d cp0=cp(v);
-
-    if(!v.left()){
-      vd HR=cp0*fDFT*TmidRt(v,w)+
-        fDFT*EkinRt(v,w);
-      
-      const WeightFactors wR=WeightFactors(*v.right());
-      vd HRR=cp0*fDFT*TmidRt(*v.right(),wR)+
-        fDFT*EkinRt(*v.right(),wR);
-      d W0,W1; std::tie(W0,W1)=BcWeightFactors(v);
-
-      return W0*HR+W1*HRR;
-    }
-    else{
-      d WR1,WR2; std::tie(WR1,WR2)=BcWeightFactors(v);
-      const WeightFactors wL=WeightFactors(*v.left());
-      vd HL=cp0*fDFT*TmidLt(v,w)+fDFT*EkinLt(v,w);
-      vd HLL=cp0*fDFT*TmidLt(*v.left(),wL)+fDFT*EkinLt(*v.left(),wL);
-      return WR1*HL+WR2*HLL;
-    }
-  }
-  JacRow Energy::dExtrapolateEnthalpy(const Cell& v) {
-    TRACE(15,"Energy::dExtrapolateEnthalpy()");
-    JacRow jac(2);
-    if(!v.left()){
-      d W0,W1; std::tie(W0,W1)=BcWeightFactors(v);
-      jac+=(dHR(v)*=W0);
-      jac+=(dHR(*v.right())*=W1);
-    }
-    else{
-      d WR1,WR2; std::tie(WR1,WR2)=BcWeightFactors(v);
-      jac+=(dHL(v)*=WR1);
-      jac+=(dHL(*v.left())*=WR2);
     }
     return jac;
   }

@@ -18,10 +18,13 @@ namespace tube {
   using tasystem::JacRow;
   using tasystem::JacCol;
 
+  inline vd mu_td(const Cell& v) {
+    return 0.5*(pow(v.mL().tdata(),2)+pow(v.mR().tdata(),2))/(v.vSf*v.rho().tdata());
+  }
+    
   vd MuEq::error() const{
     TRACE(15,"MuEq::error()");
-    return -v.mu()()+
-      fDFT*(pow(0.5*(v.mL().tdata()+v.mR().tdata()),2)/(v.rho().tdata()*v.vSf));
+    return -v.mu()()+fDFT*mu_td(v);
   }
   void MuEq::show() const{
     cout << "----------------- MuEq\n";
@@ -31,12 +34,12 @@ namespace tube {
     JacRow jac(dofnr,4);
     jac+=JacCol(v.mu(),-eye());
 
-    vd two_m_i_td=(v.mL().tdata()+v.mR().tdata());
-    vd m_i_td_sq=pow(0.5*two_m_i_td,2);
     const vd& rhot=v.rho().tdata();
-    jac+=JacCol(v.rho(),-fDFT*diagmat(m_i_td_sq/(v.vSf*pow(rhot,2)))*iDFT);
-    jac+=JacCol(v.mL(),fDFT*diagmat(two_m_i_td/(v.vSf*rhot))*iDFT);
-    jac+=JacCol(v.mR(),fDFT*diagmat(two_m_i_td/(v.vSf*rhot))*iDFT);
+
+
+    jac+=JacCol(v.rho(),-fDFT*diagmat(mu_td(v)/rhot)*iDFT);
+    jac+=JacCol(v.mL(),fDFT*diagmat(0.5*v.mL().tdata()/(v.vSf*rhot))*iDFT);
+    jac+=JacCol(v.mR(),fDFT*diagmat(0.5*v.mR().tdata()/(v.vSf*rhot))*iDFT);
     return jac;
   }
   

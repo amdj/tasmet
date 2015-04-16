@@ -10,6 +10,9 @@
 #define MOMENTUM_H
 #include "tubeequation.h"
 
+// Define this variable to disable all drag
+// #define NODRAG
+
 namespace tube{
   SPOILNAMESPACE
   class Cell;

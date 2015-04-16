@@ -37,7 +37,7 @@ namespace tube{
     t=&v.getTube();
     if(v.left()){
       Wddt=v.vx-v.left()->vx;;
-      Wpi=v.SfL;
+      Wpi=v.vSf;
       Wpim1=-v.SfL;
     }
   }

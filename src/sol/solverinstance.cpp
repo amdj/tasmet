@@ -35,9 +35,9 @@ namespace tasystem{
     while((funer>sc.funtol || reler>sc.reltol) && nloop<sc.maxiter)
       {
         try{
-          dtuple ers=sol->doIter();
-          funer=std::get<0>(ers);
-          reler=std::get<1>(ers);
+          ErrorVals ers=sol->doIter();
+          funer=ers.funer;
+          reler=ers.reler;
           if(!(funer>0)){
             WARN("Function error: "<< funer << " . Quiting solving procedure.");
             throw 0;

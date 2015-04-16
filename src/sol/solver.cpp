@@ -89,7 +89,7 @@ namespace tasystem{
     }
 
   }
-  std::tuple<d,d> Solver::doIter(d dampfac){
+  ErrorVals Solver::doIter(d dampfac){
     TRACE(15,"Solver::doIter("<<dampfac<<")");
     if(dampfac>0 && dampfac<=1.0) // if dampfac is legal value, use that
       sc.dampfac=dampfac;
@@ -98,7 +98,7 @@ namespace tasystem{
     evd error=sys().error();
     if(!(error.size()>0)){
       WARN("Error illegal residual vector obtained. Exiting.");
-      return std::make_tuple(-1,-1);
+      return {-1,-1};
     }
     evd oldx=sys().getRes();
     d oldfuner=error.norm();
@@ -150,7 +150,7 @@ namespace tasystem{
     
     cout << "Current dampfac: " << sc.dampfac << "\n";
     TRACE(10,"Iteration done...");
-    return std::make_tuple(newfuner,reler);		// Return function error
+    return {newfuner,reler};		// Return function error
 
   } // Solver::DoIter()
 

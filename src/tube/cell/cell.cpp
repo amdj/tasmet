@@ -104,7 +104,7 @@ namespace tube{
     return eqs.size()*Ns;
   }
   void Cell::setDofNrs(us firstdof){
-    TRACE(20,"Cell::setDofNrs("<<firstdof<<")");
+    TRACE(5,"Cell::setDofNrs("<<firstdof<<")");
     us nvars=vars.size();        // This makes it safe to exclude dofs
     // in the vars vector
     for (auto& var : vars) { 
