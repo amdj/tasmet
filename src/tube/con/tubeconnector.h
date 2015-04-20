@@ -29,7 +29,7 @@ namespace tube{
     std::array<const BcCell*,2> bccells;
     std::array<d,2> out={{1.0f, 1.0f}};
     us firsteqnr;
-    d dx=0;
+    d dx=0,Sfgem;
   public:
     SimpleTubeConnector(us seg1,Pos pos1,us seg2,Pos pos2);
     SimpleTubeConnector(const SimpleTubeConnector&)=delete;

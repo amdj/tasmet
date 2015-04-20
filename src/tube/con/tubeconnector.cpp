@@ -6,7 +6,7 @@
 // Connect two tube-type segments by using conservation of mass,
 // momentum and energy. Number of equations 
 //////////////////////////////////////////////////////////////////////
-#define TRACERPLUS (20)
+
 #include "tubeconnector.h"
 #include "tasystem.h"
 #include "tube.h"
@@ -69,6 +69,8 @@ namespace tube {
     else
       dx+=bccells[1]->xR-bccells[1]->vx;
 
+    Sfgem=0.5*(bccells[0]->Sfbc()+bccells[1]->Sfbc());
+    
     VARTRACE(15,pos[0]);
     VARTRACE(15,pos[1]);
     VARTRACE(15,out[0]);
@@ -141,10 +143,12 @@ namespace tube {
       error.subvec(Ns*nr,Ns*(nr+1)-1)=errorQint; nr++;
     }
     {
-      // d Sfgem=0.5*(bccells[0]->Sfbc()+bccells[1]->Sfbc());
-      vd errorp=(bccells[0]->extrapolateQuant(Pressure)
-                 -bccells[1]->extrapolateQuant(Pressure));
 
+      vd errorp=Sfgem*(bccells[1]->extrapolateQuant(Pressure)
+                 -bccells[0]->extrapolateQuant(Pressure));
+      errorp+=bccells[1]->extrapolateQuant(MomentumFlow)
+        -bccells[0]->extrapolateQuant(MomentumFlow);
+      
       error.subvec(Ns*nr,Ns*(nr+1)-1)=errorp; nr++;
     }    
 
@@ -203,8 +207,10 @@ namespace tube {
     {
       JacRow pjac(eqnr,2);
       // eqnr+=Ns; // Not needed no row below
-      pjac+=bccells[0]->dExtrapolateQuant(Pressure);
-      pjac+=(bccells[1]->dExtrapolateQuant(Pressure)*=-1);
+      pjac+=(bccells[1]->dExtrapolateQuant(Pressure)*=Sfgem);
+      pjac+=(bccells[0]->dExtrapolateQuant(Pressure)*=-Sfgem);
+      pjac+=(bccells[1]->dExtrapolateQuant(MomentumFlow));
+      pjac+=(bccells[0]->dExtrapolateQuant(MomentumFlow)*=-1);             
       jac+=pjac;
     }    
 

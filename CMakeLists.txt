@@ -30,7 +30,7 @@ add_definitions(-DTRACERNAME=nltracer)
 
 ############################## Optimized code flags
 # set(CMAKE_CXX_FLAGS " -O3 ")
-# set(CMAKE_CXX_FLAGS " -O2 ")
+set(CMAKE_CXX_FLAGS " -O2 ")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -mtune=native -fopenmp")
 # set(CMAKE_CLANG "${CMAKE_GCC} -march=native -mtune=native -fopenmp")
 
@@ -83,11 +83,7 @@ AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/geom geom)
 AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/drag drag)
 AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/cell cell)
 AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/heat heat)
-
-# AUX_SOURCE_DIRECTORy(src/tube/con con)
-set(condir ${PROJECT_SOURCE_DIR}/src/tube/con)
-set(con ${condir}/tubebc.cpp ${condir}/adiabaticwall.cpp ${condir}/prescribeqty.cpp
-  ${condir}/pressurebc.cpp ${condir}/tubeconnector.cpp)
+AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/con con)
 
 set (nonlinear_SRC
   ${src}

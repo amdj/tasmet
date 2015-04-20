@@ -36,8 +36,6 @@ namespace tube{
     virtual void jac(tasystem::Jacobian&) const;
     // ------------------------------
     virtual void show(us i) const;
-    template<typename SegType,typename Sys>
-    friend SegType* copySeg(const SegType& t,const Sys& sys);
     #endif
   };
 

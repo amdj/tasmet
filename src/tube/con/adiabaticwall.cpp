@@ -33,12 +33,7 @@ namespace tube{
   void AdiabaticWall::show(us i) const {
     TRACE(5,"AdiabaticWall::show()");
     checkInit();
-    const char* side;
-    if(pos==Pos::left)
-      side="left";
-    else
-      side="right";
-    cout << "AdiabaticWall boundary condition set at "<<side <<" side of segment "<<segnr<<".\n";
+    cout << "AdiabaticWall boundary condition set at "<< posWord(pos) <<" side of segment "<<segnr<<".\n";
   }
   segment::Connector* AdiabaticWall::copy(const tasystem::TaSystem& sys) const {
     return new AdiabaticWall(*this,sys);

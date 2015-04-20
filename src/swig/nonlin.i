@@ -34,7 +34,7 @@
 
   #include "pressurebc.h"
   #include "adiabaticwall.h"  
-
+  #include "isotwall.h"  
   // Segments
   #include "seg.h"
 
@@ -89,7 +89,7 @@ extern int nltracer;
 // Other connectors
 %include "pressurebc.h"
 %include "adiabaticwall.h"  
-
+%include "isotwall.h"  
  // Segments
 %include "seg.h"
 
