@@ -11,10 +11,10 @@ namespace tasystem{
     TRACE(2,"Jacobian::append()");
     jacrows.push_back(other);
   }
-  TripletList Jacobian::getTriplets() const{
+  TripletList Jacobian::getTriplets(us ndofs) const{
     TRACE(18,"Jacobian::getTriplets()");
     int insertrow,insertcol;
-    TripletList res;
+    TripletList res(ndofs,ndofs);
     const dmat& typicaldatacel=jacrows.at(0).jaccols.at(0).const_data();
     us size=typicaldatacel.n_rows;
 

@@ -1,22 +1,34 @@
 #include "triplets.h"
 
 namespace tasystem{
+  using arma::sp_mat;
 
-  TripletList::TripletList(const esdmat & mat){
-    //only for ColMajor Sparse Matrix
-    reserve(mat.nonZeros());
-    for (int k=0; k<mat.outerSize(); ++k){
-      for (Eigen::SparseMatrix<double>::InnerIterator it(mat,k); it; ++it)
-        {
-          // it.value();
-          // it.row(); // row index
-          // it.col(); // col index (here it is equal to k)
-          // it.index(); // inner index, here it is equal to it.row()
-          push_back(Triplet(it.row(),it.col(),it.value()));
-        }
+  // TripletList::TripletList(const esdmat & mat){
+  //   //only for ColMajor Sparse Matrix
+  //   reserve(mat.nonZeros());
+  //   for (int k=0; k<mat.outerSize(); ++k){
+  //     for (Eigen::SparseMatrix<double>::InnerIterator it(mat,k); it; ++it)
+  //       {
+  //         // it.value();
+  //         // it.row(); // row index
+  //         // it.col(); // col index (here it is equal to k)
+  //         // it.index(); // inner index, here it is equal to it.row()
+  //         push_back(Triplet(it.row(),it.col(),it.value()));
+  //       }
+  //   }
+  // } // getTriplets
+  TripletList::operator sp_mat() const {
+    TRACE(15,"TripletList::operator sp_mat()");
+    us nvals=size();
+    arma::umat locations(2,nvals);
+    vd values(nvals);
+    for(us i=0;i<nvals;i++) {
+      locations(0,i)=(*this)[i].row();
+      locations(1,i)=(*this)[i].col();
+      values(i)=(*this)[i].value();
     }
-  } // getTriplets
-
+    return sp_mat(true,locations,values,nrows_,ncols_);
+  }
   void TripletList::zeroOutRow(us rownr){
     TRACE(15,"zeroOutRow()");
     valid=false;    
@@ -66,32 +78,30 @@ namespace tasystem{
   }
 
 
-  TripletList getTripletsBlock(const esdmat& mat,us startrow,us startcol,us nrows,us ncols){
-    assert(startrow+nrows <= (us) mat.rows());
-    assert(startcol+ncols <= (us) mat.cols());
-    us Mj,Mi,i,j,currOuterIndex,nextOuterIndex;
-    TripletList tripletList;
-    tripletList.reserve(mat.nonZeros());
+  // TripletList getTripletsBlock(const esdmat& mat,us startrow,us startcol,us nrows,us ncols){
+  //   assert(startrow+nrows <= (us) mat.rows());
+  //   assert(startcol+ncols <= (us) mat.cols());
+  //   us Mj,Mi,i,j,currOuterIndex,nextOuterIndex;
+  //   TripletList tripletList;
+  //   tripletList.reserve(mat.nonZeros());
 
-    for(j=0; j<ncols; j++){
-      Mj=j+startcol;
-      currOuterIndex = mat.outerIndexPtr()[Mj];
-      nextOuterIndex = mat.outerIndexPtr()[Mj+1];
+  //   for(j=0; j<ncols; j++){
+  //     Mj=j+startcol;
+  //     currOuterIndex = mat.outerIndexPtr()[Mj];
+  //     nextOuterIndex = mat.outerIndexPtr()[Mj+1];
 
-      for(us a = currOuterIndex; a<nextOuterIndex; a++){
-        Mi=mat.innerIndexPtr()[a];
+  //     for(us a = currOuterIndex; a<nextOuterIndex; a++){
+  //       Mi=mat.innerIndexPtr()[a];
 
-        if(Mi < startrow) continue;
-        if(Mi >= startrow + nrows) break;
+  //       if(Mi < startrow) continue;
+  //       if(Mi >= startrow + nrows) break;
 
-        i=Mi-startrow;    
-        tripletList.push_back(Triplet(i,j,mat.valuePtr()[a]));
-      }
-    }
-    return tripletList;
-  }
-
-
+  //       i=Mi-startrow;    
+  //       tripletList.push_back(Triplet(i,j,mat.valuePtr()[a]));
+  //     }
+  //   }
+  //   return tripletList;
+  // }
 
 
 }            // namespace tasystem

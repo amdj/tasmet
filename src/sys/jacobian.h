@@ -19,11 +19,9 @@ namespace tasystem{
 
   public:
     vector<JacRow> jacrows;
-    us maxRow() const;
-    us maxCol() const;
     void operator+=(const Jacobian&);
     void operator+=(const JacRow&);
-    TripletList getTriplets() const;
+    TripletList getTriplets(us ndofs) const;
   };
 
   

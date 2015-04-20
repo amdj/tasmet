@@ -74,7 +74,11 @@ SET(CMAKE_SWIG_FLAGS -py3 -Wall -DSWIG_PYTHON)
 AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/ src)
 AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/seg seg)
 AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/sol sol)
-AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/sys sys)
+# AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/sys sys)
+set(sysdir ${PROJECT_SOURCE_DIR}/src/sys)
+  set(sys ${sysdir}/tasystem.cpp ${sysdir}/globalconf.cpp
+    ${sysdir}/jaccol.cpp ${sysdir}/jacrow.cpp ${sysdir}/jacobian.cpp ${sysdir}/triplets.cpp )
+  
 AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/var var)
 AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/geom/grid grid)
 AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/eq eq)

@@ -9,7 +9,7 @@
 namespace tasystem{
   using segment::Seg;
   using segment::Connector;
-  using math_common::armaView;
+  using arma::sp_mat;
 
   inline us max(us s,us t){  return s? s>=t : t;}
 
@@ -180,6 +180,7 @@ namespace tasystem{
     TRACE(14,"TaSystem::jacTriplets()");
     Jacobian jnew;
     us Nsegs=nSegs();
+    
     for(const Seg* seg :segs){
       seg->jac(jnew);
     } // end for loop
@@ -188,12 +189,12 @@ namespace tasystem{
     } // end for loop
 
     // TRACE(25,"Jac\n"<<jac);
-    trips=jnew.getTriplets();
+    trips=jnew.getTriplets(getNDofs());
     // trips.show();
     // cout << "Ndofs:" << getNDofs() << "\n";
 
   }
-  esdmat TaSystem::jac(d dummy){
+  sp_mat TaSystem::jac(d dummy){
     TRACE(14,"TaSystem::Jac()");
     checkInit();
 
@@ -204,21 +205,19 @@ namespace tasystem{
     const us& Ns=gc_.Ns();
     us Ndofs=getNDofs();
     TRACE(15,"Ndofs:"<<Ndofs);    
-    TripletList triplets;
+    TripletList triplets(Ndofs,Ndofs);
+    // Fill the tripletlist
     jacTriplets(triplets);
-
+    // Remove all invalid elements
     triplets.setValid();
-    esdmat eigsjac(Ndofs,Ndofs);
-    eigsjac.setFromTriplets(triplets.begin(),triplets.end());
-    return eigsjac;
+    return triplets;            // Implicitly converts
   }
-  evd TaSystem::error(){
+  vd TaSystem::Error() {
     TRACE(14,"TaSystem::Error()");
     checkInit();
 
     us Ndofs=getNDofs();
-    evd error(Ndofs);
-    vd Error(error.data(),Ndofs,false,false); // Globally, neqs=ndofs
+    vd Error(Ndofs); // Globally, neqs=ndofs
     Error.zeros();
     us Nsegs=nSegs();
     us Ncon=nConnectors();
@@ -237,17 +236,16 @@ namespace tasystem{
       starteq+=coneqs;
     }
     // VARTRACE(15,error)
-    return error;
+    return Error;
   }
-  evd TaSystem::getRes(){
+  vd TaSystem::getRes(){
     TRACE(14,"TaSystem::getRes()");
     checkInit();
     us Ndofs=getNDofs();
     TRACE(14,"TaSystem::GetRes(), Ndofs:"<< Ndofs);
     const us& Ns=gc_.Ns();
-    evd res(Ndofs);
-    
-    vd Res(res.data(),Ndofs,false,false);
+      
+    vd Res(Ndofs);
 
     us segdofs;
     us startdof=0;
@@ -258,7 +256,7 @@ namespace tasystem{
       startdof+=segdofs;
       TRACE(4,"Seg:"<<i<<", Ndofs: "<<segdofs);
     }
-    return res;
+    return Res;
   }
   // void TaSystem::setRes(const TaSystem& other){
   //   TRACE(25,"TaSystem::setRes(TaSystem)");
@@ -278,11 +276,6 @@ namespace tasystem{
     assert(!segs.empty());
     for(auto seg=segs.begin();seg!=segs.end();seg++)
       (*seg)->resetHarmonics();
-  }
-  void TaSystem::setRes(const evd& res){
-    TRACE(15,"EngineSystem::setRes()");
-    vd res2=math_common::armaView(res);
-    setRes(res2);
   }
   const tube::Tube& TaSystem::getTube(us i)  const {
     return dynamic_cast<const tube::Tube&>(*segs.at(i));
@@ -319,16 +312,11 @@ namespace tasystem{
   dmat TaSystem::showJac(){
     TRACE(15,"TaSystem::showJac()");
     checkInit();
-    Eigen::MatrixXd jacd(jac());
-    TRACE(15,"Eigen matrix built");
-    return math_common::EigenToArma(jacd);
+    return dmat(jac());
   }
   TaSystem::~TaSystem() {
     TRACE(25,"~TaSystem()");
     cleanup();
-  }
-  vd TaSystem::GetRes(){
-    return math_common::EigenToArma(getRes());
   }
 } // namespace tasystem
 

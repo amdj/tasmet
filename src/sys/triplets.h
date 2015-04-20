@@ -2,7 +2,6 @@
 #ifndef _TRIPLETS_H_
 #define _TRIPLETS_H_
 
-#include "arma_eigen.h"
 #include "vtypes.h"
 
 namespace tasystem{
@@ -31,12 +30,13 @@ namespace tasystem{
   class TripletList: public vector<Triplet> {
     bool valid=true;
     void setValid_();                                    // Do this if invalid
+    us nrows_,ncols_;
   public:
-    TripletList(){}
-    TripletList(const esdmat& mat);
+    TripletList(us nrows,us ncols):nrows_(nrows),ncols_(ncols){}
     virtual ~TripletList(){}
     void setValid(){ if(!valid) setValid_();}            // Updates trlist to remove invalid elements
-
+    // Convert to Armadillo Sparse matrix
+    operator arma::sp_mat() const;
     void show() const;
     void zeroOutRow(us rownr);
     void multiplyTriplets(const d& multiplicationfactor);
@@ -46,8 +46,8 @@ namespace tasystem{
 
   };
 
-  TripletList getTriplets(const esdmat& mat);
-  TripletList getTripletsBlock(const esdmat& mat,us startrow,us startcol,us nrows,us ncols);
+  // TripletList getTriplets(const esdmat& mat);
+  // TripletList getTripletsBlock(const esdmat& mat,us startrow,us startcol,us nrows,us ncols);
 
   
 

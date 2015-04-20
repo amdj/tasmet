@@ -2,59 +2,14 @@
 #include "tasystem.h"
 #include "solverinstance.h"
 #include "vtypes.h"
-#include <Eigen/Sparse>
+
 
 
 namespace tasystem{
   
   typedef std::tuple<d,d> dtuple;  
-  using Eigen::ComputationInfo;
+  using arma::sp_mat;
   
-  evd solvesys_eigen(const esdmat& K,const evd& f) {
-    TRACE(15,"Eigen solver used for large system");
-    // Solve a linear system using Eigen sparse
-    // Form: K*x=f
-    assert(f.size()>0);
-
-    // Eigen::SimplicialCholesky<esdmat,Eigen::COLAMDOrdering<int> > solver(jac); // Werkt niet...
-    // Eigen::SimplicialCholesky<esdmat,3 > solver(jac2); // Werkt niet...    
-    // Eigen::SimplicialLDLT<esdmat> solver(jac2);
-    // Eigen::SparseQR<esdmat,Eigen::COLAMDOrdering<int> > solver(jac2);      
-    // matrix
-    // cout << "f:\n"<<f;
-    // cout << "Matrix k:"<< K << "\n";
-    // Eigen::FullPivLU<edmat> dec(K);
-    TRACE(19,"Initializing solver...");    
-    // Eigen::SparseQR<esdmat,Eigen::COLAMDOrdering<int> > solver(K);
-    Eigen::SparseLU<esdmat,Eigen::COLAMDOrdering<int> > solver(K);
-    switch(solver.info()){
-    case ComputationInfo::InvalidInput:
-      cout << "Solver initialization failed: invalid input" << "\n";
-      throw(0);
-    case ComputationInfo::NumericalIssue:
-      cout << "Solver initialization failed: numerical issue" << "\n";
-      throw(0);
-    case ComputationInfo::NoConvergence:
-      cout << "Solver initialization failed: no convergence" << "\n";
-      throw(0);
-    case ComputationInfo::Success:
-      break;
-    } // switch
-    TRACE(19,"Logarithm of absolute value of determinant of matrix: "<<solver.logAbsDeterminant());
-    // Eigen::BiCGSTAB<Eigen::SparseMatrix<double> > solver(K);
-    // cout << "Logarithm of absolute value of determinant of matrix: "<<solver.logAbsDeterminant() <<"\n";
-    
-    // solver.setMaxIterations(500);
-    
-    TRACE(19,"Solving linear system...");    
-    evd x=solver.solve(f);
-    // std::cout << "#iterations: " << solver.iterations() << std::endl;
-    // std::cout << "estimated error: " << solver.error() << std::endl;
- 
-    TRACE(19,"Solving linear system done.");    
-    return x;    
-  }
-
 
   // A solver always contains a valid system.
   Solver::Solver(const TaSystem& sys):tasystem(sys.copy()) {
@@ -91,32 +46,31 @@ namespace tasystem{
   }
   ErrorVals Solver::doIter(d dampfac){
     TRACE(15,"Solver::doIter("<<dampfac<<")");
+    using arma::norm;
     if(dampfac>0 && dampfac<=1.0) // if dampfac is legal value, use that
       sc.dampfac=dampfac;
 
 
-    evd error=sys().error();
+    vd error=sys().Error();
     if(!(error.size()>0)){
       WARN("Error illegal residual vector obtained. Exiting.");
       return {-1,-1};
     }
-    evd oldx=sys().getRes();
-    d oldfuner=error.norm();
+    vd oldx=sys().getRes();
+    d oldfuner=norm(error);
 
     us Ndofs=error.size();
 
-    esdmat jac;
+    sp_mat jac=sys().jac(sc.dampfac);
 
-    jac=sys().jac(sc.dampfac);
-    jac.makeCompressed();
-
-    assert(jac.cols()==error.size());
-    assert(jac.rows()==error.size());
+    // assert(jac.cols()==error.size());
+    // assert(jac.rows()==error.size());
 
     TRACE(15,"Solving linear system...");
-    evd fulldx; 
+    vd fulldx; 
     try{
-      fulldx=-1.0*solvesys_eigen(jac,error);
+      
+      fulldx=-1.0*arma::spsolve(jac,error,"superlu");
     }
     catch(int e){
       throw e;
@@ -124,14 +78,13 @@ namespace tasystem{
     TRACE(15,"SFSG");
     d newfuner;
     d reler;
-    evd newx(Ndofs);
-    vd Newx=math_common::armaView(newx);
-    TRACE(15,"SFSG");
-    reler=fulldx.norm();
+    vd newx(Ndofs);
+
+    reler=norm(fulldx);
     do{
       newx=oldx+sc.dampfac*fulldx;
-      sys().setRes(Newx);
-      newfuner=sys().error().norm();
+      sys().setRes(newx);
+      newfuner=norm(sys().Error());
       if((newfuner>oldfuner || !(newfuner>0)) && sc.dampfac>sc.mindampfac){
         sc.dampfac=sc.dampfac*0.5;
         cout << "Decreasing dampfac, new dampfac = " << sc.dampfac << "\n";
@@ -144,8 +97,8 @@ namespace tasystem{
 
     else{
       newx=oldx+sc.dampfac*fulldx;
-      sys().setRes(Newx);
-      newfuner=sys().error().norm();
+      sys().setRes(newx);
+      newfuner=norm(sys().Error());
     }
     
     cout << "Current dampfac: " << sc.dampfac << "\n";

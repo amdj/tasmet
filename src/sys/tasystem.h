@@ -14,7 +14,6 @@
 #include <memory>
 #include "vtypes.h"
 #include "globalconf.h"
-#include "arma_eigen.h"
 
 #ifndef SWIG
 namespace segment{
@@ -30,9 +29,6 @@ namespace tube{
 namespace tasystem{
   #ifndef SWIG
   SPOILNAMESPACE
-
-  typedef Eigen::VectorXd evd;
-  typedef Eigen::SparseMatrix<double> esdmat;
 
   class TripletList;
   #endif  
@@ -76,19 +72,16 @@ namespace tasystem{
     // system. It creates a copy
 
     dmat showJac();
-    vd Error() {return math_common::EigenToArma(error());}// Total error vector
     virtual void show(us detailnr=0);
     virtual void init();
-
+    virtual vd Error();			// Total error vector
     #ifndef SWIG
-    virtual evd error();			// Total error vector
-    virtual evd getRes();			// Extract result vector
-    virtual esdmat jac(d dummy=-1);		// Return Jacobian matrix
 
-    void setRes(const evd& res);
+    virtual vd getRes();			// Extract result vector
+    virtual arma::sp_mat jac(d dummy=-1);		// Return Jacobian matrix
+
     #endif
     virtual void setRes(const vd& resvec);	// Set result vector
-    vd GetRes();			// Extract result vector
     void setNf(us);
 
     // Reset amplitude data in higher harmonics

@@ -23,7 +23,7 @@ namespace tasystem{
     SolverConfiguration& sc=sol->sc;
 
     TaSystem& sys=sol->sys();
-    evd oldres=sys.getRes();
+    vd oldres=sys.getRes();
     d funer=1.0;
     // For sure, we do at least one iteration
     d reler=1.0;
@@ -47,8 +47,7 @@ namespace tasystem{
         }
         catch(int Error){
           cout << "Solver failed. Resetting result data to old state.\n";
-          vd oldres_arma(oldres.data(),oldres.size(),false,false);
-          sys.setRes(oldres_arma);
+          sys.setRes(oldres);
           return;
         }
       }
