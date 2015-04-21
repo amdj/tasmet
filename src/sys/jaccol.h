@@ -8,7 +8,7 @@
 #pragma once
 #ifndef JACCOL_H
 #define JACCOL_H
-#include "arma_eigen.h"
+#include "vtypes.h"
 
 namespace variable{ class var;}
 namespace tasystem{ class Globalconf;}

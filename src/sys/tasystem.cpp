@@ -1,3 +1,4 @@
+#include <cassert>
 #include "tasystem.h"
 #include "triplets.h"
 #include "jacobian.h"

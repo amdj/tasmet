@@ -6,21 +6,12 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/common/cmake_to
 
 # CMakeList.txt for nonlinear code
 
-# Eigen
-find_package(Eigen3 REQUIRED)
-
 # Python
 find_package(PythonLibs REQUIRED)
 
 # Initialize swig
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
-
-# Boost libraries
-find_package(Boost COMPONENTS system REQUIRED)
-find_package(Boost COMPONENTS thread REQUIRED)
-link_directories( ${Boost_LIBRARY_DIR})
-
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/common)
 
@@ -36,7 +27,6 @@ set(CMAKE_CXX_FLAGS " -O2 ")
 
 #add_definitions(-DNDEBUG)	#This is for BOOST functions, and to disable assertions!
 # add_definitions(-DTRACER=0)
-# add_definitions(-DEIGEN_NO_DEBUG -DARMA_NO_DEBUG)
 
 #Debug mode
 # set(CMAKE_GCC "${CMAKE_GCC} -g -ggdb")
@@ -103,9 +93,7 @@ set (nonlinear_SRC
 
 include_directories(
   ${PYTHON_INCLUDE_PATH}
-  ${EIGEN3_INCLUDE_DIR}
   ${ARMADILLO_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIR}  
   ${PROJECT_SOURCE_DIR}/common/src
   ${PROJECT_SOURCE_DIR}/common/src/swig
   ${PROJECT_SOURCE_DIR}/src
@@ -126,8 +114,7 @@ link_directories(${PROJECT_SOURCE_DIR}/common)
 # add_library(nonlin_lib SHARED ${nonlinear_SRC})
 add_library(nonlin_lib  ${nonlinear_SRC})
 
-target_link_libraries(nonlin_lib common ${Boost_THREAD_LIBRARY}
-  ${Boost_SYSTEM_LIBRARY} ${ARMADILLO_LIBRARY})
+target_link_libraries(nonlin_lib common ${ARMADILLO_LIBRARY})
 
 set_source_files_properties(${PROJECT_SOURCE_DIR}/src/swig/nonlin.i
   PROPERTIES CPLUSPLUS ON)
