@@ -1,116 +1,152 @@
 #include "solver.h"
 #include "tasystem.h"
-#include "solverinstance.h"
 #include "vtypes.h"
-
-
+#include "exception.h"
 
 namespace tasystem{
-  
-  typedef std::tuple<d,d> dtuple;  
   using arma::sp_mat;
-  
 
   // A solver always contains a valid system.
-  Solver::Solver(const TaSystem& sys):tasystem(sys.copy()) {
-    TRACE(15,"Solver(TaSystem&)");
-  }
-  Solver::Solver(const Solver& o): Solver(*o.tasystem){}
   void Solver::stop() {
     TRACE(15,"Solver::stop()");
+    d maxiter=sc.maxiter;
+    sc.maxiter=0;
     if(solverThread){
       cout << "Waiting for solver to finish...\n";
-      sc.maxiter=0;
       solverThread->join();
       solverThread.reset();
     }
+    sc.maxiter=maxiter;
   }
-
-
-  void Solver::solve(us maxiter,d funtol,d reltol,d mindampfac,d maxdampfac,bool wait){
-    TRACE(20,"Solver started.");
-    sys().checkInit();
-    sc=SolverConfiguration(maxiter,funtol,reltol,mindampfac,maxdampfac);
+  void doSolve(Solver* s,TaSystem* thesys) {
+    TRACE(15,"doSolve()");
+    SolverConfiguration& sc=s->sc;
+    assert(thesys && s);
+    d funer=1.0;
+    // For sure, we do at least one iteration
+    d reler=1.0;
+    us nloop=0;
+    vd oldres=thesys->getRes();
+    while((funer>sc.funtol || reler>sc.reltol) && nloop<sc.maxiter)    {
+      try{
+        ErrorVals ers=doIter(thesys,&sc);
+        funer=ers.funer;
+        reler=ers.reler;
+        if(funer<0){
+          WARN("Function error: "<< funer << " . Quiting solving procedure.");
+          return;
+        }
+        cout << green <<  "Iteration: "<<nloop<<" , function error: "<<funer<<" , relative error:" << reler<< "."<< def <<"\n";
+        nloop++;
+      }
+      catch(...){
+        cout << "Solver failed, probably due to a numerical problem. TaSystem not updated.\n";
+        thesys->setRes(oldres);
+        return;
+      }
+    } // while
+    if(nloop==sc.maxiter)
+      WARN("Solver reached maximum number of iterations! Results might not be reliable!");
+    if(sc.maxiter==0)
+      WARN("Solver stopped externally");
+    cout << "Solver done. Updating TaSystem...\n";
+  }
+  void Solver::solve(TaSystem& sys,us maxiter,d funtol,d reltol,d mindampfac,d maxdampfac,bool wait){
+    TRACE(18,"Solver::solve(us maxiter,d funtol,d reltol,d mindampfac,d maxdampfac,bool wait)");
+    return solve(sys,SolverConfiguration(maxiter,funtol,reltol,mindampfac,maxdampfac),wait);
+  }
+  void Solver::solve(TaSystem& sys,const SolverConfiguration& sc1,bool wait){
+    TRACE(20,"Solver::solve(sys,sc)");
+    // Update solver configuration
+    sc=sc1;
+    // Check our sysetm
+    sys.checkInit();
 
     // Stop old solverthread
     stop();
-
-    solverThread.reset(new boost::thread(SolverInstance(*this)));
+    solverThread.reset(new std::thread(doSolve,this,&sys));
 
     if(wait){
       cout << "Waiting for solver...\n";
       solverThread->join();
       solverThread.reset();
     }
-
   }
-  ErrorVals Solver::doIter(d dampfac){
-    TRACE(15,"Solver::doIter("<<dampfac<<")");
+
+  ErrorVals doIter(TaSystem* sys1,SolverConfiguration* sc) {
+    TRACE(15,"Solver::doIter(sc)");
     using arma::norm;
-    if(dampfac>0 && dampfac<=1.0) // if dampfac is legal value, use that
-      sc.dampfac=dampfac;
-
-
-    vd error=sys().Error();
-    if(!(error.size()>0)){
-      WARN("Error illegal residual vector obtained. Exiting.");
-      return {-1,-1};
+    if(!sys1)
+      throw MyError("No TaSystem given!");
+    // In case no solverconfig is given
+    std::unique_ptr<SolverConfiguration> sc_local;
+    if(!sc){
+      sc_local.reset(new SolverConfiguration());
+      sc=sc_local.get();
     }
-    vd oldx=sys().getRes();
+      
+    // Wrap to reference
+    TaSystem& sys=(*sys1);
+    // old error
+    vd error=sys.Error();
+    // old error norm
     d oldfuner=norm(error);
+    if(!(error.size()>0)){
+      throw MyError("Error illegal residual vector obtained. Exiting.");
+    }
+    vd oldx=sys.getRes();
 
     us Ndofs=error.size();
+    sp_mat jac=sys.jac(sc->dampfac);
 
-    sp_mat jac=sys().jac(sc.dampfac);
-
-    // assert(jac.cols()==error.size());
-    // assert(jac.rows()==error.size());
+    assert(jac.n_cols==error.size());
+    assert(jac.n_rows==error.size());
 
     TRACE(15,"Solving linear system...");
     vd fulldx; 
-    try{
-      
-      fulldx=-1.0*arma::spsolve(jac,error,"superlu");
-    }
-    catch(int e){
-      throw e;
-    }
-    TRACE(15,"SFSG");
+    // This can throw. Is catched a layer higher
+    fulldx=-1.0*arma::spsolve(jac,error,"superlu");
+
     d newfuner;
     d reler;
     vd newx(Ndofs);
 
     reler=norm(fulldx);
+
     do{
-      newx=oldx+sc.dampfac*fulldx;
-      sys().setRes(newx);
-      newfuner=norm(sys().Error());
-      if((newfuner>oldfuner || !(newfuner>0)) && sc.dampfac>sc.mindampfac){
-        sc.dampfac=sc.dampfac*0.5;
-        cout << "Decreasing dampfac, new dampfac = " << sc.dampfac << "\n";
+      newx=oldx+sc->dampfac*fulldx;
+      sys.setRes(newx);
+      newfuner=norm(sys.Error());
+      if((newfuner>oldfuner || !(newfuner>0)) && sc->dampfac>sc->mindampfac){
+        if(sc->dampfac*0.5<sc->mindampfac){
+          d temporary=sc->mindampfac;
+          sc->dampfac=temporary;
+        }
+        else
+          sc->dampfac=sc->dampfac*0.5; // *= is not working (is atomic variable)
+        cout << "Decreasing dampfac, new dampfac = " << sc->dampfac << "\n";
       }
-    } while((newfuner>oldfuner || !(newfuner>0)) && sc.dampfac>sc.mindampfac);
-    if(newfuner<oldfuner && sc.dampfac<sc.maxdampfac){
-      cout << "Increasing dampfac, new dampfac = " << sc.dampfac << " . Max dampfac: "<< sc.maxdampfac << "\n";
-      sc.dampfac=sc.dampfac*2;
+    } while((newfuner>oldfuner || !(newfuner>0)) && sc->dampfac>sc->mindampfac);
+    if(newfuner<oldfuner && sc->dampfac<sc->maxdampfac){
+      cout << "Increasing dampfac, new dampfac = " << sc->dampfac << " . Max dampfac: "<< sc->maxdampfac << "\n";
+      sc->dampfac=sc->dampfac*2;
     }
 
     else{
-      newx=oldx+sc.dampfac*fulldx;
-      sys().setRes(newx);
-      newfuner=norm(sys().Error());
+      newx=oldx+sc->dampfac*fulldx;
+      sys.setRes(newx);
+      newfuner=norm(sys.Error());
     }
     
-    cout << "Current dampfac: " << sc.dampfac << "\n";
+    cout << "Current dampfac: " << sc->dampfac << "\n";
     TRACE(10,"Iteration done...");
+    
     return {newfuner,reler};		// Return function error
 
   } // Solver::DoIter()
 
   Solver::~Solver()  {
-    TRACE(15,"Solver::~Solver()");
-    TRACE(25,"Waiting for solver to stop..");
+    TRACE(25,"Solver::~Solver()");
     stop();
-    delete tasystem;
   }
 } // namespace tasystem

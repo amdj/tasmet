@@ -180,18 +180,12 @@ namespace tasystem{
     TRACE(14,"TaSystem::jacTriplets()");
     Jacobian jnew;
     us Nsegs=nSegs();
-    
-    for(const Seg* seg :segs){
+    for(const Seg* seg :segs)
       seg->jac(jnew);
-    } // end for loop
-    for(auto con: connectors){
+    for(auto con: connectors)
       con->jac(jnew);
-    } // end for loop
 
-    // TRACE(25,"Jac\n"<<jac);
     trips=jnew.getTriplets(getNDofs());
-    // trips.show();
-    // cout << "Ndofs:" << getNDofs() << "\n";
 
   }
   sp_mat TaSystem::jac(d dummy){

@@ -46,6 +46,7 @@
   #include "hopkinslaminarduct.h"
 
   // Solver
+  #include "solverconfiguration.h"
   #include "solver.h"
 
   %}
@@ -108,4 +109,5 @@ extern int nltracer;
  // System
 %include "tasystem.h"
  // Solver
+%include "solverconfiguration.h"
 %include "solver.h"

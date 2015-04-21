@@ -12,6 +12,8 @@
 // #define MASSEQ (0)
 
 namespace tasystem{
+  using arma::sp_mat;
+
   EngineSystem::EngineSystem(const Globalconf& gc):
     TaSystem(gc)
   {
@@ -65,7 +67,9 @@ namespace tasystem{
     }
     return dmtotdx;
   }
-  evd EngineSystem::error(){
+  vd EngineSystem::Error(){
+    TRACE(20,"EngineSystem::Error()");
+
     checkInit();
     TRACE(15,"EngineSystem::error()");
     if(gc_.Nf()>0){
@@ -80,7 +84,7 @@ namespace tasystem{
     return errorL();
     #endif
   }
-  esdmat EngineSystem::jac(d dampfac){
+  sp_mat EngineSystem::jac(d dampfac){
     TRACE(15,"EngineSystem::jac("<< dampfac<<")");
     #ifdef DIVAMPL
     TripletList jactr=this->Mjac(dampfac);
@@ -94,19 +98,15 @@ namespace tasystem{
     if(gc_.Nf()>0)
       Ndofs++;
     #endif
-    esdmat jac(Ndofs,Ndofs);
-
-    jactr.setValid();
-    jac.setFromTriplets(jactr.begin(),jactr.end());
-    return jac;
+    return jactr;
   }
   // INCLUDING DIVIDE BY AMPLITUDE
 
 
   TripletList EngineSystem::Ljac(d dampfac){
     TRACE(15,"Enginesystem::Ljac("<<dampfac<<")");
-
-    TripletList jactriplets;
+    us ndofs=getNDofs();
+    TripletList jactriplets(ndofs,ndofs);
     jacTriplets(jactriplets);
 
     us Ndofs=getNDofs();
@@ -164,7 +164,7 @@ namespace tasystem{
       assert(aval!=0);		// Otherwise, something is wrong.
       Mjac.multiplyTriplets(1/aval); // Now its nearly Mjac
 
-      evd M=this->errorM();
+      vd M=this->errorM();
       us valdof=av.dofnr(*this);
       Mjac.reserveExtraDofs(M.size());
       // If we add extra triplets to this vector, summation is done
@@ -177,7 +177,7 @@ namespace tasystem{
     }
     return Mjac;
   }
-  evd EngineSystem::errorM(){
+  vd EngineSystem::errorM(){
     TRACE(15,"EngineSystem::errorM()");
     if(gc_.Nf()>0)    {
       d aval=av.value(*this);
@@ -190,7 +190,7 @@ namespace tasystem{
     }
   }
   // WITHOUT DIVIDE BY AMPLITUDE
-  evd EngineSystem::errorL(){
+  vd EngineSystem::errorL(){
     TRACE(15,"EngineSystem::errorL()");
     
     us Ndofs=getNDofs();
@@ -198,15 +198,15 @@ namespace tasystem{
     if(gc_.Nf()>0)
       Ndofs++;
     #endif
-    evd error(Ndofs);		// Add one for the timing constraint  
+    vd error(Ndofs);		// Add one for the timing constraint  
     #ifdef TIMINGCONSTRAINT
     if(gc_.Nf()>0)    {
-      error.head(Ndofs-1)=TaSystem::error();
+      error.subvec(0,Ndofs-2)=TaSystem::Error();
       error(Ndofs-1)=tc.value(*this);
     }
     else {
       #endif
-      error=TaSystem::error();
+      error=TaSystem::Error();
     #ifdef TIMINGCONSTRAINT      
     }      
     #endif
@@ -216,15 +216,15 @@ namespace tasystem{
     error(MASSEQ)=curmass-getMass();
     return error;
   }
-  evd EngineSystem::getRes(){
+  vd EngineSystem::getRes(){
     TRACE(15,"EngineSystem::getRes()");
     checkInit();
     #ifdef TIMINGCONSTRAINT
     if(gc_.Nf()>0){
       us Ndofs=getNDofs()+1;
-      evd res(Ndofs);		// Add one for the timing constraint
+      vd res(Ndofs);		// Add one for the timing constraint
 
-      res.head(Ndofs-1)=TaSystem::getRes();
+      res.subvec(0,Ndofs-2)=TaSystem::getRes();
       res(Ndofs-1)=gc_.getomg();
       return res;
     } else{

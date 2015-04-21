@@ -4,3 +4,4 @@
 * Store pointer in gc for variables that need updating when gc is updated
 * Early init for cells in a tube (if possible?)
 * Rvalue references for jacobian stuff
+* Make enginesystem running again. First cleanup of Jacobian code

@@ -74,16 +74,15 @@ namespace tasystem{
     dmat showJac();
     virtual void show(us detailnr=0);
     virtual void init();
+    void checkInit();
     virtual vd Error();			// Total error vector
-    #ifndef SWIG
-
     virtual vd getRes();			// Extract result vector
-    virtual arma::sp_mat jac(d dummy=-1);		// Return Jacobian matrix
-
-    #endif
     virtual void setRes(const vd& resvec);	// Set result vector
-    void setNf(us);
+    #ifndef SWIG
+    virtual arma::sp_mat jac(d dummy=-1);		// Return Jacobian matrix
+    #endif
 
+    void setNf(us);
     // Reset amplitude data in higher harmonics
     void resetHarmonics();
     // void delseg(us n); // Not yet implemented.  Delete a segment
@@ -98,13 +97,11 @@ namespace tasystem{
     segment::Seg* getSeg(us i) const; // Easier for cython wrapping
     #endif
     d getCurrentMass();	// Return current mass in system [kg]
-    void checkInit();
+
   protected:
     void jacTriplets(TripletList&);
     void setDofEqNrs();
-    // A vector of boundary conditions is required
     void cleanup();
-
   };				// class System
   
 } // namespace tasystem

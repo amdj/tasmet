@@ -20,8 +20,8 @@ namespace tasystem{
   private:
     TripletList Ljac(d dampfac);
     TripletList Mjac(d dampfac);    
-    evd errorL();
-    evd errorM();    
+    vd errorL();
+    vd errorM();    
   public:    
     EngineSystem(const Globalconf& gc);
     EngineSystem(const EngineSystem&);
@@ -32,18 +32,18 @@ namespace tasystem{
     void setTimingConstraint(us segnr,us cellnr,us Varnr,us freqnr);
     void setAmplitudeDof(us segnr,us cellnr,us Varnr,us freqnr);    
     // Solving methods
-    virtual esdmat jac(d dampfac=-1);
-    virtual evd error();
-    virtual void setRes(const vd& res);
-    virtual evd getRes();
 
+    // Overloaded virtuals:
+    arma::sp_mat jac(d dampfac=-1);
+    vd Error();
+    void setRes(const vd& res);
+    vd getRes();
     // Later on, these two should be moved to private
     vd dmtotdx() const;
     vd domg();
     
     void setMass(d mass){mass_=mass;}
     d getMass() const {return mass_;}
-
 
     virtual void init();
     virtual void show(us detailnr=0);

@@ -1,20 +1,24 @@
 #ifndef _SOLVERCONFIGURATION_H_
 #define _SOLVERCONFIGURATION_H_
-#define SOLVER_MAXITER 100
 
-#include <boost/atomic.hpp>
+#include <atomic>
 #include "vtypes.h"
+
 namespace tasystem{
+  #ifndef SWIG
   SPOILNAMESPACE
-  
+  #endif
+
   class SolverConfiguration {
   public:
-    boost::atomic<us> maxiter;
-    boost::atomic<d> funtol;
-    boost::atomic<d> reltol;
-    boost::atomic<d> dampfac;
-    boost::atomic<d> mindampfac;
-    boost::atomic<d> maxdampfac;    
+    #ifndef SWIG
+    std::atomic<us> maxiter;
+    std::atomic<d> funtol;
+    std::atomic<d> reltol;
+    std::atomic<d> dampfac;
+    std::atomic<d> mindampfac;
+    std::atomic<d> maxdampfac;    
+
     SolverConfiguration& operator=(const SolverConfiguration& sc){
       d maxiter=sc.maxiter;
       this->maxiter=maxiter;
@@ -30,6 +34,7 @@ namespace tasystem{
       this->maxdampfac=maxdampfac;
       return *this;
     }
+    #endif
     SolverConfiguration(us maxiter=5000,d funtol=1e-6,d reltol=1e-6,d mindampfac=1,d maxdampfac=1):
       maxiter(maxiter),
       funtol(funtol),
@@ -44,8 +49,6 @@ namespace tasystem{
            << "Reltol: " << reltol << "\n"
            << "Mindampfac: " << mindampfac << "\n"  \
            << "Maxdampfac: " << maxdampfac << "\n";
-      if(maxiter==0)
-        maxiter=SOLVER_MAXITER;
     }
     
   };
