@@ -99,7 +99,7 @@ namespace tasystem{
     d getCurrentMass();	// Return current mass in system [kg]
 
   protected:
-    void jacTriplets(TripletList&);
+    TripletList jacTriplets();
     void setDofEqNrs();
     void cleanup();
   };				// class System

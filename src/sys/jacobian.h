@@ -16,12 +16,13 @@ namespace tasystem{
   class TripletList;
 
   class Jacobian{
-
+    us ndofs_;
   public:
+    Jacobian(us ndofs):ndofs_(ndofs){}
     vector<JacRow> jacrows;
     void operator+=(const Jacobian&);
     void operator+=(const JacRow&);
-    TripletList getTriplets(us ndofs) const;
+    operator TripletList() const;
   };
 
   

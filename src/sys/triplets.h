@@ -30,24 +30,30 @@ namespace tasystem{
   class TripletList: public vector<Triplet> {
     bool valid=true;
     void setValid_();                                    // Do this if invalid
-    us nrows_,ncols_;
+
+    // Size of the matrix to build eventually
+    us ndofs_;
   public:
-    TripletList(us nrows,us ncols):nrows_(nrows),ncols_(ncols){}
+    TripletList(us ndofs):ndofs_(ndofs){}
     virtual ~TripletList(){}
     void setValid(){ if(!valid) setValid_();}            // Updates trlist to remove invalid elements
+
     // Convert to Armadillo Sparse matrix
     operator arma::sp_mat() const;
+
     void show() const;
+    // Make one row zero
     void zeroOutRow(us rownr);
     void multiplyTriplets(const d& multiplicationfactor);
-    void reserveExtraDofs(us n); // Add to capacity
-    void shiftTriplets(int nrows,int ncols); // Shift
-    // position of triplets a certain number of rows and cols.
+
+    // Add to capacity
+    void reserveExtraDofs(us n);
+    
+    // Shift position of triplets a certain number of rows and cols.
+    void shiftTriplets(int nrows,int ncols);
 
   };
 
-  // TripletList getTriplets(const esdmat& mat);
-  // TripletList getTripletsBlock(const esdmat& mat,us startrow,us startcol,us nrows,us ncols);
 
   
 

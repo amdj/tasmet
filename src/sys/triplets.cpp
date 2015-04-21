@@ -3,20 +3,6 @@
 namespace tasystem{
   using arma::sp_mat;
 
-  // TripletList::TripletList(const esdmat & mat){
-  //   //only for ColMajor Sparse Matrix
-  //   reserve(mat.nonZeros());
-  //   for (int k=0; k<mat.outerSize(); ++k){
-  //     for (Eigen::SparseMatrix<double>::InnerIterator it(mat,k); it; ++it)
-  //       {
-  //         // it.value();
-  //         // it.row(); // row index
-  //         // it.col(); // col index (here it is equal to k)
-  //         // it.index(); // inner index, here it is equal to it.row()
-  //         push_back(Triplet(it.row(),it.col(),it.value()));
-  //       }
-  //   }
-  // } // getTriplets
   TripletList::operator sp_mat() const {
     TRACE(15,"TripletList::operator sp_mat()");
     us nvals=size();
@@ -27,7 +13,7 @@ namespace tasystem{
       locations(1,i)=(*this)[i].col();
       values(i)=(*this)[i].value();
     }
-    return sp_mat(true,locations,values,nrows_,ncols_);
+    return sp_mat(true,locations,values,ndofs_,ndofs_);
   }
   void TripletList::zeroOutRow(us rownr){
     TRACE(15,"zeroOutRow()");

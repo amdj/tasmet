@@ -11,7 +11,6 @@ namespace tasystem{
   using segment::Connector;
   using arma::sp_mat;
 
-  inline us max(us s,us t){  return s? s>=t : t;}
 
   TaSystem::TaSystem(const Globalconf& gc):gc_(gc){
     TRACE(14,"TaSystem::TaSystem(gc)");
@@ -176,35 +175,25 @@ namespace tasystem{
       }
     } // detailnr>0
   }
-  void TaSystem::jacTriplets(TripletList& trips){
+  TripletList TaSystem::jacTriplets() {
     TRACE(14,"TaSystem::jacTriplets()");
-    Jacobian jnew;
+    Jacobian j(getNDofs());
     us Nsegs=nSegs();
     for(const Seg* seg :segs)
-      seg->jac(jnew);
+      seg->jac(j);
     for(auto con: connectors)
-      con->jac(jnew);
+      con->jac(j);
 
-    trips=jnew.getTriplets(getNDofs());
-
+    return j;
   }
   sp_mat TaSystem::jac(d dummy){
     TRACE(14,"TaSystem::Jac()");
     checkInit();
-
-    // Something interesting has to be done here later on to connect
-    // the different segments in the sense that blocks of Jacobian
-    // matrix parts have to be moved to the right place etc. To be
-    // continued...
-    const us& Ns=gc_.Ns();
     us Ndofs=getNDofs();
-    TRACE(15,"Ndofs:"<<Ndofs);    
-    TripletList triplets(Ndofs,Ndofs);
-    // Fill the tripletlist
-    jacTriplets(triplets);
+    TripletList triplets=jacTriplets();
     // Remove all invalid elements
     triplets.setValid();
-    return triplets;            // Implicitly converts
+    return triplets;            // Implicitly converts to sp_mat
   }
   vd TaSystem::Error() {
     TRACE(14,"TaSystem::Error()");
@@ -229,7 +218,6 @@ namespace tasystem{
       Error.subvec(starteq,starteq+coneqs-1)=connectors[i]->error();
       starteq+=coneqs;
     }
-    // VARTRACE(15,error)
     return Error;
   }
   vd TaSystem::getRes(){

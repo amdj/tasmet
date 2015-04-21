@@ -106,8 +106,7 @@ namespace tasystem{
   TripletList EngineSystem::Ljac(d dampfac){
     TRACE(15,"Enginesystem::Ljac("<<dampfac<<")");
     us ndofs=getNDofs();
-    TripletList jactriplets(ndofs,ndofs);
-    jacTriplets(jactriplets);
+    TripletList jactriplets=jacTriplets();
 
     us Ndofs=getNDofs();
     #ifdef TIMINGCONSTRAINT
