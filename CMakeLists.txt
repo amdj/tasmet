@@ -12,6 +12,7 @@ find_package(PythonLibs REQUIRED)
 # Initialize swig
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
+SET(CMAKE_SWIG_FLAGS -py3 -Wall -DSWIG_PYTHON)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/common)
 
@@ -56,8 +57,6 @@ add_definitions(-DNPY_NO_DEPRECATED_API=NPY_1_4_API_VERSION)
 SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
 SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache) 
 
-# SET(CMAKE_SWIG_FLAGS "-py3")
-SET(CMAKE_SWIG_FLAGS -py3 -Wall -DSWIG_PYTHON)
 
 ############################## End compiler settings
 

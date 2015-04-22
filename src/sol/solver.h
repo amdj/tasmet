@@ -42,27 +42,20 @@ namespace tasystem{
   class TaSystem;
   #endif  // ifndef SWIG
   #ifdef SWIG
-  %catches(std::exception,...) Solver::solve(TaSystem&,us maxiter=5000,d funtol=1e-8, \
-                                             d reltol=1e-6,d mindampfac=1e-2,\
-                                             d maxdampfac=1,bool wait=true);
+  %catches(std::exception,...) Solver::solve(TaSystem&);
   %catches(std::exception,...) Solver::solve(TaSystem&,const SolverConfiguration&,bool wait=true);
   %catches(std::exception,...) doIter(TaSystem*,SolverConfiguration*);
   #endif  // ifdef SWIG
   // To do only one iteration
   ErrorVals doIter(TaSystem* sys,SolverConfiguration* sc=NULL);
   
-  class Solver
-  {
+  class Solver:public SolverConfiguration  {
     // Solverthread
     std::unique_ptr<std::thread> solverThread;
   public:
-    #ifndef SWIG
-    SolverConfiguration sc;
-    #endif  // ifndef SWIG
-
-    // The best way to initialize a solver is by using a TaSystem to
-    // work on.
-    Solver(){}
+    Solver(const SolverConfiguration sc=SolverConfiguration()) {
+      SolverConfiguration::operator=(sc);
+    }
     Solver(const Solver& other)=delete;    // No assignments as well
     Solver& operator=(const Solver& other)=delete;
 
@@ -73,10 +66,9 @@ namespace tasystem{
     %newobject solve;
     #endif
     // Start solving a system
-    void solve(TaSystem&,us maxiter=5000,d funtol=1e-8,d reltol=1e-6, \
-               d mindampfac=1e-2,d maxdampfac=1,bool wait=true);
+    void solve(TaSystem&);
     #ifndef SWIG
-    void solve(TaSystem&,const SolverConfiguration& sc,bool wait=true);
+    void solve(TaSystem&,const SolverConfiguration& sc);
     #endif
 
     ~Solver();

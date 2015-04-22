@@ -9,18 +9,18 @@ namespace tasystem{
   // A solver always contains a valid system.
   void Solver::stop() {
     TRACE(15,"Solver::stop()");
-    d maxiter=sc.maxiter;
-    sc.maxiter=0;
     if(solverThread){
+      d curmaxiter=maxiter;
+      maxiter=0;
       cout << "Waiting for solver to finish...\n";
       solverThread->join();
       solverThread.reset();
+      maxiter=curmaxiter;
     }
-    sc.maxiter=maxiter;
   }
   void doSolve(Solver* s,TaSystem* thesys) {
     TRACE(15,"doSolve()");
-    SolverConfiguration& sc=s->sc;
+    SolverConfiguration& sc=*s;
     assert(thesys && s);
     d funer=1.0;
     // For sure, we do at least one iteration
@@ -49,30 +49,30 @@ namespace tasystem{
       WARN("Solver reached maximum number of iterations! Results might not be reliable!");
     if(sc.maxiter==0)
       WARN("Solver stopped externally");
-    cout << "Solver done. Updating TaSystem...\n";
+    cout << "Solver done.\n";
   }
-  void Solver::solve(TaSystem& sys,us maxiter,d funtol,d reltol,d mindampfac,d maxdampfac,bool wait){
-    TRACE(18,"Solver::solve(us maxiter,d funtol,d reltol,d mindampfac,d maxdampfac,bool wait)");
-    return solve(sys,SolverConfiguration(maxiter,funtol,reltol,mindampfac,maxdampfac),wait);
-  }
-  void Solver::solve(TaSystem& sys,const SolverConfiguration& sc1,bool wait){
-    TRACE(20,"Solver::solve(sys,sc)");
-    // Update solver configuration
-    sc=sc1;
+
+  void Solver::solve(TaSystem& sys){
+    TRACE(20,"Solver::solve(sys)");
+
     // Check our sysetm
     sys.checkInit();
 
     // Stop old solverthread
     stop();
-    solverThread.reset(new std::thread(doSolve,this,&sys));
-
-    if(wait){
-      cout << "Waiting for solver...\n";
-      solverThread->join();
-      solverThread.reset();
+    if(wait) 
+      doSolve(this,&sys);
+    else {
+      stop();
+      solverThread.reset(new std::thread(doSolve,this,&sys));
     }
   }
-
+  void Solver::solve(TaSystem& sys,const SolverConfiguration& sc1){
+    TRACE(20,"Solver::solve(sys,sc)");
+    // Update solver configuration
+    SolverConfiguration::operator=(sc1);
+    solve(sys);
+  }
   ErrorVals doIter(TaSystem* sys1,SolverConfiguration* sc) {
     TRACE(15,"Solver::doIter(sc)");
     using arma::norm;
