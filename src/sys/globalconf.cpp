@@ -112,9 +112,6 @@ namespace tasystem{
     else{
       DDTfd(0,0)=0;
     }
-    omgvec=vd(Nf_+1);
-    for(us i=0; i<Nf_+1;i++)
-      omgvec(i)=omg*i;
   }
   
 

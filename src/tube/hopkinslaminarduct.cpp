@@ -1,9 +1,11 @@
+#include "num_derivative.h"
 #include "tube.h"
 #include "hopkinslaminarduct.h"
 #include "bessel.h"
 #include "geom.h"
 #include "cell.h"
 #include "constants.h"
+
 
 namespace tube{
   using tasystem::Globalconf;
@@ -31,13 +33,11 @@ namespace tube{
 
     // Set time-avg data to make solving bit easier
     assert(cells.size()>0);
-    vd vx(geom().nCells());
-    for(us i=0;i<vx.size();i++)
-      vx(i)=geom().vx(i);
+    const vd& vx=geom().vx_vec();
     const d& L=geom().L();
     // Tmirror=Tl+(Tr-Tl)*math_common::skewsine(xv/L);
-    Tmirror=Tl+(Tr-Tl)*vx/L;
-    dTwdx=math_common::ddx_central(Tmirror,vx);
+    vd Tmirror=Tl+(Tr-Tl)*vx/L;
+    vd dTwdx=((Tr-Tl)/L)*ones(vx.size());
     // WARN("ToBECANGED!!")
     d T;
     for(us i=0;i<cells.size();i++){
@@ -48,7 +48,7 @@ namespace tube{
       ccell.setResVar(Varnr::T,Tvar);
       ccell.setResVar(Varnr::Ts,Tvar);
     }
-    hopkinsheat.setdTwdx(geom(),dTwdx);
+    hopkinsheat.setdTwdx(dTwdx);
     setInit(true);
 
   }

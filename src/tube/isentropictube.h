@@ -9,9 +9,9 @@
 #ifndef ISENTROPICTUBE_H
 #define ISENTROPICTUBE_H
 
-#include "tube.h"
 #include "vtypes.h"
-#include "math_common.h"
+#include "tube.h"
+
 
 namespace tube{
 

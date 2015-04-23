@@ -10,7 +10,6 @@
 #define LAMINARDUCT_H__
 #include "tube.h"
 #include "vtypes.h"
-#include "math_common.h"
 #include "laminardrag.h"
 
 namespace tube{

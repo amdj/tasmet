@@ -5,3 +5,4 @@
 * Early init for cells in a tube (if possible?)
 * Rvalue references for jacobian stuff
 * Make enginesystem running again. First cleanup of Jacobian code
+* Finding out when to do PyDECREF on PyObject*s

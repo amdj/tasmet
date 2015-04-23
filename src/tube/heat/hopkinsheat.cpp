@@ -38,7 +38,6 @@ namespace tube{
         return 3*kappa/pow(rh,2);
       }
       d zeroheat_circ(d kappa,d rh){
-        return 0;
         return 2*kappa/pow(rh,2);
       }
       d zeroheat_inviscid(d,d){
@@ -60,6 +59,7 @@ namespace tube{
       rf=RottFuncs("blapprox");
     else
       rf=RottFuncs(t.geom().shape()); // Reinitialize thermoviscous functions with right shape
+    dTwdx=zeros(t.geom().nCells());
     TRACE(11,"Exiting redefinition of Rottfuncs");
   }
   void HopkinsHeatSource::setZeroFreq(const string& shape){
@@ -69,8 +69,6 @@ namespace tube{
       zeroheatQ=0.2;      
     }
     else if(shape.compare("circ")==0){
-      WARN("This function is set Wrong!");
-
       zeroheatH_funptr=&H::zeroheat_circ;
       zeroheatQ=1/3;      
     }
@@ -88,8 +86,8 @@ namespace tube{
         abort();
       }
   }
-  void HopkinsHeatSource::setdTwdx(const Geom& g,const vd& dTwdx){
-    this->dTwdx=&dTwdx;
+  void HopkinsHeatSource::setdTwdx(const vd& dTwdx){
+    this->dTwdx=dTwdx;
   }
   vd HopkinsHeatSource::heat(const Cell& v) const{
     TRACE(5,"HopkinsHeatSource::heat(v)");
@@ -129,7 +127,7 @@ namespace tube{
     vc htcoefQ(Nf+1,fillwith::zeros);
 
     // Obtain dTwdx
-    d dTwdx=(*(this->dTwdx))(v.geti());
+    d dTwdx=this->dTwdx(v.geti());
     // TRACE(100,"dTwdx:"<<dTwdx);
     const d& rh=v.vrh;    
     d T0=v.T()(0);

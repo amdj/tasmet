@@ -22,12 +22,12 @@ namespace tube{
     rottfuncs::RottFuncs rf;
     // This function computes for all nonzero frequencies the heat
     // transfer coeficient mathcalH.
-    const vd* dTwdx;
+    vd dTwdx;
   public:
     HopkinsHeatSource(const Tube& t);
     HopkinsHeatSource& operator=(const HopkinsHeatSource&)=delete;
     HopkinsHeatSource(const HopkinsHeatSource& o)=delete;
-    void setdTwdx(const Geom& g,const vd& dTwdx);
+    void setdTwdx(const vd& dTwdx);
     vd heat(const Cell& v) const;
     dmat dmi(const Cell& v) const;
     dmat dTi(const Cell& v) const;

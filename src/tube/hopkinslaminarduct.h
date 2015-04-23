@@ -23,12 +23,9 @@ namespace tube{
   class HopkinsLaminarDuct:public LaminarDuct{
     HopkinsHeatSource hopkinsheat;
     d Tl,Tr;
-    vd dTwdx;
-    bool Tset=false;
     HopkinsLaminarDuct(const HopkinsLaminarDuct& o)=delete;
     HopkinsLaminarDuct& operator=(const HopkinsLaminarDuct&)=delete;
   public:
-    vd Tmirror;
     HopkinsLaminarDuct(const HopkinsLaminarDuct& o,const tasystem::TaSystem&);
     HopkinsLaminarDuct(const Geom& geom,d Tl);
     HopkinsLaminarDuct(const Geom& geom,d Tl,d Tr);

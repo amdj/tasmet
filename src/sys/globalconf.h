@@ -42,7 +42,7 @@ namespace tasystem{
     d deltanu0() const{ return sqrt(2*gas_.mu(T0_)/(rho0()*omg));}
     d T0() const {return T0_;}
     d p0() const {return p0_;}
-    vd omgvec;    
+
     void setNf(us);
     #ifndef SWIG
     void set(us Nf,d freq);	// Set data for new frequency and
