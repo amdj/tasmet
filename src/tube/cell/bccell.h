@@ -27,7 +27,6 @@ namespace tube{
     vd extrapolateQuant(Physquant) const;
     tasystem::JacRow dExtrapolateQuant(Physquant) const;
     // virtual d getValueBc(Varnr,us freqnr) const=0;
-    Equation* Eq(EqType et) {return eqs.at(et);}
 
     // Fluid cross-sectional area at bc
     virtual  const d& Sfbc() const=0;

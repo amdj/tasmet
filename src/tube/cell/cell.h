@@ -71,7 +71,7 @@ namespace tube {
     const Cell* right() const {return right_;}
     const Tube& getTube() const {return *tube;}
     us geti() const {return i;}
-
+    Equation* Eq(EqType et) {return eqs.at(et);}
     // Momentum flow at vertex position
     const variable::var& mu() const {return mu_;}
     const variable::var& mL() const {return mL_;}
@@ -114,6 +114,7 @@ namespace tube {
 
     // Set result vector to res
     virtual void setRes(const vd& res);
+
 
     // Compute the error for all equations on this gridpoint
     vd error() const;

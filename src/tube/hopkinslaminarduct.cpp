@@ -1,10 +1,9 @@
-#include "num_derivative.h"
-#include "tube.h"
+#include "constants.h"
+#include "cell.h"
 #include "hopkinslaminarduct.h"
 #include "bessel.h"
 #include "geom.h"
-#include "cell.h"
-#include "constants.h"
+#include "solidenergy.h"
 
 
 namespace tube{
@@ -17,10 +16,11 @@ namespace tube{
   }
 
   HopkinsLaminarDuct::HopkinsLaminarDuct(const Geom& geom,d Tl,d Tr):
-    LaminarDuct(geom),hopkinsheat(*this){
+    LaminarDuct(geom),hopkinsheat(*this),
+    Tl(Tl),
+    Tr(Tr)
+  {
     TRACE(15,"HopkinsLaminarDuct::HopkinsLaminarDuct(Geom,Tl,Tr)");
-    this->Tl=Tl;
-    this->Tr=Tr;
   }  
   HopkinsLaminarDuct::HopkinsLaminarDuct(const HopkinsLaminarDuct& o,
                                          const TaSystem& sys):
@@ -45,6 +45,7 @@ namespace tube{
       Cell& ccell=*cells[i];
       variable::var Tvar(*gc);
       Tvar.setadata(0,T);
+      static_cast<SolidTPrescribed*>(ccell.Eq(Sol))->setTs(T);
       ccell.setResVar(Varnr::T,Tvar);
       ccell.setResVar(Varnr::Ts,Tvar);
     }
