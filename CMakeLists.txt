@@ -14,10 +14,11 @@ find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 SET(CMAKE_SWIG_FLAGS -py3 -Wall -DSWIG_PYTHON)
 
+# Prior to adding subdirectory common
+add_definitions(-DTRACERNAME=TATwenteTracer)
+
 add_subdirectory(${PROJECT_SOURCE_DIR}/common)
 
-# It is of importance that this definition is done AFTER subdirectory common is built
-add_definitions(-DTRACERNAME=nltracer)
 
 
 ############################## Optimized code flags

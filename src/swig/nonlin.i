@@ -8,8 +8,6 @@
 
   #include "settracer.h"
   #include "constants.h"
-  extern int mathcommonlogger;
-  extern int nltracer;
 
   // My exceptions
   #include "exception.h"
@@ -49,9 +47,15 @@
   #include "solverconfiguration.h"
   #include "solver.h"
 
+  inline void setTATwenteTracer(int t) {
+    tracer::setTracer<TRACERNAME>(t);
+  }
+
   %}
 using std::string;
 typedef std::complex<double> c;
+
+void setTATwenteTracer(int);
 
 
 %include "std_string.i"
@@ -61,11 +65,6 @@ typedef std::complex<double> c;
 %include "arma_numpy.i"
 
  // My compile-time constants
-%include "settracer.h"
-extern int mathcommonlogger;
-extern int nltracer;
-%template(setnonlinTracer) tracer::setTracer<nltracer>;
-%template(setmath_commonTracer) tracer::setTracer<mathcommonlogger>;
 
 %include "constants.h"
 

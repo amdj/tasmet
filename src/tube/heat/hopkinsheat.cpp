@@ -102,7 +102,7 @@ namespace tube{
 
     // WARN("These two commands are commented!");
     heat+=htcoefH.freqMultiplyMat()*(v.T()()-v.Ts()());
-    heat+=htcoefQ.freqMultiplyMat()*(0.5*(v.mL()()+v.mR()())/v.vSf);    
+    heat+=htcoefQ.freqMultiplyMat()*(0.5*(v.mL()()+v.mR()()));    
     return heat;    
   }
   dmat HopkinsHeatSource::dTi(const Cell& v) const{
@@ -117,27 +117,28 @@ namespace tube{
     TRACE(5,"HopkinsHeatSource::dUi(v)");
     variable::var htcoefQ(*v.gc);
     htcoefQ.setadata(HeatTransferCoefQ(v));
-    dmat dUi(v.gc->Ns(),v.gc->Ns(),fillwith::zeros);
-    dUi=htcoefQ.freqMultiplyMat()/v.vSf;
-    return dUi;
+    dmat dmi(v.gc->Ns(),v.gc->Ns(),fillwith::zeros);
+    dmi=htcoefQ.freqMultiplyMat()/v.vSf;
+    return dmi;
   }  
   vc HopkinsHeatSource::HeatTransferCoefQ(const Cell& v) const{
     TRACE(10,"HopkinsHeatSource::HeatTransferCoefQ(const Cell& v)");
     const us& Nf=v.gc->Nf();
-    vc htcoefQ(Nf+1,fillwith::zeros);
 
     // Obtain dTwdx
     d dTwdx=this->dTwdx(v.geti());
     // TRACE(100,"dTwdx:"<<dTwdx);
     const d& rh=v.vrh;    
-    d T0=v.T()(0);
-    d Pr0=v.gc->gas().pr(T0);
-    d cp0=v.gc->gas().cp(T0);    
-    d p0=v.p()(0)+v.gc->p0();
-    d rho0=v.gc->gas().rho(T0,p0);
-    d kappa0=v.gc->gas().kappa(T0);
-    d mu0=v.gc->gas().mu(T0);
-    htcoefQ(0)=rho0*cp0*zeroheatQ*dTwdx;
+    const d T0=v.T()(0);
+    const d Pr0=v.gc->gas().pr(T0);
+    const d cp0=v.gc->gas().cp(T0);    
+    const d p0=v.p()(0)+v.gc->p0();
+    const d rho0=v.gc->gas().rho(T0,p0);
+    const d kappa0=v.gc->gas().kappa(T0);
+    const d mu0=v.gc->gas().mu(T0);
+    vc htcoefQ(Nf+1,fillwith::zeros);
+
+    htcoefQ(0)=cp0*zeroheatQ*dTwdx;
     if(Nf>0){
       vd omgvec=v.gc->getomg()*linspace(1,Nf,Nf);
       vd deltak=sqrt(2*kappa0/(rho0*cp0*omgvec));

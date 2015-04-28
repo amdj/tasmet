@@ -13,7 +13,7 @@
 // #define ENERGY_SCALE (1.0)
 // #define TRACERPLUS 15
 #ifdef NOHEAT
-#error Noheat already defined!
+#warn Heat turned off!!
 #endif
 
 #include "energy.h"
