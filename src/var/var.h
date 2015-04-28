@@ -42,6 +42,10 @@ namespace variable {
     var(const tasystem::Globalconf&);	// Initialize with zeros
     var(const tasystem::Globalconf&,double); // Initialize with one time-average value
     var(const tasystem::Globalconf&,const vd& data,bool adata=true); // Initialize with amplitudedata. With tdata_ if adata is set to false
+    // Assign with frequency data
+    var(const tasystem::Globalconf&,const vc& data);
+    
+
     #ifndef SWIG
     var& operator=(const var&);			  // Copy assignment operator
     #endif

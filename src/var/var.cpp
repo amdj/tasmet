@@ -67,6 +67,13 @@ namespace variable {
       this->tdata_=data;
       adata_=fDFT*tdata_;
     }
+  }  var::var(const Globalconf& gc,const vc& data)
+    :var(gc)
+  { // Create a variable and fill it with time data.
+    if(data.size()!=Nf+1)
+      throw MyError("Wrong size of amplitude vector given. Does the"
+                    "vector size correspond to Ns?");
+    setadata(data);
   }
   void var::setGc(const Globalconf& gc){
     TRACE(10,"var::setGc()");

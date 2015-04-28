@@ -43,27 +43,21 @@ namespace tube{
     return vS_vec()%vphi_vec();
   }
   vd Geom::vS_vec() const{
-    vd vS(nCells()+2);
+    vd vS(nCells());
     for(us i=0;i<nCells();i++)
-      vS(i+1)=this->vS(i);
-    vS(0)=this->S(0);
-    vS(nCells()+1)=this->S(nCells());
+      vS(i)=this->vS(i);
     return vS;
   }
   vd Geom::vrh_vec() const{
-    vd vrh(nCells()+2);
+    vd vrh(nCells());
     for(us i=0;i<nCells();i++)
-      vrh(i+1)=this->vrh(i);
-    vrh(0)=this->rh(0);
-    vrh(nCells()+1)=this->rh(nCells());
+      vrh(i)=this->vrh(i);
     return vrh;
   }
   vd Geom::vphi_vec() const{
-    vd vphi(nCells()+2);
+    vd vphi(nCells());
     for(us i=0;i<nCells();i++)
-      vphi(i+1)=this->vphi(i);
-    vphi(0)=this->phi(0);
-    vphi(nCells()+1)=this->phi(nCells());
+      vphi(i)=this->vphi(i);
     return vphi;
   }
   vd Geom::vx_vec() const{

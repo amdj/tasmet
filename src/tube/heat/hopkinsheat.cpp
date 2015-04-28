@@ -92,17 +92,15 @@ namespace tube{
   vd HopkinsHeatSource::heat(const Cell& v) const{
     TRACE(5,"HopkinsHeatSource::heat(v)");
     vd heat(v.gc->Ns(),fillwith::zeros);
-    variable::var htcoefH(*v.gc);
-    variable::var htcoefQ(*v.gc);
-    htcoefH.setadata(HeatTransferCoefH(v));
-    htcoefQ.setadata(HeatTransferCoefQ(v));    
+    variable::var htcoefH(*v.gc,HeatTransferCoefH(v));
+    variable::var htcoefQ(*v.gc,HeatTransferCoefQ(v));
     // TRACE(100,"TminTs:\n"<<v.T()-v.Ts());
     // if(v.i==0)
       // TRACE(25,"H freqmultiplymat:"<< htcoefQ.freqMultiplyMat());
 
     // WARN("These two commands are commented!");
     heat+=htcoefH.freqMultiplyMat()*(v.T()()-v.Ts()());
-    heat+=htcoefQ.freqMultiplyMat()*(0.5*(v.mL()()+v.mR()()));    
+    heat+=-htcoefQ.freqMultiplyMat()*(0.5*(v.mL()()+v.mR()()));    
     return heat;    
   }
   dmat HopkinsHeatSource::dTi(const Cell& v) const{
@@ -118,7 +116,7 @@ namespace tube{
     variable::var htcoefQ(*v.gc);
     htcoefQ.setadata(HeatTransferCoefQ(v));
     dmat dmi(v.gc->Ns(),v.gc->Ns(),fillwith::zeros);
-    dmi=htcoefQ.freqMultiplyMat()/v.vSf;
+    dmi=-htcoefQ.freqMultiplyMat()/v.vSf;
     return dmi;
   }  
   vc HopkinsHeatSource::HeatTransferCoefQ(const Cell& v) const{
@@ -145,7 +143,7 @@ namespace tube{
       vd deltanu=sqrt(2*mu0/(rho0*omgvec));
       vc fnu=rf.fx(rh/deltanu); // Viscous rott function
       vc fk=rf.fx(rh/deltak); // Thermal rott function
-      htcoefQ.subvec(1,Nf)=cp0*(1/(1-Pr0))*(fnu/(1-fnu)-Pr0*fk/(1-fk))*dTwdx;
+      htcoefQ.subvec(1,Nf)=-cp0*(1/(1-Pr0))*(fnu/(1-fnu)-Pr0*fk/(1-fk))*dTwdx;
     }
     // No time-average part here.
     return htcoefQ;
