@@ -114,7 +114,7 @@ link_directories(${PROJECT_SOURCE_DIR}/common)
 # add_library(nonlin_lib SHARED ${nonlinear_SRC})
 add_library(nonlin_lib  ${nonlinear_SRC})
 
-target_link_libraries(nonlin_lib common ${ARMADILLO_LIBRARY})
+target_link_libraries(nonlin_lib common_src ${ARMADILLO_LIBRARY})
 
 set_source_files_properties(${PROJECT_SOURCE_DIR}/src/swig/nonlin.i
   PROPERTIES CPLUSPLUS ON)
@@ -125,7 +125,7 @@ set(SWIG_MODULE_nonlin_FILE_nonlin_EXTRA_DEPS
   ${PROJECT_SOURCE_DIR}/src/common/swig_files/arma_numpy.i
 )
 
-swig_link_libraries(TATwente nonlin_lib common ${PYTHON_LIBRARIES}
+swig_link_libraries(TATwente nonlin_lib common_src ${PYTHON_LIBRARIES}
   ${ARMADILLO_LIBRARIES})
 set_source_files_properties( ${swig_generated_file_fullname}
       PROPERTIES COMPILE_FLAGS "-Wno-missing-field-initializers -Wno-self-assign -Wno-#warnings")
