@@ -98,6 +98,7 @@ void setTATwenteTracer(int);
 %include "geom.h"
  // Geom instances
 %include "conetube.h"
+%include "vertplates.h"
  // Tubes
 %include "tube.h"
 %include "isentropictube.h"

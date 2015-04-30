@@ -7,13 +7,16 @@
 
 
 namespace tube{
+
+  #ifndef SWIG
   const int FIRST=0;
   const int LAST=1;
   // Smooth geometries of segments together. The percentage is a
   // length part of the smallest of the two given geometries.
   void smoothEnds(Geom& smooththisone,int smooththisonepos,
                   const Geom& tothisone,int tothisonepos,int perc);
-  
+  #endif
+
   class VertPlates:public Geom{
   protected:
     d S_=-1,phi_=1,rh_=-1;
@@ -28,7 +31,7 @@ namespace tube{
     virtual d rh(us i) const {return rh_;}		 // Hydraulic radius
     virtual ~VertPlates(){}
   };
-
+  #ifndef SWIG
   class Transition{
     Pos pos;
     d perc;
@@ -55,7 +58,7 @@ namespace tube{
     // TEST!!!!!!!!!!!!!!!!!!!
     virtual d rh(us i) const;		 // Volume porosity at position of cell walls
   };
-
+  #endif
  
 
 } // namespace tube
