@@ -44,7 +44,10 @@ namespace segment{
   public:
     virtual ~SegConBase(){}
 
+    const char* __repr__() const {return getName().c_str();}
+
     // Get and set name
+    const char* __str__() const {return name_.c_str();}
     const std::string& getName() const{return name_;} // This one is just the name
     void setName(const std::string& name){ name_=name;} // This one is just the name
 

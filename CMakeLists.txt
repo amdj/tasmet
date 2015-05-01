@@ -1,10 +1,82 @@
-# CMakeList.txt for linear code
-cmake_minimum_required (VERSION 3.1)
+# CMakeList.txt for nonlinear code
+#=============
+# General info
+#=============
+
+cmake_minimum_required (VERSION 3.2)
 project(TATwente)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/common/cmake_tools)
+# Tracer name (name of the variable)
+add_definitions(-DTRACERNAME=TATwenteTracer)
+add_subdirectory(${PROJECT_SOURCE_DIR}/common)
+#==================
+# Compiler settings
+#==================
+SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache) 
 
-# CMakeList.txt for nonlinear code
+set(CMAKE_CLANG "${CMAKE_CLANG} -Woverloaded-virtual ")
+# set(CMAKE_GCC "${CMAKE_GCC} -Wno-unused-function  -ffunction-sections\
+#  -fdata-sections -Wno-unused-local-typedefs -Wno-empty-body\
+# -Wno-unused-but-set-variable\
+# -Wno-return-local-addr -Wno-cpp \
+# ")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pipe -fPIC -Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-address ")
+
+
+# SET THE COMPILER
+# set(CMAKE_CXX_COMPILER "g++")
+set(CMAKE_CXX_COMPILER "clang++")
+
+# set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_GCC}")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CLANG}")
+add_definitions(-DNPY_NO_DEPRECATED_API=NPY_1_4_API_VERSION)
+
+#=====================
+# Optimized code flags
+#=====================
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -mtune=native -fopenmp")
+# set(CMAKE_CLANG "${CMAKE_GCC} -march=native -mtune=native -fopenmp")
+
+# Pre-allocation size for matrices. Very important setting to tune the
+# code in case we know that we are going to run with certain sizes of matrices and vectors. For Nf=6, set this to (2*Nf+1)^2=169
+# For Nf=1: 9
+# For Nf=2: 25
+# For Nf=3: 49
+# For Nf=4: 81
+# For Nf=5: 121
+# For Nf=6: 169
+# For Nf=7: 225
+# For Nf=8: 289
+# For Nf=9: 361
+# For Nf=10: 441
+# For Nf=11: 529
+
+# Watch out! Setting prealloc too high can give too much overhead for smaller Nf's
+add_definitions(-DARMA_MAT_PREALLOC=169)
+
+
+# To disable bound checking on std::vector, and to disable assertions
+# add_definitions(-DNDEBUG)
+
+# To increase speed on Armadillo
+# add_definitions(-DARMA_NO_DEBUG)
+
+# Disable traces
+# add_definitions(-DTRACER=0)
+
+#Debug mode
+# set(CMAKE_GCC "${CMAKE_GCC} -g -ggdb")
+
+
+#==================
+# Required packages
+#==================
+
+# For importing find directives for Cmake
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/common/cmake_tools)
 
 # Python
 find_package(PythonLibs REQUIRED)
@@ -14,52 +86,21 @@ find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 SET(CMAKE_SWIG_FLAGS -py3 -Wall -DSWIG_PYTHON)
 
-# Prior to adding subdirectory common
-add_definitions(-DTRACERNAME=TATwenteTracer)
-
-add_subdirectory(${PROJECT_SOURCE_DIR}/common)
-
+# Armadillo
+find_package(Armadillo REQUIRED)
+add_definitions(-DARMA_USE_SUPERLU -DARMA_USE_CXX11 -DARMA_USE_BLAS -DARMA_USE_LAPACK)
 
 
-############################## Optimized code flags
-# set(CMAKE_CXX_FLAGS " -O3 ")
-set(CMAKE_CXX_FLAGS " -O2 ")
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -mtune=native -fopenmp")
-# set(CMAKE_CLANG "${CMAKE_GCC} -march=native -mtune=native -fopenmp")
+#============
+# Make common
+#============
 
-#add_definitions(-DNDEBUG)	#This is for BOOST functions, and to disable assertions!
-# add_definitions(-DTRACER=0)
-
-#Debug mode
-# set(CMAKE_GCC "${CMAKE_GCC} -g -ggdb")
-############################## End optimized code flags
-
-############################## Compiler settings
-# set(CMAKE_CXX_COMPILER g++)
-set(CMAKE_CXX_COMPILER "clang++")
-# set(CMAKE_CXX_COMPILER_ARG1="clang++")
-
-set(CMAKE_CLANG "${CMAKE_CLANG} -pipe -Woverloaded-virtual")
-# set(CMAKE_GCC "${CMAKE_GCC} -Wno-unused-function  -ffunction-sections\
-#  -fdata-sections -Wno-unused-local-typedefs -Wno-empty-body\
-# -Wno-unused-but-set-variable\
-# -Wno-return-local-addr -Wno-cpp \
-# ")
-
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pipe -fPIC -Wall \
- -Wextra -Wno-unused-parameter \
- -Wno-unused-variable  \
- -Wno-address")
-
-# set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_GCC}")
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CLANG}")
-add_definitions(-DNPY_NO_DEPRECATED_API=NPY_1_4_API_VERSION)
-
-SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
-SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache) 
+# add_subdirectory(${PROJECT_SOURCE_DIR}/common)
 
 
-############################## End compiler settings
+#=========
+# The code
+#=========
 
 AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/ src)
 AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/seg seg)
@@ -111,40 +152,20 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/src/tube/heat
   )
 link_directories(${PROJECT_SOURCE_DIR}/common)
+# For a shared lib:
 # add_library(nonlin_lib SHARED ${nonlinear_SRC})
 add_library(nonlin_lib  ${nonlinear_SRC})
 
-target_link_libraries(nonlin_lib common_src ${ARMADILLO_LIBRARY})
+target_link_libraries(nonlin_lib common_src)
 
 set_source_files_properties(${PROJECT_SOURCE_DIR}/src/swig/nonlin.i
   PROPERTIES CPLUSPLUS ON)
-
 swig_add_module(TATwente python src/swig/nonlin.i)
 
 set(SWIG_MODULE_nonlin_FILE_nonlin_EXTRA_DEPS
   ${PROJECT_SOURCE_DIR}/src/common/swig_files/arma_numpy.i
 )
-
 swig_link_libraries(TATwente nonlin_lib common_src ${PYTHON_LIBRARIES}
   ${ARMADILLO_LIBRARIES})
 set_source_files_properties( ${swig_generated_file_fullname}
       PROPERTIES COMPILE_FLAGS "-Wno-missing-field-initializers -Wno-self-assign -Wno-#warnings")
-
-# To execute the test directly
-# add_custom_command(TARGET test123 POST_BUILD COMMAND test123 )
-
-#enable_testing()
-#add_test(test_cpp test COMMAND test)
-#add_custom_target(testtest COMMAND test)
-
-#Install library to library directory
-#install(TARGETS common DESTINATION lib)
-# Install headers to include directory
-#install(FILES ${common_HEADERS}  DESTINATION include)
-
-# add_executable(test123 test123.cpp)
-# target_link_libraries(test123 nonlin_lib common armadillo)
-
-# add_definitions(-DNODRAG)
-
-# Does this work

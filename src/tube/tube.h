@@ -74,6 +74,11 @@ namespace tube{
     // Return number of Cells 
     us getNCells() const;
 
+    // One way or another, Swig does not inherit this method to the
+    // interface of a Tube. Therefore, we wrap it manually. Probably,
+    // this should be improved later on.
+    const char* __repr__() const {return segment::SegConBase::__repr__();}
+
     // Methods not exposed to swig
     #ifndef SWIG
     virtual vd error() const;
