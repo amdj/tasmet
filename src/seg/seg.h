@@ -24,7 +24,7 @@ namespace segment{
     // ------------------------------ config methods
     virtual void setDofNrs(us firstdofnr)=0;
     virtual us getNDofs() const=0;
-    virtual d getCurrentMass() const=0;
+    virtual d getMass() const=0;
     // ------------------------------
     virtual vd getRes() const=0; // Get a result vector
     virtual void domg(vd&) const=0;	// Derivative of error w.r.t. base frequency.

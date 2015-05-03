@@ -8,9 +8,6 @@
 #define TIMINGCONSTRAINT
 #define DOMGFAC (1e0)
 
-#define MASSEQ (0)
-// #define MASSEQ (0)
-
 namespace tasystem{
   using arma::sp_mat;
 
@@ -38,34 +35,8 @@ namespace tasystem{
     TRACE(15,"EngineSystem::init()");
     TaSystem::init();
     hasInit=false;
-    // Only set initial mass when it is not already set by user by
-    // using setInitialMass()
-    if(getMass()==0)
-      setMass(getInitialMassFromGc());
+
     hasInit=true;
-  }
-  d EngineSystem::getInitialMassFromGc() const {
-    TRACE(15,"EngineSystem::getInitialMassFromGc()");
-    d mass=0;
-    us nsegs=segs.size();
-    for(us i=0;i<nsegs;i++){
-      mass+=segs[i]->getCurrentMass();
-    } // for loop
-    TRACE(20,"Volume of device: "<< mass<<" [m^3].");
-    mass=mass*gc_.rho0();
-    // TRACE(20,"Initial mass as computed from rho0="<<gc.rho0<<" [kg/m^3],\n and volume of device: "<< mass << " [kg].");
-    return mass;
-  }
-  vd EngineSystem::dmtotdx() const{
-    TRACE(15,"EngineSystem::dmtotdx()");
-    // Should become a row vector, but anyway.
-    vd dmtotdx(getNDofs(),fillwith::zeros);
-    us Nsegs=nSegs();
-    for(us i=0;i<Nsegs;i++){
-      segs[i]->dmtotdx(dmtotdx);
-      // WARN("dmtotdx: Not done function");
-    }
-    return dmtotdx;
   }
   vd EngineSystem::Error(){
     TRACE(20,"EngineSystem::Error()");
@@ -113,12 +84,6 @@ namespace tasystem{
     if(gc_.Nf()>0)
       Ndofs++;
     #endif
-    jactriplets.zeroOutRow(MASSEQ);  // Replace this equation with global
-                                // mass conservation
-    // Reserve some extra space in this tripletlist and add the extra components
-    vd dmtotdx=this->dmtotdx();
-    // cout << "dmtotdx:" <<dmtotdx;
-    us dmtotdxsize=dmtotdx.size();
     us extraspace=0;
     #ifdef TIMINGCONSTRAINT
     if(gc_.Nf()>0){
@@ -146,12 +111,6 @@ namespace tasystem{
       #endif
       jactriplets.reserveExtraDofs(extraspace);
 
-    for(us k=0;k<dmtotdxsize;k++)
-      if(dmtotdx(k)!=0){
-        // TRACE(20,"k: " << k);
-        // TRACE(20,"dmtotdx:"<< dmtotdx(k));
-        jactriplets.push_back(Triplet(MASSEQ,k,dmtotdx(k)));
-      }
     return jactriplets;
   }
   TripletList EngineSystem::Mjac(d dampfac){
@@ -209,10 +168,6 @@ namespace tasystem{
     #ifdef TIMINGCONSTRAINT      
     }      
     #endif
-    // Strip first equation (for now, assuming it is a continuity
-    d curmass=getCurrentMass();
-    TRACE(20,"Current mass in system: "<< curmass << " [kg] \n");
-    error(MASSEQ)=curmass-getMass();
     return error;
   }
   vd EngineSystem::getRes(){

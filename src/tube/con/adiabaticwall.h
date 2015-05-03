@@ -16,15 +16,20 @@ namespace tube{
 
  // Adiabatic wall boundary
   class AdiabaticWall:public TubeBc {
-    bool isentropic=false;
     us firsteqnr;
+    // Is this connector going to arbitrate mass, yes or no?
     PrescribeQty massflowzero;
     PrescribeQty enthalpyflowzero;
-    AdiabaticWall(const AdiabaticWall& o)=delete;
+    bool arbitrateMass;
+  public:
+    AdiabaticWall(us segnr,Pos position,bool arbitrateMass=false);
+  private:
+    AdiabaticWall(const AdiabaticWall& o,const tasystem::TaSystem& sys);
   public:
     AdiabaticWall& operator=(const AdiabaticWall&)=delete;
-    AdiabaticWall(us segnr,Pos position): TubeBc(segnr,position){}
-    AdiabaticWall(const AdiabaticWall& o,const tasystem::TaSystem& sys);
+    AdiabaticWall(const AdiabaticWall& o)=delete;
+
+    int arbitrateMassEq() const;
     virtual ~AdiabaticWall(){}
     virtual segment::Connector* copy(const tasystem::TaSystem&) const;
 

@@ -31,7 +31,7 @@ namespace tube{
     vd heat(const Cell& v) const;
     dmat dmi(const Cell& v) const;
     dmat dTi(const Cell& v) const;
-  private:
+  // private:
     void setZeroFreq(const string&);
     vc HeatTransferCoefH(const Cell&) const;
     vc HeatTransferCoefQ(const Cell&) const;    

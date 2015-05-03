@@ -48,6 +48,14 @@ namespace tasystem{
   class TaSystem{
   protected:
     bool hasInit=false;
+    // This is the mass in the sytem. 
+    d mass_=-1;
+    // Tells the TaSystem which Dof should be overwritten with the
+    // mass arbitration equation. The special value of -1 means, that
+    // mass is not arbitrated. This can be the case if for example a
+    // pressure boundary condition is present.
+    int arbitrateMassEq=-1;
+
     vector<segment::Seg*> segs;		
     vector<segment::Connector*> connectors;    // Yes, connectors are just like segments
     bool driven=true;
@@ -59,6 +67,12 @@ namespace tasystem{
     TaSystem(const Globalconf& g);
     TaSystem(const TaSystem& o);
     TaSystem& operator=(const TaSystem& other)=delete;
+
+    // Set and get the mass in the system. If the mass is not set
+    // before initializing, the mass is computed from the segment's
+    // intial configuration.
+    void setMass(d mass){mass_=mass;}
+    d getMass() const {return mass_;}
 
     virtual ~TaSystem();
     virtual TaSystem* copy() const {return new TaSystem(*this);}
@@ -79,10 +93,11 @@ namespace tasystem{
     virtual vd getRes();			// Extract result vector
     virtual void setRes(const vd& resvec);	// Set result vector
     #ifndef SWIG
-    virtual arma::sp_mat jac(d dummy=-1);		// Return Jacobian matrix
+    arma::sp_mat jac(d dummy=-1);		// Return Jacobian matrix
     #endif
 
-    void setNf(us);
+    // Change Nf in the system, while keeping the results.
+    void updateNf(us);
     // Reset amplitude data in higher harmonics
     void resetHarmonics();
     // void delseg(us n); // Not yet implemented.  Delete a segment
@@ -92,18 +107,20 @@ namespace tasystem{
     us getNDofs() const;	// Compute DOFS in system, set     
     us getNEqs() const;    
 
-    #ifndef SWIG                // The unsafe access methods
-    segment::Seg* operator[](us i) const;    
-    segment::Seg* getSeg(us i) const; // Easier for cython wrapping
-    #endif
-    d getCurrentMass();	// Return current mass in system [kg]
+    const segment::Connector* getConnector(us i) const;    
+    const segment::Seg* getSeg(us i) const;
 
   protected:
-    TripletList jacTriplets();
-    void setDofEqNrs();
+    // Return the mass of the system. If mass is arbitrated, this
+    // should be equal to the result of getMass if the solution is
+    // converged.
+    d getCurrentMass();
+    vd dmtotdx() const;         // Derivative of total mass to DOF x
+    virtual TripletList jacTriplets();
     void cleanup();
   };				// class System
   
 } // namespace tasystem
 
 #endif /* _SYSTEM_H_ */
+

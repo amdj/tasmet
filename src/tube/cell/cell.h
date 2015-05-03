@@ -140,7 +140,7 @@ namespace tube {
     // Convenience function, we need a lot of static (background
     // pressure) addings in the equations.
     // d Htot() const { return e.Htot();}
-    d getCurrentMass() const;
+    d getMass() const;
 
     // These virtual functions are required such that boundary
     // condition sources can be added in a later stage by inheriting

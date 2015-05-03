@@ -14,13 +14,17 @@ namespace tube{
   using tasystem::Jacobian;
   using tasystem::JacRow;
   using tasystem::JacCol;
+  AdiabaticWall::AdiabaticWall(us segnr,Pos position,bool arbitrateMass):
+      TubeBc(segnr,position),
+      arbitrateMass(arbitrateMass)
+  {}
 
   AdiabaticWall::AdiabaticWall(const AdiabaticWall& o,const TaSystem& sys):
-    TubeBc(o,sys)
+    TubeBc(o,sys),
+    arbitrateMass(o.arbitrateMass)
   {
     TRACE(15,"AdiabaticWall::init()");
     if(dynamic_cast<const IsentropicTube*>(t)){
-      isentropic=true;
       TRACE(40,"Tube is isentropic");
     }
     setInit(true);
@@ -34,6 +38,13 @@ namespace tube{
     TRACE(5,"AdiabaticWall::show()");
     checkInit();
     cout << "AdiabaticWall boundary condition set at "<< posWord(pos) <<" side of segment "<<segnr<<".\n";
+  }
+  int AdiabaticWall::arbitrateMassEq() const {
+    TRACE(15,"AdiabaticWall::arbitrateMassEq()");
+    if(arbitrateMass)
+      return firsteqnr;
+    else
+      return -1;
   }
   segment::Connector* AdiabaticWall::copy(const tasystem::TaSystem& sys) const {
     return new AdiabaticWall(*this,sys);

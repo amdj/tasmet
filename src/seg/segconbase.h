@@ -54,6 +54,12 @@ namespace segment{
     // This function determines whether a class is abstract or not for SWIG
     // Return error from internal equations
 
+    // Tell a TaSystem whether this Segment of Connector arbitrates
+    // Mass or not. The special return value of -1 tells it does
+    // not. If it does, the derived class should return which equation
+    // should be overwritten with the mass arbitration equation.
+    virtual int arbitrateMassEq() const {return -1;}
+
     #ifndef SWIG
     virtual vd error() const=0;
     virtual void setEqNrs(us firstdofnr)=0;    

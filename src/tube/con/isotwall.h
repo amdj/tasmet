@@ -24,12 +24,17 @@ namespace tube{
                                 // at wall
     PrescribeQty Tbc;
     PrescribeQty Tsbc;    
-    IsoTWall& operator=(const IsoTWall&) =delete;
-    IsoTWall(const IsoTWall& o,const tasystem::TaSystem&);
-  public:
-    IsoTWall(const variable::var& Tbc,us segnr,Pos position);
-    virtual ~IsoTWall(){}
+    bool arbitrateMass=false;
 
+  public:
+    IsoTWall(us segnr,Pos position,const variable::var& Tbc,bool arbitrateMass=false);
+  private:
+    IsoTWall(const IsoTWall& o,const tasystem::TaSystem&);
+  public:    
+    IsoTWall(const IsoTWall& o)=delete;
+    IsoTWall& operator=(const IsoTWall&) =delete;
+    virtual ~IsoTWall(){}
+    int arbitrateMassEq() const;
     virtual segment::Connector* copy(const tasystem::TaSystem& sys) const {
       return new IsoTWall(*this,sys);}
     #ifndef SWIG

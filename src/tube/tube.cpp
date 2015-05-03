@@ -15,7 +15,7 @@
 #include "exception.h"
 #include "utils.h"
 #include <typeinfo>
-
+#include "hopkinsheat.h"
 // Tried to keep the method definition a bit in order in which a
   // tube is created, including all its components. First a tube is
   // created, which has a geometry and a global
@@ -113,12 +113,12 @@ namespace tube {
     return ndofs;
   }  
 
-  d Tube::getCurrentMass() const{
-    TRACE(8,"Tube::getCurrentMass()");
+  d Tube::getMass() const{
+    TRACE(8,"Tube::getMass()");
     assert(cells.size()>0);
     d mass=0;
     for(auto cell=cells.begin();cell!=cells.end();cell++){
-      mass+=(*cell)->getCurrentMass();
+      mass+=(*cell)->getMass();
     }
     return mass;
   }
@@ -128,6 +128,22 @@ namespace tube {
     for(auto v=cells.begin();v!=cells.end();v++){
       (*v)->updateNf();
     }
+  }
+  vc Tube::heatQ() const {
+    TRACE(15,"Tube::heatQ()");
+    vc res(getNCells());
+    for(us i=0; i< getNCells(); i++) {
+      res(i)=static_cast<const HopkinsHeatSource&>(getHeatSource()).HeatTransferCoefQ(*cells[i])(1);
+    }
+    return res;
+  }
+  vc Tube::heatH() const {
+    TRACE(15,"Tube::heatQ()");
+    vc res(getNCells());
+    for(us i=0; i< getNCells(); i++) {
+      res(i)=static_cast<const HopkinsHeatSource&>(getHeatSource()).HeatTransferCoefH(*cells[i])(1);
+    }
+    return res;
   }
   const BcCell& Tube::bcCell(Pos p) const{
     TRACE(3,"Tube::bcCell()");

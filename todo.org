@@ -6,3 +6,38 @@
 * Rvalue references for jacobian stuff
 * Make enginesystem running again. First cleanup of Jacobian code
 * Finding out when to do PyDECREF on PyObject*s
+
+
+* 3 May 2015
+Reached the point of implemented mass conservation with new
+TaSystem. The following type of b.c.'s should be implemented:
+
+| bc            | Determines mass?      |
+|---------------+-----------------------|
+| Velocity b.c. | SHOULD, in some cases |
+| Pressure b.c. | Yes                   |
+| Ad. wall      | No                    |
+| IsoT wall     | No                    |
+|---------------+-----------------------|
+
+Means:
+- If we have a tube closed with two walls, one time-avg continuity eq
+   should be replaced with a global mass conservation eq.
+- If we have a tube somewhere closed with a pressure b.c., no mass
+  conservation eq is required.
+- If somewhere a pressure b.c. is present, nothing has to be done,
+  i.e. the mass is determined.
+- Otherwise: some segments needs to be assigned the job of mass
+  arbitrator. There are natural choices for that. For example, if we
+  have a tube which has a wall b.c. at one end and a velocity b.c. at
+  the other end, there cannot be a net mass flow through it. Therefore
+  we cannot prescribe a velocity other than zero if Nf=0. Therefore,
+  the velocity b.c. /SHOULD/ replace its zero velocity component with a
+  global mass flow eq.
+
+
+* Implementation
+- Some boundary conditions have the ability to arbitrate the mass in
+  the system. This will be the velocity b.c. and the wall b.c.'s. The
+  user should set a certain boundary condtion's flag to start
+  arbitrating mass.

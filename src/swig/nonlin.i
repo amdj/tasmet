@@ -16,8 +16,9 @@
   #include "globalconf.h"
   #include "var.h"
 
-
+  // Build a system
   #include "tasystem.h"
+
   #include "boundarylayer.h"
   #include "geom.h"
   #include "conetube.h"
@@ -47,6 +48,8 @@
   #include "solverconfiguration.h"
   #include "solver.h"
 
+  // A small wrapper for this function, as TRACERNAME is not
+  // substituted by its macro value in SWIG.
   inline void setTATwenteTracer(int t) {
     tracer::setTracer<TRACERNAME>(t);
   }
@@ -55,6 +58,7 @@
 using std::string;
 typedef std::complex<double> c;
 
+// To change the tracing noisyness
 void setTATwenteTracer(int);
 
 

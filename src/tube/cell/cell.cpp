@@ -83,7 +83,7 @@ namespace tube{
     TRACE(15,"Cell::~Cell()");
     utils::purge(eqs);
   }
-  d Cell::getCurrentMass() const{
+  d Cell::getMass() const{
     return rho_(0)*vVf;
   }
   void Cell::init(const Cell* left,const Cell* right) {

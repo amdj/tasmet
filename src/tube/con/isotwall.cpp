@@ -19,10 +19,11 @@ namespace tube{
   using tasystem::JacRow;
   using tasystem::JacCol;
 
-  IsoTWall::IsoTWall(const var& Tbc,us segnr,Pos position):
+  IsoTWall::IsoTWall(us segnr,Pos position,const var& Tbc,bool arbitrateMass):
     TubeBc(segnr,position),
     Tbc(Tbc),
-    Tsbc(Tbc)
+    Tsbc(Tbc),
+    arbitrateMass(arbitrateMass)
   {
     TRACE(15,"IsoTWall::IsoTWall()");
   }
@@ -31,7 +32,8 @@ namespace tube{
     massflowzero(o.massflowzero),
     enthalpyflowzero(o.enthalpyflowzero),
     Tbc(o.Tbc),
-    Tsbc(o.Tsbc)
+    Tsbc(o.Tsbc),
+    arbitrateMass(o.arbitrateMass)
   {
     TRACE(15,"IsoTWall::IsoTWall(copy)");
     massflowzero.setGc(*gc);
@@ -46,6 +48,13 @@ namespace tube{
     enthalpyflowzero.updateNf();
     Tbc.updateNf();
     Tsbc.updateNf();
+  }
+  int IsoTWall::arbitrateMassEq() const {
+    TRACE(15,"AdiabaticWall::arbitrateMassEq()");
+    if(arbitrateMass)
+      return firsteqnr;
+    else
+      return -1;
   }
   void IsoTWall::show(us i) const {
     TRACE(5,"IsoTWall::show()");

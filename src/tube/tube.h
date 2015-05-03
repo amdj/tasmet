@@ -74,6 +74,8 @@ namespace tube{
     // Return number of Cells 
     us getNCells() const;
 
+    vc heatQ() const;
+    vc heatH() const;
     // One way or another, Swig does not inherit this method to the
     // interface of a Tube. Therefore, we wrap it manually. Probably,
     // this should be improved later on.
@@ -96,7 +98,7 @@ namespace tube{
     void setDofNrs(us firstdofnr);
     void setEqNrs(us firstdofnr);    
 	// Obtain current mass in system
-    d getCurrentMass() const;
+    d getMass() const;
     // Derivative of current mass in system to all dofs.
     void dmtotdx(vd&) const;
     // Set all higher harmonic amplitudes to zero

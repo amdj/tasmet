@@ -13,10 +13,8 @@ namespace tasystem{
   class TripletList;
   
   class EngineSystem:public TaSystem{
-    d mass_=0;
     PickADof tc;		    // Timing constraint
     PickADof av;		    // Reference amplitude value
-    d getInitialMassFromGc() const; //
   private:
     TripletList Ljac(d dampfac);
     TripletList Mjac(d dampfac);    
@@ -26,12 +24,11 @@ namespace tasystem{
     EngineSystem(const Globalconf& gc);
     EngineSystem(const EngineSystem&);
     EngineSystem(const TaSystem&); // Copy from base class
-    EngineSystem& operator=(const EngineSystem&);
+    EngineSystem& operator=(const EngineSystem&)=delete;
     virtual TaSystem* copy() const {return new EngineSystem(*this);}
 
     void setTimingConstraint(us segnr,us cellnr,us Varnr,us freqnr);
     void setAmplitudeDof(us segnr,us cellnr,us Varnr,us freqnr);    
-    // Solving methods
 
     // Overloaded virtuals:
     arma::sp_mat jac(d dampfac=-1);
@@ -39,11 +36,8 @@ namespace tasystem{
     void setRes(const vd& res);
     vd getRes();
     // Later on, these two should be moved to private
-    vd dmtotdx() const;
     vd domg();
     
-    void setMass(d mass){mass_=mass;}
-    d getMass() const {return mass_;}
 
     virtual void init();
     virtual void show(us detailnr=0);
