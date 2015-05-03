@@ -62,6 +62,7 @@ namespace tube{
     d xR=v.xR;    
 
     Wddt=v.vVf;
+    WheatQ=(xR-xL);
     // VARTRACE(25,v.vVf);
     // Difference of factor half
     Wddtkin=0.5*(v.xR-v.xL);
@@ -91,7 +92,7 @@ namespace tube{
     // External heat    
     #ifndef NOHEAT
     assert(t);
-    error+=Wddt*t->getHeatSource().heat(v);
+    error+=t->getHeatSource().heat(v);
     #else
     if(v.geti()==0)
       WARN("Applying no heat coupling");
@@ -121,7 +122,7 @@ namespace tube{
     #ifndef NOHEAT
     jac+=JacCol(v.mL(),0.5*Wddt*t->getHeatSource().dmi(v));
     jac+=JacCol(v.mR(),0.5*Wddt*t->getHeatSource().dmi(v));
-    jac+=JacCol(v.T(),Wddt*t->getHeatSource().dTi(v));
+    jac+=JacCol(v.T(),t->getHeatSource().dTi(v));
     #endif
 
     jac*=ENERGY_SCALE;

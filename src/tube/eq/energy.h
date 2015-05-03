@@ -10,8 +10,7 @@ namespace tube{
   class Energy:public Equation
   {
     const Tube* t=nullptr;
-  public:
-    d Wddt=0,Wddtkin=0;
+    d Wddt=0,Wddtkin=0,WheatQ;
 
   public:
     Energy(const Cell& v):Equation(v){}
