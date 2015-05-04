@@ -12,7 +12,7 @@
 #define _SEGCONBASE_H_
 #include "vtypes.h"
 #include "exception.h"
-
+#include "phaseconstraint.h"
 
 namespace tasystem{
   class Jacobian;
@@ -51,9 +51,6 @@ namespace segment{
     const std::string& getName() const{return name_;} // This one is just the name
     void setName(const std::string& name){ name_=name;} // This one is just the name
 
-    // This function determines whether a class is abstract or not for SWIG
-    // Return error from internal equations
-
     // Tell a TaSystem whether this Segment of Connector arbitrates
     // Mass or not. The special return value of -1 tells it does
     // not. If it does, the derived class should return which equation
@@ -62,11 +59,15 @@ namespace segment{
 
     #ifndef SWIG
     virtual vd error() const=0;
+    // Number the internal equations
     virtual void setEqNrs(us firstdofnr)=0;    
+    // Return the total number of equations in this segment/connector.
     virtual us getNEqs() const=0;    
     virtual void show(us) const=0;
+    // Fill Jacobian with values from the equations in this
+    // segment/connector.
     virtual void jac(tasystem::Jacobian&) const=0;
-    virtual void updateNf()=0;  // Update nr of frequencies
+    virtual void updateNf()=0;  // Update nr of frequencies.
 
     // Return reference to Glocalconf
     const tasystem::Globalconf& Gc() const {return *gc;}

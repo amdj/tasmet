@@ -42,11 +42,11 @@ namespace constants {
   #ifndef SWIG
   // These variable numbers are important, as they determine the
   // position of these variables in the array in cell.h
-  const int rho=0;
-  const int m=1;
-  const int T=2;
-  const int p=3;
-  const int Ts=4;
+  // const int rho=1;
+  // const int m=2;
+  // const int T=3;
+  // const int p=4;
+  // const int Ts=5;
   // Number of variables
   const int nvars_reserve=7;
   const int neqs_reserve=7;
@@ -57,10 +57,33 @@ namespace constants {
 
 #endif
 
+// Variables and their names
+enum class Varnr{
+  none,                         // None
+    rho,                        // Density
+    m,                          // Mass flow (rho*U)
+    T,                          // Temperature
+    p,                          // Pressure
+    Ts,                         // Temperature of the solid
+    mH,                         // Enthalpy flow (Watts)
+    U,                          // Volume flow (m^3/s)
+    u,                          // Velocity (U/Sf)
+    mu,                         // Momentum flux
+    Q,                          // Heat flow
+    Qs                 // Solid heat Flow
+    };
+
+#ifndef SWIG
+const char* toString(Varnr v);  // Convert Varnr to string. Defined in
+                                // constants.cpp
+#endif
+
 namespace segment{
   enum Pos{left=0,right=1};
 }
-
+namespace tasystem{
+  typedef segment::Pos Pos;
+}
 namespace tube{
   typedef segment::Pos Pos;
 
@@ -72,29 +95,8 @@ namespace tube{
       return "right";
   }
   #endif
-  enum Varnr{rho=constants::rho,
-             m=constants::m,
-             T=constants::T,
-             p=constants::p,
-             Ts=constants::Ts,
-             U,
-             mu,
-             mH,
-             Q
-  };
-
-
-  enum Physquant{MassFlow,
-                 MomentumFlow,
-                 EnthalpyFlow,
-                 HeatFlow,
-                 SolidHeatFlow,
-                 Pressure,
-  };
-
+  
   #ifndef SWIG
-
-
   
   enum EqType{
     Con=0,			// Continuity

@@ -28,12 +28,14 @@ namespace tube{
   class BcCell;
   #endif  // SWIG
   #ifdef SWIG
+  %catches(std::exception,...) Tube::setPhaseContraint(tasystem::PhaseConstraint v);
   %catches(std::exception,...) Tube::getValue(Varnr,us freqnr) const;
   %catches(std::exception,...) Tube::getValueC(Varnr,us freqnr) const;
   %catches(std::exception,...) Tube::getErrorAt(us eqnr,us freqnr) const;
   #endif
   class Tube:public segment::Seg {
-
+    // Pointer to possible PhaseConstraint instance
+    tasystem::PhaseConstraint* pc_=nullptr;
     void showVertices(us detailnr) const ;   
     // Pointer to the geometry
     Geom* geom_=nullptr;		
@@ -55,7 +57,10 @@ namespace tube{
     // Set individual at certain location for certain harmonic number
     void setResVar(Varnr,us i,us freqnr,d value);
     void setResVar(Varnr,us freqnr,const vd& value);
-    
+    // Optional: set a phase constraint on this segment,
+    // somewere. Throws when wrong type of variable is constrained, or
+    // when the freq number is not OK.
+    void setPhaseContraint(tasystem::PhaseConstraint v);
     // Return a vector of all vertex positions
     vd getx() const;
 
@@ -74,8 +79,6 @@ namespace tube{
     // Return number of Cells 
     us getNCells() const;
 
-    vc heatQ() const;
-    vc heatH() const;
     // One way or another, Swig does not inherit this method to the
     // interface of a Tube. Therefore, we wrap it manually. Probably,
     // this should be improved later on.
@@ -83,6 +86,10 @@ namespace tube{
 
     // Methods not exposed to swig
     #ifndef SWIG
+    // Computes the Dof to constrain when called by a EngineSystem
+    int providePhaseDof() const;
+    d phaseDofValue() const;
+
     virtual vd error() const;
     void show(us showvertices=0) const;
 

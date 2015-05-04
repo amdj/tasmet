@@ -2,10 +2,16 @@
 #ifndef _ENGINESYSTEM_H_
 #define _ENGINESYSTEM_H_
 
-#include "pickadof.h"
 #include "tasystem.h"
 
 namespace tasystem{
+
+  #ifdef SWIG
+  %catches(std::exception,...) EngineSystem::EngineSystem(const Globalconf& gc);
+  %catches(std::exception,...) EngineSystem::EngineSystem(const EngineSystem&);
+  %catches(std::exception,...) EngineSystem::init();
+  %catches(std::exception,...) EngineSystem::show(us detailnr=0);
+  #endif // SWIG
 
   // The EngineSystem uses the given Globalconf omg as its guess
   // value. It will iteratively change the base frequency to solve the
@@ -13,13 +19,11 @@ namespace tasystem{
   class TripletList;
   
   class EngineSystem:public TaSystem{
-    PickADof tc;		    // Timing constraint
-    PickADof av;		    // Reference amplitude value
-  private:
-    TripletList Ljac(d dampfac);
-    TripletList Mjac(d dampfac);    
-    vd errorL();
-    vd errorM();    
+    // The Dof which should be used for the phase constraint
+    int PhaseConstraintDof=-1;
+    // Pointer to the segment which provide a phaseDof
+    const segment::Seg* phaseDofSeg=NULL;
+
   public:    
     EngineSystem(const Globalconf& gc);
     EngineSystem(const EngineSystem&);
@@ -27,22 +31,18 @@ namespace tasystem{
     EngineSystem& operator=(const EngineSystem&)=delete;
     virtual TaSystem* copy() const {return new EngineSystem(*this);}
 
-    void setTimingConstraint(us segnr,us cellnr,us Varnr,us freqnr);
-    void setAmplitudeDof(us segnr,us cellnr,us Varnr,us freqnr);    
-
     // Overloaded virtuals:
-    arma::sp_mat jac(d dampfac=-1);
     vd Error();
     void setRes(const vd& res);
     vd getRes();
-    // Later on, these two should be moved to private
-    vd domg();
-    
 
-    virtual void init();
-    virtual void show(us detailnr=0);
-    // If user decides to set a "custom mass" in the system, which does
-    // not correspond to rho0*TotalFluidVolume
+    void init();
+    void show(us detailnr=0);
+  private:
+    // Overloaded virtual:
+    TripletList jacTriplets(d dampfac);
+    // Derivative of equations to frequency
+    vd domg();
   };
 
 } // namespace tasystem

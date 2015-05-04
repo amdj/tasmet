@@ -27,6 +27,7 @@
   // and a suitable equation of state should hold.
 
 namespace tube {
+  using tasystem::PhaseConstraint;
   using tasystem::TaSystem;
   using tasystem::Globalconf;
   using tasystem::Jacobian;
@@ -40,7 +41,8 @@ namespace tube {
   Tube::Tube(const Tube& other,const TaSystem& sys):
     Seg(other,sys),
     geom_(other.geom().copy()){
-
+    if(other.pc_)
+      this->pc_=new PhaseConstraint(*other.pc_);
     TRACE(13,"Filling vertices. Current size:"<<cells.size());
       // Left *probable* boundary condition
       // cells.emplace_back(new LeftCell(0,g));
@@ -71,6 +73,7 @@ namespace tube {
   Tube::~Tube(){
     TRACE(25,"~Tube()");
     delete geom_;
+    delete pc_;
     utils::purge(cells);
   }
   const Cell& Tube::getCell(us i) const{
@@ -129,22 +132,22 @@ namespace tube {
       (*v)->updateNf();
     }
   }
-  vc Tube::heatQ() const {
-    TRACE(15,"Tube::heatQ()");
-    vc res(getNCells());
-    for(us i=0; i< getNCells(); i++) {
-      res(i)=static_cast<const HopkinsHeatSource&>(getHeatSource()).HeatTransferCoefQ(*cells[i])(1);
-    }
-    return res;
-  }
-  vc Tube::heatH() const {
-    TRACE(15,"Tube::heatQ()");
-    vc res(getNCells());
-    for(us i=0; i< getNCells(); i++) {
-      res(i)=static_cast<const HopkinsHeatSource&>(getHeatSource()).HeatTransferCoefH(*cells[i])(1);
-    }
-    return res;
-  }
+  // vc Tube::heatQ() const {
+  //   TRACE(15,"Tube::heatQ()");
+  //   vc res(getNCells());
+  //   for(us i=0; i< getNCells(); i++) {
+  //     res(i)=static_cast<const HopkinsHeatSource&>(getHeatSource()).HeatTransferCoefQ(*cells[i])(1);
+  //   }
+  //   return res;
+  // }
+  // vc Tube::heatH() const {
+  //   TRACE(15,"Tube::heatQ()");
+  //   vc res(getNCells());
+  //   for(us i=0; i< getNCells(); i++) {
+  //     res(i)=static_cast<const HopkinsHeatSource&>(getHeatSource()).HeatTransferCoefH(*cells[i])(1);
+  //   }
+  //   return res;
+  // }
   const BcCell& Tube::bcCell(Pos p) const{
     TRACE(3,"Tube::bcCell()");
     if(p==Pos::left){
@@ -197,6 +200,48 @@ namespace tube {
     for(auto v=cells.begin();v!=cells.end();v++){
       (*v)->resetHarmonics();
     }
+  }
+  void Tube::setPhaseContraint(PhaseConstraint pc){
+    TRACE(15,"Tube::setPhaseContraint(PhaseConstraint v)");
+    // Sanity checks on Phase constraint:
+    if(pc.var == Varnr::p || pc.var == Varnr::m || pc.var==Varnr::T) {
+      delete pc_;
+      pc_=new PhaseConstraint(pc);
+    }
+    else {
+      WARN("Phase constraint on " << toString(pc.var) << " cannot be set in a Tube");
+      throw MyError("Phase constraint cannot be set. See warning messages for details.");
+    }
+  }
+  int Tube::providePhaseDof() const {
+    TRACE(20,"Tube::providePhaseDof()");
+    if(!pc_) {
+      TRACE(20,"No phase contraint in " << getName());
+      return -1;
+    }
+    if(pc_->freqnr>Gc().Ns()-1){
+      WARN("Frequency number given for phase constraint is "
+           "too high! Given: " << pc_->freqnr);
+      throw MyError("Illegal frequency given. See warnings.");
+    }
+    if(pc_->var == Varnr::p) 
+      return bcCell(pc_->pos).p().getDofNr()+pc_->freqnr;
+    if(pc_->var == Varnr::m) 
+      return bcCell(pc_->pos).mbc().getDofNr()+pc_->freqnr;
+    if(pc_->var == Varnr::T) 
+      return bcCell(pc_->pos).Tbc().getDofNr()+pc_->freqnr;
+    assert(false);
+  }
+  d Tube::phaseDofValue() const {
+    TRACE(15,"Tube::PhaseDofValue()");
+    assert(pc_);
+    if(pc_->var == Varnr::p) 
+      return bcCell(pc_->pos).p()(pc_->freqnr);
+    if(pc_->var == Varnr::m) 
+      return bcCell(pc_->pos).mbc()(pc_->freqnr);
+    if(pc_->var == Varnr::T) 
+      return bcCell(pc_->pos).Tbc()(pc_->freqnr);
+    assert(false);
   }
   void Tube::dmtotdx(vd& dmtotdx_) const{
     TRACE(15,"Tube::dmtotdx()");

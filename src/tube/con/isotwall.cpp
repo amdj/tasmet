@@ -1,14 +1,13 @@
 #include "isotwall.h"
 #include "jacobian.h"
-#include "tasystem.h"
 #include "bccell.h"
 #include "tube.h"
-
 
 #define iDFT (gc->iDFT)
 #define fDFT (gc->fDFT)
 #define DDTfd (gc->DDTfd)
 #define Ns (gc->Ns())
+
 
 namespace tube{
 

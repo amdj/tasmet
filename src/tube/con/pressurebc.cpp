@@ -88,7 +88,7 @@ namespace tube{
       errorM+=cell.vSf*cell.p()();
       errorM-=cell.SfL*p_prescribed();
       errorM+=cell.mu()();       // 
-      errorM-=cell.extrapolateQuant(Physquant::MomentumFlow);
+      errorM-=cell.extrapolateQuant(Varnr::mu);
       #ifndef NODRAG
       errorM+=Wddt*(t->getDragResistance().drag(cell));
       #endif
@@ -99,7 +99,7 @@ namespace tube{
       errorM-=cell.vSf*cell.p()();
       errorM+=cell.SfR*p_prescribed();
       errorM-=cell.mu()();
-      errorM+=cell.extrapolateQuant(Physquant::MomentumFlow);      
+      errorM+=cell.extrapolateQuant(Varnr::mu);      
       #ifndef NODRAG
       errorM+=Wddt*(t->getDragResistance().drag(cell));
       #endif
@@ -112,7 +112,7 @@ namespace tube{
     // VARTRACE(30,cell.Tbc()());
     // VARTRACE(30,cp(cell));
     error.subvec(2*Ns,3*Ns-1)=-cell.mHbc()();
-    error.subvec(2*Ns,3*Ns-1)+=cell.extrapolateQuant(Physquant::EnthalpyFlow);
+    error.subvec(2*Ns,3*Ns-1)+=cell.extrapolateQuant(Varnr::mH);
     return error;
   }
   void PressureBc::jac(Jacobian& jac) const{
@@ -128,7 +128,7 @@ namespace tube{
       jacr+=JacCol(cell.mbc(),Wddt*DDTfd);
       jacr+=JacCol(cell.p(),cell.vSf*eye);
       jacr+=JacCol(cell.mu(),eye);
-      jacr+=-cell.dExtrapolateQuant(Physquant::MomentumFlow);
+      jacr+=-cell.dExtrapolateQuant(Varnr::mu);
       #ifndef NODRAG
       jacr+=JacCol(cell.mL(),Wddt*(t->getDragResistance().dm(cell)));
       #endif  // NODRAG
@@ -141,7 +141,7 @@ namespace tube{
       jacr+=JacCol(cell.mbc(),Wddt*DDTfd);
       jacr+=JacCol(cell.p(),-cell.vSf*eye);
       jacr+=JacCol(cell.mu(),-eye);
-      jacr+=cell.dExtrapolateQuant(Physquant::MomentumFlow);
+      jacr+=cell.dExtrapolateQuant(Varnr::mu);
       #ifndef NODRAG
       jacr+=JacCol(cell.mR(),Wddt*(t->getDragResistance().dm(cell)));
       #endif  // NODRAG
@@ -150,7 +150,7 @@ namespace tube{
     // Prescribed enthalpy flow.
     JacRow enthalpy_extrapolated_jac(firsteqnr+2*Ns,3);
 
-    enthalpy_extrapolated_jac+=cell.dExtrapolateQuant(Physquant::EnthalpyFlow);
+    enthalpy_extrapolated_jac+=cell.dExtrapolateQuant(Varnr::mH);
     enthalpy_extrapolated_jac+=JacCol(cell.mHbc(),-eye);
     // enthalpy_extrapolated_jac+=JacCol(cell.mbc(),fDFT*diagmat(cp(cell)*cell.Tbc().tdata())*iDFT);
     // enthalpy_extrapolated_jac+=JacCol(cell.Tbc(),fDFT*diagmat(cp(cell)*cell.mbc().tdata())*iDFT);

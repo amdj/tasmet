@@ -31,7 +31,13 @@ namespace tasystem{
   }
   void TaSystem::setGc(const Globalconf& gc){
     TRACE(14,"TaSystem::setGc()");
+
+    if(gc_.Nf()!=gc.Nf()){
+      gc_.setNf(gc.Nf());
+      updateNf(gc.Nf());
+    }
     gc_=gc;
+    
     hasInit=false;
   }
   void TaSystem::cleanup(){
@@ -189,7 +195,7 @@ namespace tasystem{
       }
     } // detailnr>0
   }
-  TripletList TaSystem::jacTriplets() {
+  TripletList TaSystem::jacTriplets(d dummy) {
     TRACE(14,"TaSystem::jacTriplets()");
     us ndofs=getNDofs();
     Jacobian j(ndofs);
@@ -217,11 +223,11 @@ namespace tasystem{
     }
     return jac;
   }
-  sp_mat TaSystem::jac(d dummy){
+  sp_mat TaSystem::jac(d dampfac){
     TRACE(14,"TaSystem::Jac()");
     checkInit();
     us Ndofs=getNDofs();
-    TripletList triplets=jacTriplets();
+    TripletList triplets=jacTriplets(dampfac);
     // Remove all invalid elements
     triplets.setValid();
     return triplets;            // Implicitly converts to sp_mat

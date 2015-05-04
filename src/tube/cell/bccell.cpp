@@ -32,44 +32,43 @@ namespace tube{
     vars.push_back(&Tbc_);
     vars.push_back(&mHbc_);
   }
-  vd BcCell::extrapolateQuant(Physquant p) const {
+  vd BcCell::extrapolateQuant(Varnr v) const {
     TRACE(5,"LeftCell::extrapolateQuant()");
-    switch(p){
-    case Physquant::MassFlow:
+    switch(v){
+    case Varnr::m:
       return Continuity::extrapolateMassFlow(*this);            
-    case Physquant::MomentumFlow:
+    case Varnr::mu:
       return Momentum::extrapolateMomentumFlow(*this);      
       break;
-    case Physquant::Pressure:
+    case Varnr::p:
       return Momentum::extrapolatePressure(*this);      
       break;
-    case Physquant::HeatFlow:
+    case Varnr::Q:
       return Energy::extrapolateHeatFlow(*this);
       break;
-    case Physquant::EnthalpyFlow:
+    case Varnr::mH:
       return Energy::extrapolateEnthalpyFlow(*this);
       break;
     default:
       WARN("This is not yet implemented!");
       assert(false);
     }
-
   }
-  JacRow BcCell::dExtrapolateQuant(Physquant p) const {
+  JacRow BcCell::dExtrapolateQuant(Varnr p) const {
     TRACE(5,"LeftCell::dExtrapolateQuant()");
     switch(p){
-    case Physquant::MassFlow:
+    case Varnr::m:
       return Continuity::dExtrapolateMassFlow(*this);            
-    case Physquant::MomentumFlow:
+    case Varnr::mu:
       return Momentum::dExtrapolateMomentumFlow(*this);      
       break;
-    case Physquant::Pressure:
+    case Varnr::p:
       return Momentum::dExtrapolatePressure(*this);      
       break;
-    case Physquant::HeatFlow:
+    case Varnr::Q:
       return Energy::dExtrapolateHeatFlow(*this);
       break;
-    case Physquant::EnthalpyFlow:
+    case Varnr::mH:
       return Energy::dExtrapolateEnthalpyFlow(*this);
       break;
     default:

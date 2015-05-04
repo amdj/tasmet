@@ -17,8 +17,23 @@ namespace segment{
   public:
     virtual segment::Seg* copy(const tasystem::TaSystem&) const=0;
     virtual ~Seg(){}            // We do not own the gc instance
+
+    // This function can be used to set a phase constraint for this
+    // segment. This default implementation throws an error telling
+    // that the segment is unable to provide a DOF to constrain the
+    // phase on
+    virtual void setPhaseContraint(tasystem::PhaseConstraint);
     #ifndef SWIG
     // Pure virtual functions
+
+    // Dof number for which an additional constraint can be set to
+    // uniquely determine the phase of the system. (For EngineSystems,
+    // the phase of higher harmonics is arbitrary and needs to be
+    // fixed). This method returns the Dof on which an EngineSystem
+    // puts a phase constraint as extra equation when the extra DOF
+    // omega is introduced.
+    virtual int providePhaseDof() const {return -1;}
+    virtual d PhaseDofValue() const {return 0;}
     virtual void resetHarmonics()=0;
     // important for connecting the segments
     // ------------------------------ config methods

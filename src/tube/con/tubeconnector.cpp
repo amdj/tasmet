@@ -121,8 +121,8 @@ namespace tube {
     {
       // Simple variant. Should later be expanded to average of left
       // and right
-      vd errormHint=0.5*out[0]*bccells[0]->extrapolateQuant(EnthalpyFlow)
-        -0.5*out[1]*bccells[1]->extrapolateQuant(EnthalpyFlow)
+      vd errormHint=0.5*out[0]*bccells[0]->extrapolateQuant(Varnr::mH)
+        -0.5*out[1]*bccells[1]->extrapolateQuant(Varnr::mH)
         -out[0]*bccells[0]->mHbc()();
       error.subvec(Ns*nr,Ns*(nr+1)-1)=errormHint; nr++;
     }
@@ -132,22 +132,22 @@ namespace tube {
       const vd& T1t=bccells[1]->T().tdata();
       
       vd errorQ=fDFT*(kappaSft%(T0t-T1t)/dx)
-        -out[0]*bccells[0]->extrapolateQuant(HeatFlow);
+        -out[0]*bccells[0]->extrapolateQuant(Varnr::Q);
 
       error.subvec(Ns*nr,Ns*(nr+1)-1)=errorQ;  nr++;      
     }
     {
-      vd errorQint=out[0]*bccells[0]->extrapolateQuant(HeatFlow)
-        +out[1]*bccells[1]->extrapolateQuant(HeatFlow);
+      vd errorQint=out[0]*bccells[0]->extrapolateQuant(Varnr::Q)
+        +out[1]*bccells[1]->extrapolateQuant(Varnr::Q);
 
       error.subvec(Ns*nr,Ns*(nr+1)-1)=errorQint; nr++;
     }
     {
 
-      vd errorp=Sfgem*(bccells[1]->extrapolateQuant(Pressure)
-                 -bccells[0]->extrapolateQuant(Pressure));
-      errorp+=bccells[1]->extrapolateQuant(MomentumFlow)
-        -bccells[0]->extrapolateQuant(MomentumFlow);
+      vd errorp=Sfgem*(bccells[1]->extrapolateQuant(Varnr::p)
+                 -bccells[0]->extrapolateQuant(Varnr::p));
+      errorp+=bccells[1]->extrapolateQuant(Varnr::mu)
+        -bccells[0]->extrapolateQuant(Varnr::mu);
       
       error.subvec(Ns*nr,Ns*(nr+1)-1)=errorp; nr++;
     }    
@@ -177,8 +177,8 @@ namespace tube {
       JacRow mHjacint(eqnr,5);
       eqnr+=Ns;
 
-      mHjacint+=(bccells[0]->dExtrapolateQuant(EnthalpyFlow)*=0.5*out[0]);
-      mHjacint+=(bccells[1]->dExtrapolateQuant(EnthalpyFlow)*=-0.5*out[1]);
+      mHjacint+=(bccells[0]->dExtrapolateQuant(Varnr::mH)*=0.5*out[0]);
+      mHjacint+=(bccells[1]->dExtrapolateQuant(Varnr::mH)*=-0.5*out[1]);
       mHjacint+=JacCol(bccells[0]->mHbc(),-out[0]*eye);
 
       jac+=mHjacint;
@@ -191,7 +191,7 @@ namespace tube {
       VARTRACE(15,kappaSft);
       Qjac+=JacCol(bccells[0]->T(),fDFT*diagmat(kappaSft/dx)*iDFT);
       Qjac+=JacCol(bccells[1]->T(),-fDFT*diagmat(kappaSft/dx)*iDFT);
-      Qjac+=(bccells[0]->dExtrapolateQuant(HeatFlow)*=-out[0]);
+      Qjac+=(bccells[0]->dExtrapolateQuant(Varnr::Q)*=-out[0]);
 
       jac+=Qjac;
 
@@ -200,17 +200,17 @@ namespace tube {
       JacRow Qintjac(eqnr,5);
       eqnr+=Ns;
 
-      Qintjac+=(bccells[0]->dExtrapolateQuant(HeatFlow)*=out[0]);
-      Qintjac+=(bccells[1]->dExtrapolateQuant(HeatFlow)*=out[1]);
+      Qintjac+=(bccells[0]->dExtrapolateQuant(Varnr::Q)*=out[0]);
+      Qintjac+=(bccells[1]->dExtrapolateQuant(Varnr::Q)*=out[1]);
       jac+=Qintjac;
     }
     {
       JacRow pjac(eqnr,2);
       // eqnr+=Ns; // Not needed no row below
-      pjac+=(bccells[1]->dExtrapolateQuant(Pressure)*=Sfgem);
-      pjac+=(bccells[0]->dExtrapolateQuant(Pressure)*=-Sfgem);
-      pjac+=(bccells[1]->dExtrapolateQuant(MomentumFlow));
-      pjac+=(bccells[0]->dExtrapolateQuant(MomentumFlow)*=-1);             
+      pjac+=(bccells[1]->dExtrapolateQuant(Varnr::p)*=Sfgem);
+      pjac+=(bccells[0]->dExtrapolateQuant(Varnr::p)*=-Sfgem);
+      pjac+=(bccells[1]->dExtrapolateQuant(Varnr::mu));
+      pjac+=(bccells[0]->dExtrapolateQuant(Varnr::mu)*=-1);             
       jac+=pjac;
     }    
 

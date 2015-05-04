@@ -24,8 +24,8 @@ namespace tube{
     virtual ~BcCell(){}
     virtual Pos getPos() const=0;
     virtual void init(const Cell* left,const Cell* right);
-    vd extrapolateQuant(Physquant) const;
-    tasystem::JacRow dExtrapolateQuant(Physquant) const;
+    vd extrapolateQuant(Varnr) const;
+    tasystem::JacRow dExtrapolateQuant(Varnr) const;
     // virtual d getValueBc(Varnr,us freqnr) const=0;
 
     // Fluid cross-sectional area at bc

@@ -18,6 +18,7 @@
 
   // Build a system
   #include "tasystem.h"
+  #include "enginesystem.h"
 
   #include "boundarylayer.h"
   #include "geom.h"
@@ -83,7 +84,7 @@ void setTATwenteTracer(int);
 
  // For Segments and connectors
 %include "segconbase.h"
-
+%include "phaseconstraint.h"
  // Connectors
 %include "connector.h"
 %include "tubebc.h"
@@ -111,6 +112,7 @@ void setTATwenteTracer(int);
 
  // System
 %include "tasystem.h"
+%include "enginesystem.h"
  // Solver
 %include "solverconfiguration.h"
 %include "solver.h"

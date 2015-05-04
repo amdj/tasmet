@@ -40,7 +40,7 @@ namespace tasystem{
 
     // Convert to Armadillo Sparse matrix
     operator arma::sp_mat() const;
-
+    void setNdofs(us ndofs){ndofs_=ndofs;}
     void show() const;
     // Make one row zero
     void zeroOutRow(us rownr);

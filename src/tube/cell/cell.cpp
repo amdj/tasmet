@@ -183,6 +183,8 @@ namespace tube{
     TRACE(4,"Cell::getValue(Varnr,freqnr)");
     return getValue(v)(freqnr);
   }
+
+
   void Cell::setResVar(Varnr v,const vd& res){
     TRACE(15,"Cell::setResVar(Varnr,vd)");
     switch(v) {
@@ -203,7 +205,7 @@ namespace tube{
       Ts_.setadata(res);
       break;
     default:
-      WARN("Varnr" << v << " not handled!");
+      WARN("Varnr" << toString(v) << " not handled!");
     }
   }
   void Cell::setResVar(Varnr v,const variable::var& res){
@@ -213,6 +215,8 @@ namespace tube{
   var Cell::getValue(Varnr v) const{
     TRACE(4,"Cell::getValue(Varnr)");
       switch(v) {
+      case Varnr::none:
+        return var(*gc);
       case Varnr::rho: // Density
         return rho();
         break;

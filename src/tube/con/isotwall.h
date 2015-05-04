@@ -18,32 +18,43 @@ namespace tube{
  // IsoT wall boundary
   class IsoTWall:public TubeBc {
     us firsteqnr;
-    PrescribeQty massflowzero;       // Equation to make volume flow zero
-                                // at wall
-    PrescribeQty enthalpyflowzero;       // Equation to make volume flow zero
-                                // at wall
-    PrescribeQty Tbc;
-    PrescribeQty Tsbc;    
-    bool arbitrateMass=false;
+    // Equation to make volume flow zero at wall
+    PrescribeQty massflowzero;
+    // Equation to make volume flow zero at wall
+    PrescribeQty enthalpyflowzero;
 
-  public:
-    IsoTWall(us segnr,Pos position,const variable::var& Tbc,bool arbitrateMass=false);
+    // 
+    PrescribeQty Tbc;
+    // Not yet implemented!
+    PrescribeQty Tsbc;
+    
+    // 
+    bool arbitrateMass=false;
   private:
     IsoTWall(const IsoTWall& o,const tasystem::TaSystem&);
-  public:    
+  public:
+    // segnr: segment number to apply this b.c. to. Position: left or
+    // right side.
+    // Tbc: temperature boundary condition value.
+    // arbitrateMass: whether this b.c. returns an equation number
+    // such that a TaSystem can overwrite this equation with global
+    // mass conservation.
+    // provide
+    IsoTWall(us segnr,Pos position,const variable::var& Tbc
+             ,bool arbitrateMass=false);
     IsoTWall(const IsoTWall& o)=delete;
+    virtual segment::Connector* copy(const tasystem::TaSystem& sys) const {
+      return new IsoTWall(*this,sys);}
     IsoTWall& operator=(const IsoTWall&) =delete;
     virtual ~IsoTWall(){}
     int arbitrateMassEq() const;
-    virtual segment::Connector* copy(const tasystem::TaSystem& sys) const {
-      return new IsoTWall(*this,sys);}
+
     #ifndef SWIG
     us getNEqs() const;
     virtual void updateNf();
     virtual void setEqNrs(us firstdofnr);    
     virtual vd error() const;
     virtual void jac(tasystem::Jacobian&) const;
-    // ------------------------------
     virtual void show(us i) const;
     #endif
   };

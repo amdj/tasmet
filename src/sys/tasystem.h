@@ -61,12 +61,16 @@ namespace tasystem{
     bool driven=true;
     Globalconf gc_;             // Global configuration parameters
   public:
-    void setGc(const Globalconf& gc); // Reset globalconf configuration
     const Globalconf& gc() const {return gc_;} // Reset globalconf configuration
     TaSystem():gc_(Globalconf::airSTP(0,100)){}
     TaSystem(const Globalconf& g);
     TaSystem(const TaSystem& o);
     TaSystem& operator=(const TaSystem& other)=delete;
+
+
+    // Set globalconf configuration. Applies updateNf as well.
+    void setGc(const Globalconf& gc);
+    
 
     // Set and get the mass in the system. If the mass is not set
     // before initializing, the mass is computed from the segment's
@@ -93,7 +97,9 @@ namespace tasystem{
     virtual vd getRes();			// Extract result vector
     virtual void setRes(const vd& resvec);	// Set result vector
     #ifndef SWIG
-    arma::sp_mat jac(d dummy=-1);		// Return Jacobian matrix
+    // Compute Jacobian matrix. The dampfac value is used in an
+    // EngineSystem
+    arma::sp_mat jac(d dampfac=1);		// Return Jacobian matrix
     #endif
 
     // Change Nf in the system, while keeping the results.
@@ -116,7 +122,7 @@ namespace tasystem{
     // converged.
     d getCurrentMass();
     vd dmtotdx() const;         // Derivative of total mass to DOF x
-    virtual TripletList jacTriplets();
+    virtual TripletList jacTriplets(d dummy);
     void cleanup();
   };				// class System
   

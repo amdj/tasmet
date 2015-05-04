@@ -65,7 +65,7 @@ namespace tube{
     vd error(getNEqs());
     error.subvec(0,Ns-1)=massflowzero.error();
     error.subvec(Ns,2*Ns-1)=enthalpyflowzero.error();
-    error.subvec(2*Ns,3*Ns-1)=cell.extrapolateQuant(Physquant::HeatFlow);
+    error.subvec(2*Ns,3*Ns-1)=cell.extrapolateQuant(Varnr::Q);
     return error;
   }
   void AdiabaticWall::jac(Jacobian& jac) const {
@@ -74,7 +74,7 @@ namespace tube{
     jac+=massflowzero.jac();
     jac+=enthalpyflowzero.jac();
     JacRow heatflowjac(firsteqnr+2*Ns,2);
-    heatflowjac+=cell.dExtrapolateQuant(Physquant::HeatFlow);
+    heatflowjac+=cell.dExtrapolateQuant(Varnr::Q);
     jac+=heatflowjac;
   }
 } // namespace tube
