@@ -114,7 +114,7 @@ AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/geom geom)
 AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/drag drag)
 AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/cell cell)
 AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/heat heat)
-AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/con con)
+AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/tubecon tubecon)
 
 set (nonlinear_SRC
   ${src}
@@ -123,7 +123,7 @@ set (nonlinear_SRC
   ${sys}
   ${var}
   ${tube}
-  ${con}
+  ${tubecon}
   ${drag}
   ${eq}
   ${geom}
@@ -146,7 +146,7 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/src/tube/geom
   ${PROJECT_SOURCE_DIR}/src/tube/geom/grid
   ${PROJECT_SOURCE_DIR}/src/tube/drag
-  ${PROJECT_SOURCE_DIR}/src/tube/con
+  ${PROJECT_SOURCE_DIR}/src/tube/tubecon
   ${PROJECT_SOURCE_DIR}/src/tube/cell
   ${PROJECT_SOURCE_DIR}/src/tube/eq
   ${PROJECT_SOURCE_DIR}/src/tube/heat
