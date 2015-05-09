@@ -1,0 +1,334 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+TASMET User's guide
+\end_layout
+
+\begin_layout Standard
+ThermoAcoustic System Modeling Environment Twente.
+\end_layout
+
+\begin_layout Section
+Duct basics
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename fig/duct_grid.eps
+	width 75text%
+
+\end_inset
+
+s
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Geometry and discretization of a duct
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Cell vertices halfway between the cell walls
+\end_layout
+
+\begin_layout Itemize
+Cross-sectional area jumps at the cell walls
+\end_layout
+
+\begin_layout Subsection
+Continuity equation
+\end_layout
+
+\begin_layout Standard
+Continuity equation lives at the vertex
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+S_{f}\frac{\partial\rho}{\partial t}+\frac{\partial m}{\partial x}=0,
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $x$
+\end_inset
+
+ is the axial position, 
+\begin_inset Formula $S_{f}$
+\end_inset
+
+ the cross-sectional area occupied by fluid, 
+\begin_inset Formula $\rho$
+\end_inset
+
+ is the density and 
+\begin_inset Formula $m$
+\end_inset
+
+ the mass flow.
+ Quasi-discrete form:
+\begin_inset Formula 
+\begin{equation}
+W_{\mathrm{ddt}}\frac{\partial\rho_{i}}{\partial t}+m{}_{R}-m_{L}=0,
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $W_{\mathrm{ddt}}=V_{vf}$
+\end_inset
+
+ is the volume of a cell, which is 
+\begin_inset Formula $S_{vf}\left(x_{R}-x_{L}\right)$
+\end_inset
+
+, where 
+\begin_inset Formula $S_{f}=\frac{1}{2}\left(S_{f,L}+S_{f,R}\right)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Momentum equation
+\end_layout
+
+\begin_layout Standard
+Momentum equation lives at the cell wall.
+ It conserves the momentum in a 
+\begin_inset Quotes eld
+\end_inset
+
+cell
+\begin_inset Quotes erd
+\end_inset
+
+ with left and right walls which are at the corresponding vertices.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial m}{\partial t}+\frac{\partial mu}{\partial x}+S_{f}\frac{\partial p}{\partial x}+\mathcal{R}=0
+\end{equation}
+
+\end_inset
+
+where, 
+\begin_inset Formula $p$
+\end_inset
+
+ is the pressure and 
+\begin_inset Formula $\mathcal{R}$
+\end_inset
+
+ is the viscous resistance coefficient.
+ 
+\end_layout
+
+\begin_layout Standard
+Quasi-discrete form
+\begin_inset Formula 
+\begin{equation}
+\left(x_{i}-x_{i-1}\right)\frac{\partial m_{L}}{\partial t}+\left(mu\right)_{i}-\left(mu\right)_{i-1}+S_{f,L}\left(p_{i}-p_{i-1}\right)+\left(x_{i}-x_{i-1}\right)\mathcal{D}=0
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Laminar flow
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathcal{\hat{R}}=\hat{R}\diamond\hat{m}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\mathcal{R}}_{n}=\frac{\mu}{r_{h}^{2}}\frac{is_{n}^{2}f_{\nu,n}}{1-f_{\nu,n}}\hat{U}_{n}$
+\end_inset
+
+ where 
+\begin_inset Formula $s_{n}^{2}=r_{h}^{2}\frac{\rho_{0}\omega}{\mu}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Substituting that:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\mathcal{R}}_{n}=\rho_{0}\frac{i\omega nf_{\nu,n}}{1-f_{\nu,n}}\hat{U}_{n}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+where
+\begin_inset Formula 
+\begin{equation}
+\hat{R}_{n}=\frac{i\omega nf_{\nu,n}}{1-f_{\nu,n}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Discretization
+\end_layout
+
+\begin_layout Standard
+Since pressure and density live on the vertices, to compute 
+\begin_inset Formula $f_{\nu,n}$
+\end_inset
+
+ at each cell wall, we take for 
+\begin_inset Formula $\delta_{\nu,\kappa}$
+\end_inset
+
+ the weighted average of the neighboring vertices.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{T}_{0,L}\approx w_{i-1}\hat{T}_{0,i-1}+w_{i}T_{0,i},
+\end{equation}
+
+\end_inset
+
+where
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $w_{i}=1-w_{i-1}=\frac{x_{i+1}-x_{L}}{x_{i+1}-x_{i-1}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+w_{i-1}=\frac{x_{i+1}-x_{L}}{x_{i+1}-x_{i-1}}\quad w_{i}=1-w_{i-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

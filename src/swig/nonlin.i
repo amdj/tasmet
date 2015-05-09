@@ -59,6 +59,7 @@
 using std::string;
 typedef std::complex<double> c;
 
+void clearConsole();
 // To change the tracing noisyness
 void setTATwenteTracer(int);
 

@@ -17,7 +17,7 @@ namespace tube{
 
   class IsentropicTube:public Tube
   {
-    DragResistance nodrag;
+    drag::DragResistance nodrag;
     HeatSource noheat;
     IsentropicTube& operator=(const IsentropicTube&) =delete;    
     IsentropicTube(const IsentropicTube&)=delete;
@@ -28,7 +28,7 @@ namespace tube{
     virtual ~IsentropicTube();
     #ifndef SWIG
     vd dragCoefVec(us i) const;
-    virtual const DragResistance& getDragResistance() const {return nodrag;}
+    virtual const drag::DragResistance& getDragResistance() const {return nodrag;}
     virtual const HeatSource& getHeatSource() const {return noheat;}
     void cleanup();
     #endif  // ifndef SWIG

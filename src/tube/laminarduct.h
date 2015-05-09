@@ -19,7 +19,7 @@ namespace tube{
 
   class LaminarDuct:public Tube
   {
-    LaminarDragResistance laminardrag;
+    drag::LaminarDragResistance laminardrag;
   protected:
     LaminarDuct(const Geom& geom);
     LaminarDuct(const LaminarDuct&)=delete;
@@ -28,7 +28,7 @@ namespace tube{
   public:
     #ifndef SWIG
     virtual ~LaminarDuct();
-    virtual const DragResistance& getDragResistance() const {return laminardrag;}
+    virtual const drag::DragResistance& getDragResistance() const {return laminardrag;}
     #endif
   };
 

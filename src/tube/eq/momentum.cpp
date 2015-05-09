@@ -37,7 +37,7 @@ namespace tube{
     t=&v.getTube();
     if(v.left()){
       Wddt=v.vx-v.left()->vx;;
-      Wpi=v.vSf;
+      Wpi=v.SfL;
       Wpim1=-v.SfL;
     }
   }
@@ -54,8 +54,6 @@ namespace tube{
 
     // Pressure right
     error+=Wpi*v.p()();
-    d vSf=v.vSf;
-    d vSfL=v.left()->vSf;
     // Pressure left
     error+=Wpim1*v.left()->p()();
 

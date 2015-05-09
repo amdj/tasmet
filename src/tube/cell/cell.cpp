@@ -251,7 +251,7 @@ namespace tube{
       // Default:
       throw MyError("Unknown varnr");
   }
-
+    
   void Cell::updateNf(){
     TRACE(10,"Cell::setNf()");
     for(auto var=vars.begin();var!=vars.end();var++)

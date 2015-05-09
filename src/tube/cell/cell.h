@@ -94,6 +94,8 @@ namespace tube {
     const variable::var& T() const { return T_;}
     virtual const variable::var& TL() const { assert(left_); return left_->T();}
     virtual const variable::var& TR() const {assert(right_); return right_->T();}
+    const variable::var& pL() const { assert(left_); return left_->p();}
+    const variable::var& pR() const {assert(right_); return right_->p();}
     const variable::var& rhoL() const { assert(left_); return left_->rho();}
     const variable::var& rhoR() const {assert(right_); return right_->rho();}
 

@@ -131,7 +131,7 @@ namespace tube{
     const Cell& getCell(us i) const;
     const Cell& operator[](us i) const;
     
-    virtual const DragResistance& getDragResistance() const=0;
+    virtual const drag::DragResistance& getDragResistance() const=0;
     virtual const HeatSource& getHeatSource() const=0;
     #endif
   private:
