@@ -7,7 +7,7 @@
 #define iDFT (v.gc->iDFT)
 #define fDFT (v.gc->fDFT)
 #define DDTfd (v.gc->DDTfd)
-
+#define Ns (v.gc->Ns())
 namespace tube{
 
   using tasystem::JacCol;
@@ -34,7 +34,7 @@ namespace tube{
   }
   vd Continuity::error() const {	
     TRACE(6,"Continuity::Error()");
-    vd error(v.gc->Ns(),fillwith::zeros);
+    vd error(Ns,fillwith::zeros);
     error+=Wddt*DDTfd*v.rho()();
     error+=v.mR()();
     error-=v.mL()();
@@ -44,10 +44,9 @@ namespace tube{
     return error;
   }
   void Continuity::domg(vd& domg_) const{
-    TRACE(0,"Continuity::domg()");
-    vd domg_full=Wddt*DDTfd*v.rho()()/v.gc->getomg();
-    // domg_.subvec(dofnr+1,dofnr+2)=domg_full.subvec(1,2); 
-    domg_.subvec(dofnr,dofnr+v.gc->Ns()-1)=domg_full;     
+    TRACE(18,"Continuity::domg()");
+    vd domg_full=(Wddt*DDTfd*v.rho()())/v.gc->getomg();
+    domg_.subvec(dofnr,dofnr+Ns-1)=domg_full;     
   }
   vd Continuity::extrapolateMassFlow(const Cell& v){
     TRACE(15,"Continuity::extrapolateMassFlow(const Cell& v)");

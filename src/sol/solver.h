@@ -35,7 +35,7 @@ namespace tasystem{
       reler=*it;
     }
     #endif
-    ~ErrorVals(){ TRACE(20,"~ErrorVals()"); }
+    ~ErrorVals(){ TRACE(5,"~ErrorVals()"); }
   };
 
   #ifndef SWIG

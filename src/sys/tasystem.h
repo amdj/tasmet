@@ -39,6 +39,7 @@ namespace tasystem{
   %catches(std::exception,...) TaSystem::TaSystem(const Globalconf&);
   %catches(std::exception,...) TaSystem::Error();
   %catches(std::exception,...) TaSystem::init();
+  %catches(std::exception,...) TaSystem::setRes(const vd& res);
   %catches(std::exception,...) TaSystem::showJac();
   %catches(std::exception,...) TaSystem::show(us detailnr=0);
   %catches(std::exception,...) TaSystem::operator+=(const segment::Connector&);
@@ -123,7 +124,7 @@ namespace tasystem{
     d getCurrentMass();
     vd dmtotdx() const;         // Derivative of total mass to DOF x
     virtual TripletList jacTriplets(d dummy);
-    void cleanup();
+    virtual void cleanup();
   };				// class System
   
 } // namespace tasystem

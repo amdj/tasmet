@@ -7,7 +7,7 @@
 
 // To set divide by amplitude on
 // #define DIVAMPL
-#define TIMINGCONSTRAINT
+// #define TIMINGCONSTRAINT
 #define DOMGFAC (1e0)
 
 namespace tasystem{
@@ -17,7 +17,7 @@ namespace tasystem{
   EngineSystem::EngineSystem(const Globalconf& gc):
     TaSystem(gc)
   {
-    TRACE(15,"EngineSystem::EngineSystem(gc,tc)");
+    TRACE(20,"EngineSystem::EngineSystem(gc,tc)");
     // Since an EngineSystem cannot be driven:
     setDriven(false);
     if(gc.Nf()<1)
@@ -37,19 +37,30 @@ namespace tasystem{
     cout << "Target system mass: " << getMass() << "\n";
     TaSystem::show(detailnr);
   }
+  void EngineSystem::cleanup() {
+    TRACE(25,"EngineSystem::cleanup()");
+    TaSystem::cleanup();
+    phaseConDof=-1;
+  }
+
   void  EngineSystem::init(){
     TRACE(15,"EngineSystem::init()");
     TaSystem::init();
     hasInit=false;
+    phaseConDof=-1;
+    phaseConSeg=-1;
     // Getting the PhaseConstraint Dof
-    for(const Seg* seg: segs) {
-      int thissegPhaseDof=seg->providePhaseDof();
+
+    for(us segnr=0;segnr<segs.size();segnr++) {
+      int thissegPhaseDof=segs[segnr]->providePhaseDof();
       if(thissegPhaseDof>=0) {
-        if(PhaseConstraintDof<0) {
-          // set the PhaseConstraintDof to this seg its 
-          PhaseConstraintDof=thissegPhaseDof;
+        if(phaseConDof<0) {
+          // set the phaseConDof to this seg its 
+          phaseConDof=thissegPhaseDof;
           // Set the pointer to the right segment
-          phaseDofSeg=seg;
+          phaseConSeg=segnr;
+          TRACE(20,"Phase constraint set on segment " << phaseConSeg);
+
         }
         else {
           throw MyError("Too many segments with a Phase Constraint"
@@ -58,14 +69,14 @@ namespace tasystem{
       } // if thissegDhaseDof>0
     } // for
 
-    // Check if we really found a PhaseConstraintDof
-    if(PhaseConstraintDof<1){
+    // Check if we really found a phaseConDof
+    if(phaseConDof<1){
       throw MyError("No phase constraints found. Initialization of "
                     "EngineSystem failed.");
     }
 
     // Crude check if the PhaseConstraintdof we found is valid
-    if((us) PhaseConstraintDof>getNDofs()) {
+    if((us) phaseConDof>getNDofs()) {
         throw MyError("Invalid phase constraint Dof given."
                       " Is the frequency OK?");
     }
@@ -74,15 +85,16 @@ namespace tasystem{
     hasInit=true;
   }
   vd EngineSystem::Error(){
-    TRACE(20,"EngineSystem::Error()");
+    TRACE(18,"EngineSystem::Error()");
     checkInit();
-    assert(phaseDofSeg);
+    assert(phaseConSeg>=0);
     // Add one Dof for the timing constraint  
     us Ndofs=getNDofs()+1;
 
     vd error(Ndofs);
-    error.subvec(0,Ndofs-1)=TaSystem::Error();
-    error(Ndofs-1)=phaseDofSeg->PhaseDofValue();
+    error.subvec(0,Ndofs-2)=TaSystem::Error();
+    TRACE(15,"Phase dof seg: " << phaseConSeg);    
+    error(Ndofs-1)=segs[phaseConSeg]->phaseDofValue();
 
     return error;
   }
@@ -97,10 +109,11 @@ namespace tasystem{
     us extraspace=0;
     vd domg=this->domg();
     us domgsize=domg.size();
-    // if(dampfac>0){
-    //   TRACE(15,"Dampfac set:"<< dampfac << "\nNorm of domg:"<< arma::norm(domg));
-    //   domg*=DOMGFAC/dampfac;
-    // }
+    TRACE(18,"dampfac:" << dampfac);
+    if(dampfac>0){
+      domg*=DOMGFAC/dampfac;
+      TRACE(18,"Norm of domg:"<< arma::norm(domg));
+    }
     // TRACE(50,"domg:"<<domg);
     // extraspace+=domgsize;	// A little bit too much, but anyway..
     // jactriplets.reserveExtraDofs(extraspace);
@@ -109,8 +122,8 @@ namespace tasystem{
         jactriplets.push_back(Triplet(i,ndofs-1,domg(i)));
     }	// for domg
     // Now we need to add the timingconstraint as well.
-    TRACE(14,"Dofnr timingconstraint:"<<PhaseConstraintDof);
-    jactriplets.push_back(Triplet(ndofs-1,PhaseConstraintDof,1));
+    TRACE(17,"Dofnr timingconstraint:"<<phaseConDof);
+    jactriplets.push_back(Triplet(ndofs-1,phaseConDof,1));
 
     // jactriplets.reserveExtraDofs(extraspace);
     return jactriplets;
@@ -165,11 +178,27 @@ namespace tasystem{
     // Sanity check
     us ndofs=getNDofs()+1;
     us ressize=res.size();
-    if(ressize!=ndofs)
+    vd oldres=getRes();
+    TRACE(18,"ndofs: " << ndofs);
+    TRACE(18,"ressize: " << ressize);
+    cout << "Current amplitude value: " << res(phaseConDof-1) << endl;
+    if(ressize==ndofs){
+      TaSystem::setRes(res.subvec(0,ndofs-2));
+      d fac=1;
+      d oldomg=gc_.getomg();
+      d newomg=res(ndofs-1);
+      d setomg=oldomg+fac*(newomg-oldomg);
+      gc_.setomg(setomg);
+    }
+    else if(ressize==ndofs-1){
+      TaSystem::setRes(res);
+      WARN("TaSystem result vector given. Fundamental frequency not updated");
+    }
+    else {
       throw MyError("Result vector has inappropriate length!");
+    }
+    cout << "Current frequency: " << gc_.getfreq() << endl;
 
-    TaSystem::setRes(res.subvec(0,ndofs-2));
-    gc_.setomg(res(ndofs-1));
     TRACE(18,"New freq:"<< res(ndofs)/2/number_pi);
   }
   vd EngineSystem::domg(){

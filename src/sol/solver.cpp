@@ -88,12 +88,14 @@ namespace tasystem{
     // Wrap to reference
     TaSystem& sys=(*sys1);
     // old error
+    TRACE(25,"Obtaining old error...");
     vd error=sys.Error();
     // old error norm
     d oldfuner=norm(error);
     if(!(error.size()>0)){
       throw MyError("Error illegal residual vector obtained. Exiting.");
     }
+    TRACE(25,"Obtaining old result vector...");
     vd oldx=sys.getRes();
 
     us Ndofs=error.size();
@@ -102,11 +104,11 @@ namespace tasystem{
     assert(jac.n_cols==error.size());
     assert(jac.n_rows==error.size());
 
-    TRACE(15,"Solving linear system...");
+    TRACE(25,"Solving linear system...");
     vd fulldx; 
     // This can throw. Is catched a layer higher
     fulldx=-1.0*arma::spsolve(jac,error,"superlu");
-
+    TRACE(25,"Solving linear system done.");
     d newfuner;
     d reler;
     vd newx(Ndofs);
@@ -137,9 +139,9 @@ namespace tasystem{
       sys.setRes(newx);
       newfuner=norm(sys.Error());
     }
-    
+    TRACE(55,"Update in omg:" << newx(newx.size()-1)-oldx(newx.size()-1));
     cout << "Current dampfac: " << sc->dampfac << "\n";
-    TRACE(10,"Iteration done...");
+    TRACE(25,"Iteration done...");
     
     return {newfuner,reler};		// Return function error
 

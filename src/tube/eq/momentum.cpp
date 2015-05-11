@@ -16,6 +16,8 @@
 #define iDFT (v.gc->iDFT)
 #define fDFT (v.gc->fDFT)
 #define DDTfd (v.gc->DDTfd)
+#define Ns (v.gc->Ns())
+#define eye (arma::eye(Ns,Ns))
 
 namespace tube{
   using tasystem::Jacobian;
@@ -80,10 +82,10 @@ namespace tube{
     // Time-derivative of mass flow
     jac+=JacCol(v.mL(),Wddt*DDTfd);
 
-    jac+=JacCol(v.p(),Wpi*eye());
-    jac+=JacCol(v.left()->p(),Wpim1*eye());
-    jac+=JacCol(v.mu(),eye());
-    jac+=JacCol(v.left()->mu(),-eye());
+    jac+=JacCol(v.p(),Wpi*eye);
+    jac+=JacCol(v.left()->p(),Wpim1*eye);
+    jac+=JacCol(v.mu(),eye);
+    jac+=JacCol(v.left()->mu(),-eye);
 
  
     #ifndef NODRAG
@@ -93,16 +95,14 @@ namespace tube{
     return jac;
   }
   void Momentum::domg(vd & domg_) const {
-    TRACE(0,"Momentum::domg()");
+    TRACE(18,"Momentum::domg()");
     // Possibly later adding drag->domg();
-    const us& Ns=v.gc->Ns();
-    vd domg_full;//=v.gc->DDTfd*Wddt*fDFT*(v.rho().tdata()%v.U().tdata())/v.gc->getomg();
-    // domg_.subvec(dofnr+1,dofnr+2)=domg_full.subvec(1,2);
-    domg_.subvec(dofnr,dofnr+v.gc->Ns()-1)=domg_full;
+    vd domg_full=(Wddt/v.gc->getomg())*DDTfd*v.mL()();
+    domg_.subvec(dofnr,dofnr+Ns-1)=domg_full;
     TRACE(0,"Momentum::domg() done");
   }
 
-  #define eye (arma::eye(v.gc->Ns(),v.gc->Ns()))
+
   namespace LEFT {
   
    static vd2 weightfactors(const Cell& v){

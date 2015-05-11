@@ -9,13 +9,11 @@
 #include "tube.h"
 #include "leftcell.h"       // which includes tubebccell.h
 #include "rightcell.h"       // which includes tubebccell.h
-#include "interpolate.h"
 #include "globalconf.h"
 #include "geom.h"
 #include "exception.h"
 #include "utils.h"
-#include <typeinfo>
-#include "hopkinsheat.h"
+
 // Tried to keep the method definition a bit in order in which a
   // tube is created, including all its components. First a tube is
   // created, which has a geometry and a global
@@ -314,14 +312,10 @@ namespace tube {
     TRACE(10,"Filling error for seg nr " << getNumber() << " done." );
     return error;
   }
-  void Tube::domg(vd& domg_v) const{
+  void Tube::domg(vd& domg) const{
     TRACE(8,"Tube::Error()");
-    const us& Ns=gc->Ns();
-    us nCell=cells.size();    
-    // vd domg(getNDofs(),fillwith::zeros);
-    us vndofs,curpos=0;
-    for(us k=0; k<nCell;k++) {
-      cells[k]->domg(domg_v);
+    for(const Cell* cell:cells) {
+      cell->domg(domg);
     }
   }
 

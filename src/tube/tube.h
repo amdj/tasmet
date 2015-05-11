@@ -84,11 +84,12 @@ namespace tube{
     // this should be improved later on.
     const char* __repr__() const {return segment::SegConBase::__repr__();}
 
-    // Methods not exposed to swig
-    #ifndef SWIG
     // Computes the Dof to constrain when called by a EngineSystem
     int providePhaseDof() const;
     d phaseDofValue() const;
+
+    // Methods not exposed to swig
+    #ifndef SWIG
 
     virtual vd error() const;
     void show(us showvertices=0) const;

@@ -11,6 +11,7 @@ namespace tasystem{
   %catches(std::exception,...) EngineSystem::EngineSystem(const EngineSystem&);
   %catches(std::exception,...) EngineSystem::init();
   %catches(std::exception,...) EngineSystem::show(us detailnr=0);
+  %catches(std::exception,...) EngineSystem::setRes(const vd& res);
   #endif // SWIG
 
   // The EngineSystem uses the given Globalconf omg as its guess
@@ -20,9 +21,9 @@ namespace tasystem{
   
   class EngineSystem:public TaSystem{
     // The Dof which should be used for the phase constraint
-    int PhaseConstraintDof=-1;
+    int phaseConDof=-1;
     // Pointer to the segment which provide a phaseDof
-    const segment::Seg* phaseDofSeg=NULL;
+    int phaseConSeg=-1;
 
   public:    
     EngineSystem(const Globalconf& gc);
@@ -38,11 +39,15 @@ namespace tasystem{
 
     void init();
     void show(us detailnr=0);
+    vd domg();
+  protected:
+    // Overloaded virtual
+    void cleanup();    
   private:
     // Overloaded virtual:
     TripletList jacTriplets(d dampfac);
     // Derivative of equations to frequency
-    vd domg();
+
   };
 
 } // namespace tasystem

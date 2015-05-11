@@ -117,11 +117,8 @@ namespace tube{
         const d omg=v.gc->getomg();
         const vd omgvec=omg*linspace(1,Nf,Nf);
         vd rh_over_deltanu=(shearWaveNumber(v).subvec(1,Nf))/sq2;
-        TRACE(20,"SFSF");
         vc fnu=rf.fx(rh_over_deltanu); // Viscous rott function
-        TRACE(20,"SFSF");
         rescoef.subvec(1,Nf)=I*(omgvec%(fnu/(1.0-fnu)));
-        TRACE(20,"SFSF");
       }
       return rescoef;
     }

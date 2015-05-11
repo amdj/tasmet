@@ -42,6 +42,7 @@ namespace tasystem{
   }
   void TaSystem::cleanup(){
     TRACE(25,"TaSystem::cleanup()");
+    arbitrateMassEq=-1;
     utils::purge(segs);
     utils::purge(connectors);
     hasInit=false;
@@ -151,7 +152,8 @@ namespace tasystem{
     }
     for(auto con=connectors.begin();con!=connectors.end();con++)      {
       (*con)->updateNf();
-    }    TRACE(25,"New Ns:"<< gc_.Ns() << " . Adres gc: " << &gc_);
+    }
+    TRACE(25,"New Ns:"<< gc_.Ns() << " . Adres gc: " << &gc_);
 
     init();
   }

@@ -33,7 +33,7 @@ namespace segment{
     // puts a phase constraint as extra equation when the extra DOF
     // omega is introduced.
     virtual int providePhaseDof() const {return -1;}
-    virtual d PhaseDofValue() const {return 0;}
+    virtual d phaseDofValue() const {return 0;}
     virtual void resetHarmonics()=0;
     // important for connecting the segments
     // ------------------------------ config methods

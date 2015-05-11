@@ -41,7 +41,6 @@ namespace tube{
 
       const d omg=v.gc->getomg();
       const vd omgvec=linspace(0,Nf*omg,Nf+1);
-      TRACE(20,"SFSQ")
       const d& rh=v.rhL;
 
       return rh*sqrt((rho0/mu0)*omgvec);

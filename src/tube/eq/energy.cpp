@@ -88,19 +88,26 @@ namespace tube{
     error+=mHR(v)-mHL(v);
     // Heat flow in and out
     error+=QR(v)-QL(v);
-
     // External heat    
     #ifndef NOHEAT
     assert(t);
-    error+=t->getHeatSource().heat(v);
+    error-=t->getHeatSource().heat(v);
     #else
     if(v.geti()==0)
       WARN("Applying no heat coupling");
     #endif
-
     // (Boundary source term)
     // error+=v.esource();
     return error*ENERGY_SCALE;
+  }
+  void Energy::domg(vd& domg_) const {
+    TRACE(18,"Energy::domg()");
+    assert(v.gc!=nullptr);
+    d gamma=this->gamma();
+    d gamfac=gamma/(gamma-1.0);
+    vd domg_full=ENERGY_SCALE*(Wddt/((gamma-1.0)*v.gc->getomg()))*DDTfd*v.p()();
+    domg_full+=Wddtkin*DDTfd*v.mu()()/v.gc->getomg();                
+    domg_.subvec(dofnr,dofnr+Ns-1)=domg_full;
   }
   JacRow Energy::jac() const{
     TRACE(6,"Energy::jac()");
@@ -120,9 +127,9 @@ namespace tube{
 
     // Transverse heat transver
     #ifndef NOHEAT
-    jac+=JacCol(v.mL(),0.5*Wddt*t->getHeatSource().dmi(v));
-    jac+=JacCol(v.mR(),0.5*Wddt*t->getHeatSource().dmi(v));
-    jac+=JacCol(v.T(),t->getHeatSource().dTi(v));
+    jac+=JacCol(v.mL(),-0.5*Wddt*t->getHeatSource().dmi(v));
+    jac+=JacCol(v.mR(),-0.5*Wddt*t->getHeatSource().dmi(v));
+    jac+=JacCol(v.T(),-t->getHeatSource().dTi(v));
     #endif
 
     jac*=ENERGY_SCALE;
@@ -306,7 +313,7 @@ namespace tube{
   };
 
   vd Energy::QL(const Cell& v) {
-    TRACE(4,"Energy::QL()");
+    TRACE(15,"Energy::QL()");
     const heatW w(v);
     const vd& Tt=v.T().tdata();
     const vd& Ttl=v.TL().tdata();
@@ -314,7 +321,7 @@ namespace tube{
     return fDFT*(kappaLt(v)%(w.WcLl*Ttl+w.WcLr*Tt));
   }
   JacRow Energy::dQL(const Cell& v) {
-    TRACE(4,"Energy::dQL()");
+    TRACE(15,"Energy::dQL()");
     const heatW w(v);
     JacRow dQL(2);
     dQL+=JacCol(v.T(),fDFT*diagmat(w.WcLr*kappaLt(v))*iDFT);
@@ -322,16 +329,14 @@ namespace tube{
     return dQL;
   }
   vd Energy::QR(const Cell& v) {
-    TRACE(4,"Energy::QR()");
+    TRACE(15,"Energy::QR()");
     const heatW w(v);
     const vd& Tt=v.T().tdata();
     const vd& Ttr=v.TR().tdata();
-
-    VARTRACE(5,fDFT*(kappaRt(v)%(w.WcRl*Tt+w.WcRr*Ttr)));
     return fDFT*(kappaRt(v)%(w.WcRl*Tt+w.WcRr*Ttr));
   }
   JacRow Energy::dQR(const Cell& v) {
-    TRACE(4,"Energy::dQR()");
+    TRACE(15,"Energy::dQR()");
     const heatW w(v);
     JacRow dQR(2);
     dQR+=JacCol(v.T(),fDFT*diagmat(w.WcRl*kappaRt(v))*iDFT);
@@ -339,40 +344,21 @@ namespace tube{
     return dQR;
   }
   vd Energy::kappaRt(const Cell& v) {		// Returns thermal conductivity time domain data
-    TRACE(5,"Energy::kappaRt()");
-    // if(v.i==0)
-      // WARN("Thermal conductivity computed at T0");
+    TRACE(15,"Energy::kappaRt()");
     const WeightFactors w=WeightFactors(v);
     const vd& Tt=v.T().tdata();
     const vd& TtR=v.TR().tdata();
-    // VARTRACE(25,v.gc->gas().kappa(WRr*TtR+WRl*Tt));
     return v.gc->gas().kappa(w.WRr*TtR+w.WRl*Tt);
-
     // return ones(Ns)*v.gc->gas().kappa(v.gc->T0());
   }
   vd Energy::kappaLt(const Cell& v) {		// Returns thermal conductivity time domain data
-    TRACE(5,"Energy::kappaRt()");
+    TRACE(15,"Energy::kappaRt()");
     const WeightFactors w=WeightFactors(v);
     const vd& Tt=v.T().tdata();
     const vd& TtL=v.TL().tdata();    
-    // VARTRACE(25,v.gc->gas().kappa(WLl*TtL+WLr*Tt));
     return v.gc->gas().kappa(w.WLl*TtL+w.WLr*Tt);
     // return ones(Ns)*v.gc->gas().kappa(v.gc->T0());
   }
-  void Energy::domg(vd& domg_) const {
-    TRACE(0,"Energy::domg()");
-    assert(v.gc!=nullptr);
-
-    d gamma=this->gamma();
-    d gamfac=gamma/(gamma-1.0);
-    WARN("Is this correct??");
-    vd domg_full=Wddt*DDTfd*v.p()()/(gamma-1.0)/v.gc->getomg(); // Static
-    domg_full+=Wddtkin*DDTfd*v.mu()()/v.gc->getomg();                                                        // enthalpy
-    // term
-    // domg_.subvec(dofnr+1,dofnr+2)=domg_full.subvec(1,2);
-    domg_.subvec(dofnr,dofnr+Ns-1)=domg_full;
-  }
-
   vd Energy::extrapolateEnthalpyFlow(const Cell& v) {
     TRACE(15,"Energy::extrapolateEnthalpyFlow()");
     // Can only be called for leftmost or rightmost node

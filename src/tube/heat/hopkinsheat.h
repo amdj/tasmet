@@ -1,12 +1,17 @@
+// hopkinsheat.h
+//
+// Author: J.A. de Jong 
+//
+// Description:
+//
+//////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef _HOPKINSHEAT_H_
-#define _HOPKINSHEAT_H_
+#ifndef HOPKINSHEAT_H
+#define HOPKINSHEAT_H
+
 #include "vtypes.h"
 #include "heat.h"
-
 #include "rottfuncs.h"
-
-
 
 
 namespace tube{
@@ -38,4 +43,6 @@ namespace tube{
   };
 
 } // namespace tube
-#endif /* _HOPKINSHEAT_H_ */
+
+#endif // HOPKINSHEAT_H
+//////////////////////////////////////////////////////////////////////
