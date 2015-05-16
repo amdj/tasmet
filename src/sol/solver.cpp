@@ -139,7 +139,7 @@ namespace tasystem{
       sys.setRes(newx);
       newfuner=norm(sys.Error());
     }
-    TRACE(55,"Update in omg:" << newx(newx.size()-1)-oldx(newx.size()-1));
+    TRACE(18,"Update in omg:" << newx(newx.size()-1)-oldx(newx.size()-1));
     cout << "Current dampfac: " << sc->dampfac << "\n";
     TRACE(25,"Iteration done...");
     
