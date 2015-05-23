@@ -10,12 +10,17 @@
 #ifndef _IMPEDANCEBC_H_
 #define _IMPEDANCEBC_H_
 
-#include "tubebccell.h"
-#include "momentumeq.h"
-
+#include "constants.h"
+#include "tubebc.h"
 
 namespace tube{
+  SPOILNAMESPACE
 
+  class ImpedanceBc:public TubeBc {
+  public:
+    ImpedanceBc(us segnr,Pos pos,const tasystem::var& z,d T0=constants::T0);
+  virtual ~ImpedanceBc();
+};
 
 
 

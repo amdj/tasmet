@@ -12,7 +12,7 @@
 #include <assert.h>
 
 
-namespace variable {
+namespace tasystem {
   #ifndef SWIG
   SPOILNAMESPACE
 
@@ -89,13 +89,13 @@ namespace variable {
 
     // Operations ********************
 
-    // Time derivative of this variable
+    // Time derivative of this tasystem
     var ddt() const;
     var operator/(const var& var2) const; // Time-domain division operator
 
     // Multiply two variables in time domain
-    var operator*(const var& variable) const;
-    // Multiply a variable with a scalar. This operation is possible
+    var operator*(const var& tasystem) const;
+    // Multiply a tasystem with a scalar. This operation is possible
     // for both frequency and time domain data
     var operator*(d scalar) const;
 
@@ -109,27 +109,13 @@ namespace variable {
     // corresponds to a matrix-vector multiplication (cosines and
     // sines) are mixed up due to the complex numbers. This product
     // can be obtained by getting the matrix-variant of the first
-    // variable. The following function will give the effective matrix
+    // tasystem. The following function will give the effective matrix
     dmat freqMultiplyMat() const;
   private:
     vc getcRes() const;
   };
 
 
-} /* namespace variable */
+} /* namespace tasystem */
 #endif /* VAR_H_ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

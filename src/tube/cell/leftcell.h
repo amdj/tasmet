@@ -15,13 +15,13 @@ namespace tube{
     virtual Pos getPos() const {return Pos::left;}
     // For the pressure, we only do not assert that a cell is
     // located on the left...
-    // virtual const variable::var& pL() const {return pL_;}
+    // virtual const tasystem::var& pL() const {return pL_;}
 
     const d& Sfbc() const {return SfL;}
     // OVerloaded virtuals from BcCell
     void show(us detailnr=1) const;
-    const variable::var& mbc() const {return mL_;}
-    const variable::var& TL() const { return Tbc_;}
+    const tasystem::var& mbc() const {return mL_;}
+    const tasystem::var& TL() const { return Tbc_;}
   };  
 
 } // namespace tube

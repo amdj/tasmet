@@ -16,10 +16,10 @@ namespace tube{
     virtual BcCell* copy() const {return new RightAdiabaticWall(*this);}
     virtual enum connectpos connectPos() const {return connectpos::right;}
     virtual void initCell(us i,const Tube& thisseg);
-    virtual const variable::var& pR() const {return pr;};
-    virtual void setpR(const variable::var& o){pr=o;}
+    virtual const tasystem::var& pR() const {return pr;};
+    virtual void setpR(const tasystem::var& o){pr=o;}
   protected:
-    variable::var pr;
+    tasystem::var pr;
     StateR sr;
     
   };

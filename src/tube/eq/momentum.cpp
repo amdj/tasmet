@@ -23,7 +23,7 @@ namespace tube{
   using tasystem::Jacobian;
   using tasystem::JacRow;
   using tasystem::JacCol;
-  using variable::var;
+  using tasystem::var;
 
 
   void Momentum::show() const{

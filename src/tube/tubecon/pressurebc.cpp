@@ -13,30 +13,19 @@
 
 #define Ns (gc->Ns())
 #define eye (eye(Ns,Ns))
+#include "varutils.h"
 
 namespace tube{
-  using variable::var;
+  using tasystem::var;
+  using tasystem::coldTemp;
+  using tasystem::adiabaticTemp;
   using tasystem::TaSystem;
   using tasystem::Globalconf;
   using tasystem::Jacobian;
   using tasystem::JacRow;
   using tasystem::JacCol;
 
-  var coldtemp(const var& pres){
-    return var(pres.gc(),pres.gc().T0());
-  }
-  var adiabatictemp(const var& pres){
-    TRACE(10,"adiabatictemp()");
-    const Globalconf* gc=&pres.gc();
-    d T0=gc->T0();
-    d gamma=gc->gas().gamma(T0);
-    vd p0(Ns,fillwith::ones); p0*=gc->p0();
-    vd Tbct=T0*pow((p0+pres.tdata())/p0,(gamma-1.0)/gamma);		// Adiabatic compression/expansion
-    var res(pres.gc());
-    res.settdata(Tbct);
-    return res;
-  } 
-  PressureBc::PressureBc(const var& pres,const var& temp,const var& stemp,us segnr,Pos position):
+  PressureBc::PressureBc(us segnr,Pos position,const var& pres,const var& temp,const var& stemp):
     TubeBc(segnr,position),
     p_prescribed(pres),
     prescribeT(temp)
@@ -45,11 +34,11 @@ namespace tube{
     TRACE(8,"PressureBc full constructor");
 
   }
-  PressureBc::PressureBc(const var& pres,const var& temp,us segnr,Pos position):
-    PressureBc(pres,temp,coldtemp(pres),segnr,position)
+  PressureBc::PressureBc(us segnr,Pos position,const var& pres,const var& temp):
+    PressureBc(segnr,position,pres,temp,coldTemp(pres))
   {}
-  PressureBc::PressureBc(const var& pres,us segnr,Pos position):
-    PressureBc(pres,adiabatictemp(pres),segnr,position)
+  PressureBc::PressureBc(us segnr,Pos position,const var& pres):
+    PressureBc(segnr,position,pres,adiabaticTemp(pres))
   {}
   PressureBc::PressureBc(const PressureBc& other,const TaSystem& sys):
     TubeBc(other,sys),

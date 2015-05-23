@@ -11,7 +11,7 @@
 
 namespace tasystem{
 
-  JacCol::JacCol(const variable::var& thevar):
+  JacCol::JacCol(const tasystem::var& thevar):
     coldof_(thevar.getDofNr()),
     data_(thevar.gc().Ns(),thevar.gc().Ns(),fillwith::zeros)
   {  }
@@ -24,7 +24,7 @@ namespace tasystem{
     data_(data)
   {  }
 
-  JacCol::JacCol(const variable::var& thevar,const dmat& data):
+  JacCol::JacCol(const tasystem::var& thevar,const dmat& data):
     coldof_(thevar.getDofNr()),
     data_(data)
   {  }

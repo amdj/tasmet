@@ -43,7 +43,7 @@ namespace tube{
     for(us i=0;i<cells.size();i++){
       T=Tmirror(i);
       Cell& ccell=*cells[i];
-      variable::var Tvar(*gc);
+      tasystem::var Tvar(*gc);
       Tvar.setadata(0,T);
       static_cast<SolidTPrescribed*>(ccell.Eq(Sol))->setTs(T);
       ccell.setResVar(Varnr::T,Tvar);

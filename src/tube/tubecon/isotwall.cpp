@@ -11,7 +11,7 @@
 
 namespace tube{
 
-  using variable::var;
+  using tasystem::var;
   using tasystem::TaSystem;
   using tasystem::Globalconf;
   using tasystem::Jacobian;

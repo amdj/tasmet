@@ -12,7 +12,7 @@ namespace tube{
 
   using tasystem::JacCol;
   using tasystem::JacRow;
-  using variable::var;
+  using tasystem::var;
   
   void Continuity::show() const {
     cout << "-------------- Continuity equation\n";

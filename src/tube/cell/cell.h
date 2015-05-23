@@ -25,15 +25,15 @@ namespace tube {
     const Cell* left_=nullptr;
     const Cell* right_=nullptr;
 
-    variable::var rho_;         // Density at vertex
-    variable::var mL_;		// Mass flow at left cell wall
-    // variable::var mHL_;		// Total enthalpy flow at left cell wall
-    variable::var mu_;      // Momentum flow at vertex
-    variable::var T_;		// Temperature
-    variable::var p_;      // Pressure at left cell wall
-    variable::var Ts_;		// Solid temperature
+    tasystem::var rho_;         // Density at vertex
+    tasystem::var mL_;		// Mass flow at left cell wall
+    // tasystem::var mHL_;		// Total enthalpy flow at left cell wall
+    tasystem::var mu_;      // Momentum flow at vertex
+    tasystem::var T_;		// Temperature
+    tasystem::var p_;      // Pressure at left cell wall
+    tasystem::var Ts_;		// Solid temperature
 
-    vector<variable::var*> vars;
+    vector<tasystem::var*> vars;
     std::map<EqType,Equation*> eqs; // Vector of pointers to the equations
 
   public:
@@ -73,35 +73,35 @@ namespace tube {
     us geti() const {return i;}
     Equation* Eq(EqType et) {return eqs.at(et);}
     // Momentum flow at vertex position
-    const variable::var& mu() const {return mu_;}
-    const variable::var& mL() const {return mL_;}
-    // const variable::var& mHL() const {return mHL_;}
-    virtual const variable::var& mR() const {assert(right_); return right_->mL();}
-    // virtual const variable::var& mHR() const { assert(right_); return right_->mHL();}
-    const variable::var& p() const{return p_;}
+    const tasystem::var& mu() const {return mu_;}
+    const tasystem::var& mL() const {return mL_;}
+    // const tasystem::var& mHL() const {return mHL_;}
+    virtual const tasystem::var& mR() const {assert(right_); return right_->mL();}
+    // virtual const tasystem::var& mHR() const { assert(right_); return right_->mHL();}
+    const tasystem::var& p() const{return p_;}
 
     // These are variables for the left and right vertices, but are on
     // the cell walls for the leftmost and rightmost vertices
     // respectively
-    const variable::var& rho() const {return rho_;}
-    // virtual const variable::var& rhoL() const {assert(left_); return left_->rho();}
-    // virtual const variable::var& rhoR() const {assert(right_); return right_->rho();}
+    const tasystem::var& rho() const {return rho_;}
+    // virtual const tasystem::var& rhoL() const {assert(left_); return left_->rho();}
+    // virtual const tasystem::var& rhoR() const {assert(right_); return right_->rho();}
 
-    // const variable::var& U() const {return U_;}
-    // virtual const variable::var& UL() const {assert(left_); return left_->U();}
-    // virtual const variable::var& UR() const {assert(right_); return right_->U();}
+    // const tasystem::var& U() const {return U_;}
+    // virtual const tasystem::var& UL() const {assert(left_); return left_->U();}
+    // virtual const tasystem::var& UR() const {assert(right_); return right_->U();}
 
-    const variable::var& T() const { return T_;}
-    virtual const variable::var& TL() const { assert(left_); return left_->T();}
-    virtual const variable::var& TR() const {assert(right_); return right_->T();}
-    const variable::var& pL() const { assert(left_); return left_->p();}
-    const variable::var& pR() const {assert(right_); return right_->p();}
-    const variable::var& rhoL() const { assert(left_); return left_->rho();}
-    const variable::var& rhoR() const {assert(right_); return right_->rho();}
+    const tasystem::var& T() const { return T_;}
+    virtual const tasystem::var& TL() const { assert(left_); return left_->T();}
+    virtual const tasystem::var& TR() const {assert(right_); return right_->T();}
+    const tasystem::var& pL() const { assert(left_); return left_->p();}
+    const tasystem::var& pR() const {assert(right_); return right_->p();}
+    const tasystem::var& rhoL() const { assert(left_); return left_->rho();}
+    const tasystem::var& rhoR() const {assert(right_); return right_->rho();}
 
-    const variable::var& Ts() const {return Ts_;}
-    virtual const variable::var& TsL() const {assert(left_); return left_->Ts();}
-    virtual const variable::var& TsR() const {assert(right_); return right_->Ts();}
+    const tasystem::var& Ts() const {return Ts_;}
+    virtual const tasystem::var& TsL() const {assert(left_); return left_->Ts();}
+    virtual const tasystem::var& TsR() const {assert(right_); return right_->Ts();}
 
     // Set this cell to be isentropically
     void setIsentropic();
@@ -128,7 +128,7 @@ namespace tube {
 
     virtual void jac(tasystem::Jacobian& tofill) const;		       // Fill complete Jacobian for this node
     virtual void domg(vd& ) const;
-    void setResVar(Varnr,const variable::var& res);
+    void setResVar(Varnr,const tasystem::var& res);
     virtual void setResVar(Varnr,const vd& res); // Overridden for
                                                  // lefttubecell and
                                                  // righttubecell!
@@ -136,7 +136,7 @@ namespace tube {
     virtual vd getRes() const;			  // Extract current result
                                           // vector
     d getValue(Varnr,us freqnr) const;
-    variable::var getValue(Varnr) const;
+    tasystem::var getValue(Varnr) const;
     virtual void updateNf();
 
     // Convenience function, we need a lot of static (background

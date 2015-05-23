@@ -1,7 +1,7 @@
 #include "rightcell.h"
 
 namespace tube{
-  using variable::var;
+  using tasystem::var;
   using tasystem::JacRow;
   using tasystem::JacCol;
 

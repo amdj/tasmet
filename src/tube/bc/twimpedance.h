@@ -53,11 +53,11 @@ namespace tube{
     // TwImpedanceEnergyEq   eright; // Completely adjusted equation
     RightTwImpedanceEq righttwimp;
     // Isentropic is;
-    variable::var pr;
+    tasystem::var pr;
     // State s;
     StateR sr;
     
-    const variable::var& pR() const {return pr;}
+    const tasystem::var& pR() const {return pr;}
     TwImpedance();
     TwImpedance(const TwImpedance& o);
     TwImpedance& operator=(const TwImpedance&);

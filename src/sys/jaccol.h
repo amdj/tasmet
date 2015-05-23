@@ -10,8 +10,10 @@
 #define JACCOL_H
 #include "vtypes.h"
 
-namespace variable{ class var;}
-namespace tasystem{ class Globalconf;}
+namespace tasystem{ 
+  class var;
+  class Globalconf;
+}
 
 namespace tasystem{
   SPOILNAMESPACE
@@ -20,10 +22,10 @@ namespace tasystem{
     us coldof_;                  // First dof of column
     dmat data_;                  // data
   public:
-    JacCol(const variable::var&);
+    JacCol(const tasystem::var&);
     JacCol(us coldof,const tasystem::Globalconf*);
     JacCol(us coldof,const dmat&);    
-    JacCol(const variable::var&,const dmat&);
+    JacCol(const tasystem::var&,const dmat&);
     // JacCol(JacCol&&);           // Move data
     JacCol(const JacCol&);
     void prePostMultiply(const dmat& pre,const dmat& post){ data_=pre*data_*post;}

@@ -40,7 +40,7 @@ namespace tube{
     // such that a TaSystem can overwrite this equation with global
     // mass conservation.
     // provide
-    IsoTWall(us segnr,Pos position,const variable::var& Tbc
+    IsoTWall(us segnr,Pos position,const tasystem::var& Tbc
              ,bool arbitrateMass=false);
     IsoTWall(const IsoTWall& o)=delete;
     virtual segment::Connector* copy(const tasystem::TaSystem& sys) const {

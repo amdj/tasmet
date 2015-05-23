@@ -98,7 +98,7 @@ namespace tube{
     dmat LaminarDragResistance::dm(const Cell& v) const { // Derivative of drag resistance to velocity
       TRACE(10,"LaminarDragResistance::dUi()");
       vc CResistance=ComplexResistancecoef(v);
-      variable::var resistance(*v.gc);
+      tasystem::var resistance(*v.gc);
       resistance.setadata(CResistance);
       return resistance.freqMultiplyMat();
     }

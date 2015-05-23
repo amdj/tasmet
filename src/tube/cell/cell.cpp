@@ -17,7 +17,7 @@
 #define Ns (gc->Ns())
 
 namespace tube{
-  using variable::var;
+  using tasystem::var;
   using tasystem::Jacobian;
 
   Cell::Cell(us i,const Tube& tube):
@@ -208,7 +208,7 @@ namespace tube{
       WARN("Varnr" << toString(v) << " not handled!");
     }
   }
-  void Cell::setResVar(Varnr v,const variable::var& res){
+  void Cell::setResVar(Varnr v,const tasystem::var& res){
       TRACE(4,"Cell::setResVar(Varnr,var)");
       setResVar(v,res());
   }

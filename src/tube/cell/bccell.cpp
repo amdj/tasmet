@@ -17,7 +17,7 @@ namespace tube{
 
   using tasystem::JacRow;
   using tasystem::JacCol;
-  using variable::var;
+  using tasystem::var;
 
   BcCell::BcCell(us i,const Tube& t):
     Cell(i,t)

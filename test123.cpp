@@ -73,13 +73,13 @@ int main(int argc,char* argv[]) {
   HopkinsLaminarDuct t1(geom1,gc.T0(),gc.T0());
 
   // IsentropicTube t1(geom1);
-  variable::var pL(gc,0);
+  tasystem::var pL(gc,0);
   pL.set(0,3.14);
   if(Nf>0)
     pL.set(1,1.0);
   // PressureBc first(pL,0,pos::left);
   // PressureBc p(pL,0,pos::left);
-  variable::var Tbc(gc,393.15);
+  tasystem::var Tbc(gc,393.15);
   // AdiabaticWall first(0,pos::left);
   PressureBc first(pL,0,left); 
   IsoTWall second(0,right,Tbc);

@@ -6,7 +6,7 @@ namespace tube{
 
   using tasystem::JacRow;
   using tasystem::JacCol;
-  using variable::var;
+  using tasystem::var;
 
   void PrescribeQty::set(us eqnr,const var& toprescribe,const var& vals){
     TRACE(15,"PrescribeQty::set()");

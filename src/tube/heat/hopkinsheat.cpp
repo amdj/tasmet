@@ -98,7 +98,7 @@ namespace tube{
   }
   dmat HopkinsHeatSource::dTi(const Cell& v) const{
     TRACE(5,"HopkinsHeatSource::dTi(v)");
-    variable::var htcoefH(*v.gc);
+    tasystem::var htcoefH(*v.gc);
     htcoefH.setadata(HeatTransferCoefH(v));
     dmat dTi(v.gc->Ns(),v.gc->Ns(),fillwith::zeros);
     dTi=-v.vVf*htcoefH.freqMultiplyMat();
@@ -106,7 +106,7 @@ namespace tube{
   }
   dmat HopkinsHeatSource::dmi(const Cell& v) const{
     TRACE(5,"HopkinsHeatSource::dUi(v)");
-    variable::var htcoefQ(*v.gc);
+    tasystem::var htcoefQ(*v.gc);
     htcoefQ.setadata(HeatTransferCoefQ(v));
     dmat dmi(v.gc->Ns(),v.gc->Ns(),fillwith::zeros);
     // Obtain dTwdx

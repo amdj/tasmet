@@ -12,7 +12,7 @@
 #define fDFT (gc_->fDFT)
 #define iDFT (gc_->iDFT)
 
-namespace variable {
+namespace tasystem {
 
   using namespace tasystem
 ;
@@ -54,7 +54,7 @@ namespace variable {
   }
   var::var(const Globalconf& gc,const vd& data,bool adata)
     :var(gc)
-  { // Create a variable and fill it with time data.
+  { // Create a tasystem and fill it with time data.
     TRACE(0,"var::var(gc,tdata_)");
     if(data.size()!=adata_.size())
       throw MyError("Wrong size of amplitude vector given. Does the"
@@ -69,7 +69,7 @@ namespace variable {
     }
   }  var::var(const Globalconf& gc,const vc& data)
     :var(gc)
-  { // Create a variable and fill it with time data.
+  { // Create a tasystem and fill it with time data.
     if(data.size()!=Nf+1)
       throw MyError("Wrong size of amplitude vector given. Does the"
                     "vector size correspond to Ns?");
@@ -236,7 +236,7 @@ namespace variable {
     return result;
   }
 
-  //Get a variable which is the time derivative of the current one
+  //Get a tasystem which is the time derivative of the current one
   var var::ddt() const {
     var result(*(this->gc_));
     vd newadata=gc_->DDTfd*adata_;
@@ -249,7 +249,7 @@ namespace variable {
 
 
 
-} /* namespace variable */
+} /* namespace tasystem */
 
 
 

@@ -13,38 +13,38 @@ namespace tube{
   class Cell;
 
   class  PrescribeQty{
-    const variable::var* toprescribe;
-    variable::var vals;
+    const tasystem::var* toprescribe;
+    tasystem::var vals;
     us eqnr;
   public:
     PrescribeQty(){}
     // Vals: variables to coerce to
-    PrescribeQty(const variable::var& vals){setVals(vals);} // 
+    PrescribeQty(const tasystem::var& vals){setVals(vals);} // 
     // toprescribe: a reference to the variable which has to be prescribed
-    void set(us eqnr,const variable::var& toprescribe,const variable::var& vals);
-    void set(us eqnr,const variable::var& toprescribe);
-    void setVals(const variable::var& vals);
+    void set(us eqnr,const tasystem::var& toprescribe,const tasystem::var& vals);
+    void set(us eqnr,const tasystem::var& toprescribe);
+    void setVals(const tasystem::var& vals);
     vd error() const;
     tasystem::JacRow jac() const;
     void updateNf() {vals.updateNf();}
     void setGc(const tasystem::Globalconf& gc){vals.setGc(gc);}
-    const variable::var& getVals() const {return vals;}
+    const tasystem::var& getVals() const {return vals;}
   };
   class PrescribeddxQty{
-    const variable::var *Qi,*Qj,*Qk; // Quantities as position i,j,k
+    const tasystem::var *Qi,*Qj,*Qk; // Quantities as position i,j,k
     d Wi,Wj,Wk;
-    variable::var vals;
+    tasystem::var vals;
     us eqnr;
   public:
     PrescribeddxQty(){}
-    #define varref const variable::var&
-    void set(us eqnr,varref Qi,varref Qj,varref Qk,d xi,d xj, d xk,const variable::var& vals);
+    #define varref const tasystem::var&
+    void set(us eqnr,varref Qi,varref Qj,varref Qk,d xi,d xj, d xk,const tasystem::var& vals);
     #undef varref
     vd error() const;
     tasystem::JacRow jac() const;
     void updateNf() {vals.updateNf();}
     void setGc(const tasystem::Globalconf& gc){vals.setGc(gc);}
-    const variable::var& getVals() const {return vals;}
+    const tasystem::var& getVals() const {return vals;}
   };
 
 } // namespace tube

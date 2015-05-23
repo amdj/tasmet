@@ -25,7 +25,7 @@
   // and a suitable equation of state should hold.
 using tasystem::Globalconf;
 using tasystem::TaSystem;
-using variable::var;
+using tasystem::var;
 
 namespace tube {
 
