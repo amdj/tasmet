@@ -14,10 +14,14 @@
 namespace tasystem {
   
   var coldTemp(const var& pres); // Returns a variable with constant
-                                 // temperature T0
+                                 // temperature gc->T0
+
+
   // Returns adiabatic compression/expansion temperature corresponding
-  // to given pressure
-  var adiabaticTemp(const var& pres);
+  // to given pressure. T0 is Grabbed from the Global configuration
+  // (Globalconf) if an invalid value is given. The default argument
+  // is an invalid value.
+  var adiabaticTemp(const var& pres,d T0=-1);
   
   
 } // namespace tasystem

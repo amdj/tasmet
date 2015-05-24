@@ -64,9 +64,8 @@ namespace tube{
   }
   void IsoTWall::setEqNrs(us firsteqnr){
     TRACE(2,"IsoTWall::setEqNrs()");
-    this->firsteqnr=firsteqnr;
+    TubeBc::setEqNrs(firsteqnr);
     var zero(*gc,0);             // zero at all the time
-
     const BcCell& cell=t->bcCell(pos);
     massflowzero.set(firsteqnr,cell.mbc(),zero);
     enthalpyflowzero.set(firsteqnr+Ns,cell.mHbc(),zero);

@@ -15,6 +15,7 @@
 #include "var.h"
 #include "tubebc.h"
 #include "prescribeqty.h"
+#include "varutils.h"
 
 namespace tasystem{
   class TaSystem;
@@ -22,21 +23,18 @@ namespace tasystem{
 
 
 namespace tube{
-  #ifndef SWIG
-  tasystem::var coldtemp(const tasystem::var&);
-  #endif
   #ifdef SWIG
-  %catches(std::exception,...) PressureBc::PressureBc(const tasystem::var& p,const tasystem::var& T,const tasystem::var& Ts,us segnr,Pos position);
-  %catches(std::exception,...) PressureBc::PressureBc(const tasystem::var& p,const tasystem::var& T,us segnr,Pos position); 
-  %catches(std::exception,...) PressureBc::PressureBc(const tasystem::var& p,us segnr,Pos position);  // %feature("notabstract") PressureBc;
+  %catches(std::exception,...) PressureBc::PressureBc(us segnr,Pos position,const tasystem::var& p,const tasystem::var& T,const tasystem::var& Ts);
+  %catches(std::exception,...) PressureBc::PressureBc(us segnr,Pos position,const tasystem::var& p,const tasystem::var& T); 
+  %catches(std::exception,...) PressureBc::PressureBc(us segnr,Pos position,const tasystem::var& p);  // %feature("notabstract") PressureBc;
   #endif // SWIG
 
   class PressureBc:public TubeBc {
-    us firsteqnr;
     tasystem::var p_prescribed;
     // PrescribeQty prescribep;			// Pressure boundary condition
     PrescribeQty prescribeT;			// Temperature boundary condition
     // PrescribeQty prescribeTs;			// Solid temperature boundary condition
+    PressureBc(const PressureBc& other,const tasystem::TaSystem&);
   public:
     PressureBc& operator=(const PressureBc&)=delete;
     // Set all variables
@@ -46,14 +44,14 @@ namespace tube{
     // Assume above and adiabatic compresion/expansion
     PressureBc(us segnr,Pos position,const tasystem::var& p);
     PressureBc(const PressureBc& other)=delete;
-    PressureBc(const PressureBc& other,const tasystem::TaSystem&);
+
     segment::Connector* copy(const tasystem::TaSystem& s) const { return new PressureBc(*this,s);}
     virtual vd error() const;
     virtual ~PressureBc(){}
     #ifndef SWIG
     us getNEqs() const {return 3*gc->Ns();}    
     virtual void updateNf();
-    virtual void setEqNrs(us firstdofnr);    
+    virtual void setEqNrs(us firsteqnr);    
     virtual void jac(tasystem::Jacobian&) const;
     // ------------------------------
     virtual void show(us i) const;

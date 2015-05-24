@@ -12,7 +12,9 @@ namespace tube{
   #ifndef SWIG
   SPOILNAMESPACE
   #endif
+  #ifdef SWIG
 
+  #endif
 
   class BoundaryLayer;
   class Grid{

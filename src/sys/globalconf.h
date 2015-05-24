@@ -20,6 +20,13 @@ namespace tasystem{
   #ifndef SWIG
   SPOILNAMESPACE
   #endif
+  #ifdef SWIG
+  %catches(std::exception,...) Globalconf::Globalconf(us Nf,d freq,const string& gasstring,d T0,d p0);
+  %catches(std::exception,...) Globalconf::airSTP(us Nf,d freq);
+  %catches(std::exception,...) Globalconf::heliumSTP(us Nf,d freq);
+  #endif
+
+
   class Globalconf{
     d omg;		// The "base" frequency in rad/s
     us Nf_;			// Number of frequencies to solve for
@@ -27,9 +34,9 @@ namespace tasystem{
     d T0_,p0_;			/* Reference temperature and pressure (used to initialize a lot of variables. */
     gases::Gas gas_;
   public:
-    Globalconf(us Nf,d freq,const string& gasstring,d T0,d p0) throw(std::exception);
-    static Globalconf airSTP(us Nf,d freq) throw(std::exception);
-    static Globalconf heliumSTP(us Nf,d freq) throw(std::exception);
+    Globalconf(us Nf,d freq,const string& gasstring,d T0,d p0);
+    static Globalconf airSTP(us Nf,d freq);
+    static Globalconf heliumSTP(us Nf,d freq);
     
     const us& Nf() const {return Nf_;}
     const us& Ns() const {return Ns_;}    

@@ -24,7 +24,7 @@ namespace constants {
   const int mingp=4;              // Minimum number of gridpoints
   const int maxgp=3000;           // Maximum number of gridpoints
 
-  const us maxNf=30;              // Maximum number of frequencies
+  const us maxNf=100;              // Maximum number of frequencies
   const d minomg=1e-3;            // Minimal oscillation frequency
   const d maxomg=1e5;
 

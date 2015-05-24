@@ -60,8 +60,8 @@ namespace tube{
   }
   void PressureBc::setEqNrs(us firsteqnr){
     TRACE(2,"Pressure::setEqNrs()");
+    TubeBc::setEqNrs(firsteqnr);
     const BcCell& cell=t->bcCell(pos);
-    this->firsteqnr=firsteqnr;
     prescribeT.set(firsteqnr+Ns,cell.Tbc());
   }
 

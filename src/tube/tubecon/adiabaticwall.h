@@ -16,7 +16,6 @@ namespace tube{
 
  // Adiabatic wall boundary
   class AdiabaticWall:public TubeBc {
-    us firsteqnr;
     // Is this connector going to arbitrate mass, yes or no?
     PrescribeQty massflowzero;
     PrescribeQty enthalpyflowzero;

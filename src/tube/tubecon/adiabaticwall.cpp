@@ -55,7 +55,7 @@ namespace tube{
   }
   void AdiabaticWall::setEqNrs(us firsteqnr){
     TRACE(2,"AdiabaticWall::setEqNrs()");
-    this->firsteqnr=firsteqnr;
+    TubeBc::setEqNrs(firsteqnr);
     massflowzero.set(firsteqnr,t->bcCell(pos).mbc());
     enthalpyflowzero.set(firsteqnr+Ns,t->bcCell(pos).mHbc());
   }

@@ -3,6 +3,9 @@
 \begin_document
 \begin_header
 \textclass memoir
+\begin_preamble
+\extrarowheight10pt
+\end_preamble
 \options a4paper
 \use_default_options true
 \maintain_unincluded_children false
@@ -29,7 +32,7 @@
 \spacing single
 \use_hyperref false
 \papersize default
-\use_geometry false
+\use_geometry true
 \use_package amsmath 1
 \use_package amssymb 1
 \use_package cancel 1
@@ -53,6 +56,8 @@
 \shortcut idx
 \color #008000
 \end_index
+\leftmargin 2cm
+\rightmargin 2cm
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -76,6 +81,10 @@ TASMET User's guide
 
 \begin_layout Standard
 ThermoAcoustic System Modeling Environment Twente.
+\end_layout
+
+\begin_layout Part
+TASMET Basics
 \end_layout
 
 \begin_layout Chapter
@@ -126,6 +135,10 @@ Cell vertices halfway between the cell walls
 
 \begin_layout Itemize
 Cross-sectional area jumps at the cell walls
+\end_layout
+
+\begin_layout Standard
+What variables do live where?
 \end_layout
 
 \begin_layout Section
@@ -467,7 +480,7 @@ w_{i-1}=\frac{x_{i+1}-x_{L}}{x_{i+1}-x_{i-1}}\quad w_{i}=1-w_{i-1}
 
 
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Section
 Turbulent flow
@@ -584,6 +597,412 @@ where
 
 \begin_layout Section
 TurbulentDuct
+\end_layout
+
+\begin_layout Section
+Tube boundary conditions
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename fig/duct_vars.eps
+	width 80text%
+
+\end_inset
+
+
+\begin_inset VSpace medskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="3">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top" width="0pt">
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Quotes eld
+\end_inset
+
+node
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Variables
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Equations
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+huge{
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\bullet$
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\rho,mu,T,p,Ts$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Continuity, Energy, 
+\begin_inset Formula $mu=\frac{m^{2}}{\rho S_{f}}$
+\end_inset
+
+, Solid energy
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\blacksquare$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $m$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Momentum
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\Box$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $m,mH,T$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Dependent on b.c.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Staggered grid equations and variables
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+PressureBc
+\end_layout
+
+\begin_layout Standard
+Momentum equation (prescribes pressure 
+\begin_inset Formula $p_{p}$
+\end_inset
+
+)
+\begin_inset Formula 
+\begin{equation}
+\Delta x\frac{\partial\mathbf{m}_{L}}{\partial t}+\left(\widehat{\mathbf{mu}}_{0}-\widehat{\mathbf{mu}}_{L}\right)+S_{f,L}\left(\hat{\mathbf{p}}_{0}-\hat{\mathbf{p}}_{p}\right)+\Delta x\mbox{\textbf{\mathcal{R}}}_{L}=\mathbf{0}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $mH$
+\end_inset
+
+ extrapolated from inside
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $T=T_{p}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $T_{s}=T_{s,p}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And
+\begin_inset Formula 
+\begin{equation}
+T_{p}=T_{0}\left(\frac{p_{0}+p_{p}}{p_{0}}\right)^{\frac{\gamma_{0}-1}{\gamma_{0}}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+AdiabaticWall
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $m=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $mH=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $Q=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $Q_{s}=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+IsoTWall
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $m=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $mH=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $T=T_{p}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $T_{s}=T_{s,p}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+ImpedanceBc
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\mathbf{p}}=\mathbf{Z}\cdot\hat{\mathbf{u}}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{Z}^{-1}\cdot\hat{\mathbf{p}}=\boldsymbol{\mathcal{F}}^{-1}\cdot\hat{\mathbf{u}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{\mathcal{F}}\cdot\left[\left(\boldsymbol{\mathcal{F}}^{-1}\left(\mathbf{Z}^{-1}\cdot\hat{\mathbf{p}}\right)\right)\circ\mathbf{m}\right]=\boldsymbol{\mathcal{F}}^{-1}\cdot\mathbf{u}\circ\mathbf{m}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{\mathcal{F}}\cdot\left[\left(\boldsymbol{\mathcal{F}}^{-1}\left(\mathbf{Z}^{-1}\cdot\hat{\mathbf{p}}\right)\right)\circ\mathbf{m}\right]=\widehat{\mathbf{m}\mathbf{u}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+Finally:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{R}=\boldsymbol{\mathcal{F}}\cdot\left[\left(\boldsymbol{\mathcal{F}}^{-1}\left(\mathbf{Z}^{-1}\cdot\hat{\mathbf{p}}\right)\right)\circ\left(\boldsymbol{\mathcal{F}}^{-1}\cdot\mathbf{m}\right)\right]-\widehat{\mathbf{m}\mathbf{u}}=\mathbf{0}
+\end{equation}
+
+\end_inset
+
+And
+\begin_inset Formula 
+\begin{eqnarray}
+\frac{\partial\mathbf{R}}{\partial\hat{\mathbf{p}}} & = & \boldsymbol{\mathcal{F}}\cdot\mathrm{diag}\left(\mathbf{m}\right)\cdot\boldsymbol{\mathcal{F}}^{-1}\cdot\mathbf{Z}^{-1}\\
+\frac{\partial\mathbf{R}}{\partial\hat{\mathbf{m}}} & = & \boldsymbol{\mathcal{F}}\cdot\left[\mbox{diag}\left(\boldsymbol{\mathcal{F}}^{-1}\cdot\mathbf{Z}^{-1}\cdot\hat{\mathbf{p}}\right)\cdot\boldsymbol{\mathcal{F}}^{-1}\right]\\
+\frac{\partial\mathbf{R}}{\partial\widehat{\mathbf{m}\mathbf{u}}} & = & -\mathbf{I}
+\end{eqnarray}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Chapter
@@ -764,6 +1183,7 @@ Create a PhaseConstraint object:
 \end_layout
 
 \begin_layout Verbatim
+
 	pc=PhaseConstraint(Varnr, freqnr, left)
 \end_layout
 
@@ -772,6 +1192,7 @@ Apply this contraint to a segment which can accept them, for example a Tube:
 \end_layout
 
 \begin_layout Verbatim
+
 	t1.setPhaseConstraint(pc)
 \end_layout
 
@@ -780,6 +1201,18 @@ Apply this contraint to a segment which can accept them, for example a Tube:
  Note: only one phase constraint can be used in an EngineSystem.
  For a TaSystem, the phase constraint is ignored.
  
+\end_layout
+
+\begin_layout Part
+The API
+\end_layout
+
+\begin_layout Chapter
+Tube segments
+\end_layout
+
+\begin_layout Section
+Tube
 \end_layout
 
 \end_body

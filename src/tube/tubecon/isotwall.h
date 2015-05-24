@@ -17,7 +17,6 @@ namespace tube{
 
  // IsoT wall boundary
   class IsoTWall:public TubeBc {
-    us firsteqnr;
     // Equation to make volume flow zero at wall
     PrescribeQty massflowzero;
     // Equation to make volume flow zero at wall
