@@ -33,8 +33,8 @@ namespace tube{
       WRr=1;
     }
   }
-  tuple<d,d> BcWeightFactors(const Cell& v){
-    TRACE(15,"anonymous weightfactors for extrapolation of mH");
+  tuple<d,d> BcWeightFactorsW(const Cell& v){
+    TRACE(15,"BcWeightfactorsW");
     assert((!v.left() && v.right()) || (v.left() && !v.right()));
     if(!v.left()){
       // Leftmost node
@@ -58,6 +58,28 @@ namespace tube{
       d xR=v.xR;
       d xL=v.xL;
       d xLL=v.left()->xL;
+      d WR2=(xR-xL)/(xLL-xL);
+      d WR1=1-WR2;
+      return make_tuple(WR1,WR2);
+    }
+  }
+  tuple<d,d> BcWeightFactorsV(const Cell& v){
+    TRACE(15,"BcWeightFactorsV()");
+    assert((!v.left() && v.right()) || (v.left() && !v.right()));
+    if(!v.left()){
+      // Leftmost node
+      d xL=0;
+      d xR=v.vx;
+      d xRR=v.right()->vx;
+
+      d W1=-xR/(xRR-xR);
+      d W0=1-W1;
+      return make_tuple(W0,W1);
+    }
+    else{
+      d xR=v.xR;
+      d xL=v.vx;
+      d xLL=v.left()->vx;
       d WR2=(xR-xL)/(xLL-xL);
       d WR1=1-WR2;
       return make_tuple(WR1,WR2);

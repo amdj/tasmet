@@ -52,12 +52,24 @@ namespace tube{
     TRACE(15,"Continuity::extrapolateMassFlow(const Cell& v)");
     assert((!v.left() && v.right()) || (!v.right() && v.left()));
     if(!v.left()){
-      d W0,W1; std::tie(W0,W1)=BcWeightFactors(v);
+      d W0,W1; std::tie(W0,W1)=BcWeightFactorsW(v);
       return W0*v.mR()()+W1*v.right()->mR()();
     }
     else{
-      d WR1,WR2; std::tie(WR1,WR2)=BcWeightFactors(v);
+      d WR1,WR2; std::tie(WR1,WR2)=BcWeightFactorsW(v);
       return WR1*v.mL()()+WR2*v.left()->mL()();
+    }
+  }
+  vd Continuity::extrapolateDensity(const Cell& v){
+    TRACE(15,"Continuity::extrapolateDensity(const Cell& v)");
+    assert((!v.left() && v.right()) || (!v.right() && v.left()));
+    if(!v.left()){
+      d W0,W1; std::tie(W0,W1)=BcWeightFactorsV(v);
+      return W0*v.rho()()+W1*v.rhoR()();
+    }
+    else{
+      d WR1,WR2; std::tie(WR1,WR2)=BcWeightFactorsV(v);
+      return WR1*v.rho()()+WR2*v.rhoL()();
     }
   }
   JacRow Continuity::dExtrapolateMassFlow(const Cell& v){
@@ -65,14 +77,30 @@ namespace tube{
     assert((!v.left() && v.right()) || (!v.right() && v.left()));
     JacRow jac(2);
     if(!v.left()){
-      d W0,W1; std::tie(W0,W1)=BcWeightFactors(v);
+      d W0,W1; std::tie(W0,W1)=BcWeightFactorsW(v);
       jac+=JacCol(v.mR(),W0*eye(v));
       jac+=JacCol(v.right()->mR(),W1*eye(v));
     }
     else{
-      d WR1,WR2; std::tie(WR1,WR2)=BcWeightFactors(v);
+      d WR1,WR2; std::tie(WR1,WR2)=BcWeightFactorsW(v);
       jac+=JacCol(v.mL(),WR1*eye(v));
       jac+=JacCol(v.left()->mL(),WR2*eye(v));
+    }
+    return jac;
+  }
+  JacRow Continuity::dExtrapolateDensity(const Cell& v){
+    TRACE(15,"Continuity::dExtrapolateDensity(const Cell& v)");
+    assert((!v.left() && v.right()) || (!v.right() && v.left()));
+    JacRow jac(2);
+    if(!v.left()){
+      d W0,W1; std::tie(W0,W1)=BcWeightFactorsV(v);
+      jac+=JacCol(v.rho(),W0*eye(v));
+      jac+=JacCol(v.rhoR(),W1*eye(v));
+    }
+    else{
+      d WR1,WR2; std::tie(WR1,WR2)=BcWeightFactorsV(v);
+      jac+=JacCol(v.rho(),WR1*eye(v));
+      jac+=JacCol(v.rhoL(),WR2*eye(v));
     }
     return jac;
   }

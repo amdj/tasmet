@@ -955,6 +955,51 @@ ImpedanceBc
 \end_inset
 
 
+\begin_inset Formula 
+\begin{equation}
+\mathbf{R}=\hat{\mathbf{p}}-\mathbf{Z}\cdot\mathcal{\boldsymbol{F}}\cdot\left(\frac{\mathbf{m}_{bc}}{w_{1}\mathbf{\rho}_{1}+w_{2}\mathbf{\rho}_{2}}\right)=\mathbf{0}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\mathbf{R}}{\partial\hat{\mathbf{p}}_{bc}}=\mathbf{I}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\mathbf{R}}{\partial\hat{\mathbf{m}}_{bc}}=-\mathbf{Z}\cdot\boldsymbol{\mathcal{F}}\cdot\mbox{diag}\left(\frac{1}{\boldsymbol{\rho}_{bc}}\right)\cdot\boldsymbol{\mathcal{F}}^{-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\mathbf{R}}{\partial\boldsymbol{\rho}_{1,2}}=w_{1,2}\mathbf{Z}\cdot\boldsymbol{\mathcal{F}}\cdot\mbox{diag}\left(\frac{\mathbf{m}_{bc}}{\boldsymbol{\rho}_{bc}^{2}}\right)\cdot\boldsymbol{\mathcal{F}}^{-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+---
+\end_layout
+
+\begin_layout Standard
 \begin_inset Note Note
 status open
 
@@ -981,6 +1026,67 @@ status open
 
 \end_inset
 
+
+\end_layout
+
+\begin_layout Standard
+Temperature at the b.c.
+ computed from pressure:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $T_{bc}=T_{0}\left(\frac{p_{bc}+p_{p}}{p_{0}}\right)^{\frac{\gamma_{0}-1}{\gamma_{0}}}$
+\end_inset
+
+, dus
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\mathbf{R}=\hat{\mathbf{p}}_{bc}-\boldsymbol{\mathcal{F}}\cdot\left[p_{0}\left(\left(\frac{\mathbf{T}_{bc}}{T_{0}}\right)^{\frac{\gamma_{0}}{\gamma_{0}-1}}-\mathbf{1}\right)\right]=\mathbf{0}
+\end{equation}
+
+\end_inset
+
+and
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{R}=\hat{\mathbf{p}}_{bc}-\boldsymbol{\mathcal{F}}\cdot\left[p_{0}\left(\left(\frac{\mathbf{T}_{bc}}{T_{0}}\right)^{\frac{\gamma_{0}}{\gamma_{0}-1}}-\mathbf{1}\right)\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{\partial\mathbf{R}}{\partial\mathbf{T}_{bc}}=\boldsymbol{\mathcal{F}}\cdot\mbox{diag}\left[\frac{\gamma_{0}}{\gamma_{0}-1}\frac{p_{0}}{T_{0}}\left(\left(\frac{\mathbf{T}_{bc}}{T_{0}}\right)^{\frac{1}{\gamma_{0}-1}}\right)\right]\cdot\boldsymbol{\mathcal{F}}^{-1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\mathbf{R}}{\partial\mathbf{T}_{bc}}=\boldsymbol{\mathcal{F}}\cdot\mbox{diag}\left[\frac{\gamma_{0}}{\gamma_{0}-1}\frac{p_{0}}{T_{0}}\left(\left(\frac{\mathbf{T}_{bc}}{T_{0}}\right)^{\frac{1}{\gamma_{0}-1}}\right)\right]\cdot\boldsymbol{\mathcal{F}}^{-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 Finally:
 \end_layout
 

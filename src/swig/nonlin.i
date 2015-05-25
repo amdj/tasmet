@@ -33,6 +33,7 @@
   #include "tubeconnector.h"
 
   #include "pressurebc.h"
+  #include "impedancebc.h"
   #include "adiabaticwall.h"  
   #include "isotwall.h"  
   // Segments
@@ -56,6 +57,16 @@
   }
 
   %}
+
+// Grab a Python function object as a Python object.
+%typemap(in) PyObject* pyfunc {
+  if (!PyCallable_Check($input)) {
+      PyErr_SetString(PyExc_TypeError, "Need a callable object!");
+      return NULL;
+  }
+  $1 = $input;
+}
+
 using std::string;
 typedef std::complex<double> c;
 
@@ -95,6 +106,7 @@ void setTATwenteTracer(int);
 %include "pressurebc.h"
 %include "adiabaticwall.h"  
 %include "isotwall.h"  
+%include "impedancebc.h"
  // Segments
 %include "seg.h"
 

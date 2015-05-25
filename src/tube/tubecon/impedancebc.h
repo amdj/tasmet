@@ -14,20 +14,30 @@
 #include "tubebc.h"
 #include "var.h"
 
+#ifndef SWIG
+#ifndef PyObject_HEAD
+struct _object;
+typedef _object PyObject;
+#endif
+#endif
+
 namespace tube{
+  #ifndef SWIG
   SPOILNAMESPACE
+  #endif
   #ifdef SWIG
-  %catches(std::exception,...) ImpedanceBc::ImpedanceBc(us segnr,Pos position,const tasystem::var& z,d T0=constants::T0);  // %feature("notabstract") PressureBc;
+  %catches(std::exception,...) ImpedanceBc::ImpedanceBc(us segnr,Pos position,PyObject* pyfunc,d T0=constants::T0);  // %feature("notabstract") PressureBc;
   #endif // SWIG
 
 
   class ImpedanceBc:public TubeBc {
-    tasystem::var Z;
-    us firsteqnr;
+    PyObject* impedanceFunc=NULL;
     d T0;
     ImpedanceBc(const ImpedanceBc& other,const tasystem::TaSystem&);
   public:
-    ImpedanceBc(us segnr,Pos pos,const tasystem::var& z,d T0=constants::T0);
+    // pyfunc is impedance function, which should return a complex
+    // number as a function of omega: z=Z(omega)
+    ImpedanceBc(us segnr,Pos pos,PyObject* pyfunc,d T0=constants::T0);
     ImpedanceBc(const ImpedanceBc&)=delete;
     virtual ~ImpedanceBc();
 

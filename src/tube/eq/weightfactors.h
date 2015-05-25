@@ -21,7 +21,13 @@ namespace tube{
     d WRr=0,WRl=0,WLr=0,WLl=0;
     WeightFactors(const Cell& c);
   };
-  std::tuple<d,d> BcWeightFactors(const Cell& c);
+  // anonymous weightfactors for extrapolation from cell walls at
+  // interior to cell wall at end of tube.
+  std::tuple<d,d> BcWeightFactorsW(const Cell& c);
+
+  // anonymous weightfactors for extrapolation from inner vertices to
+  // cell wall
+  std::tuple<d,d> BcWeightFactorsV(const Cell& c);
 }
 #endif /* _WEIGHTFACTORS_H_ */
 

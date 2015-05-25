@@ -1,7 +1,7 @@
+#define TRACERPLUS 20
 #include "tube.h"
 #include "pressurebc.h"
 #include "tasystem.h"
-#include "globalconf.h"
 #include "jacobian.h"
 #include "bccell.h"
 #include "constants.h"
@@ -67,7 +67,7 @@ namespace tube{
 
   vd PressureBc::error() const {
     TRACE(15,"PressureBc::error()");
-    vd error(getNEqs(),fillwith::zeros);
+    vd error(getNEqs());
     const BcCell& cell=t->bcCell(pos);
 
     vd errorM(Ns,fillwith::zeros);
@@ -96,10 +96,6 @@ namespace tube{
     error.subvec(0,Ns-1)=errorM;
     error.subvec(Ns,2*Ns-1)=prescribeT.error();
 
-    // error.subvec(2*Ns,3*Ns-1)=-cell.mHbc()()
-      // +fDFT*(cp(cell)*cell.mbc().tdata()%cell.Tbc().tdata());
-    // VARTRACE(30,cell.Tbc()());
-    // VARTRACE(30,cp(cell));
     error.subvec(2*Ns,3*Ns-1)=-cell.mHbc()();
     error.subvec(2*Ns,3*Ns-1)+=cell.extrapolateQuant(Varnr::mH);
     return error;

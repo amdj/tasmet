@@ -25,7 +25,9 @@ namespace tube{
     virtual void domg(vd&) const;
     // vd massFlow() const;
     static vd extrapolateMassFlow(const Cell&);
+    static vd extrapolateDensity(const Cell&);
     static tasystem::JacRow dExtrapolateMassFlow(const Cell&);
+    static tasystem::JacRow dExtrapolateDensity(const Cell&);
   };				// Continuity class
   
 } // Namespace tube

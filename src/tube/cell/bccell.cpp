@@ -40,6 +40,9 @@ namespace tube{
     case Varnr::mu:
       return Momentum::extrapolateMomentumFlow(*this);      
       break;
+    case Varnr::rho:
+      return Continuity::extrapolateDensity(*this);      
+      break;
     case Varnr::p:
       return Momentum::extrapolatePressure(*this);      
       break;
@@ -61,6 +64,9 @@ namespace tube{
       return Continuity::dExtrapolateMassFlow(*this);            
     case Varnr::mu:
       return Momentum::dExtrapolateMomentumFlow(*this);      
+      break;
+    case Varnr::rho:
+      return Continuity::dExtrapolateDensity(*this);      
       break;
     case Varnr::p:
       return Momentum::dExtrapolatePressure(*this);      

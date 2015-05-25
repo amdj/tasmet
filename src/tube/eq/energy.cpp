@@ -364,11 +364,11 @@ namespace tube{
     // Can only be called for leftmost or rightmost node
     assert((!v.left() && v.right()) || (v.left() && !v.right()));
     if(!v.left()){
-      d W0,W1; std::tie(W0,W1)=BcWeightFactors(v);
+      d W0,W1; std::tie(W0,W1)=BcWeightFactorsW(v);
       return W0*mHR(v)+W1*mHR(*v.right());
     }
     else{
-      d WR1,WR2; std::tie(WR1,WR2)=BcWeightFactors(v);
+      d WR1,WR2; std::tie(WR1,WR2)=BcWeightFactorsW(v);
       return WR1*mHL(v)+WR2*mHL(*v.left());
     }
   }
@@ -376,12 +376,12 @@ namespace tube{
     TRACE(15,"Energy::dExtrapolateEnthalpyFlow()");
     JacRow jac(2);
     if(!v.left()){
-      d W0,W1; std::tie(W0,W1)=BcWeightFactors(v);
+      d W0,W1; std::tie(W0,W1)=BcWeightFactorsW(v);
       jac+=(dmHR(v)*=W0);
       jac+=(dmHR(*v.right())*=W1);
     }
     else{
-      d WR1,WR2; std::tie(WR1,WR2)=BcWeightFactors(v);
+      d WR1,WR2; std::tie(WR1,WR2)=BcWeightFactorsW(v);
       jac+=(dmHL(v)*=WR1);
       jac+=(dmHL(*v.left())*=WR2);
     }
