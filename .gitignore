@@ -7,3 +7,6 @@ nonlinPYTHON_wrap.cxx
 __pycache__
 TATwente.py
 cmake_install.cmake
+doc/html
+doc/latex
+doc/usg.pdf

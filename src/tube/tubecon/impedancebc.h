@@ -22,7 +22,7 @@ namespace tube{
 
 
   class ImpedanceBc:public TubeBc {
-    tasystem::var z;
+    tasystem::var Z;
     us firsteqnr;
     d T0;
     ImpedanceBc(const ImpedanceBc& other,const tasystem::TaSystem&);

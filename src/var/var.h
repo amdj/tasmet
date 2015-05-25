@@ -111,7 +111,6 @@ namespace tasystem {
     // can be obtained by getting the matrix-variant of the first
     // tasystem. The following function will give the effective matrix
     dmat freqMultiplyMat() const;
-  private:
     vc getcRes() const;
   };
 

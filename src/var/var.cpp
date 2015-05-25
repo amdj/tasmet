@@ -145,7 +145,7 @@ namespace tasystem {
     vc cadata(Nf+1);
     cadata(0)=adata_(0);
     for(us i=1;i<Nf+1;i++)
-      cadata(i)=adata_(2*i-1)-I*adata_(2*i); //The minus is very important
+      cadata(i)=adata_(2*i-1)+I*adata_(2*i); //The minus is very important
     //	TRACE(0,"Resulting cadata:" << cadata);
     return cadata;
   }
