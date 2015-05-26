@@ -16,7 +16,6 @@
 //////////////////////////////////////////////////////////////////////
 #include "isentropictube.h"
 #include "cell.h"
-#include "globalconf.h"
 #include "geom.h"
 
 namespace tube {

@@ -34,28 +34,6 @@ namespace tube{
     virtual void show() const;
   };
 
-  
-
-  class TransitionCylindricalTube:public Geom{
-    Transition transition;
-    d r_,perc,S_;
-    d S_other,phi_other,rh_other;
-  public:
-    TransitionCylindricalTube(const Grid& g,d r,\
-                              Pos TransitionSide,const Geom& other,\
-                              Pos sideofremote,d perc=10,bool blapprox=true);
-    // Copy constructor only needs to copy all params, so default will
-    // suffice.
-    virtual ~TransitionCylindricalTube(){}
-    virtual d S(us i) const;
-    virtual d phi(us i) const;
-    virtual d rh(us i ) const;
-    virtual string shape() const { return "circ";}
-    virtual Geom* copy() const {return new TransitionCylindricalTube(*this);}
-    virtual void show() const;
-
-  };
-
 
 } // namespace tube
 

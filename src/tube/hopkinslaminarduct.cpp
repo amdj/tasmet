@@ -1,7 +1,5 @@
-#include "constants.h"
 #include "cell.h"
 #include "hopkinslaminarduct.h"
-#include "bessel.h"
 #include "geom.h"
 #include "solidenergy.h"
 

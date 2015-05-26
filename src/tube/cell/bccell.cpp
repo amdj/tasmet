@@ -1,8 +1,4 @@
-#include "utils.h"
-#include "vtypes.h"
 #include "bccell.h"
-#include "var.h"
-#include "tubeequation.h"
 #include "continuity.h"
 #include "momentum.h"
 #include "energy.h"

@@ -12,7 +12,6 @@
 #include "tube.h"
 #include "bccell.h"
 #include "constants.h"
-#include "jacrow.h"
 #include "jacobian.h"
 #include "energy.h"
 

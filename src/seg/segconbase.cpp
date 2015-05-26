@@ -1,6 +1,5 @@
 #include "segconbase.h"
 #include "tasystem.h"
-#include <typeinfo>
 
 namespace segment{
   using tasystem::Globalconf;   

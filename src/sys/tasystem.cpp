@@ -1,4 +1,3 @@
-#include <cassert>
 #include "tasystem.h"
 #include "triplets.h"
 #include "jacobian.h"
@@ -6,6 +5,7 @@
 #include "connector.h"
 #include "tube.h"
 #include "utils.h"
+#include <cassert>
 
 namespace tasystem{
   using segment::Seg;
