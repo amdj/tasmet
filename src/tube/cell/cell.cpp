@@ -247,6 +247,9 @@ namespace tube{
       case Varnr::U:
         return getValue(Varnr::m)/getValue(Varnr::rho);
         break;
+      case Varnr::u:
+        return getValue(Varnr::U)/tube->geom().Sf(i);
+        break;
       }
       // Default:
       throw MyError("Unknown varnr");

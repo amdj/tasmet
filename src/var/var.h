@@ -92,7 +92,7 @@ namespace tasystem {
     // Time derivative of this tasystem
     var ddt() const;
     var operator/(const var& var2) const; // Time-domain division operator
-
+    var operator/(const d& var2) const; // Time-domain or frequency domain division operator
     // Multiply two variables in time domain
     var operator*(const var& tasystem) const;
     // Multiply a tasystem with a scalar. This operation is possible

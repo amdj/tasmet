@@ -26,6 +26,10 @@ namespace tasystem {
     TRACE(0,"var::operator/()");
     return var(*gc_,this->tdata()/var2.tdata_,false);
   }
+  var var::operator/(const d& val) const {
+    TRACE(0,"var::operator/(double)");
+    return var(*gc_,this->tdata()/val,false);
+  }
   var var::operator-(const var& other) const{
     TRACE(0,"var::operator-(var)");
     return var(*gc_,adata_-other.adata_);
