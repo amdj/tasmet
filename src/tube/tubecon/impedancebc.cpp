@@ -7,6 +7,8 @@
 //////////////////////////////////////////////////////////////////////
 // #define TRACERPLUS 20
 #include "impedancebc.h"
+#include "weightfactors.h"
+
 #include "tube.h"
 #include "bccell.h"
 #include "jacobian.h"
@@ -87,23 +89,21 @@ namespace tube {
     const BcCell& cell=t->bcCell(pos);
 
     // Impedance error
-    {
-      WARN("needs to be divided by S as well");
-      dmat Z=Zvar(impedanceFunc,gc).freqMultiplyMat();
-      VARTRACE(15,Z);
-      error.subvec(0,Ns-1)=cell.extrapolateQuant(Varnr::p);
-      error.subvec(0,Ns-1)+=-Z*fDFT*(cell.mbc().tdata()/(iDFT*cell.extrapolateQuant(Varnr::rho)));
-    }
+    dmat Z=Zvar(impedanceFunc,gc).freqMultiplyMat();
+    // VARTRACE(15,Z);
+    d Sf=pos==Pos::left?cell.SfL:cell.SfR;
+    error.subvec(0,Ns-1)=cell.extrapolateQuant(Varnr::p);
+    error.subvec(0,Ns-1)+=-Z*fDFT*(cell.mbc().tdata()/(Sf*iDFT*cell.extrapolateQuant(Varnr::rho)));
+
     // Isentropic state eq. error
-    {
-      const vd p=cell.extrapolateQuant(Varnr::p);
-      const var& Tbc=cell.Tbc();
-      const d p0=gc->p0();
-      const d gamma=gc->gas().gamma(T0);
-      vd p0t(Ns,fillwith::ones); p0t*=p0;
-      // Adiabatic compression/expansion
-      error.subvec(Ns,2*Ns-1)=p-fDFT*(p0*(pow(Tbc.tdata()/T0,gamma/(gamma-1))-1));
-    }
+    const vd p=cell.extrapolateQuant(Varnr::p);
+    const var& Tbc=cell.Tbc();
+    const d p0=gc->p0();
+    const d gamma=gc->gas().gamma(T0);
+    vd p0t(Ns,fillwith::ones); p0t*=p0;
+    // Adiabatic compression/expansion
+    error.subvec(Ns,2*Ns-1)=p-fDFT*(p0*(pow(Tbc.tdata()/T0,gamma/(gamma-1))-1));
+
     // Extrapolated enthalpy flow
     error.subvec(2*Ns,3*Ns-1)=-cell.mHbc()();
     error.subvec(2*Ns,3*Ns-1)+=cell.extrapolateQuant(Varnr::mH);
@@ -115,31 +115,39 @@ namespace tube {
     const BcCell& cell=t->bcCell(pos);
 
     // Impedance Jacobian
-    {
-      // VARTRACE(25,cell.extrapolateQuant(Varnr::rho));
-      dmat Z=Zvar(impedanceFunc,gc).freqMultiplyMat();
-      JacRow impjac(firsteqnr,5); // 5=(2*p,2*rho,1*mbc)
-      impjac+=cell.dExtrapolateQuant(Varnr::p);
-      impjac+=JacCol(cell.mbc(),-Z*fDFT*diagmat(1/(iDFT*cell.extrapolateQuant(Varnr::rho)))*iDFT);
-      
-      jac+=impjac;
+    // VARTRACE(25,cell.extrapolateQuant(Varnr::rho));
+    dmat Z=Zvar(impedanceFunc,gc).freqMultiplyMat();
+    JacRow impjac(firsteqnr,5); // 5=(2*p,2*rho,1*mbc)
+    d Sf=pos==Pos::left?cell.SfL:cell.SfR;
+    impjac+=cell.dExtrapolateQuant(Varnr::p);
+    const vd rhobct=iDFT*cell.extrapolateQuant(Varnr::rho);
+    impjac+=JacCol(cell.mbc(),-Z*fDFT*diagmat(1/(Sf*rhobct))*iDFT);
+    d w1,w2; std::tie(w1,w2)=BcWeightFactorsV(cell);
+    if(pos==Pos::left) {
+      impjac+=JacCol(cell.rho(),w1*Z*fDFT*diagmat(cell.mbc().tdata()/(Sf*pow(rhobct,2)))*iDFT);      
+      impjac+=JacCol(cell.rhoR(),w2*Z*fDFT*diagmat(cell.mbc().tdata()/(Sf*pow(rhobct,2)))*iDFT);      
+    } else {
+      impjac+=JacCol(cell.rho(),w1*Z*fDFT*diagmat(cell.mbc().tdata()/(Sf*pow(rhobct,2)))*iDFT);      
+      impjac+=JacCol(cell.rhoL(),w2*Z*fDFT*diagmat(cell.mbc().tdata()/(Sf*pow(rhobct,2)))*iDFT);      
     }
+
+    jac+=impjac;
+
 
     // Adiabatic pressure-temperature Jacobian:
-    {
-      JacRow IsentropicJac(firsteqnr+Ns,2);
-      const var& Tbc=cell.Tbc();
+    JacRow IsentropicJac(firsteqnr+Ns,2);
+    const var& Tbc=cell.Tbc();
 
-      // Pressure part
-      IsentropicJac+=cell.dExtrapolateQuant(Varnr::p);
-      const d p0=gc->p0();
-      const d gamma=gc->gas().gamma(T0);
+    // Pressure part
+    IsentropicJac+=cell.dExtrapolateQuant(Varnr::p);
+    const d p0=gc->p0();
+    const d gamma=gc->gas().gamma(T0);
 
-      // Temperature part
-      d fac1=p0*gamma/(T0*(gamma-1));
-      IsentropicJac+=JacCol(cell.Tbc(),-fDFT*diagmat(fac1*pow(Tbc.tdata()/T0,1/(gamma-1)))*iDFT);
-      jac+=IsentropicJac;
-    }
+    // Temperature part
+    d fac1=p0*gamma/(T0*(gamma-1));
+    IsentropicJac+=JacCol(cell.Tbc(),-fDFT*diagmat(fac1*pow(Tbc.tdata()/T0,1/(gamma-1)))*iDFT);
+    jac+=IsentropicJac;
+
     // Prescribed enthalpy flow.
     JacRow enthalpy_extrapolated_jac(firsteqnr+2*Ns,3);
     enthalpy_extrapolated_jac+=cell.dExtrapolateQuant(Varnr::mH);

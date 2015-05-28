@@ -256,9 +256,9 @@ namespace tube{
   }
     
   void Cell::updateNf(){
-    TRACE(10,"Cell::setNf()");
-    for(auto var=vars.begin();var!=vars.end();var++)
-      (*var)->updateNf();
+    TRACE(15,"Cell::setNf()");
+    for(auto var: vars)
+      var->updateNf();
   }
   void Cell::setRes(const vd& res){
     TRACE(10,"Cell::setRes(), i="<< i);

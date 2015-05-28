@@ -1,14 +1,13 @@
-// file: bccell.h, created March 20th, 2014
-// Author: J.A. de Jong
-
-// bccell.h: external boundary conditions for tubes. This file
-// contains the implementation of typical external boundary conditions
-// for tubes as a custom cell. Examples are adiabatic walls, isothermal walls and an
-// adiabatic open pressure boundary conditions.
+// impedancebc.h
+//
+// Author: J.A. de Jong 
+//
+// Description:
+//
+//////////////////////////////////////////////////////////////////////
 #pragma once
-
-#ifndef _IMPEDANCEBC_H_
-#define _IMPEDANCEBC_H_
+#ifndef IMPEDANCEBC_H
+#define IMPEDANCEBC_H
 
 #include "constants.h"
 #include "tubebc.h"

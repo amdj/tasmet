@@ -95,8 +95,6 @@ namespace tube{
     void show(us showvertices=0) const;
 
 
-    us getNCell() const {return cells.size();}    
-
     // ******************** Overloaded virtual methods
     // Return number of DOFS
     us getNDofs() const;

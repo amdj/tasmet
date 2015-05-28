@@ -126,8 +126,8 @@ namespace tube {
   void Tube::updateNf(){
     TRACE(18,"Tube::updateNf()");
     assert(cells.size()>0);
-    for(auto v=cells.begin();v!=cells.end();v++){
-      (*v)->updateNf();
+    for(auto v: cells){
+      v->updateNf();
     }
   }
   // vc Tube::heatQ() const {

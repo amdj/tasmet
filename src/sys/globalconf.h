@@ -47,6 +47,7 @@ namespace tasystem{
     d c0() const {return gas_.cm(T0_);}
     d rho0() const {return gas_.rho(T0_,p0_);}
     d deltanu0() const{ return sqrt(2*gas_.mu(T0_)/(rho0()*omg));}
+    d deltanu0min() const{ return deltanu0()/sqrt((d) Nf());}
     d T0() const {return T0_;}
     d p0() const {return p0_;}
 

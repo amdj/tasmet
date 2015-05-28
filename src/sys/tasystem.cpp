@@ -42,7 +42,6 @@ namespace tasystem{
   }
   void TaSystem::cleanup(){
     TRACE(25,"TaSystem::cleanup()");
-    arbitrateMassEq=-1;
     utils::purge(segs);
     utils::purge(connectors);
     hasInit=false;
@@ -68,7 +67,7 @@ namespace tasystem{
   void TaSystem::init(){
     TRACE(14,"TaSystem::init()");
     hasInit=false;
-
+    arbitrateMassEq=-1;
     us firstdof=0;
     us firsteq=0;
     d mass=0;

@@ -113,12 +113,12 @@ namespace tasystem {
   }
   void var::updateNf(){
     TRACE(0,"var::updateNf()");
-    us size=adata_.size();
+    us asize=adata_.size();
     assert(gc_);
-    assert(size==tdata_.size());
-    if(size!=Ns){
+    assert(asize==tdata_.size());
+    if(asize!=Ns){
       assert((Ns%2)==1);	// Check if number of samples is not even
-      if(size>Ns){
+      if(asize>Ns){
         TRACE(0,"Shrinking vector");
         adata_=adata_.subvec(0,Ns-1);
       }
@@ -128,7 +128,7 @@ namespace tasystem {
         adata_=vd(Ns,fillwith::zeros);
         // TRACE(25,"New amplitude data size: "<< adata_.size());
         if(oldadata.size()>0)
-          adata_.subvec(0,Ns-1)=oldadata;
+          adata_.subvec(0,oldadata.size()-1)=oldadata;
       }
       tdata_=vd(Ns,fillwith::zeros); // Reinitialize tdata_
       tdata_=iDFT*adata_;

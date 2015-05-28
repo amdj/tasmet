@@ -34,6 +34,7 @@
 
   #include "pressurebc.h"
   #include "impedancebc.h"
+  #include "velocitybc.h"
   #include "adiabaticwall.h"  
   #include "isotwall.h"  
   // Segments
@@ -52,7 +53,7 @@
 
   // A small wrapper for this function, as TRACERNAME is not
   // substituted by its macro value in SWIG.
-  inline void setTATwenteTracer(int t) {
+  inline void setTASMETTracer(int t) {
     tracer::setTracer<TRACERNAME>(t);
   }
 
@@ -72,7 +73,7 @@ typedef std::complex<double> c;
 
 void clearConsole();
 // To change the tracing noisyness
-void setTATwenteTracer(int);
+void setTASMETTracer(int);
 
 
 %include "std_string.i"
@@ -107,6 +108,7 @@ void setTATwenteTracer(int);
 %include "adiabaticwall.h"  
 %include "isotwall.h"  
 %include "impedancebc.h"
+%include "velocitybc.h"
  // Segments
 %include "seg.h"
 

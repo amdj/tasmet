@@ -13,8 +13,8 @@ namespace tasystem{
   
   class SolverConfiguration {
   public:
-    bool wait=true;
     #ifndef SWIG
+    bool wait=true;
     std::atomic<us> maxiter;
     std::atomic<d> funtol;
     std::atomic<d> reltol;
@@ -39,6 +39,7 @@ namespace tasystem{
     }
     #endif
     void setWait(bool w){wait=w;}
+    void setMaxiter(us maxiter1){maxiter=maxiter1;}
     void setFuntol(d ft){funtol=ft;}
     void setReltol(d ft){reltol=ft;}
     void setDampfac(d df){dampfac=df;}

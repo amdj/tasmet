@@ -36,8 +36,8 @@ add_definitions(-DNPY_NO_DEPRECATED_API=NPY_1_4_API_VERSION)
 # Optimized code flags
 #=====================
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -mtune=native -fopenmp")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -march=native -mtune=native -fopenmp")
 # set(CMAKE_CLANG "${CMAKE_GCC} -march=native -mtune=native -fopenmp")
 
 # Pre-allocation size for matrices. Very important setting to tune the

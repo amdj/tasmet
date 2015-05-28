@@ -957,7 +957,7 @@ ImpedanceBc
 
 \begin_inset Formula 
 \begin{equation}
-\mathbf{R}=\hat{\mathbf{p}}-\mathbf{Z}\cdot\mathcal{\boldsymbol{F}}\cdot\left(\frac{\mathbf{m}_{bc}}{w_{1}\mathbf{\rho}_{1}+w_{2}\mathbf{\rho}_{2}}\right)=\mathbf{0}
+\mathbf{R}=\hat{\mathbf{p}}-\mathbf{Z}\cdot\mathcal{\boldsymbol{F}}\cdot\left(\frac{\mathbf{m}_{bc}}{S_{f}\left(w_{1}\mathbf{\rho}_{1}+w_{2}\mathbf{\rho}_{2}\right)}\right)=\mathbf{0}
 \end{equation}
 
 \end_inset
@@ -976,7 +976,7 @@ ImpedanceBc
 
 \begin_inset Formula 
 \begin{equation}
-\frac{\partial\mathbf{R}}{\partial\hat{\mathbf{m}}_{bc}}=-\mathbf{Z}\cdot\boldsymbol{\mathcal{F}}\cdot\mbox{diag}\left(\frac{1}{\boldsymbol{\rho}_{bc}}\right)\cdot\boldsymbol{\mathcal{F}}^{-1}
+\frac{\partial\mathbf{R}}{\partial\hat{\mathbf{m}}_{bc}}=-\mathbf{Z}\cdot\boldsymbol{\mathcal{F}}\cdot\mbox{diag}\left(\frac{1}{S_{f}\boldsymbol{\rho}_{bc}}\right)\cdot\boldsymbol{\mathcal{F}}^{-1}
 \end{equation}
 
 \end_inset
@@ -987,7 +987,7 @@ ImpedanceBc
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\frac{\partial\mathbf{R}}{\partial\boldsymbol{\rho}_{1,2}}=w_{1,2}\mathbf{Z}\cdot\boldsymbol{\mathcal{F}}\cdot\mbox{diag}\left(\frac{\mathbf{m}_{bc}}{\boldsymbol{\rho}_{bc}^{2}}\right)\cdot\boldsymbol{\mathcal{F}}^{-1}
+\frac{\partial\mathbf{R}}{\partial\boldsymbol{\rho}_{1,2}}=w_{1,2}\mathbf{Z}\cdot\boldsymbol{\mathcal{F}}\cdot\mbox{diag}\left(\frac{\mathbf{m}_{bc}}{S_{f}\boldsymbol{\rho}_{bc}^{2}}\right)\cdot\boldsymbol{\mathcal{F}}^{-1}
 \end{equation}
 
 \end_inset
@@ -1105,6 +1105,33 @@ And
 \frac{\partial\mathbf{R}}{\partial\hat{\mathbf{m}}} & = & \boldsymbol{\mathcal{F}}\cdot\left[\mbox{diag}\left(\boldsymbol{\mathcal{F}}^{-1}\cdot\mathbf{Z}^{-1}\cdot\hat{\mathbf{p}}\right)\cdot\boldsymbol{\mathcal{F}}^{-1}\right]\\
 \frac{\partial\mathbf{R}}{\partial\widehat{\mathbf{m}\mathbf{u}}} & = & -\mathbf{I}
 \end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+VelocityBc
+\end_layout
+
+\begin_layout Standard
+Prescribed velocity, adiabatic compression/expansion.
+\begin_inset Formula 
+\begin{equation}
+\mathbf{R}=\boldsymbol{\mathcal{F}}\cdot\left(\frac{\mathbf{m}_{bc}}{S_{f}\mathbf{\rho}_{bc}}\right)-\hat{\mathbf{u}}_{bc}=0
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\mathbf{R}}{\partial\hat{\mathbf{m}}_{bc}}=\boldsymbol{\mathcal{F}}\cdot\mbox{diag}\left(\frac{1}{S_{f}\boldsymbol{\rho}_{bc}}\right)\cdot\boldsymbol{\mathcal{F}}^{-1}
+\end{equation}
 
 \end_inset
 
