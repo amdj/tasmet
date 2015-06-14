@@ -22,9 +22,6 @@ namespace tube{
     virtual vd error() const;			// Error in Energy equation at node i
     virtual tasystem::JacRow jac() const;
     void show() const;
-  private:
-    tasystem::JacCol dp() const;
-    tasystem::JacCol drho() const;
   };
 }
 

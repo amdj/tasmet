@@ -12,7 +12,9 @@ namespace tasystem{
       locations(0,i)=(*this)[i].row();
       locations(1,i)=(*this)[i].col();
       values(i)=(*this)[i].value();
+      TRACE(0,"row: " << (*this)[i].row() << ", col: "<< (*this)[i].col() << ", value: " << (*this)[i].value());
     }
+    TRACE(0,"ndofs: "<< ndofs_);
     return sp_mat(true,locations,values,ndofs_,ndofs_);
   }
   void TripletList::zeroOutRow(us rownr){

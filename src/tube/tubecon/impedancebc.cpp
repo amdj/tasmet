@@ -25,6 +25,9 @@
 namespace tube {
   using namespace tasystem;
   
+  // Return a var which contains the impedance using evaluation of
+  // impfunc. It assumes a valid function, which should be tested
+  // beforehand.
   var Zvar(PyObject* impfunc,const Globalconf* gc){
 
     vd omg=linspace(0,Nf*gc->getomg(),Nf+1);

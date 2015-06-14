@@ -1,0 +1,390 @@
+// piston.cpp
+//
+// last-edit-by: J.A. de Jong 
+// 
+// Description:
+//
+//////////////////////////////////////////////////////////////////////
+
+#include "piston.h"
+#include "jacobian.h"
+
+#define fDFT (gc->fDFT)
+#define iDFT (gc->iDFT)
+#define DDTfd (gc->DDTfd)
+
+#define Ns (gc->Ns())
+#define Nf (gc->Nf())
+#define eye (eye(Ns,Ns))
+
+
+namespace mech {
+  SPOILNAMESPACE
+  typedef tasystem::Jacobian jac;
+  using tasystem::JacRow;
+  using tasystem::JacCol;
+  using tasystem::Jacobian;
+  using tasystem::var;
+  using tasystem::Globalconf;
+
+  Piston::Piston(const tasystem::TaSystem& sys,const Piston& other):
+    Seg(other,sys),
+    M(other.M),Sr(other.Sr),Sl(other.Sl),Km(other.Km),Cm(other.Cm),
+    V0l(other.V0l),V0r(other.V0r)
+  {
+    TRACE(15,"Piston::Piston()");
+    xp_=var(*gc);
+    Fp_=var(*gc);
+
+    pl_=var(*gc);
+    pr_=var(*gc);
+    ml_=var(*gc);
+    mr_=var(*gc);
+    Tl_=var(*gc,gc->T0());
+    Tr_=var(*gc,gc->T0());
+    rhol_=var(*gc,gc->rho0());
+    rhor_=var(*gc,gc->rho0());
+    if(!leftConnected && massL<0)
+      massL=rhol_(0)*V0l;
+    if(!rightConnected && massR<0)
+      massR=rhor_(0)*V0r;
+  }
+  Piston::~Piston(){}
+  void Piston::setEqNrs(us firsteqnr){
+    TRACE(15,"us Piston::setEqNrs()");
+    this->firsteqnr=firsteqnr;
+  }
+  void Piston::setDofNrs(us firstdof) {
+    TRACE(15,"void Piston::setDofNrs()");
+    us dof=firstdof;
+    xp_.setDofNr(dof); dof+=Ns;
+    Fp_.setDofNr(dof); dof+=Ns;
+
+    rhol_.setDofNr(dof); dof+=Ns;
+    Tl_.setDofNr(dof); dof+=Ns;
+    pl_.setDofNr(dof); dof+=Ns;
+    ml_.setDofNr(dof); dof+=Ns;
+
+    rhor_.setDofNr(dof); dof+=Ns;
+    Tr_.setDofNr(dof); dof+=Ns;
+    pr_.setDofNr(dof); dof+=Ns;
+    mr_.setDofNr(dof); dof+=Ns;
+
+  }
+  us Piston::getNEqs() const {
+    TRACE(15,"void Piston::getNEqs()");
+    // 1 for equation of motion of piston
+    // 2 for mass conservation left and right volumes
+    // 2 for energy conservation left and right volumes
+    // 2 for equations of state
+
+    us neqs=7*Ns;
+    // If not connected, one to set mass flow left and right to zero
+    if(!leftConnected)
+      neqs+=Ns;                 // For ml=0
+    if(!rightConnected)
+      neqs+=Ns;                 // For mr=0
+    return neqs;
+  }
+  us Piston::getNDofs() const {
+    TRACE(15,"us Piston::getNDofs()");
+    return 10*Ns;
+  }
+  void Piston::setRes(const vd& res) {
+    TRACE(15,"void Piston::setRes()");
+    us dofnr=0;
+    // order: xp,Fp,rhol,Tl,pl,ml,rhor,Tr,pr,mr
+    xp_.setadata(res.subvec(dofnr,dofnr+Ns-1)); dofnr+=Ns;
+    Fp_.setadata(res.subvec(dofnr,dofnr+Ns-1)); dofnr+=Ns;
+
+    rhol_.setadata(res.subvec(dofnr,dofnr+Ns-1)); dofnr+=Ns;
+    Tl_.setadata(res.subvec(dofnr,dofnr+Ns-1)); dofnr+=Ns;
+    pl_.setadata(res.subvec(dofnr,dofnr+Ns-1)); dofnr+=Ns;
+    ml_.setadata(res.subvec(dofnr,dofnr+Ns-1)); dofnr+=Ns;
+
+    rhor_.setadata(res.subvec(dofnr,dofnr+Ns-1)); dofnr+=Ns;
+    Tr_.setadata(res.subvec(dofnr,dofnr+Ns-1)); dofnr+=Ns;
+    pr_.setadata(res.subvec(dofnr,dofnr+Ns-1)); dofnr+=Ns;
+    mr_.setadata(res.subvec(dofnr,dofnr+Ns-1)); dofnr+=Ns;
+
+  }
+  vd Piston::getRes() const {
+    TRACE(15,"vd Piston::getRes()");
+    vd res(getNDofs());
+    us dofnr=0;
+    // order: xp,Fp,rhol,Tl,pl,ml,rhor,Tr,pr,mr
+    res.subvec(dofnr,dofnr+Ns-1)=xp_(); dofnr+=Ns;
+    res.subvec(dofnr,dofnr+Ns-1)=Fp_(); dofnr+=Ns;
+
+    res.subvec(dofnr,dofnr+Ns-1)=rhol_(); dofnr+=Ns;
+    res.subvec(dofnr,dofnr+Ns-1)=Tl_(); dofnr+=Ns;
+    res.subvec(dofnr,dofnr+Ns-1)=pl_(); dofnr+=Ns;
+    res.subvec(dofnr,dofnr+Ns-1)=ml_(); dofnr+=Ns;
+
+    res.subvec(dofnr,dofnr+Ns-1)=rhor_(); dofnr+=Ns;
+    res.subvec(dofnr,dofnr+Ns-1)=Tr_(); dofnr+=Ns;
+    res.subvec(dofnr,dofnr+Ns-1)=pr_(); dofnr+=Ns;
+    res.subvec(dofnr,dofnr+Ns-1)=mr_(); dofnr+=Ns;
+
+    return res;
+  }
+  vd Piston::error() const {
+    TRACE(15,"void Piston::error()");
+    
+    vd error(getNEqs());
+    us eqnr=0;
+    // Equation of motion of the piston
+    error.subvec(eqnr,eqnr+Ns-1)=\
+      M*DDTfd*DDTfd*xp_()\      // "Inertia" force
+      +Cm*DDTfd*xp_()\          // Damping force
+      +Km*xp_()\                // Spring force
+      -pl_()*Sl\                // "Pushes"
+      +pr_()*Sr\                // "Pushes back"
+      -Fp_();                   // "External force on piston
+
+    eqnr+=Ns;
+
+    // Mass conservation left side
+    if(!leftConnected){
+      assert(massL>0);
+      error.subvec(eqnr,eqnr+Ns-1)=fDFT*(rhol_.tdata()%(V0l+xp_.tdata()*Sl));
+      error(eqnr)-=massL;
+
+      // Not connected left side, so set ml to zero
+      eqnr+=Ns;
+      error.subvec(eqnr,eqnr+Ns-1)=ml_();
+    }
+    else{
+      throw MyError("Not yet implemented");
+    }
+    eqnr+=Ns;
+
+    // Mass conservation right side
+    if(!rightConnected){
+      assert(massR>0);
+      error.subvec(eqnr,eqnr+Ns-1)=fDFT*(rhor_.tdata()%(V0r-xp_.tdata()*Sr));
+      error(eqnr)-=massR;
+
+      // Not connected right side, so set mr to zero
+      eqnr+=Ns;
+      error.subvec(eqnr,eqnr+Ns-1)=mr_();
+
+    }
+    else{
+      throw MyError("Not yet implemented");
+    }
+    eqnr+=Ns;
+
+    d p0=gc->p0();
+    d rho0=gc->rho0();
+    d gamma=gc->gas().gamma(constants::T0);
+
+    // Energy consrvation left side
+    if(!leftConnected){
+      error.subvec(eqnr,eqnr+Ns-1)=pl_()/p0;
+      error(eqnr)+=1;
+      error.subvec(eqnr,eqnr+Ns-1)+=-fDFT*pow(rhol_.tdata()/rho0,gamma);
+    }
+    else{
+      throw MyError("Not yet implemented");
+    }
+    eqnr+=Ns;
+
+    // Energy consrvation right side
+    if(!leftConnected){
+      error.subvec(eqnr,eqnr+Ns-1)=pr_()/p0;
+      error(eqnr)+=1;
+      error.subvec(eqnr,eqnr+Ns-1)+=-fDFT*pow(rhor_.tdata()/rho0,gamma);
+    }
+    else{
+      throw MyError("Not yet implemented");
+    }
+    eqnr+=Ns;
+
+    // Specific gas constant
+    d Rs=gc->gas().Rs();
+
+    // Equation of state left side
+    error.subvec(eqnr,eqnr+Ns-1)=pl_()-fDFT*(Tl_.tdata()%rhol_.tdata()*Rs);
+    error(eqnr)+=p0;
+    eqnr+=Ns;
+
+    // Equation of state right side
+    error.subvec(eqnr,eqnr+Ns-1)=pr_()-fDFT*(Tr_.tdata()%rhor_.tdata()*Rs);
+    error(eqnr)+=p0;
+
+
+
+    TRACE(15,"Returning from Piston::Error()");
+    return error;
+  }
+  void Piston::jac(Jacobian& jac) const{
+    TRACE(15,"void Piston::jac()");
+    TRACE(15,"forsteqnr: "<< firsteqnr);
+
+    us eqnr=firsteqnr;
+    // Equation of motion of the piston
+    JacRow eomjac(eqnr,4);
+    eomjac+=JacCol(xp_,M*DDTfd*DDTfd+Cm*DDTfd+Km*eye);
+    eomjac+=JacCol(Fp_,-eye);
+    eomjac+=JacCol(pl_,-Sl*eye);
+    eomjac+=JacCol(pr_,Sr*eye);
+    jac+=eomjac;
+    eqnr+=Ns;
+
+    // Mass conservation left side
+    if(!leftConnected){
+      JacRow mcljac(eqnr,2);
+      mcljac+=JacCol(rhol_,fDFT*diagmat(V0l+xp_.tdata()*Sl)*iDFT);
+      mcljac+=JacCol(xp_,fDFT*diagmat(rhol_.tdata()*Sl)*iDFT);
+      jac+=mcljac;
+
+      // Not connected to leftside so ml to zero
+      eqnr+=Ns;
+      jac+=JacRow(eqnr,JacCol(ml_,eye));
+    }
+    else{
+      throw MyError("Not yet implemented");
+    }
+    eqnr+=Ns;
+    
+    // Mass conservation right side
+    if(!rightConnected){
+      JacRow mcrjac(eqnr,2);
+      mcrjac+=JacCol(rhor_,fDFT*diagmat(V0r-xp_.tdata()*Sr)*iDFT);
+      mcrjac+=JacCol(xp_,fDFT*diagmat(-rhor_.tdata()*Sr)*iDFT);
+      jac+=mcrjac;
+
+      // Not connected to right side so mr to zero
+      eqnr+=Ns;
+      jac+=JacRow(eqnr,JacCol(mr_,eye));
+
+    }
+    else{
+      throw MyError("Not yet implemented");
+    }
+    eqnr+=Ns;
+
+    // Energy equation left side
+    d p0=gc->p0();    
+    d T0=gc->T0();
+    d rho0=gc->gas().rho(T0,p0);
+    d gamma=gc->gas().gamma(T0);
+
+    if(!leftConnected) {
+      JacRow pdcop(eqnr,2);
+      pdcop+=JacCol(pl_,eye/p0);
+      // Integrated form
+      pdcop+=JacCol(rhol_,-(gamma/rho0)*fDFT*
+                    diagmat(pow(rhol_.tdata()/rho0,(gamma-1.0)))*iDFT);
+      jac+=pdcop;
+    }
+    else{
+      throw MyError("Not yet implemented");
+    }
+    eqnr+=Ns;
+
+    // Energy equation right side
+    if(!rightConnected) {
+      JacRow pdcop(eqnr,2);
+      pdcop+=JacCol(pr_,eye/p0);
+      // Integrated form
+      pdcop+=JacCol(rhor_,-(gamma/rho0)*fDFT*
+                    diagmat(pow(rhor_.tdata()/rho0,(gamma-1.0)))*iDFT);
+      jac+=pdcop;
+    }
+    else{
+      throw MyError("Not yet implemented");
+    }
+    eqnr+=Ns;
+
+    d Rs=gc->gas().Rs();
+    // Equation of state left side
+    {
+      JacRow eosl(eqnr,3);
+      eosl+=JacCol(pl(),eye);
+      eosl+=JacCol(rhol_,-fDFT*diagmat(Tl_.tdata()*Rs)*iDFT);
+      eosl+=JacCol(Tl_,-fDFT*diagmat(rhol_.tdata()*Rs)*iDFT);
+      jac+=eosl;
+      eqnr+=Ns;
+    }
+    // Equation of state right side
+    {
+      JacRow eosr(eqnr,3);
+      eosr+=JacCol(pr(),eye);
+      eosr+=JacCol(rhor_,-fDFT*diagmat(Tr_.tdata()*Rs)*iDFT);
+      eosr+=JacCol(Tr_,-fDFT*diagmat(rhor_.tdata()*Rs)*iDFT);
+      jac+=eosr;
+      eqnr+=Ns;
+    }
+  }
+  void Piston::show(us detailnr) const {
+    TRACE(15,"void Piston::show()");
+    cout << "Piston segment:\n"
+         << "Piston mass: " << M
+         << "\nPiston mechanical stiffness: "<< Km
+         << "\nPiston mechanical damping: "<< Cm
+         << "\nLeft volume: "<< V0l    
+         << "\nRight volume: "<< V0r << endl;    
+    if(!leftConnected)
+      cout << "Left initial mass: "<< massL << endl;    
+    if(!rightConnected)
+      cout << "Right initial mass: "<< massR << endl;    
+  }
+  d Piston::getMass() const {
+    TRACE(15,"void Piston::getMass()");
+    // Only the mass counts which is connected to other segments
+    d mass=0;
+    if(leftConnected){
+      WARN("Code has not been checked");
+      mass+=arma::dot( fDFT.row(0) , rhol_.tdata()*(V0l+Sl*xp_.tdata()) );
+    }
+    if(rightConnected){
+      WARN("Code has not been checked");
+      mass+=arma::dot( fDFT.row(0) , rhor_.tdata()*(V0r-Sr*xp_.tdata()) );
+    }
+    return mass;
+  }
+  void Piston::dmtotdx(vd& dmtotdx) const {
+    TRACE(15,"void Piston::dmtotdx()");
+    // if(leftConnected){
+    //   us rholdof=rhol.getDofNr();
+    //   dmtotdx.subvec(rholdof,rholdof+Ns-1)=
+    WARN("Not finished code");
+    assert(false);
+  }
+  void Piston::domg(vd& domg) const{
+    TRACE(15,"void Piston::domg()");
+    WARN("Code has not been checked");
+    WARN("Needs implementation");    
+    assert(false);
+  }
+  void Piston::updateNf(){
+    TRACE(15,"Piston::updateNf()");
+    xp_.updateNf();
+    Fp_.updateNf();    
+    pl_.updateNf();
+    pr_.updateNf();
+    ml_.updateNf();
+    mr_.updateNf();
+    Tl_.updateNf();
+    Tr_.updateNf();
+    rhol_.updateNf();
+    rhor_.updateNf();
+  }
+  void Piston::resetHarmonics(){
+    TRACE(15,"Piston::updateNf()");
+    xp_.resetHarmonics();
+    Fp_.resetHarmonics();
+    pl_.resetHarmonics();
+    pr_.resetHarmonics();
+    ml_.resetHarmonics();
+    mr_.resetHarmonics();
+    Tl_.resetHarmonics();
+    Tr_.resetHarmonics();
+    rhol_.resetHarmonics();
+    rhor_.resetHarmonics();
+  }
+
+} // namespace mech
+//////////////////////////////////////////////////////////////////////

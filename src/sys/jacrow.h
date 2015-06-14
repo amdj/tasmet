@@ -13,7 +13,7 @@
 namespace variable{ class var;}
 
 namespace tasystem{
-
+  
   class JacRow{                 // Row in Jacobian matrix
     int rowdof_=-1;            // Number of first row, default is
                                 // invalid state
@@ -23,6 +23,7 @@ namespace tasystem{
 
     vector<JacCol> jaccols;     // Column blocks
     JacRow(const JacCol&);
+    JacRow(us rowdof,const JacCol&); // Initialization with only one column
     JacRow(int rowdofnr,us cols=2): rowdof_(rowdofnr){ jaccols.reserve(cols);}
     // void addCol(const JacCol& jaccol);
     // JacRow& operator+=(JacCol&&);

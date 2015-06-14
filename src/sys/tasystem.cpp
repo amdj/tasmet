@@ -4,6 +4,7 @@
 #include "seg.h"
 #include "connector.h"
 #include "tube.h"
+#include "piston.h"
 #include "utils.h"
 #include <cassert>
 
@@ -299,6 +300,9 @@ namespace tasystem{
   }
   const tube::Tube& TaSystem::getTube(us i)  const {
     return dynamic_cast<const tube::Tube&>(*segs.at(i));
+  }
+  const mech::Piston& TaSystem::getPiston(us i)  const {
+    return dynamic_cast<const mech::Piston&>(*segs.at(i));
   }
   void TaSystem::setRes(const vd& Res){
     checkInit();

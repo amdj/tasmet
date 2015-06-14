@@ -26,7 +26,15 @@ const char* toString(Varnr v) {
     return "Q";
   case Varnr::Qs:
     return "Qs";
+  case Varnr::F:
+    return "F";
+  case Varnr::x:
+    return "x";
+  case Varnr::Z:
+    return "Z";
+
   default:
     throw MyError("Unknown varnr");
   }
 }
+

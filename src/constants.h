@@ -70,7 +70,10 @@ enum class Varnr{
     u,                          // Velocity (U/Sf)
     mu,                         // Momentum flux
     Q,                          // Heat flow
-    Qs                 // Solid heat Flow
+    Qs,                 // Solid heat Flow
+    F,                 // A mechanical domain force [N]
+    x,                // A mechanical displacement [m]
+    Z,                 // A mechanical impedance [N/m]
     };
 
 #ifndef SWIG
@@ -82,6 +85,9 @@ namespace segment{
   enum Pos{left=0,right=1};
 }
 namespace tasystem{
+  typedef segment::Pos Pos;
+}
+namespace mech{
   typedef segment::Pos Pos;
 }
 namespace tube{

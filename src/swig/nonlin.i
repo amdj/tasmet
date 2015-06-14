@@ -1,4 +1,4 @@
-%module(docstring="TATwente nonlinear thermoacoustic code") TATwente
+%module(docstring="TASMET nonlinear thermoacoustic code") tasmet
 %{
   #define PY_ARRAY_UNIQUE_SYMBOL npy_array
   #define SWIG_FILE_WITH_INIT
@@ -37,8 +37,11 @@
   #include "velocitybc.h"
   #include "adiabaticwall.h"  
   #include "isotwall.h"  
+
   // Segments
   #include "seg.h"
+  #include "piston.h"
+  #include "mechbc.h"
 
   // Tubes
   #include "grid.h"
@@ -109,9 +112,10 @@ void setTASMETTracer(int);
 %include "isotwall.h"  
 %include "impedancebc.h"
 %include "velocitybc.h"
+%include "mechbc.h"
  // Segments
 %include "seg.h"
-
+%include "piston.h"
  // Tubes
 %include "grid.h"
 %include "boundarylayer.h"

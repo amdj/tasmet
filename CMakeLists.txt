@@ -4,10 +4,10 @@
 #=============
 
 cmake_minimum_required (VERSION 3.2)
-project(TATwente)
+project(TASMET)
 
 # Tracer name (name of the variable)
-add_definitions(-DTRACERNAME=TATwenteTracer)
+add_definitions(-DTRACERNAME=TASMETTracer)
 add_subdirectory(${PROJECT_SOURCE_DIR}/common)
 #==================
 # Compiler settings
@@ -103,6 +103,7 @@ add_definitions(-DARMA_USE_SUPERLU -DARMA_USE_CXX11 -DARMA_USE_BLAS -DARMA_USE_L
 #=========
 
 AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/ src)
+AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/mech mech)
 AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/seg seg)
 AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/sol sol)
 AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/sys sys)
@@ -119,6 +120,7 @@ AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/tubecon tubecon)
 set (nonlinear_SRC
   ${src}
   ${seg}
+  ${mech}
   ${sol}
   ${sys}
   ${var}
@@ -139,6 +141,7 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/common/src/swig
   ${PROJECT_SOURCE_DIR}/src
   ${PROJECT_SOURCE_DIR}/src/sys
+  ${PROJECT_SOURCE_DIR}/src/mech
   ${PROJECT_SOURCE_DIR}/src/sol
   ${PROJECT_SOURCE_DIR}/src/seg
   ${PROJECT_SOURCE_DIR}/src/var
@@ -160,12 +163,12 @@ target_link_libraries(nonlin_lib common_src)
 
 set_source_files_properties(${PROJECT_SOURCE_DIR}/src/swig/nonlin.i
   PROPERTIES CPLUSPLUS ON)
-swig_add_module(TATwente python src/swig/nonlin.i)
+swig_add_module(tasmet python src/swig/nonlin.i)
 
 set(SWIG_MODULE_nonlin_FILE_nonlin_EXTRA_DEPS
   ${PROJECT_SOURCE_DIR}/src/common/swig_files/arma_numpy.i
 )
-swig_link_libraries(TATwente nonlin_lib common_src ${PYTHON_LIBRARIES}
+swig_link_libraries(tasmet nonlin_lib common_src ${PYTHON_LIBRARIES}
   ${ARMADILLO_LIBRARIES})
 set_source_files_properties( ${swig_generated_file_fullname}
       PROPERTIES COMPILE_FLAGS "-Wno-missing-field-initializers -Wno-self-assign -Wno-#warnings")

@@ -9,6 +9,11 @@ namespace tasystem{
   {
     (*this)+=j;
   }
+  JacRow::JacRow(us rowdof,const JacCol& j):
+    JacRow(rowdof,1)
+  {
+    (*this)+=j;
+  }
   // JacRow& JacRow::operator+=(JacCol&& j){
   //   TRACE(45,"JacRow::operator+=(JacCol&& j)");
   //   jaccols.emplace_back(std::move(j));

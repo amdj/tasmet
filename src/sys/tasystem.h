@@ -20,6 +20,9 @@ namespace segment{
   class Seg;
   class Connector;
 }
+namespace mech {
+  class Piston;
+} // namespace mech
 
 namespace tube{
   class Tube;
@@ -35,6 +38,7 @@ namespace tasystem{
 
   #ifdef SWIG
   %catches(std::exception,...) TaSystem::getTube(us i) const;
+  %catches(std::exception,...) TaSystem::getPiston(us i) const;
   %catches(std::exception,...) TaSystem::TaSystem();
   %catches(std::exception,...) TaSystem::TaSystem(const Globalconf&);
   %catches(std::exception,...) TaSystem::Error();
@@ -111,6 +115,7 @@ namespace tasystem{
     // from the system (we have to determine how elaborated the API
     // has to be.)
     const tube::Tube& getTube(us i) const;
+    const mech::Piston& getPiston(us i) const;
     us getNDofs() const;	// Compute DOFS in system, set     
     us getNEqs() const;    
 

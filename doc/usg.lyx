@@ -433,6 +433,21 @@ where
 \end_layout
 
 \begin_layout Subsection
+Isentropic state equation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\hat{\mathbf{1}}+\frac{\hat{\mathbf{p}}}{p_{0}}-\mathcal{\boldsymbol{F}}\cdot\left(\frac{\boldsymbol{\rho}}{\rho_{0}}\right)^{\gamma}=\mathbf{0}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Discretization
 \end_layout
 
@@ -1139,6 +1154,192 @@ Prescribed velocity, adiabatic compression/expansion.
 \end_layout
 
 \begin_layout Chapter
+Transducers
+\end_layout
+
+\begin_layout Section
+Piston
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $V_{f}$
+\end_inset
+
+ front volume
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $V_{b}$
+\end_inset
+
+ back volume
+\end_layout
+
+\begin_layout Standard
+Piston(M,Sf,Sb,V0f,V0b,Km)
+\end_layout
+
+\begin_layout Subsection
+Piston equations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename fig/piston.eps
+	width 80text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Piston
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Variables
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+x,\\
+p_{r},T_{r},\rho_{r} &  & m_{r},mH_{r}\\
+p_{l},T_{l},\rho_{l} &  & m_{l},mH_{l}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+m\frac{\partial^{2}x}{\partial t^{2}}+C_{m}\frac{\partial x}{\partial t}+K_{m}x+p_{r}S_{r}-p_{l}S_{l}-F=0
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\begin{eqnarray}
+p_{r}-\rho_{r}R_{s}T_{r} & = & 0\\
+p_{l}-\rho_{l}R_{s}T_{l} & = & 0
+\end{eqnarray}
+
+\end_inset
+
+and
+\begin_inset Formula 
+\begin{eqnarray}
+\frac{\partial\rho_{r}\left(V_{0r}-xS_{r}\right)}{\partial t}+m_{f} & = & 0\\
+\frac{\partial\rho_{l}\left(V_{0l}+xS_{l}\right)}{\partial t}+m_{l} & = & 0
+\end{eqnarray}
+
+\end_inset
+
+and
+\begin_inset Formula 
+\begin{eqnarray}
+\frac{\partial\frac{p_{r}}{\gamma-1}\left(V_{0r}-xS_{r}\right)}{\partial t}+mH_{r} & = & 0\\
+\frac{\partial\frac{p_{l}}{\gamma-1}\left(V_{0l}+xS_{l}\right)}{\partial t}+mH_{l} & = & 0
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Mass in piston volumes
+\end_layout
+
+\begin_layout Standard
+The time-averaged amount of mass in a piston volume is
+\begin_inset Formula 
+\[
+m=\mathcal{F}_{0}\cdot\left[\mathbf{\rho}\circ(V_{0}\pm S\mathbf{x})\right]
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\boldsymbol{\mathcal{F}}_{0}$
+\end_inset
+
+ is the first row in the Fourier transform matrix.
+ Therefore, 
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial m}{\partial\hat{\boldsymbol{\rho}}}=\mathcal{F}_{0}\cdot\left[(V_{0}\pm S\mathbf{x})\cdot\boldsymbol{\mathcal{F}}^{-1}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Unconnected side
+\end_layout
+
+\begin_layout Standard
+For example, left side is not connected:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\rho_{l}\left(V_{0l}+xS_{l}\right)=m_{l}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Isentropic:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+p-p_{0}\left(\frac{\rho}{\rho_{0}}\right)^{\gamma}=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Later:
+\end_layout
+
+\begin_layout Chapter
 Systems
 \end_layout
 
@@ -1316,7 +1517,6 @@ Create a PhaseConstraint object:
 \end_layout
 
 \begin_layout Verbatim
-
 	pc=PhaseConstraint(Varnr, freqnr, left)
 \end_layout
 
@@ -1325,7 +1525,6 @@ Apply this contraint to a segment which can accept them, for example a Tube:
 \end_layout
 
 \begin_layout Verbatim
-
 	t1.setPhaseConstraint(pc)
 \end_layout
 
