@@ -21,14 +21,13 @@ namespace mech {
 
   class Piston: public segment::Seg {
     us firsteqnr;               // First equation of this segment
+
     // These booleans determine what kind of equations to solve.
     bool leftConnected=false,rightConnected=false;
     d M;                        // The piston mass [kg]
     d Sr;                        // The piston right area [m^2]
     d Sl;                        // The left area [m^2]
 
-    d Stl,Str;                  // Total cross-sectional area of fluid
-                                // in contact with wall.
     d Km;                        // The mechanical spring stiffness
     // [N/m]
     d Cm;                       // Mechanical damping constant
@@ -40,8 +39,10 @@ namespace mech {
     tasystem::var Fp_;                   // Force on piston (externally
                                         // applied)
 
+    d Stl=-1,Str=-1;                  // Total cross-sectional area of fluid
+                                // in contact with wall.
     // Left pressure,right pressure
-
+    d T0;
     // ml: mass flow out of left volume
     // mr: mass flow out of right volume
     tasystem::var pl_,pr_,rhol_,rhor_,Tl_,Tr_,ml_,mr_;
@@ -49,11 +50,12 @@ namespace mech {
     Piston(const tasystem::TaSystem&,const Piston& other);
   public:
     Piston(const Piston& other)=delete;
-    Piston(d Sl,d Sr,d V0l,d V0r,d M,d Km,d Cm,d Str=-1,d Srl=-1,
+    Piston(d Sl,d Sr,d V0l,d V0r,d M,d Km,d Cm,d Stl=-1,d Str=-1,
            bool leftConnected=false,bool rightConnected=false):
       Seg(),
       leftConnected(leftConnected),rightConnected(rightConnected),
-      M(M),Sr(Sr),Sl(Sl),Km(Km),Cm(Cm),V0l(V0l),V0r(V0r)
+      M(M),Sr(Sr),Sl(Sl),Km(Km),Cm(Cm),V0l(V0l),V0r(V0r),
+      Stl(Stl),Str(Str)
     {
       TRACE(15,"Piston()");
     }
@@ -70,6 +72,11 @@ namespace mech {
     const tasystem::var& rhor() const {return rhor_;}
     const tasystem::var& Tl() const {return Tl_;}
     const tasystem::var& Tr() const {return Tr_;}
+
+    // Post-processing the left and right volume (vars)
+    tasystem::var Vl() const;
+    tasystem::var Vr() const;
+
     #ifndef SWIG
     // If a side of the piston is not connected, different equations
     // are solved in that part. See documentation for details

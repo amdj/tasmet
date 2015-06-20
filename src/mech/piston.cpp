@@ -30,9 +30,12 @@ namespace mech {
   Piston::Piston(const tasystem::TaSystem& sys,const Piston& other):
     Seg(other,sys),
     M(other.M),Sr(other.Sr),Sl(other.Sl),Km(other.Km),Cm(other.Cm),
-    V0l(other.V0l),V0r(other.V0r)
+    V0l(other.V0l),V0r(other.V0r),Stl(other.Stl),Str(other.Str)
   {
     TRACE(15,"Piston::Piston()");
+
+    T0=gc->T0();
+
     xp_=var(*gc);
     Fp_=var(*gc);
 
@@ -40,8 +43,8 @@ namespace mech {
     pr_=var(*gc);
     ml_=var(*gc);
     mr_=var(*gc);
-    Tl_=var(*gc,gc->T0());
-    Tr_=var(*gc,gc->T0());
+    Tl_=var(*gc,T0);
+    Tr_=var(*gc,T0);
     rhol_=var(*gc,gc->rho0());
     rhor_=var(*gc,gc->rho0());
     if(!leftConnected && massL<0)
@@ -133,6 +136,20 @@ namespace mech {
     
     vd error(getNEqs());
     us eqnr=0;
+
+    const vd& rholt=rhol_.tdata();
+    const vd& rhort=rhor_.tdata();
+    const vd& plt=pl_.tdata();
+    const vd& prt=pr_.tdata();
+    const vd& Tlt=Tl_.tdata();
+    const vd& Trt=Tr_.tdata();
+    const vd& mlt=ml_.tdata();
+    const vd& mrt=mr_.tdata();
+    const vd& xpt=xp_.tdata();
+    // Volume as a function of time
+    const vd Vlt=V0l+xpt*Sl;
+    const vd Vrt=V0r-xpt*Sr;
+
     // Equation of motion of the piston
     error.subvec(eqnr,eqnr+Ns-1)=\
       M*DDTfd*DDTfd*xp_()\      // "Inertia" force
@@ -147,7 +164,7 @@ namespace mech {
     // Mass conservation left side
     if(!leftConnected){
       assert(massL>0);
-      error.subvec(eqnr,eqnr+Ns-1)=fDFT*(rhol_.tdata()%(V0l+xp_.tdata()*Sl));
+      error.subvec(eqnr,eqnr+Ns-1)=fDFT*(rholt%Vlt);
       error(eqnr)-=massL;
 
       // Not connected left side, so set ml to zero
@@ -155,7 +172,7 @@ namespace mech {
       error.subvec(eqnr,eqnr+Ns-1)=ml_();
     }
     else{
-      throw MyError("Not yet implemented");
+      error.subvec(eqnr,eqnr+Ns-1)=DDTfd*fDFT*(rholt%Vlt)+ml_();
     }
     eqnr+=Ns;
 
@@ -171,19 +188,34 @@ namespace mech {
 
     }
     else{
-      throw MyError("Not yet implemented");
+      error.subvec(eqnr,eqnr+Ns-1)=DDTfd*fDFT*(rhort%Vrt)+mr_();
     }
     eqnr+=Ns;
 
     d p0=gc->p0();
-    d rho0=gc->rho0();
-    d gamma=gc->gas().gamma(constants::T0);
+    d rho0=gc->gas().rho(T0,p0);
+    d gamma=gc->gas().gamma(T0);
+    d gamfac=1/(gamma-1);
+    d cp=gc->gas().cp(T0);
+
+    // dVdt in time domain of left volume
+    vd dVldtt=iDFT*DDTfd*(xp_()*Sl);
 
     // Energy consrvation left side
+    error.subvec(eqnr,eqnr+Ns-1)=gamfac*DDTfd*fDFT*(plt%Vlt)
+      +fDFT*(plt%dVldtt)\ // Work contribution to change in
+                                  \  // energy
+      +fDFT*(cp*mlt%Tlt);            // Enthalpy flow out of segment
+
     if(!leftConnected){
-      error.subvec(eqnr,eqnr+Ns-1)=pl_()/p0;
-      error(eqnr)+=1;
-      error.subvec(eqnr,eqnr+Ns-1)+=-fDFT*pow(rhol_.tdata()/rho0,gamma);
+      // Overwrite time-average part with constraint on time-average
+      // internal energy, by fixing the time-averaged temperature
+      error(eqnr)=Tl_()(0)-T0;
+
+      // Isentropic model
+      // error.subvec(eqnr,eqnr+Ns-1)=pl_()/p0;
+      // error(eqnr)+=1;
+      // error.subvec(eqnr,eqnr+Ns-1)+=-fDFT*pow(rhol_.tdata()/rho0,gamma);
     }
     else{
       throw MyError("Not yet implemented");
@@ -213,8 +245,6 @@ namespace mech {
     error.subvec(eqnr,eqnr+Ns-1)=pr_()-fDFT*(Tr_.tdata()%rhor_.tdata()*Rs);
     error(eqnr)+=p0;
 
-
-
     TRACE(15,"Returning from Piston::Error()");
     return error;
   }
@@ -223,7 +253,21 @@ namespace mech {
     TRACE(15,"forsteqnr: "<< firsteqnr);
 
     us eqnr=firsteqnr;
-    // Equation of motion of the piston
+    const vd& rholt=rhol_.tdata();
+    const vd& rhort=rhor_.tdata();
+    const vd& plt=pl_.tdata();
+    const vd& prt=pr_.tdata();
+    const vd& Tlt=Tl_.tdata();
+    const vd& Trt=Tr_.tdata();
+    const vd& mlt=ml_.tdata();
+    const vd& mrt=mr_.tdata();
+    const vd& xpt=xp_.tdata();
+    // Volume as a function of time
+    const vd Vlt=V0l+xpt*Sl;
+    const vd Vrt=V0r-xpt*Sr;
+
+
+    // 1: Equation of motion of the piston
     JacRow eomjac(eqnr,4);
     eomjac+=JacCol(xp_,M*DDTfd*DDTfd+Cm*DDTfd+Km*eye);
     eomjac+=JacCol(Fp_,-eye);
@@ -232,7 +276,7 @@ namespace mech {
     jac+=eomjac;
     eqnr+=Ns;
 
-    // Mass conservation left side
+    // 2: Mass conservation left side
     if(!leftConnected){
       JacRow mcljac(eqnr,2);
       mcljac+=JacCol(rhol_,fDFT*diagmat(V0l+xp_.tdata()*Sl)*iDFT);
@@ -248,14 +292,14 @@ namespace mech {
     }
     eqnr+=Ns;
     
-    // Mass conservation right side
+    // 3: Mass conservation right side
     if(!rightConnected){
       JacRow mcrjac(eqnr,2);
       mcrjac+=JacCol(rhor_,fDFT*diagmat(V0r-xp_.tdata()*Sr)*iDFT);
       mcrjac+=JacCol(xp_,fDFT*diagmat(-rhor_.tdata()*Sr)*iDFT);
       jac+=mcrjac;
 
-      // Not connected to right side so mr to zero
+      // Not connected to right side so mr is set to zero
       eqnr+=Ns;
       jac+=JacRow(eqnr,JacCol(mr_,eye));
 
@@ -265,23 +309,41 @@ namespace mech {
     }
     eqnr+=Ns;
 
-    // Energy equation left side
+    // Energy equation left side:
+    // 1/(gamma-1)*d/dt(p*Vl)+p*dVl/dt+ml*hl=0
     d p0=gc->p0();    
-    d T0=gc->T0();
     d rho0=gc->gas().rho(T0,p0);
     d gamma=gc->gas().gamma(T0);
+    d gamfac=1/(gamma-1);
+    d cp=gc->gas().cp(T0);
+    // dVdt in time domain of left volume
+    vd dVldtt=iDFT*DDTfd*(xp_()*Sl);
+    // 4: energy conservation left side
+    // 4 columns in this row if not connected, otherwise 3
+    JacRow enl(eqnr,3+(!leftConnected?1:0));
+    
+    dmat enlmat_pl(Ns,Ns),enlmat_x(Ns,Ns);
 
+    enlmat_pl=gamfac*DDTfd*fDFT*diagmat(Vlt)*iDFT;
+    enlmat_x=gamfac*DDTfd*fDFT*diagmat(plt*Sl)*iDFT;
+    
     if(!leftConnected) {
-      JacRow pdcop(eqnr,2);
-      pdcop+=JacCol(pl_,eye/p0);
-      // Integrated form
-      pdcop+=JacCol(rhol_,-(gamma/rho0)*fDFT*
-                    diagmat(pow(rhol_.tdata()/rho0,(gamma-1.0)))*iDFT);
-      jac+=pdcop;
+      // Overwrite time-average part with constraint on time-average
+      // internal energy, by fixing the time-averaged temperature
+      dmat enlmat_T(Ns,Ns,fillwith::zeros);
+      enlmat_T(0,0)=1;
+
+      // Zero out first row
+      enlmat_pl.row(0).zeros();
+      enlmat_x.row(0).zeros();
+
+      // Add Jacobian terms corresponding to left temperature
+      enl+=JacCol(Tl_,enlmat_T);          
+
     }
-    else{
-      throw MyError("Not yet implemented");
-    }
+    enl+=JacCol(pl_,enlmat_pl);
+    enl+=JacCol(xp_,enlmat_x);    
+    jac+=enl;
     eqnr+=Ns;
 
     // Energy equation right side
@@ -385,6 +447,13 @@ namespace mech {
     rhol_.resetHarmonics();
     rhor_.resetHarmonics();
   }
-
+  var Piston::Vl() const {
+    TRACE(15,"var Piston::Vl()");
+    return var(*gc,V0l+xp_.tdata()*Sl,false);
+  }
+  var Piston::Vr() const {
+    TRACE(15,"var Piston::Vr()");
+    return var(*gc,V0r-xp_.tdata()*Sr,false);
+  }
 } // namespace mech
 //////////////////////////////////////////////////////////////////////

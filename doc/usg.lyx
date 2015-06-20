@@ -120,10 +120,6 @@ Geometry and discretization of a duct
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
@@ -1180,7 +1176,7 @@ Piston(M,Sf,Sb,V0f,V0b,Km)
 \end_layout
 
 \begin_layout Subsection
-Piston equations
+Piston volume mass conservation
 \end_layout
 
 \begin_layout Standard
@@ -1260,10 +1256,43 @@ and
 
 \end_inset
 
-and
+
+\end_layout
+
+\begin_layout Subsection
+Piston volume energy conservation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial}{\partial t}\left(\frac{p}{\gamma-1}V\right)+p\frac{\partial V}{\partial t}+mc_{p}T=0
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To isentropic (and no mass flow):
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{dp}{p}=-\gamma\frac{dV}{V}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray}
-\frac{\partial\frac{p_{r}}{\gamma-1}\left(V_{0r}-xS_{r}\right)}{\partial t}+mH_{r} & = & 0\\
+\frac{\partial\frac{p_{r}}{\gamma-1}\left(V_{0r}-xS_{r}\right)}{\partial t}+p_{r}\frac{\partial\left(V_{0r}-xS_{r}\right)}{\partial t}+mH_{r} & = & 0\\
 \frac{\partial\frac{p_{l}}{\gamma-1}\left(V_{0l}+xS_{l}\right)}{\partial t}+mH_{l} & = & 0
 \end{eqnarray}
 
