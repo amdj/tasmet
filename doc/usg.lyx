@@ -1290,11 +1290,25 @@ To isentropic (and no mass flow):
 \end_layout
 
 \begin_layout Standard
+left side:
+\end_layout
+
+\begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray}
-\frac{\partial\frac{p_{r}}{\gamma-1}\left(V_{0r}-xS_{r}\right)}{\partial t}+p_{r}\frac{\partial\left(V_{0r}-xS_{r}\right)}{\partial t}+mH_{r} & = & 0\\
-\frac{\partial\frac{p_{l}}{\gamma-1}\left(V_{0l}+xS_{l}\right)}{\partial t}+mH_{l} & = & 0
+\frac{1}{\gamma-1}\mathbf{D}\cdot\boldsymbol{\mathcal{F}}\cdot\left[\mathbf{p}_{l}\circ\left(V_{0r}-\mathbf{x}S_{l}\right)\right]+\boldsymbol{\mathcal{F}}\cdot\left[\mathbf{p}_{l}\circ\left(\boldsymbol{\mathcal{F}}^{-1}\cdot\mathbf{D}\cdot\left(V_{0l}-\hat{\mathbf{x}}S_{l}\right)\right)\right]+\boldsymbol{\mathcal{F}}\cdot\mathbf{mH}_{l} & = & 0
 \end{eqnarray}
+
+\end_inset
+
+right side:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\frac{p_{l}}{\gamma-1}\left(V_{0l}+xS_{l}\right)}{\partial t}+mH_{l}=0
+\end{equation}
 
 \end_inset
 
@@ -1546,6 +1560,7 @@ Create a PhaseConstraint object:
 \end_layout
 
 \begin_layout Verbatim
+
 	pc=PhaseConstraint(Varnr, freqnr, left)
 \end_layout
 
@@ -1554,6 +1569,7 @@ Apply this contraint to a segment which can accept them, for example a Tube:
 \end_layout
 
 \begin_layout Verbatim
+
 	t1.setPhaseConstraint(pc)
 \end_layout
 

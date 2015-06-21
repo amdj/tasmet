@@ -137,10 +137,17 @@ namespace mech {
     vd error(getNEqs());
     us eqnr=0;
 
+    const d p0=gc->p0();
+    const d rho0=gc->gas().rho(T0,p0);
+    const d gamma=gc->gas().gamma(T0);
+    const d gamfac=1/(gamma-1);
+    const d cp=gc->gas().cp(T0);
+
     const vd& rholt=rhol_.tdata();
     const vd& rhort=rhor_.tdata();
-    const vd& plt=pl_.tdata();
-    const vd& prt=pr_.tdata();
+    const vd plt=pl_.tdata()+p0;
+    const vd prt=pr_.tdata()+p0;
+
     const vd& Tlt=Tl_.tdata();
     const vd& Trt=Tr_.tdata();
     const vd& mlt=ml_.tdata();
@@ -149,6 +156,11 @@ namespace mech {
     // Volume as a function of time
     const vd Vlt=V0l+xpt*Sl;
     const vd Vrt=V0r-xpt*Sr;
+
+    // dVdt in time domain of left volume
+    const vd dVldtt=iDFT*DDTfd*(xp_()*Sl);
+    // dVdt in time domain of right volume
+    const vd dVrdtt=iDFT*DDTfd*(-xp_()*Sr);
 
     // Equation of motion of the piston
     error.subvec(eqnr,eqnr+Ns-1)=\
@@ -191,15 +203,6 @@ namespace mech {
       error.subvec(eqnr,eqnr+Ns-1)=DDTfd*fDFT*(rhort%Vrt)+mr_();
     }
     eqnr+=Ns;
-
-    d p0=gc->p0();
-    d rho0=gc->gas().rho(T0,p0);
-    d gamma=gc->gas().gamma(T0);
-    d gamfac=1/(gamma-1);
-    d cp=gc->gas().cp(T0);
-
-    // dVdt in time domain of left volume
-    vd dVldtt=iDFT*DDTfd*(xp_()*Sl);
 
     // Energy consrvation left side
     error.subvec(eqnr,eqnr+Ns-1)=gamfac*DDTfd*fDFT*(plt%Vlt)
@@ -253,10 +256,18 @@ namespace mech {
     TRACE(15,"forsteqnr: "<< firsteqnr);
 
     us eqnr=firsteqnr;
+
+    const d p0=gc->p0();
+    const d rho0=gc->gas().rho(T0,p0);
+    const d gamma=gc->gas().gamma(T0);
+    const d gamfac=1/(gamma-1);
+    const d cp=gc->gas().cp(T0);
+
     const vd& rholt=rhol_.tdata();
     const vd& rhort=rhor_.tdata();
-    const vd& plt=pl_.tdata();
-    const vd& prt=pr_.tdata();
+    const vd plt=pl_.tdata()+p0;
+    const vd prt=pr_.tdata()+p0;
+
     const vd& Tlt=Tl_.tdata();
     const vd& Trt=Tr_.tdata();
     const vd& mlt=ml_.tdata();
@@ -266,6 +277,10 @@ namespace mech {
     const vd Vlt=V0l+xpt*Sl;
     const vd Vrt=V0r-xpt*Sr;
 
+    // dVdt in time domain of left volume
+    const vd dVldtt=iDFT*DDTfd*(xp_()*Sl);
+    // dVdt in time domain of right volume
+    const vd dVrdtt=iDFT*DDTfd*(-xp_()*Sr);
 
     // 1: Equation of motion of the piston
     JacRow eomjac(eqnr,4);
@@ -295,7 +310,7 @@ namespace mech {
     // 3: Mass conservation right side
     if(!rightConnected){
       JacRow mcrjac(eqnr,2);
-      mcrjac+=JacCol(rhor_,fDFT*diagmat(V0r-xp_.tdata()*Sr)*iDFT);
+      mcrjac+=JacCol(rhor_,fDFT*diagmat(Vrt)*iDFT);
       mcrjac+=JacCol(xp_,fDFT*diagmat(-rhor_.tdata()*Sr)*iDFT);
       jac+=mcrjac;
 
@@ -311,21 +326,19 @@ namespace mech {
 
     // Energy equation left side:
     // 1/(gamma-1)*d/dt(p*Vl)+p*dVl/dt+ml*hl=0
-    d p0=gc->p0();    
-    d rho0=gc->gas().rho(T0,p0);
-    d gamma=gc->gas().gamma(T0);
-    d gamfac=1/(gamma-1);
-    d cp=gc->gas().cp(T0);
-    // dVdt in time domain of left volume
-    vd dVldtt=iDFT*DDTfd*(xp_()*Sl);
+
     // 4: energy conservation left side
     // 4 columns in this row if not connected, otherwise 3
-    JacRow enl(eqnr,3+(!leftConnected?1:0));
+    JacRow enl(eqnr,2+(!leftConnected?1:0));
     
-    dmat enlmat_pl(Ns,Ns),enlmat_x(Ns,Ns);
+    // Terms due to change in internal energy
+    dmat enlmat_pl=gamfac*DDTfd*fDFT*diagmat(Vlt)*iDFT;
+    dmat enlmat_x=gamfac*DDTfd*fDFT*diagmat(plt*Sl)*iDFT;
 
-    enlmat_pl=gamfac*DDTfd*fDFT*diagmat(Vlt)*iDFT;
-    enlmat_x=gamfac*DDTfd*fDFT*diagmat(plt*Sl)*iDFT;
+    // Terms due to work done on fluid
+    enlmat_pl+=fDFT*diagmat(dVldtt)*iDFT;
+
+    enlmat_x+=fDFT*diagmat(Sl*plt)*iDFT*DDTfd;
     
     if(!leftConnected) {
       // Overwrite time-average part with constraint on time-average
