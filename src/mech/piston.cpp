@@ -162,6 +162,7 @@ namespace mech {
     // dVdt in time domain of right volume
     const vd dVrdtt=iDFT*DDTfd*(-xp_()*Sr);
 
+    // ************************************************************
     // Equation of motion of the piston
     error.subvec(eqnr,eqnr+Ns-1)=\
       M*DDTfd*DDTfd*xp_()\      // "Inertia" force
@@ -173,6 +174,7 @@ namespace mech {
 
     eqnr+=Ns;
 
+    // ************************************************************
     // Mass conservation left side
     if(!leftConnected){
       assert(massL>0);
@@ -188,6 +190,7 @@ namespace mech {
     }
     eqnr+=Ns;
 
+    // ************************************************************
     // Mass conservation right side
     if(!rightConnected){
       assert(massR>0);
@@ -204,6 +207,7 @@ namespace mech {
     }
     eqnr+=Ns;
 
+    // ************************************************************
     // Energy consrvation left side
     error.subvec(eqnr,eqnr+Ns-1)=gamfac*DDTfd*fDFT*(plt%Vlt)
       +fDFT*(plt%dVldtt)\ // Work contribution to change in
@@ -220,30 +224,37 @@ namespace mech {
       // error(eqnr)+=1;
       // error.subvec(eqnr,eqnr+Ns-1)+=-fDFT*pow(rhol_.tdata()/rho0,gamma);
     }
-    else{
-      throw MyError("Not yet implemented");
-    }
     eqnr+=Ns;
 
+    // ************************************************************
     // Energy consrvation right side
+    error.subvec(eqnr,eqnr+Ns-1)=gamfac*DDTfd*fDFT*(prt%Vrt)
+      +fDFT*(prt%dVrdtt)\ // Work contribution to change in
+                                  \  // energy
+      +fDFT*(cp*mrt%Trt);            // Enthalpy flow out of segment
+
     if(!leftConnected){
-      error.subvec(eqnr,eqnr+Ns-1)=pr_()/p0;
-      error(eqnr)+=1;
-      error.subvec(eqnr,eqnr+Ns-1)+=-fDFT*pow(rhor_.tdata()/rho0,gamma);
-    }
-    else{
-      throw MyError("Not yet implemented");
+      // Overwrite time-average part with constraint on time-average
+      // internal energy, by fixing the time-averaged temperature
+      error(eqnr)=Tr_()(0)-T0;
+
+      // Isentropic model
+      // error.subvec(eqnr,eqnr+Ns-1)=pr_()/p0;
+      // error(eqnr)+=1;
+      // error.subvec(eqnr,eqnr+Ns-1)+=-fDFT*pow(rhor_.tdata()/rho0,gamma);
     }
     eqnr+=Ns;
 
     // Specific gas constant
     d Rs=gc->gas().Rs();
 
+    // ************************************************************
     // Equation of state left side
     error.subvec(eqnr,eqnr+Ns-1)=pl_()-fDFT*(Tl_.tdata()%rhol_.tdata()*Rs);
     error(eqnr)+=p0;
     eqnr+=Ns;
 
+    // ************************************************************
     // Equation of state right side
     error.subvec(eqnr,eqnr+Ns-1)=pr_()-fDFT*(Tr_.tdata()%rhor_.tdata()*Rs);
     error(eqnr)+=p0;
@@ -282,6 +293,7 @@ namespace mech {
     // dVdt in time domain of right volume
     const vd dVrdtt=iDFT*DDTfd*(-xp_()*Sr);
 
+    // ************************************************************
     // 1: Equation of motion of the piston
     JacRow eomjac(eqnr,4);
     eomjac+=JacCol(xp_,M*DDTfd*DDTfd+Cm*DDTfd+Km*eye);
@@ -291,6 +303,7 @@ namespace mech {
     jac+=eomjac;
     eqnr+=Ns;
 
+    // ************************************************************
     // 2: Mass conservation left side
     if(!leftConnected){
       JacRow mcljac(eqnr,2);
@@ -306,7 +319,8 @@ namespace mech {
       throw MyError("Not yet implemented");
     }
     eqnr+=Ns;
-    
+
+    // ************************************************************    
     // 3: Mass conservation right side
     if(!rightConnected){
       JacRow mcrjac(eqnr,2);
@@ -324,6 +338,7 @@ namespace mech {
     }
     eqnr+=Ns;
 
+    // ************************************************************
     // Energy equation left side:
     // 1/(gamma-1)*d/dt(p*Vl)+p*dVl/dt+ml*hl=0
 
@@ -337,7 +352,6 @@ namespace mech {
 
     // Terms due to work done on fluid
     enlmat_pl+=fDFT*diagmat(dVldtt)*iDFT;
-
     enlmat_x+=fDFT*diagmat(Sl*plt)*iDFT*DDTfd;
     
     if(!leftConnected) {
@@ -359,21 +373,41 @@ namespace mech {
     jac+=enl;
     eqnr+=Ns;
 
+    // ************************************************************
     // Energy equation right side
+    // 1/(gamma-1)*d/dt(p*Vr)+p*dVr/dt+mr*hr=0
+    // 3 columns in this row if not connected, otherwise 2
+    JacRow enr(eqnr,2+(!leftConnected?1:0));
+    
+    // Terms due to change in internal energy
+    dmat enrmat_pr=gamfac*DDTfd*fDFT*diagmat(Vrt)*iDFT;
+    dmat enrmat_x=gamfac*DDTfd*fDFT*diagmat(-prt*Sr)*iDFT;
+
+    // Terms due to work done on fluid
+    enrmat_pr+=fDFT*diagmat(dVrdtt)*iDFT;
+    enrmat_x+=-fDFT*diagmat(Sr*prt)*iDFT*DDTfd;
+    
     if(!rightConnected) {
-      JacRow pdcop(eqnr,2);
-      pdcop+=JacCol(pr_,eye/p0);
-      // Integrated form
-      pdcop+=JacCol(rhor_,-(gamma/rho0)*fDFT*
-                    diagmat(pow(rhor_.tdata()/rho0,(gamma-1.0)))*iDFT);
-      jac+=pdcop;
+      // Overwrite time-average part with constraint on time-average
+      // internal energy, by fixing the time-averaged temperature
+      dmat enrmat_T(Ns,Ns,fillwith::zeros);
+      enrmat_T(0,0)=1;
+
+      // Zero out first row
+      enrmat_pr.row(0).zeros();
+      enrmat_x.row(0).zeros();
+
+      // Add Jacobian terms corresponding to left temperature
+      enr+=JacCol(Tr_,enrmat_T);          
+
     }
-    else{
-      throw MyError("Not yet implemented");
-    }
+    enr+=JacCol(pr_,enrmat_pr);
+    enr+=JacCol(xp_,enrmat_x);    
+    jac+=enr;
     eqnr+=Ns;
 
-    d Rs=gc->gas().Rs();
+    const d Rs=gc->gas().Rs();
+    // ************************************************************
     // Equation of state left side
     {
       JacRow eosl(eqnr,3);
@@ -383,6 +417,7 @@ namespace mech {
       jac+=eosl;
       eqnr+=Ns;
     }
+    // ************************************************************
     // Equation of state right side
     {
       JacRow eosr(eqnr,3);
