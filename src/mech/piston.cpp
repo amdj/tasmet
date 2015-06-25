@@ -29,13 +29,37 @@ namespace mech {
 
   Piston::Piston(const tasystem::TaSystem& sys,const Piston& other):
     Seg(other,sys),
-    M(other.M),Sr(other.Sr),Sl(other.Sl),Km(other.Km),Cm(other.Cm),
-    V0l(other.V0l),V0r(other.V0r),Stl(other.Stl),Str(other.Str)
+    M(other.M),
+    Sr(other.Sr),
+    Sl(other.Sl),
+    Km(other.Km),
+    Cm(other.Cm),
+    V0l(other.V0l),
+    V0r(other.V0r),
+    Stl(other.Stl),
+    Str(other.Str),
+    T0(other.T0)
   {
     TRACE(15,"Piston::Piston()");
 
-    T0=gc->T0();
+    // If temperature not initialized
+    if(T0<=0)
+      T0=gc->T0();
 
+    // If Stl is undefined, we make it a cylinder
+    if(Stl<0){
+      d L=V0l/Sl;
+      d circumference=2*number_pi*sqrt(Sl/number_pi);
+      Stl=Sl+L*circumference;
+    }
+    // Same for Str
+    if(Str<0){
+      d L=V0r/Sr;
+      d circumference=2*number_pi*sqrt(Sr/number_pi);
+      Str=Sr+L*circumference;
+    }
+    
+    // Initialize all variables
     xp_=var(*gc);
     Fp_=var(*gc);
 
@@ -47,6 +71,8 @@ namespace mech {
     Tr_=var(*gc,T0);
     rhol_=var(*gc,gc->rho0());
     rhor_=var(*gc,gc->rho0());
+
+    
     if(!leftConnected && massL<0)
       massL=rhol_(0)*V0l;
     if(!rightConnected && massR<0)

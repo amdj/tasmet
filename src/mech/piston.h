@@ -41,11 +41,16 @@ namespace mech {
 
     d Stl=-1,Str=-1;                  // Total cross-sectional area of fluid
                                 // in contact with wall.
-    // Left pressure,right pressure
-    d T0;
+
     // ml: mass flow out of left volume
     // mr: mass flow out of right volume
+    // 
     tasystem::var pl_,pr_,rhol_,rhor_,Tl_,Tr_,ml_,mr_;
+
+    // Prescribed mean temperature in the volumes. Can be set using
+    // setT0().
+    d T0=-1;
+
     
     Piston(const tasystem::TaSystem&,const Piston& other);
   public:
@@ -63,7 +68,7 @@ namespace mech {
     segment::Seg* copy(const tasystem::TaSystem& s) const {
       return new Piston(s,*this);
     }
-
+    void setT0(d T01){T0=T01;}
     const tasystem::var& Fpiston() const { return Fp_;}
     const tasystem::var& xpiston() const { return xp_;}
     const tasystem::var& pl() const {return pl_;}
