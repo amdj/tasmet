@@ -7,12 +7,13 @@
 #include "piston.h"
 #include "utils.h"
 #include <cassert>
+#include "staticmsg.h"
 
 namespace tasystem{
   using segment::Seg;
   using segment::Connector;
   using arma::sp_mat;
-
+  common::StaticMsg<> ermsg;
 
   TaSystem::TaSystem(const Globalconf& gc):gc_(gc){
     TRACE(14,"TaSystem::TaSystem(gc)");
@@ -132,9 +133,8 @@ namespace tasystem{
     }
 
     if(getNDofs()!=getNEqs()){
-      WARN("Ndofs="<< getNDofs());
-      WARN("Neqs ="<< getNEqs());
-      throw MyError("Ndofs on TaSystem level not equal to number of equations! Initialization failed.");
+      throw MyError(ermsg("Ndofs on TaSystem level (%d) not equal to number "
+                           "of equations (%d)! Initialization failed.",getNDofs(),getNEqs()));
     }
     hasInit=true;
   }

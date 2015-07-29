@@ -55,7 +55,6 @@ namespace tasystem {
     const tasystem::Globalconf& gc() const {return *gc_;}
     d operator()(us i) const;				   // Extract amplitude data result at specific frequency    
 
-
     // Extract data
     const vd& tdata() const  {return tdata_; } //Get time data
     const vd& adata() const  {return adata_; } //Get time data                                                 //vector
@@ -63,7 +62,12 @@ namespace tasystem {
     // Shortcut for adata()
     const vd& operator()() const { return adata_;} //Extract result
 
+    // Obtain a time response vector
+    vd timeResponse(us nperiod=2,us ninst=100) const;
+    // Obtain the corresponding time vector
+    vd timeResponseTime(us nperiod=2,us ninst=100) const;
 
+    #ifndef SWIG
     dmat diagt() const {return diagmat(tdata_);}
     dmat diag() const {return diagmat(adata_);}    
     //Set methods
@@ -73,9 +77,9 @@ namespace tasystem {
     void resetHarmonics();
     void updateNf();
 
-    // Extract result at a certain time [s]
-    d tdata(d t) const;
-
+    // Obtain time response vector. 
+    d timeresponse(us ninst=100) const;
+    
     void setadata(const vd& values); //Set amplitude data vector to these values
     void settdata(double value); //Set time data to specific value for all time
     void settdata(const vd& values);
@@ -83,9 +87,6 @@ namespace tasystem {
     void setadata(const vc& values); //Set result vector to these values,
     us size() const {return adata_.size();}
     // Specific methods to the result using time domain data
-    //Show methods
-    void showtdata() const; //Print time data to
-    void showRes() const;
 
     // Operations ********************
 
@@ -111,6 +112,7 @@ namespace tasystem {
     // can be obtained by getting the matrix-variant of the first
     // tasystem. The following function will give the effective matrix
     dmat freqMultiplyMat() const;
+    #endif
     vc getcRes() const;
   };
 

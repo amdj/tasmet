@@ -5,6 +5,23 @@
 \textclass memoir
 \begin_preamble
 \extrarowheight10pt
+
+
+\newlength\drop
+\makeatletter
+\newcommand*\titleM{\begingroup% Misericords, T&H p 153
+\setlength\drop{0.08\textheight}
+\centering
+\vspace*{\drop}
+{\Huge\bfseries TaSMET User's guide}\\[\baselineskip]
+{\scshape Thermoacoustic System Modeling Environment Twente}\\[\baselineskip]
+\vfill
+{\large\scshape J.A. de Jong}\par
+\vfill
+{\scshape \@date}\par
+\vspace*{2\drop}
+\endgroup}
+\makeatother
 \end_preamble
 \options a4paper
 \use_default_options true
@@ -25,12 +42,23 @@
 \font_tt_scale 100
 \graphics default
 \default_output_format default
-\output_sync 0
+\output_sync 1
 \bibtex_command default
 \index_command default
 \paperfontsize default
 \spacing single
-\use_hyperref false
+\use_hyperref true
+\pdf_title "TaSMET User's guide"
+\pdf_author "J.A. de Jong"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
 \papersize default
 \use_geometry true
 \use_package amsmath 1
@@ -49,7 +77,7 @@
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
-\suppress_date false
+\suppress_date true
 \justification true
 \use_refstyle 1
 \index Index
@@ -75,12 +103,50 @@
 
 \begin_body
 
-\begin_layout Title
-TASMET User's guide
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+thispagestyle{empty}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{titlingpage}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+titleM
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{titlingpage} 
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-ThermoAcoustic System Modeling Environment Twente.
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Part
@@ -88,7 +154,7 @@ TASMET Basics
 \end_layout
 
 \begin_layout Chapter
-Duct basics
+Ducts
 \end_layout
 
 \begin_layout Standard
@@ -1149,6 +1215,75 @@ Prescribed velocity, adiabatic compression/expansion.
 
 \end_layout
 
+\begin_layout Section
+Connectors
+\end_layout
+
+\begin_layout Subsection
+SimpleTubeConnector
+\end_layout
+
+\begin_layout Standard
+The SimpleTubeConnector can connect two Tube segments together.
+ At the interface, continuity of mass and energy flow is enforced.
+\begin_inset Formula 
+\begin{equation}
+S_{gem}\left(p_{bc,2}-p_{bc,1}\right)+mu|_{2}-mu|_{1}=0
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+TubePistonConnector
+\end_layout
+
+\begin_layout Standard
+The TubePistonConnector connects a Piston segment to a Tube.
+ Using this connector, the 
+\end_layout
+
+\begin_layout Subsubsection
+Heat conduction between tube and piston
+\end_layout
+
+\begin_layout Standard
+The typical length scale for conduction is
+\begin_inset Formula 
+\begin{equation}
+L_{\mathrm{con}}=\frac{V_{0}}{S_{0}},
+\end{equation}
+
+\end_inset
+
+such that the heat conduction is
+\begin_inset Formula 
+\begin{equation}
+Q_{\mathrm{piston}\rightarrow\mathrm{tube}}=\frac{\kappa S_{f}}{L_{\mathrm{con}}}\left(T_{p}-T_{bc}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Piston energy balance
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+mH_{p}+Q_{p\rightarrow t}+s\cdot mH_{t}=0
+\]
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Chapter
 Transducers
 \end_layout
@@ -1552,7 +1687,7 @@ and finally for the equation of state
 \end_layout
 
 \begin_layout Subsection
-Setting a phase constrained
+Setting a phase constraint
 \end_layout
 
 \begin_layout Itemize
@@ -1560,7 +1695,6 @@ Create a PhaseConstraint object:
 \end_layout
 
 \begin_layout Verbatim
-
 	pc=PhaseConstraint(Varnr, freqnr, left)
 \end_layout
 
@@ -1569,7 +1703,6 @@ Apply this contraint to a segment which can accept them, for example a Tube:
 \end_layout
 
 \begin_layout Verbatim
-
 	t1.setPhaseConstraint(pc)
 \end_layout
 

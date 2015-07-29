@@ -88,12 +88,11 @@ namespace tube{
     int providePhaseDof() const;
     d phaseDofValue() const;
 
+    virtual vd error() const;
+
     // Methods not exposed to swig
     #ifndef SWIG
-
-    virtual vd error() const;
     void show(us showvertices=0) const;
-
 
     // ******************** Overloaded virtual methods
     // Return number of DOFS

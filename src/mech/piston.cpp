@@ -27,17 +27,27 @@ namespace mech {
   using tasystem::var;
   using tasystem::Globalconf;
 
+  PistonConfiguration::PistonConfiguration(d Sl,d Sr,d V0l,d V0r,d M,d Km,d Cm,d Stl,d Str):
+      M(M),Sr(Sr),Sl(Sl),Km(Km),Cm(Cm),V0l(V0l),V0r(V0r),
+      Stl(Stl),Str(Str)
+    {
+      // If Stl is undefined, we make it a cylinder
+      if(Stl<0){
+        d L=V0l/Sl;
+        d circumference=2*number_pi*sqrt(Sl/number_pi);
+        Stl=Sl+L*circumference;
+      }
+      // Same for Str
+      if(Str<0){
+        d L=V0r/Sr;
+        d circumference=2*number_pi*sqrt(Sr/number_pi);
+        Str=Sr+L*circumference;
+      }
+    }
+
   Piston::Piston(const tasystem::TaSystem& sys,const Piston& other):
     Seg(other,sys),
-    M(other.M),
-    Sr(other.Sr),
-    Sl(other.Sl),
-    Km(other.Km),
-    Cm(other.Cm),
-    V0l(other.V0l),
-    V0r(other.V0r),
-    Stl(other.Stl),
-    Str(other.Str),
+    pc(other.pc),
     T0(other.T0)
   {
     TRACE(15,"Piston::Piston()");
@@ -46,19 +56,6 @@ namespace mech {
     if(T0<=0)
       T0=gc->T0();
 
-    // If Stl is undefined, we make it a cylinder
-    if(Stl<0){
-      d L=V0l/Sl;
-      d circumference=2*number_pi*sqrt(Sl/number_pi);
-      Stl=Sl+L*circumference;
-    }
-    // Same for Str
-    if(Str<0){
-      d L=V0r/Sr;
-      d circumference=2*number_pi*sqrt(Sr/number_pi);
-      Str=Sr+L*circumference;
-    }
-    
     // Initialize all variables
     xp_=var(*gc);
     Fp_=var(*gc);
@@ -71,12 +68,13 @@ namespace mech {
     Tr_=var(*gc,T0);
     rhol_=var(*gc,gc->rho0());
     rhor_=var(*gc,gc->rho0());
-
+    mHl_=var(*gc);
+    mHr_=var(*gc);
     
     if(!leftConnected && massL<0)
-      massL=rhol_(0)*V0l;
+      massL=rhol_(0)*pc.V0l;
     if(!rightConnected && massR<0)
-      massR=rhor_(0)*V0r;
+      massR=rhor_(0)*pc.V0r;
   }
   Piston::~Piston(){}
   void Piston::setEqNrs(us firsteqnr){
@@ -93,12 +91,14 @@ namespace mech {
     Tl_.setDofNr(dof); dof+=Ns;
     pl_.setDofNr(dof); dof+=Ns;
     ml_.setDofNr(dof); dof+=Ns;
-
+    mHl_.setDofNr(dof); dof+=Ns;
+    
     rhor_.setDofNr(dof); dof+=Ns;
     Tr_.setDofNr(dof); dof+=Ns;
     pr_.setDofNr(dof); dof+=Ns;
     mr_.setDofNr(dof); dof+=Ns;
-
+    mHr_.setDofNr(dof); dof+=Ns;
+    
   }
   us Piston::getNEqs() const {
     TRACE(15,"void Piston::getNEqs()");
@@ -106,18 +106,25 @@ namespace mech {
     // 2 for mass conservation left and right volumes
     // 2 for energy conservation left and right volumes
     // 2 for equations of state
+    // ------ +
+    // 7 equations
 
     us neqs=7*Ns;
     // If not connected, one to set mass flow left and right to zero
-    if(!leftConnected)
-      neqs+=Ns;                 // For ml=0
-    if(!rightConnected)
-      neqs+=Ns;                 // For mr=0
+    // and one to set enthalpy flow left and right to zero
+    if(!leftConnected){
+      TRACE(15,"Left side not connected");
+      neqs+=2*Ns;                 // For ml=0
+    }
+    if(!rightConnected){
+      neqs+=2*Ns;                 // For mr=0
+      TRACE(15,"Right side not connected");
+    }
     return neqs;
   }
   us Piston::getNDofs() const {
     TRACE(15,"us Piston::getNDofs()");
-    return 10*Ns;
+    return 12*Ns;
   }
   void Piston::setRes(const vd& res) {
     TRACE(15,"void Piston::setRes()");
@@ -130,12 +137,13 @@ namespace mech {
     Tl_.setadata(res.subvec(dofnr,dofnr+Ns-1)); dofnr+=Ns;
     pl_.setadata(res.subvec(dofnr,dofnr+Ns-1)); dofnr+=Ns;
     ml_.setadata(res.subvec(dofnr,dofnr+Ns-1)); dofnr+=Ns;
+    mHl_.setadata(res.subvec(dofnr,dofnr+Ns-1)); dofnr+=Ns;
 
     rhor_.setadata(res.subvec(dofnr,dofnr+Ns-1)); dofnr+=Ns;
     Tr_.setadata(res.subvec(dofnr,dofnr+Ns-1)); dofnr+=Ns;
     pr_.setadata(res.subvec(dofnr,dofnr+Ns-1)); dofnr+=Ns;
     mr_.setadata(res.subvec(dofnr,dofnr+Ns-1)); dofnr+=Ns;
-
+    mHr_.setadata(res.subvec(dofnr,dofnr+Ns-1)); dofnr+=Ns;
   }
   vd Piston::getRes() const {
     TRACE(15,"vd Piston::getRes()");
@@ -149,12 +157,13 @@ namespace mech {
     res.subvec(dofnr,dofnr+Ns-1)=Tl_(); dofnr+=Ns;
     res.subvec(dofnr,dofnr+Ns-1)=pl_(); dofnr+=Ns;
     res.subvec(dofnr,dofnr+Ns-1)=ml_(); dofnr+=Ns;
+    res.subvec(dofnr,dofnr+Ns-1)=mHl_(); dofnr+=Ns;
 
     res.subvec(dofnr,dofnr+Ns-1)=rhor_(); dofnr+=Ns;
     res.subvec(dofnr,dofnr+Ns-1)=Tr_(); dofnr+=Ns;
     res.subvec(dofnr,dofnr+Ns-1)=pr_(); dofnr+=Ns;
     res.subvec(dofnr,dofnr+Ns-1)=mr_(); dofnr+=Ns;
-
+    res.subvec(dofnr,dofnr+Ns-1)=mHr_(); dofnr+=Ns;
     return res;
   }
   vd Piston::error() const {
@@ -180,22 +189,22 @@ namespace mech {
     const vd& mrt=mr_.tdata();
     const vd& xpt=xp_.tdata();
     // Volume as a function of time
-    const vd Vlt=V0l+xpt*Sl;
-    const vd Vrt=V0r-xpt*Sr;
+    const vd Vlt=pc.V0l+xpt*pc.Sl;
+    const vd Vrt=pc.V0r-xpt*pc.Sr;
 
     // dVdt in time domain of left volume
-    const vd dVldtt=iDFT*DDTfd*(xp_()*Sl);
+    const vd dVldtt=iDFT*DDTfd*(xp_()*pc.Sl);
     // dVdt in time domain of right volume
-    const vd dVrdtt=iDFT*DDTfd*(-xp_()*Sr);
+    const vd dVrdtt=iDFT*DDTfd*(-xp_()*pc.Sr);
 
     // ************************************************************
     // Equation of motion of the piston
     error.subvec(eqnr,eqnr+Ns-1)=\
-      M*DDTfd*DDTfd*xp_()\      // "Inertia" force
-      +Cm*DDTfd*xp_()\          // Damping force
-      +Km*xp_()\                // Spring force
-      -pl_()*Sl\                // "Pushes"
-      +pr_()*Sr\                // "Pushes back"
+      pc.M*DDTfd*DDTfd*xp_()\      // "Inertia" force
+      +pc.Cm*DDTfd*xp_()\          // Damping force
+      +pc.Km*xp_()\                // Spring force
+      -pl_()*pc.Sl\                // "Pushes"
+      +pr_()*pc.Sr\                // "Pushes back"
       -Fp_();                   // "External force on piston
 
     eqnr+=Ns;
@@ -210,9 +219,13 @@ namespace mech {
       // Not connected left side, so set ml to zero
       eqnr+=Ns;
       error.subvec(eqnr,eqnr+Ns-1)=ml_();
+      // Not connected left side, so set mHl to zero
+      eqnr+=Ns;
+      error.subvec(eqnr,eqnr+Ns-1)=mHl_();
     }
     else{
-      error.subvec(eqnr,eqnr+Ns-1)=DDTfd*fDFT*(rholt%Vlt)+ml_();
+      error.subvec(eqnr,eqnr+Ns-1)=\
+        DDTfd*fDFT*(rholt%Vlt)+ml_();
     }
     eqnr+=Ns;
 
@@ -220,16 +233,21 @@ namespace mech {
     // Mass conservation right side
     if(!rightConnected){
       assert(massR>0);
-      error.subvec(eqnr,eqnr+Ns-1)=fDFT*(rhor_.tdata()%(V0r-xp_.tdata()*Sr));
+      error.subvec(eqnr,eqnr+Ns-1)=fDFT*(rhor_.tdata()%(pc.V0r-xp_.tdata()*pc.Sr));
       error(eqnr)-=massR;
 
       // Not connected right side, so set mr to zero
       eqnr+=Ns;
       error.subvec(eqnr,eqnr+Ns-1)=mr_();
 
+      // Not connected right side, so set mHr to zero
+      eqnr+=Ns;
+      error.subvec(eqnr,eqnr+Ns-1)=mHr_();
+
     }
     else{
-      error.subvec(eqnr,eqnr+Ns-1)=DDTfd*fDFT*(rhort%Vrt)+mr_();
+      error.subvec(eqnr,eqnr+Ns-1)=\
+        DDTfd*fDFT*(rhort%Vrt)+mr_();
     }
     eqnr+=Ns;
 
@@ -238,7 +256,7 @@ namespace mech {
     error.subvec(eqnr,eqnr+Ns-1)=gamfac*DDTfd*fDFT*(plt%Vlt)
       +fDFT*(plt%dVldtt)\ // Work contribution to change in
                                   \  // energy
-      +fDFT*(cp*mlt%Tlt);            // Enthalpy flow out of segment
+      +mHl_();            // Enthalpy flow out of segment
 
     if(!leftConnected){
       // Overwrite time-average part with constraint on time-average
@@ -256,10 +274,10 @@ namespace mech {
     // Energy consrvation right side
     error.subvec(eqnr,eqnr+Ns-1)=gamfac*DDTfd*fDFT*(prt%Vrt)
       +fDFT*(prt%dVrdtt)\ // Work contribution to change in
-                                  \  // energy
-      +fDFT*(cp*mrt%Trt);            // Enthalpy flow out of segment
+      \  // energy
+      +mHr_();            // Enthalpy flow out of segment
 
-    if(!leftConnected){
+    if(!rightConnected){
       // Overwrite time-average part with constraint on time-average
       // internal energy, by fixing the time-averaged temperature
       error(eqnr)=Tr_()(0)-T0;
@@ -311,21 +329,21 @@ namespace mech {
     const vd& mrt=mr_.tdata();
     const vd& xpt=xp_.tdata();
     // Volume as a function of time
-    const vd Vlt=V0l+xpt*Sl;
-    const vd Vrt=V0r-xpt*Sr;
+    const vd Vlt=pc.V0l+xpt*pc.Sl;
+    const vd Vrt=pc.V0r-xpt*pc.Sr;
 
     // dVdt in time domain of left volume
-    const vd dVldtt=iDFT*DDTfd*(xp_()*Sl);
+    const vd dVldtt=iDFT*DDTfd*(xp_()*pc.Sl);
     // dVdt in time domain of right volume
-    const vd dVrdtt=iDFT*DDTfd*(-xp_()*Sr);
+    const vd dVrdtt=iDFT*DDTfd*(-xp_()*pc.Sr);
 
     // ************************************************************
     // 1: Equation of motion of the piston
     JacRow eomjac(eqnr,4);
-    eomjac+=JacCol(xp_,M*DDTfd*DDTfd+Cm*DDTfd+Km*eye);
+    eomjac+=JacCol(xp_,pc.M*DDTfd*DDTfd+pc.Cm*DDTfd+pc.Km*eye);
     eomjac+=JacCol(Fp_,-eye);
-    eomjac+=JacCol(pl_,-Sl*eye);
-    eomjac+=JacCol(pr_,Sr*eye);
+    eomjac+=JacCol(pl_,-pc.Sl*eye);
+    eomjac+=JacCol(pr_,pc.Sr*eye);
     jac+=eomjac;
     eqnr+=Ns;
 
@@ -333,16 +351,23 @@ namespace mech {
     // 2: Mass conservation left side
     if(!leftConnected){
       JacRow mcljac(eqnr,2);
-      mcljac+=JacCol(rhol_,fDFT*diagmat(V0l+xp_.tdata()*Sl)*iDFT);
-      mcljac+=JacCol(xp_,fDFT*diagmat(rhol_.tdata()*Sl)*iDFT);
+      mcljac+=JacCol(rhol_,fDFT*diagmat(Vlt)*iDFT);
+      mcljac+=JacCol(xp_,fDFT*diagmat(rhol_.tdata()*pc.Sl)*iDFT);
       jac+=mcljac;
 
       // Not connected to leftside so ml to zero
       eqnr+=Ns;
       jac+=JacRow(eqnr,JacCol(ml_,eye));
+      // Not connected to leftside so mHl to zero
+      eqnr+=Ns;
+      jac+=JacRow(eqnr,JacCol(mHl_,eye));
     }
     else{
-      throw MyError("Not yet implemented");
+      JacRow mcljac(eqnr,3);
+      mcljac+=JacCol(rhol_,DDTfd*fDFT*diagmat(Vlt)*iDFT);
+      mcljac+=JacCol(xp_,DDTfd*fDFT*diagmat(rhol_.tdata()*pc.Sl)*iDFT);
+      mcljac+=JacCol(ml_,eye);
+      jac+=mcljac;
     }
     eqnr+=Ns;
 
@@ -351,89 +376,102 @@ namespace mech {
     if(!rightConnected){
       JacRow mcrjac(eqnr,2);
       mcrjac+=JacCol(rhor_,fDFT*diagmat(Vrt)*iDFT);
-      mcrjac+=JacCol(xp_,fDFT*diagmat(-rhor_.tdata()*Sr)*iDFT);
+      mcrjac+=JacCol(xp_,fDFT*diagmat(-rhor_.tdata()*pc.Sr)*iDFT);
       jac+=mcrjac;
 
       // Not connected to right side so mr is set to zero
       eqnr+=Ns;
       jac+=JacRow(eqnr,JacCol(mr_,eye));
+      // Not connected to right side so mHr is set to zero
+      eqnr+=Ns;
+      jac+=JacRow(eqnr,JacCol(mHr_,eye));
 
     }
     else{
-      throw MyError("Not yet implemented");
+      JacRow mcrjac(eqnr,3);
+      mcrjac+=JacCol(rhor_,DDTfd*fDFT*diagmat(Vrt)*iDFT);
+      mcrjac+=JacCol(xp_,DDTfd*fDFT*diagmat(-rhor_.tdata()*pc.Sr)*iDFT);
+      mcrjac+=JacCol(mr_,eye);
+      jac+=mcrjac;
     }
     eqnr+=Ns;
 
     // ************************************************************
-    // Energy equation left side:
-    // 1/(gamma-1)*d/dt(p*Vl)+p*dVl/dt+ml*hl=0
+    {
+      // Energy equation left side:
+      // 1/(gamma-1)*d/dt(p*Vl)+p*dVl/dt+ml*hl=0
 
-    // 4: energy conservation left side
-    // 4 columns in this row if not connected, otherwise 3
-    JacRow enl(eqnr,2+(!leftConnected?1:0));
+      // 4: energy conservation left side
+      // 4 columns in this row if not connected, otherwise 3
+      JacRow enl(eqnr,2+(!leftConnected?1:0));
     
-    // Terms due to change in internal energy
-    dmat enlmat_pl=gamfac*DDTfd*fDFT*diagmat(Vlt)*iDFT;
-    dmat enlmat_x=gamfac*DDTfd*fDFT*diagmat(plt*Sl)*iDFT;
+      // Terms due to change in internal energy
+      dmat enlmat_pl=gamfac*DDTfd*fDFT*diagmat(Vlt)*iDFT;
+      dmat enlmat_x=gamfac*DDTfd*fDFT*diagmat(plt*pc.Sl)*iDFT;
 
-    // Terms due to work done on fluid
-    enlmat_pl+=fDFT*diagmat(dVldtt)*iDFT;
-    enlmat_x+=fDFT*diagmat(Sl*plt)*iDFT*DDTfd;
+      // Terms due to work done on fluid
+      enlmat_pl+=fDFT*diagmat(dVldtt)*iDFT;
+      enlmat_x+=fDFT*diagmat(pc.Sl*plt)*iDFT*DDTfd;
     
-    if(!leftConnected) {
-      // Overwrite time-average part with constraint on time-average
-      // internal energy, by fixing the time-averaged temperature
-      dmat enlmat_T(Ns,Ns,fillwith::zeros);
-      enlmat_T(0,0)=1;
+      if(!leftConnected) {
+        // Overwrite time-average part with constraint on time-average
+        // internal energy, by fixing the time-averaged temperature
+        dmat enlmat_T(Ns,Ns,fillwith::zeros);
+        enlmat_T(0,0)=1;
 
-      // Zero out first row
-      enlmat_pl.row(0).zeros();
-      enlmat_x.row(0).zeros();
+        // Zero out first row
+        enlmat_pl.row(0).zeros();
+        enlmat_x.row(0).zeros();
 
-      // Add Jacobian terms corresponding to left temperature
-      enl+=JacCol(Tl_,enlmat_T);          
+        // Add Jacobian terms corresponding to left temperature
+        enl+=JacCol(Tl_,enlmat_T);          
 
+      }
+      enl+=JacCol(mHl_,eye);
+      enl+=JacCol(pl_,enlmat_pl);
+      enl+=JacCol(xp_,enlmat_x);    
+      jac+=enl;
+      eqnr+=Ns;
     }
-    enl+=JacCol(pl_,enlmat_pl);
-    enl+=JacCol(xp_,enlmat_x);    
-    jac+=enl;
-    eqnr+=Ns;
-
+    
     // ************************************************************
-    // Energy equation right side
-    // 1/(gamma-1)*d/dt(p*Vr)+p*dVr/dt+mr*hr=0
-    // 3 columns in this row if not connected, otherwise 2
-    JacRow enr(eqnr,2+(!leftConnected?1:0));
+    {
+      // Energy equation right side
+      // 1/(gamma-1)*d/dt(p*Vr)+p*dVr/dt+mr*hr=0
+      // 3 columns in this row if not connected, otherwise 2
+      JacRow enr(eqnr,2+(!leftConnected?1:0));
     
-    // Terms due to change in internal energy
-    dmat enrmat_pr=gamfac*DDTfd*fDFT*diagmat(Vrt)*iDFT;
-    dmat enrmat_x=gamfac*DDTfd*fDFT*diagmat(-prt*Sr)*iDFT;
+      // Terms due to change in internal energy
+      dmat enrmat_pr=gamfac*DDTfd*fDFT*diagmat(Vrt)*iDFT;
+      dmat enrmat_x=gamfac*DDTfd*fDFT*diagmat(-prt*pc.Sr)*iDFT;
 
-    // Terms due to work done on fluid
-    enrmat_pr+=fDFT*diagmat(dVrdtt)*iDFT;
-    enrmat_x+=-fDFT*diagmat(Sr*prt)*iDFT*DDTfd;
+      // Terms due to work done on fluid
+      enrmat_pr+=fDFT*diagmat(dVrdtt)*iDFT;
+      enrmat_x+=-fDFT*diagmat(pc.Sr*prt)*iDFT*DDTfd;
     
-    if(!rightConnected) {
-      // Overwrite time-average part with constraint on time-average
-      // internal energy, by fixing the time-averaged temperature
-      dmat enrmat_T(Ns,Ns,fillwith::zeros);
-      enrmat_T(0,0)=1;
+      if(!rightConnected) {
+        // Overwrite time-average part with constraint on time-average
+        // internal energy, by fixing the time-averaged temperature
+        dmat enrmat_T(Ns,Ns,fillwith::zeros);
+        enrmat_T(0,0)=1;
 
-      // Zero out first row
-      enrmat_pr.row(0).zeros();
-      enrmat_x.row(0).zeros();
+        // Zero out first row
+        enrmat_pr.row(0).zeros();
+        enrmat_x.row(0).zeros();
 
-      // Add Jacobian terms corresponding to left temperature
-      enr+=JacCol(Tr_,enrmat_T);          
+        // Add Jacobian terms corresponding to left temperature
+        enr+=JacCol(Tr_,enrmat_T);          
 
+      }
+      enr+=JacCol(mHr_,eye);
+      enr+=JacCol(pr_,enrmat_pr);
+      enr+=JacCol(xp_,enrmat_x);    
+      jac+=enr;
+      eqnr+=Ns;
     }
-    enr+=JacCol(pr_,enrmat_pr);
-    enr+=JacCol(xp_,enrmat_x);    
-    jac+=enr;
-    eqnr+=Ns;
-
+    
+    // ************************************************************
     const d Rs=gc->gas().Rs();
-    // ************************************************************
     // Equation of state left side
     {
       JacRow eosl(eqnr,3);
@@ -454,14 +492,17 @@ namespace mech {
       eqnr+=Ns;
     }
   }
+  var Piston::upiston() const{
+    return var(*gc,DDTfd*xpiston()());
+  }
   void Piston::show(us detailnr) const {
     TRACE(15,"void Piston::show()");
     cout << "Piston segment:\n"
-         << "Piston mass: " << M
-         << "\nPiston mechanical stiffness: "<< Km
-         << "\nPiston mechanical damping: "<< Cm
-         << "\nLeft volume: "<< V0l    
-         << "\nRight volume: "<< V0r << endl;    
+         << "Piston mass: " << pc.M
+         << "\nPiston mechanical stiffness: "<< pc.Km
+         << "\nPiston mechanical damping: "<< pc.Cm
+         << "\nLeft volume: "<< pc.V0l    
+         << "\nRight volume: "<< pc.V0r << endl;    
     if(!leftConnected)
       cout << "Left initial mass: "<< massL << endl;    
     if(!rightConnected)
@@ -472,18 +513,17 @@ namespace mech {
     // Only the mass counts which is connected to other segments
     d mass=0;
     if(leftConnected){
-      WARN("Code has not been checked");
-      mass+=arma::dot( fDFT.row(0) , rhol_.tdata()*(V0l+Sl*xp_.tdata()) );
+      mass+=arma::dot( fDFT.row(0) , rhol_.tdata()%(pc.V0l+pc.Sl*xp_.tdata()) );
     }
     if(rightConnected){
-      WARN("Code has not been checked");
-      mass+=arma::dot( fDFT.row(0) , rhor_.tdata()*(V0r-Sr*xp_.tdata()) );
+      mass+=arma::dot( fDFT.row(0) , rhor_.tdata()%(pc.V0r-pc.Sr*xp_.tdata()) );
     }
     return mass;
   }
   void Piston::dmtotdx(vd& dmtotdx) const {
     TRACE(15,"void Piston::dmtotdx()");
-    // if(leftConnected){
+    if(leftConnected){}
+      
     //   us rholdof=rhol.getDofNr();
     //   dmtotdx.subvec(rholdof,rholdof+Ns-1)=
     WARN("Not finished code");
@@ -523,11 +563,19 @@ namespace mech {
   }
   var Piston::Vl() const {
     TRACE(15,"var Piston::Vl()");
-    return var(*gc,V0l+xp_.tdata()*Sl,false);
+    return var(*gc,pc.V0l+xp_.tdata()*pc.Sl,false);
   }
   var Piston::Vr() const {
     TRACE(15,"var Piston::Vr()");
-    return var(*gc,V0r-xp_.tdata()*Sr,false);
+    return var(*gc,pc.V0r-xp_.tdata()*pc.Sr,false);
+  }
+  bool Piston::isConnected(Pos side) const {
+    TRACE(15,"bool Piston::isConnected()");
+    return side==Pos::left?leftConnected:rightConnected;
+  }
+  void Piston::setConnected(Pos side,bool val) const {
+    TRACE(15,"void Piston::setConnected()");
+    side==Pos::left?leftConnected:rightConnected=val;
   }
 } // namespace mech
 //////////////////////////////////////////////////////////////////////

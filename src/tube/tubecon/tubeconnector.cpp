@@ -107,48 +107,55 @@ namespace tube {
     us nr=0;
     vd error(Neq*Ns);
     {
-      vd errorm=out[0]*bccells[0]->mbc()()
-      +out[1]*bccells[1]->mbc()();
+       error.subvec(Ns*nr,Ns*(nr+1)-1)=\
+         out[0]*bccells[0]->mbc()()\
+         +out[1]*bccells[1]->mbc()();
 
-      error.subvec(Ns*nr,Ns*(nr+1)-1)=errorm; nr++;
+       nr++;
     }
     {
-      vd errormH=out[0]*bccells[0]->mHbc()()
+      error.subvec(Ns*nr,Ns*(nr+1)-1)=\
+        out[0]*bccells[0]->mHbc()()\
         +out[1]*bccells[1]->mHbc()();
-      error.subvec(Ns*nr,Ns*(nr+1)-1)=errormH;  nr++;
+
+      nr++;
     }
     {
       // Simple variant. Should later be expanded to average of left
       // and right
-      vd errormHint=0.5*out[0]*bccells[0]->extrapolateQuant(Varnr::mH)
-        -0.5*out[1]*bccells[1]->extrapolateQuant(Varnr::mH)
+      error.subvec(Ns*nr,Ns*(nr+1)-1)=\
+        0.5*out[0]*bccells[0]->extrapolateQuant(Varnr::mH)\
+        -0.5*out[1]*bccells[1]->extrapolateQuant(Varnr::mH)\
         -out[0]*bccells[0]->mHbc()();
-      error.subvec(Ns*nr,Ns*(nr+1)-1)=errormHint; nr++;
+
+      nr++;
     }
     {
       vd kappaSft=this->kappaSft();
       const vd& T0t=bccells[0]->T().tdata();
       const vd& T1t=bccells[1]->T().tdata();
       
-      vd errorQ=fDFT*(kappaSft%(T0t-T1t)/dx)
+      error.subvec(Ns*nr,Ns*(nr+1)-1)=\
+        fDFT*(kappaSft%(T0t-T1t)/dx)\
         -out[0]*bccells[0]->extrapolateQuant(Varnr::Q);
 
-      error.subvec(Ns*nr,Ns*(nr+1)-1)=errorQ;  nr++;      
+      nr++;      
     }
     {
-      vd errorQint=out[0]*bccells[0]->extrapolateQuant(Varnr::Q)
+      error.subvec(Ns*nr,Ns*(nr+1)-1)=\
+        out[0]*bccells[0]->extrapolateQuant(Varnr::Q)\
         +out[1]*bccells[1]->extrapolateQuant(Varnr::Q);
 
-      error.subvec(Ns*nr,Ns*(nr+1)-1)=errorQint; nr++;
+      nr++;
     }
     {
 
-      vd errorp=Sfgem*(bccells[1]->extrapolateQuant(Varnr::p)
-                 -bccells[0]->extrapolateQuant(Varnr::p));
-      errorp+=bccells[1]->extrapolateQuant(Varnr::mu)
-        -bccells[0]->extrapolateQuant(Varnr::mu);
-      
-      error.subvec(Ns*nr,Ns*(nr+1)-1)=errorp; nr++;
+      error.subvec(Ns*nr,Ns*(nr+1)-1)=\
+        Sfgem*(bccells[1]->extrapolateQuant(Varnr::p)\
+               -bccells[0]->extrapolateQuant(Varnr::p));//+
+        // bccells[1]->extrapolateQuant(Varnr::mu)
+        // -bccells[0]->extrapolateQuant(Varnr::mu);
+      nr++;
     }    
 
     return error;
@@ -208,8 +215,8 @@ namespace tube {
       // eqnr+=Ns; // Not needed no row below
       pjac+=(bccells[1]->dExtrapolateQuant(Varnr::p)*=Sfgem);
       pjac+=(bccells[0]->dExtrapolateQuant(Varnr::p)*=-Sfgem);
-      pjac+=(bccells[1]->dExtrapolateQuant(Varnr::mu));
-      pjac+=(bccells[0]->dExtrapolateQuant(Varnr::mu)*=-1);             
+      // pjac+=(bccells[1]->dExtrapolateQuant(Varnr::mu));
+      // pjac+=(bccells[0]->dExtrapolateQuant(Varnr::mu)*=-1);             
       jac+=pjac;
     }    
 

@@ -67,9 +67,7 @@ namespace tasystem{
     #endif
     // Start solving a system
     void solve(TaSystem&);
-    #ifndef SWIG
     void solve(TaSystem&,const SolverConfiguration& sc);
-    #endif
 
     ~Solver();
   };

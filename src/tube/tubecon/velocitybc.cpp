@@ -73,7 +73,8 @@ namespace tube {
 
     // Velocity error
     d Sf=pos==Pos::left?cell.SfL:cell.SfR;
-    error.subvec(0,Ns-1)=fDFT*(cell.mbc().tdata()/(Sf*iDFT*cell.extrapolateQuant(Varnr::rho)))-u_p();
+    error.subvec(0,Ns-1)=fDFT*(cell.mbc().tdata()/(Sf*iDFT*cell.extrapolateQuant(Varnr::rho)))
+      -u_p();
 
     // Isentropic state eq. error
     const vd p=cell.extrapolateQuant(Varnr::p);

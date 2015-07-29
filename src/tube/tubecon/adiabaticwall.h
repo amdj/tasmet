@@ -31,10 +31,10 @@ namespace tube{
     int arbitrateMassEq() const;
     virtual ~AdiabaticWall(){}
     virtual segment::Connector* copy(const tasystem::TaSystem&) const;
+    virtual vd error() const;
 
     #ifndef SWIG
     us getNEqs() const;
-    virtual vd error() const;
     virtual void updateNf();
     virtual void setEqNrs(us firstdofnr);    
     virtual void jac(tasystem::Jacobian&) const;

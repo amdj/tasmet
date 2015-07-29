@@ -48,11 +48,11 @@ namespace tube{
     virtual ~IsoTWall(){}
     int arbitrateMassEq() const;
 
+    virtual vd error() const;
     #ifndef SWIG
     us getNEqs() const;
     virtual void updateNf();
     virtual void setEqNrs(us firstdofnr);    
-    virtual vd error() const;
     virtual void jac(tasystem::Jacobian&) const;
     virtual void show(us i) const;
     #endif

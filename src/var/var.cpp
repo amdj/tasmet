@@ -153,18 +153,6 @@ namespace tasystem {
     //	TRACE(0,"Resulting cadata:" << cadata);
     return cadata;
   }
-  d var::tdata(d t) const //Extract the value for a given time
-  {
-    TRACE(-2,"var::tdata(d t)");
-    d result=0;
-    vc cres=getcRes();
-    for(us n=0;n<Nf+1;n++)
-      {
-        result+=real(cres(n)*exp(I*double(n)*gc_->getomg()*t));
-      }
-    return result;
-  }
-
   // Set methods
   void var::setadata(us freqnr,d val) { //Set result for specific frequency zero,real one, -imag one, etc
     TRACE(-2,"var::setadata("<<freqnr<<","<<val<<")");
@@ -205,24 +193,20 @@ namespace tasystem {
     tdata_=val;
     adata_=fDFT*tdata_;
   }
-  //Show methods
-  void var::showtdata() const {
-    unsigned i;
-    cout << "[" ;
-    for(i=0; i<Ns-1; i++) {
-      cout << tdata_[i] << " ";
-    }
-    cout << tdata_[Ns-1] << "]\n";
 
+  vd var::timeResponse(us nperiod,us ninst) const {
+    TRACE(15,"vd var::timeResponse()");
+    vd t=timeResponseTime(nperiod,ninst);
+    vc cres=getcRes();
+    vd res(t.size(),fillwith::zeros);
+    c omg=gc_->getomg();
+    for(us i=0;i<Nf+1;i++)
+      res+=real(cres(i)*exp(((d) i)*omg*I*t));
+    return res;
   }
-  void var::showRes() const {
-    unsigned i;
-    cout << "[" ;
-    for(i=0; i<Ns-1; i++) {
-      cout << adata_[i] << " ";
-    }
-    cout << adata_[Ns-1] << "]\n";
-
+  vd var::timeResponseTime(us nperiod,us ninst) const{
+    d T=1/gc_->getfreq();
+    return linspace(0,nperiod*T,ninst);
   }
   dmat var::freqMultiplyMat() const{
     TRACE(0,"var::freqMultiplyMat()");

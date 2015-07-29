@@ -39,6 +39,8 @@ namespace tasystem{
   #ifdef SWIG
   %catches(std::exception,...) TaSystem::getTube(us i) const;
   %catches(std::exception,...) TaSystem::getPiston(us i) const;
+  %catches(std::exception,...) TaSystem::getSeg(us i) const;
+  %catches(std::exception,...) TaSystem::getConnector(us i) const;
   %catches(std::exception,...) TaSystem::TaSystem();
   %catches(std::exception,...) TaSystem::TaSystem(const Globalconf&);
   %catches(std::exception,...) TaSystem::Error();

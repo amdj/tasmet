@@ -31,6 +31,7 @@
   #include "connector.h"
   #include "tubebc.h"
   #include "tubeconnector.h"
+  #include "tubepistonconnector.h"
 
   #include "pressurebc.h"
   #include "impedancebc.h"
@@ -105,6 +106,7 @@ void setTASMETTracer(int);
 %include "connector.h"
 %include "tubebc.h"
 %include "tubeconnector.h"
+%include "tubepistonconnector.h"
 
 // Other connectors
 %include "pressurebc.h"

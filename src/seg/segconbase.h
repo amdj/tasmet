@@ -56,9 +56,8 @@ namespace segment{
     // not. If it does, the derived class should return which equation
     // should be overwritten with the mass arbitration equation.
     virtual int arbitrateMassEq() const {return -1;}
-
-    #ifndef SWIG
     virtual vd error() const=0;
+    #ifndef SWIG
     // Number the internal equations
     virtual void setEqNrs(us firstdofnr)=0;    
     // Return the total number of equations in this segment/connector.

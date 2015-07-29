@@ -36,8 +36,8 @@ namespace tube{
     SimpleTubeConnector(const SimpleTubeConnector&,const tasystem::TaSystem&);    
     virtual segment::Connector* copy(const tasystem::TaSystem& s) const {return new SimpleTubeConnector(*this,s);}
     ~SimpleTubeConnector(){}
-    #ifndef SWIG
     virtual vd error() const;
+    #ifndef SWIG
     virtual void setEqNrs(us firstdofnr);
     virtual us getNEqs() const;    
     virtual void show(us) const;
