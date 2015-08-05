@@ -10,3 +10,4 @@ doc/html
 doc/latex
 doc/usg.pdf
 tasmet.py
+tasmet_main_ui.py
