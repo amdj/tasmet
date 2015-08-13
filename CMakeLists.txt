@@ -103,6 +103,7 @@ add_definitions(-DARMA_USE_SUPERLU -DARMA_USE_CXX11 -DARMA_USE_BLAS -DARMA_USE_L
 #=========
 
 AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/ src)
+AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/volume volume)
 AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/mech mech)
 AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/seg seg)
 AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/sol sol)
@@ -120,6 +121,7 @@ AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/tubecon tubecon)
 set (nonlinear_SRC
   ${src}
   ${seg}
+  ${volume}
   ${mech}
   ${sol}
   ${sys}
@@ -145,6 +147,7 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/src/sol
   ${PROJECT_SOURCE_DIR}/src/seg
   ${PROJECT_SOURCE_DIR}/src/var
+  ${PROJECT_SOURCE_DIR}/src/volume
   ${PROJECT_SOURCE_DIR}/src/tube
   ${PROJECT_SOURCE_DIR}/src/tube/geom
   ${PROJECT_SOURCE_DIR}/src/tube/geom/grid

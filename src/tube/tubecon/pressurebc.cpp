@@ -1,4 +1,3 @@
-#define TRACERPLUS 20
 #include "pressurebc.h"
 #include "tasystem.h"
 #include "jacobian.h"

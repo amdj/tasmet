@@ -106,39 +106,38 @@ namespace tube {
 
     us nr=0;
     vd error(Neq*Ns);
-    {
-       error.subvec(Ns*nr,Ns*(nr+1)-1)=\
-         out[0]*bccells[0]->mbc()()\
-         +out[1]*bccells[1]->mbc()();
+    const vd& T1t=bccells[0]->T().tdata();
+    const vd& T2t=bccells[1]->T().tdata();
+      d T0=gc->T0();
+      d cp=gc->gas().cp(T0);
+      const vd p1t=bccells[0]->extrapolateQuant(Varnr::p);
+      const vd p2t=bccells[2]->extrapolateQuant(Varnr::p);
 
-       nr++;
-    }
-    {
-      error.subvec(Ns*nr,Ns*(nr+1)-1)=\
-        out[0]*bccells[0]->mHbc()()\
-        +out[1]*bccells[1]->mHbc()();
+    // First equation: mass balance
+    error.subvec(Ns*nr,Ns*(nr+1)-1)=\
+      out[0]*bccells[0]->mbc()()\
+      +out[1]*bccells[1]->mbc()();
+    nr++;
+    // Second equation: enthalpy flow balance
+    error.subvec(Ns*nr,Ns*(nr+1)-1)=\
+      out[0]*bccells[0]->mHbc()()\
+      +out[1]*bccells[1]->mHbc()();
 
-      nr++;
-    }
-    {
-      // Simple variant. Should later be expanded to average of left
-      // and right
+    nr++;
+      // Third equation: Enthalpy flow at the interface equals the average of the
+      // enthalpy flows of both tubes
       error.subvec(Ns*nr,Ns*(nr+1)-1)=\
         0.5*out[0]*bccells[0]->extrapolateQuant(Varnr::mH)\
         -0.5*out[1]*bccells[1]->extrapolateQuant(Varnr::mH)\
         -out[0]*bccells[0]->mHbc()();
 
       nr++;
-    }
     {
       vd kappaSft=this->kappaSft();
-      const vd& T0t=bccells[0]->T().tdata();
-      const vd& T1t=bccells[1]->T().tdata();
       
       error.subvec(Ns*nr,Ns*(nr+1)-1)=\
-        fDFT*(kappaSft%(T0t-T1t)/dx)\
+        fDFT*(kappaSft%(T1t-T2t)/dx)\
         -out[0]*bccells[0]->extrapolateQuant(Varnr::Q);
-
       nr++;      
     }
     {
@@ -149,7 +148,8 @@ namespace tube {
       nr++;
     }
     {
-
+      // Change in exergy
+      // DeltaE=T0*cp*log(
       error.subvec(Ns*nr,Ns*(nr+1)-1)=\
         Sfgem*(bccells[1]->extrapolateQuant(Varnr::p)\
                -bccells[0]->extrapolateQuant(Varnr::p));//+

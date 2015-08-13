@@ -3,6 +3,7 @@
 #include "jacobian.h"
 #include "seg.h"
 #include "connector.h"
+#include "connectorvolume.h"
 #include "tube.h"
 #include "piston.h"
 #include "utils.h"
@@ -300,6 +301,9 @@ namespace tasystem{
   }
   const tube::Tube& TaSystem::getTube(us i)  const {
     return dynamic_cast<const tube::Tube&>(*segs.at(i));
+  }
+  const tube::ConnectorVolume& TaSystem::getConnnectorVolume(us i)  const {
+    return dynamic_cast<const tube::ConnectorVolume&>(*segs.at(i));
   }
   const mech::Piston& TaSystem::getPiston(us i)  const {
     return dynamic_cast<const mech::Piston&>(*segs.at(i));

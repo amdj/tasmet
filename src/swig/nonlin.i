@@ -26,7 +26,7 @@
 
   // For Segments and connectors
   #include "segconbase.h"
-
+  #include "connectorvolume.h"
   // Connectors
   #include "connector.h"
   #include "tubebc.h"
@@ -118,6 +118,7 @@ void setTASMETTracer(int);
  // Segments
 %include "seg.h"
 %include "piston.h"
+%include "connectorvolume.h"
  // Tubes
 %include "grid.h"
 %include "boundarylayer.h"

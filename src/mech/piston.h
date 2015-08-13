@@ -3,7 +3,7 @@
 // Author: J.A. de Jong 
 //
 // Description:
-//
+// This segment comprises a Piston with two volumes on both sides.
 //////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef PISTON_H
@@ -15,6 +15,10 @@
 // A mechanical-fluid interaction segment
 namespace mech {
   
+  #ifdef SWIG
+  %catches(std::exception,...) Piston::Piston(const PistonConfiguration& pc);
+  #endif // SWIG
+
   struct PistonConfiguration{
     PistonConfiguration(d Sl,d Sr,d V0l,d V0r,d M,d Km,d Cm,d Stl=-1,d Str=-1);
     ~PistonConfiguration(){}
@@ -92,7 +96,7 @@ namespace mech {
     #ifndef SWIG
     // If a side of the piston is not connected, different equations
     // are solved in that part. See documentation for details
-    void setConnected(Pos pos,bool con) const;
+    void setConnected(Pos pos) const;
     bool isConnected(Pos pos) const;
 
     virtual void setEqNrs(us firstdofnr);    

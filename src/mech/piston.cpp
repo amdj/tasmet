@@ -8,6 +8,7 @@
 
 #include "piston.h"
 #include "jacobian.h"
+#include "staticmsg.h"
 
 #define fDFT (gc->fDFT)
 #define iDFT (gc->iDFT)
@@ -17,8 +18,11 @@
 #define Nf (gc->Nf())
 #define eye (eye(Ns,Ns))
 
-
+namespace{
+    common::StaticMsg<> msg;
+}
 namespace mech {
+
   SPOILNAMESPACE
   typedef tasystem::Jacobian jac;
   using tasystem::JacRow;
@@ -176,7 +180,7 @@ namespace mech {
     const d rho0=gc->gas().rho(T0,p0);
     const d gamma=gc->gas().gamma(T0);
     const d gamfac=1/(gamma-1);
-    const d cp=gc->gas().cp(T0);
+
 
     const vd& rholt=rhol_.tdata();
     const vd& rhort=rhor_.tdata();
@@ -573,9 +577,12 @@ namespace mech {
     TRACE(15,"bool Piston::isConnected()");
     return side==Pos::left?leftConnected:rightConnected;
   }
-  void Piston::setConnected(Pos side,bool val) const {
+  void Piston::setConnected(Pos side) const {
     TRACE(15,"void Piston::setConnected()");
-    side==Pos::left?leftConnected:rightConnected=val;
+    bool& connected=(side==Pos::left?leftConnected:rightConnected);
+    if(connected)
+      throw MyError(msg("Error: piston is already connected on side %s.",tube::posWord(side)));
+    connected=true;
   }
 } // namespace mech
 //////////////////////////////////////////////////////////////////////

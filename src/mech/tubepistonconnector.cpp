@@ -22,6 +22,9 @@
 #define Ns (gc->Ns())
 #define eye (arma::eye(Ns,Ns))
 
+namespace{
+    common::StaticMsg<> msg;
+}
 namespace mech {
   using tasystem::JacRow;
   using tasystem::JacCol;
@@ -29,7 +32,7 @@ namespace mech {
   using tasystem::var;
   using tasystem::Globalconf;
 
-  common::StaticMsg<> msg;
+
   
   TubePistonConnector::TubePistonConnector(us tubenr,Pos tubepos,\
                                            us pistonnr,Pos pistonpos,\
@@ -73,7 +76,7 @@ namespace mech {
                          "a segment at side %s.",pistonNr,tube::posWord(pistonPos)));
 
     // Tell the Piston that it is connected at some side
-    piston->setConnected(pistonPos,true);
+    piston->setConnected(pistonPos);
   }
 
   vd TubePistonConnector::error() const {
@@ -107,7 +110,7 @@ namespace mech {
    // Compute conduction path length
     d Lcon=pistonPos==Pos::left?pc.V0l/pc.Sl:pc.V0r/pc.Sr;
     // Compute cross sectional area of tube exit
-    d Sf=tubePos==Pos::left?tubecell.SfL:tubecell.SfR;
+    d Sf=tubecell.Sfbc();
     // Temperature of gas in piston volume in time domain
     const vd& pTt=piston->T(pistonPos).tdata();
     // Temperature of gas at tube boundary in time domain
@@ -175,7 +178,7 @@ namespace mech {
     // Compute conduction path length
     d Lcon=(pistonPos==Pos::left)?pc.V0l/pc.Sl:pc.V0r/pc.Sr;
     // Compute cross sectional area of tube exit
-    d Sf=(tubePos==Pos::left)?tubecell.SfL:tubecell.SfR;
+    d Sf=tubecell.Sfbc();
 
     JacRow QisQjac(firsteqnr+3*Ns,3);
     QisQjac+=JacCol(piston->T(pistonPos),                       \

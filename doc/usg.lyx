@@ -1215,75 +1215,6 @@ Prescribed velocity, adiabatic compression/expansion.
 
 \end_layout
 
-\begin_layout Section
-Connectors
-\end_layout
-
-\begin_layout Subsection
-SimpleTubeConnector
-\end_layout
-
-\begin_layout Standard
-The SimpleTubeConnector can connect two Tube segments together.
- At the interface, continuity of mass and energy flow is enforced.
-\begin_inset Formula 
-\begin{equation}
-S_{gem}\left(p_{bc,2}-p_{bc,1}\right)+mu|_{2}-mu|_{1}=0
-\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-TubePistonConnector
-\end_layout
-
-\begin_layout Standard
-The TubePistonConnector connects a Piston segment to a Tube.
- Using this connector, the 
-\end_layout
-
-\begin_layout Subsubsection
-Heat conduction between tube and piston
-\end_layout
-
-\begin_layout Standard
-The typical length scale for conduction is
-\begin_inset Formula 
-\begin{equation}
-L_{\mathrm{con}}=\frac{V_{0}}{S_{0}},
-\end{equation}
-
-\end_inset
-
-such that the heat conduction is
-\begin_inset Formula 
-\begin{equation}
-Q_{\mathrm{piston}\rightarrow\mathrm{tube}}=\frac{\kappa S_{f}}{L_{\mathrm{con}}}\left(T_{p}-T_{bc}\right)
-\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsubsection
-Piston energy balance
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-mH_{p}+Q_{p\rightarrow t}+s\cdot mH_{t}=0
-\]
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Chapter
 Transducers
 \end_layout
@@ -1518,6 +1449,606 @@ Later:
 \end_layout
 
 \begin_layout Chapter
+Connectors
+\end_layout
+
+\begin_layout Section
+Connector theory
+\end_layout
+
+\begin_layout Subsection
+Conservation of mass
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+sm_{1}=sm_{2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Conservation of energy
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+smH_{1}=smH_{2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+sQ_{1}=sQ_{2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+mH at the boundary is half the
+\begin_inset Formula 
+\begin{equation}
+mH_{boundary}=\frac{1}{2}\left(mH_{1}+mH_{2}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Heat flow between tubes
+\end_layout
+
+\begin_layout Subsection
+Minor loss - conversion of kinetic energy to thermal energy
+\end_layout
+
+\begin_layout Standard
+At a sharp interface, generally turbulence is created, which converts kinetic
+ energy to thermal energy.
+ To model this effect, minor loss coefficients are introduced.
+ If the minor loss coefficient is zero, no entropy is generated at an interface.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathrm{d}h=T\mathrm{d}s+\rho^{-1}\mathrm{d}p
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Isentropically:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+c_{p}\frac{T}{T_{0}}=\left(\frac{p}{p_{0}}\right)^{\frac{\gamma-1}{\gamma}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For a calorically perfect gas, the entropy is
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+From Hoeijmakers:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $s=s_{0}+c_{v}\ln\left[\left(\frac{p}{p_{0}}\right)\left(\frac{\rho_{0}}{\rho}\right)^{\gamma}\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Rework to:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $s=s_{0}+c_{v}\ln\left[\left(\frac{p}{p_{0}}\right)\left(\frac{Tp_{0}}{T_{0}p}\right)^{\gamma}\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $s=s_{0}+\gamma c_{v}\ln\left[\left(\frac{p}{p_{0}}\right)^{1-\gamma}\left(\frac{T}{T_{0}}\right)\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $s=s_{0}+c_{p}\ln\left[\left(\frac{p_{0}}{p}\right)^{\gamma-1}\left(\frac{T}{T_{0}}\right)\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+s=s_{0}+c_{p}\ln\left[\left(\frac{p_{0}}{p}\right)^{\gamma-1}\left(\frac{T}{T_{0}}\right)\right]\label{eq:entropy_idealgas}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Isentropic change in temperature:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $T=T_{0}\left(\frac{p}{p_{0}}\right)^{\frac{\gamma-1}{\gamma}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Such that:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\Delta h_{irr}=c_{p}\Delta T=c_{p}T_{0}\left(\left(\frac{p}{p_{0}}\right)^{\frac{\gamma-1}{\gamma}}-1\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Fully non-isentropic change in temperature:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $dh=Tds+0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $c_{p}\frac{dT}{T}=dS$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+with: 
+\begin_inset Formula $ds=\frac{}{}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+and:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\Delta H=\Delta\left(c_{p}T+\frac{1}{2}u^{2}\right)=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $c_{p}\left(T-T_{0}\right)+\frac{1}{2}\left(u^{2}-u_{0}^{2}\right)=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+-- Fill in above:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\underbrace{c_{p}T_{0}\left(\left(\frac{p}{p_{0}}\right)^{\frac{\gamma-1}{\gamma}}-1\right)}_{\Delta h_{irr}}+\frac{1}{2}\left(u^{2}-u_{0}^{2}\right)=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Hence:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $c_{p}T_{0}\left(\left(\frac{p}{p_{0}}\right)^{\frac{\gamma-1}{\gamma}}-1\right)=-\frac{1}{2}\left(u^{2}-u_{0}^{2}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+For very small 
+\begin_inset Formula $\Delta p$
+\end_inset
+
+, this becomes:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $c_{p}T_{0}\frac{\gamma-1}{\gamma}\frac{\Delta p}{p_{0}}=-\frac{1}{2}\left(u^{2}-u_{0}^{2}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+is
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $p=p_{0}-\frac{1}{2}\rho\left(u^{2}-u_{0}^{2}\right)\Rightarrow p+\frac{1}{2}\rho u^{2}=p_{0}+\frac{1}{2}\rho u_{0}^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+which is Bernouillis law
+\end_layout
+
+\end_inset
+
+The result of minor losses is a reduction in Exergy.
+ To generalize minor loss to the full compressible flow, minor loss is modeled
+ as
+\begin_inset Formula 
+\begin{equation}
+\Delta E_{x}=-K\left(\frac{T_{0}}{T_{u}}\right)\frac{1}{2}u_{u}^{2},
+\end{equation}
+
+\end_inset
+
+where subscript 
+\begin_inset Formula $u$
+\end_inset
+
+ denotes the upstream condition and 
+\begin_inset Formula $\Delta E_{x}$
+\end_inset
+
+ is the change in exergy per unit mass:
+\begin_inset Formula 
+\begin{equation}
+E_{x}=h+\frac{1}{2}u^{2}-T_{0}s,
+\end{equation}
+
+\end_inset
+
+which is also called the available energy.
+ 
+\begin_inset Formula $K$
+\end_inset
+
+ is the traditional minor loss coefficient.
+ Since 
+\begin_inset Formula $H=h+\frac{1}{2}u^{2}$
+\end_inset
+
+ is constant, the change in exergy is
+\begin_inset Formula 
+\begin{equation}
+\Delta E_{x}=-T_{0}\left(s_{d}-s_{u}\right),
+\end{equation}
+
+\end_inset
+
+where subscript 
+\begin_inset Formula $d$
+\end_inset
+
+ denotes the downstream condition.
+ Filling in Eq.
+ (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:entropy_idealgas"
+
+\end_inset
+
+) for the entropy of an ideal gas results in
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Formula $-T_{0}(s_{d}-s_{u})=-T_{0}c_{p}\left(\ln\left[\left(\frac{p_{0}}{p_{d}}\right)^{\gamma-1}\left(\frac{T_{d}}{T_{0}}\right)\right]-\ln\left[\left(\frac{p_{0}}{p_{u}}\right)^{\gamma-1}\left(\frac{T_{u}}{T_{0}}\right)\right]\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $-T_{0}(s_{d}-s_{u})=T_{0}c_{p}\left(\ln\left[\left(\frac{p_{0}}{p_{u}}\right)^{\gamma-1}\left(\frac{T_{u}}{T_{0}}\right)\right]-\ln\left[\left(\frac{p_{0}}{p_{d}}\right)^{\gamma-1}\left(\frac{T_{d}}{T_{0}}\right)\right]\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $-T_{0}(s_{d}-s_{u})=T_{0}c_{p}\ln\left[\left(\frac{p_{0}}{p_{u}}\right)^{\gamma-1}\left(\frac{T_{u}}{T_{0}}\right)\left(\frac{p_{d}}{p_{o}}\right)^{\gamma-1}\left(\frac{T_{0}}{T_{d}}\right)\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $-T_{0}(s_{d}-s_{u})=T_{0}c_{p}\ln\left[\left(\frac{p_{d}}{p_{u}}\right)^{\gamma-1}\left(\frac{T_{u}}{T_{d}}\right)\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\Delta E_{x}=E_{x,d}-E_{x,u}=T_{0}c_{p}\ln\left[\left(\frac{p_{d}}{p_{u}}\right)^{\gamma-1}\left(\frac{T_{u}}{T_{d}}\right)\right]=-K\left(\frac{T_{0}}{T_{u}}\right)\frac{1}{2}u_{u}^{2}.\label{eq:DeltaE_steady}
+\end{equation}
+
+\end_inset
+
+If we assume incompressible flow and if we take 
+\begin_inset Formula $p_{d}=p_{u}+\Delta p$
+\end_inset
+
+, with 
+\begin_inset Formula $\Delta p\ll1$
+\end_inset
+
+, this equation can be linearized to obtain
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Formula $\Delta E_{x}=T_{0}c_{p}\ln\left[\left(\frac{p_{d}}{p_{u}}\right)^{\gamma-1}\left(\frac{T_{u}}{T_{d}}\right)\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\Delta E_{x}=T_{0}c_{p}\left(\left(\gamma-1\right)\frac{\Delta p}{p_{u}}-\frac{\Delta T}{T_{u}}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+In the limit of incompressible flow, 
+\begin_inset Formula $\gamma\to1$
+\end_inset
+
+, hence
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\Delta E_{x}=-\frac{T_{0}}{T_{u}}c_{p}\Delta T$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\Delta E_{x}=-\frac{T_{0}}{T_{u}}c\Delta T=-K\left(\frac{T_{0}}{T_{u}}\right)\frac{1}{2}u_{u}^{2}.
+\end{equation}
+
+\end_inset
+
+Moreover, for incompressible flow
+\begin_inset Formula 
+\begin{equation}
+H=cT+\frac{p}{\rho}+\frac{1}{2}u^{2}=\mathrm{const},
+\end{equation}
+
+\end_inset
+
+the minor loss directly converts kinetic energy to thermal energy for an
+ incompressible flow.
+\end_layout
+
+\begin_layout Subsection
+Generalization for oscillating flow
+\end_layout
+
+\begin_layout Standard
+For oscillating flow, there is no real 
+\begin_inset Quotes eld
+\end_inset
+
+upstream
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+downstream
+\begin_inset Quotes erd
+\end_inset
+
+ position.
+ To generalize Eq.
+ (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:DeltaE_steady"
+
+\end_inset
+
+):
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Flow from 1 to 2
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $E_{x,2}-E_{x,1}=-K_{1\to2}\left(\frac{T_{0}}{T_{1}}\right)\frac{1}{8}\left(s|u_{1}|+u_{1}\right)^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Flow from 2 to 1
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $E_{x,1}-E_{x,2}=-K_{2\to1}\left(\frac{T_{0}}{T_{2}}\right)\frac{1}{8}\left(s|u_{2}|+u_{2}\right)^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Mutual exclusive sum:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $E_{x,2}-E_{x,1}=K_{2\to1}\left(\frac{T_{0}}{T_{2}}\right)\frac{1}{8}\left(s|u_{2}|+u_{2}\right)^{2}-K_{1\to2}\left(\frac{T_{0}}{T_{1}}\right)\frac{1}{8}\left(s|u_{1}|+u_{1}\right)^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+E_{x,2}-E_{x,1}=T_{0}c_{p}\ln\left[\left(\frac{p_{2}}{p_{1}}\right)^{\gamma-1}\left(\frac{T_{1}}{T_{2}}\right)\right]=K_{2\to1}\frac{T_{0}}{T_{2}}\frac{1}{8}\left(s|u_{2}|+u_{2}\right)^{2}-K_{1\to2}\frac{T_{0}}{T_{1}}\frac{1}{8}\left(s|u_{1}|+u_{1}\right)^{2},
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $s=1$
+\end_inset
+
+ for a right outflow side of a tube and 
+\begin_inset Formula $s=-1$
+\end_inset
+
+ for a left inflow side.
+\end_layout
+
+\begin_layout Section
+SimpleTubeConnector
+\end_layout
+
+\begin_layout Standard
+The SimpleTubeConnector can connect two Tube segments together.
+ At the interface, continuity of mass and energy flow is enforced.
+\begin_inset Formula 
+\begin{equation}
+S_{gem}\left(p_{bc,2}-p_{bc,1}\right)+mu|_{2}-mu|_{1}=0
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+TubePistonConnector
+\end_layout
+
+\begin_layout Standard
+The TubePistonConnector connects a Piston segment to a Tube.
+ Using this connector, the 
+\end_layout
+
+\begin_layout Subsection
+Heat conduction between tube and piston
+\end_layout
+
+\begin_layout Standard
+The typical length scale for conduction is
+\begin_inset Formula 
+\begin{equation}
+L_{\mathrm{con}}=\frac{V_{0}}{S_{0}},
+\end{equation}
+
+\end_inset
+
+such that the heat conduction is
+\begin_inset Formula 
+\begin{equation}
+Q_{\mathrm{piston}\rightarrow\mathrm{tube}}=\frac{\kappa S_{f}}{L_{\mathrm{con}}}\left(T_{p}-T_{bc}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Piston energy balance
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+mH_{p}+Q_{p\rightarrow t}+s\cdot mH_{t}=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Transition of kinetic energy to heat
+\end_layout
+
+\begin_layout Section
+TubePistonConnector
+\end_layout
+
+\begin_layout Chapter
 Systems
 \end_layout
 
@@ -1695,6 +2226,7 @@ Create a PhaseConstraint object:
 \end_layout
 
 \begin_layout Verbatim
+
 	pc=PhaseConstraint(Varnr, freqnr, left)
 \end_layout
 
@@ -1703,6 +2235,7 @@ Apply this contraint to a segment which can accept them, for example a Tube:
 \end_layout
 
 \begin_layout Verbatim
+
 	t1.setPhaseConstraint(pc)
 \end_layout
 
