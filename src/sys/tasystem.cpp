@@ -248,6 +248,7 @@ namespace tasystem{
     us starteq=0;
     TRACE(-1,"Nsegs:"<< Nsegs);
     for(us i=0;i<Nsegs;i++){
+      TRACE(15,"Segment " << i);
       segeqs=segs[i]->getNEqs();
       error.subvec(starteq,starteq+segeqs-1)=segs[i]->error();
       starteq+=segeqs;

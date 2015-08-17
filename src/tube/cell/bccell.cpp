@@ -29,7 +29,7 @@ namespace tube{
     vars.push_back(&mHbc_);
   }
   vd BcCell::extrapolateQuant(Varnr v) const {
-    TRACE(5,"LeftCell::extrapolateQuant()");
+    TRACE(5,"BcCell::extrapolateQuant()");
     switch(v){
     case Varnr::m:
       return Continuity::extrapolateMassFlow(*this);            
