@@ -30,7 +30,7 @@ namespace tube{
 
 
   class ImpedanceBc:public TubeBc {
-    PyObject* impedanceFunc=NULL;
+    PyObject* impedanceFunc=nullptr;
     d T0;
     ImpedanceBc(const ImpedanceBc& other,const tasystem::TaSystem&);
   public:

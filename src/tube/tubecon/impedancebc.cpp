@@ -29,7 +29,7 @@ namespace tube {
   // impfunc. It assumes a valid function, which should be tested
   // beforehand.
   var Zvar(PyObject* impfunc,const Globalconf* gc){
-
+    TRACE(15,"Zvar()");
     vd omg=linspace(0,Nf*gc->getomg(),Nf+1);
     vc Zcomplex(Nf+1);
     VARTRACE(10,omg);
@@ -37,14 +37,10 @@ namespace tube {
       Zcomplex(i)=python::PythonCallBackComplex(omg(i),impfunc);
     return var(*gc,Zcomplex);
   }
-
-
-  ImpedanceBc::ImpedanceBc(us segnr,Pos position,PyObject* impedancefunc,d T0):
-    TubeBc(segnr,position),
-    T0(T0)
-  {
-    TRACE(15,"ImpedanceBc::ImpedanceBc()");
-    // if(!impedanceFunc)
+  void testImpedanceFunc(PyObject* impedancefunc){
+    TRACE(15,"TestImpedanceFunc()");
+    if(!impedancefunc)
+      throw MyError("impedancefunc is null pointer!");
     // Simply testing the impedanceFunc
     try{ 
       c test=python::PythonCallBackComplex(100,impedancefunc);
@@ -55,11 +51,20 @@ namespace tube {
       WARN(m.what());
       throw MyError("Illegal impedance callback function.");
     }
-      
+  }
+
+  ImpedanceBc::ImpedanceBc(us segnr,Pos position,PyObject* impedancefunc,d T0):
+    TubeBc(segnr,position),
+    T0(T0)
+  {
+    TRACE(15,"ImpedanceBc::ImpedanceBc()");
+
+    testImpedanceFunc(impedancefunc);
     // Increase reference to impedanceFunc, if not already error
     // thrown
+    TRACE(15,"Incref impedance func");
+    Py_INCREF(impedancefunc);
     impedanceFunc=impedancefunc;
-    Py_INCREF(impedanceFunc);
   }
   ImpedanceBc::ImpedanceBc(const ImpedanceBc& other,const TaSystem& sys):
     TubeBc(other,sys),
@@ -68,14 +73,16 @@ namespace tube {
   {
     TRACE(15,"ImpedanceBc::ImpedanceBc(copy and init)");
     assert(gc);
-    
+    testImpedanceFunc(impedanceFunc);
     // Increase reference to impedanceFunc
-    Py_INCREF(impedanceFunc);
+    TRACE(15,"Incref impedance func");
+    Py_INCREF(impedanceFunc);    
     setInit(true);
   }
   ImpedanceBc::~ImpedanceBc(){
-    if(impedanceFunc)
-      Py_DECREF(impedanceFunc);
+    TRACE(15,"ImpedanceBc::~ImpedanceBc()");
+    // if(impedanceFunc)
+      // Py_DECREF(impedanceFunc);
   }
   void ImpedanceBc::updateNf() {
 
@@ -92,7 +99,9 @@ namespace tube {
     const BcCell& cell=t->bcCell(pos);
 
     // Impedance error
+    TRACE(15,"Calling impedance function");
     dmat Z=Zvar(impedanceFunc,gc).freqMultiplyMat();
+    TRACE(15,"Calling impedance function done.");
     // VARTRACE(15,Z);
     d Sf=pos==Pos::left?cell.SfL:cell.SfR;
     error.subvec(0,Ns-1)=cell.extrapolateQuant(Varnr::p);
