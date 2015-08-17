@@ -1553,7 +1553,7 @@ c_{p}\frac{T}{T_{0}}=\left(\frac{p}{p_{0}}\right)^{\frac{\gamma-1}{\gamma}}
 \begin_layout Standard
 For a calorically perfect gas, the entropy is
 \begin_inset Note Note
-status collapsed
+status open
 
 \begin_layout Plain Layout
 From Hoeijmakers:
@@ -1578,14 +1578,21 @@ Rework to:
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Formula $s=s_{0}+\gamma c_{v}\ln\left[\left(\frac{p}{p_{0}}\right)^{1-\gamma}\left(\frac{T}{T_{0}}\right)\right]$
+\begin_inset Formula $s=s_{0}+c_{v}\ln\left[\left(\frac{p_{0}}{p}\right)^{\gamma-1}\left(\frac{T}{T_{0}}\right)^{\gamma}\right]$
 \end_inset
 
 
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Formula $s=s_{0}+c_{p}\ln\left[\left(\frac{p_{0}}{p}\right)^{\gamma-1}\left(\frac{T}{T_{0}}\right)\right]$
+\begin_inset Formula $s=s_{0}+\left(\gamma-1\right)c_{v}\ln\left[\left(\frac{p_{0}}{p}\right)\left(\frac{T}{T_{0}}\right)^{\frac{\gamma}{\gamma-1}}\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $s=s_{0}+R_{s}\ln\left[\left(\frac{p_{0}}{p}\right)\left(\frac{T}{T_{0}}\right)^{\frac{\gamma}{\gamma-1}}\right]$
 \end_inset
 
 
@@ -1596,7 +1603,7 @@ Rework to:
 
 \begin_inset Formula 
 \begin{equation}
-s=s_{0}+c_{p}\ln\left[\left(\frac{p_{0}}{p}\right)^{\gamma-1}\left(\frac{T}{T_{0}}\right)\right]\label{eq:entropy_idealgas}
+s=s_{0}+R_{s}\ln\left[\left(\frac{p_{0}}{p}\right)\left(\frac{T}{T_{0}}\right)^{\frac{\gamma}{\gamma-1}}\right]\label{eq:entropy_idealgas}
 \end{equation}
 
 \end_inset
@@ -1784,31 +1791,31 @@ reference "eq:entropy_idealgas"
 
 ) for the entropy of an ideal gas results in
 \begin_inset Note Note
-status collapsed
+status open
 
 \begin_layout Plain Layout
-\begin_inset Formula $-T_{0}(s_{d}-s_{u})=-T_{0}c_{p}\left(\ln\left[\left(\frac{p_{0}}{p_{d}}\right)^{\gamma-1}\left(\frac{T_{d}}{T_{0}}\right)\right]-\ln\left[\left(\frac{p_{0}}{p_{u}}\right)^{\gamma-1}\left(\frac{T_{u}}{T_{0}}\right)\right]\right)$
+\begin_inset Formula $-T_{0}(s_{d}-s_{u})=-T_{0}R_{s}\left(\ln\left[\left(\frac{p_{0}}{p_{d}}\right)\left(\frac{T_{d}}{T_{0}}\right)^{\frac{\gamma}{\gamma-1}}\right]-\ln\left[\left(\frac{p_{0}}{p_{u}}\right)\left(\frac{T_{u}}{T_{0}}\right)^{\frac{\gamma}{\gamma-1}}\right]\right)$
 \end_inset
 
 
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Formula $-T_{0}(s_{d}-s_{u})=T_{0}c_{p}\left(\ln\left[\left(\frac{p_{0}}{p_{u}}\right)^{\gamma-1}\left(\frac{T_{u}}{T_{0}}\right)\right]-\ln\left[\left(\frac{p_{0}}{p_{d}}\right)^{\gamma-1}\left(\frac{T_{d}}{T_{0}}\right)\right]\right)$
+\begin_inset Formula $-T_{0}(s_{d}-s_{u})=T_{0}R_{s}\left(\ln\left[\left(\frac{p_{0}}{p_{u}}\right)\left(\frac{T_{u}}{T_{0}}\right)^{\frac{\gamma}{\gamma-1}}\right]-\ln\left[\left(\frac{p_{0}}{p_{d}}\right)\left(\frac{T_{d}}{T_{0}}\right)^{\frac{\gamma}{\gamma-1}}\right]\right)$
 \end_inset
 
 
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Formula $-T_{0}(s_{d}-s_{u})=T_{0}c_{p}\ln\left[\left(\frac{p_{0}}{p_{u}}\right)^{\gamma-1}\left(\frac{T_{u}}{T_{0}}\right)\left(\frac{p_{d}}{p_{o}}\right)^{\gamma-1}\left(\frac{T_{0}}{T_{d}}\right)\right]$
+\begin_inset Formula $-T_{0}(s_{d}-s_{u})=T_{0}R_{s}\ln\left[\left(\frac{p_{0}}{p_{u}}\right)\left(\frac{T_{u}}{T_{0}}\right)^{\frac{\gamma}{\gamma-1}}\left(\frac{p_{d}}{p_{o}}\right)\left(\frac{T_{0}}{T_{d}}\right)^{\frac{\gamma}{\gamma-1}}\right]$
 \end_inset
 
 
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Formula $-T_{0}(s_{d}-s_{u})=T_{0}c_{p}\ln\left[\left(\frac{p_{d}}{p_{u}}\right)^{\gamma-1}\left(\frac{T_{u}}{T_{d}}\right)\right]$
+\begin_inset Formula $-T_{0}(s_{d}-s_{u})=T_{0}R_{s}\ln\left[\left(\frac{p_{d}}{p_{u}}\right)\left(\frac{T_{u}}{T_{d}}\right)^{\frac{\gamma}{\gamma-1}}\right]$
 \end_inset
 
 
@@ -1819,7 +1826,7 @@ status collapsed
 
 \begin_inset Formula 
 \begin{equation}
-\Delta E_{x}=E_{x,d}-E_{x,u}=T_{0}c_{p}\ln\left[\left(\frac{p_{d}}{p_{u}}\right)^{\gamma-1}\left(\frac{T_{u}}{T_{d}}\right)\right]=-K\left(\frac{T_{0}}{T_{u}}\right)\frac{1}{2}u_{u}^{2}.\label{eq:DeltaE_steady}
+\Delta E_{x}=E_{x,d}-E_{x,u}=T_{0}R_{s}\ln\left[\left(\frac{p_{d}}{p_{u}}\right)\left(\frac{T_{u}}{T_{d}}\right)^{\frac{\gamma}{\gamma-1}}\right]=-K\left(\frac{T_{0}}{T_{u}}\right)\frac{1}{2}u_{u}^{2}.\label{eq:DeltaE_steady}
 \end{equation}
 
 \end_inset
@@ -1919,7 +1926,7 @@ reference "eq:DeltaE_steady"
 
 ):
 \begin_inset Note Note
-status collapsed
+status open
 
 \begin_layout Plain Layout
 Flow from 1 to 2
@@ -1959,7 +1966,7 @@ Mutual exclusive sum:
 
 \begin_inset Formula 
 \begin{equation}
-E_{x,2}-E_{x,1}=T_{0}c_{p}\ln\left[\left(\frac{p_{2}}{p_{1}}\right)^{\gamma-1}\left(\frac{T_{1}}{T_{2}}\right)\right]=K_{2\to1}\frac{T_{0}}{T_{2}}\frac{1}{8}\left(s|u_{2}|+u_{2}\right)^{2}-K_{1\to2}\frac{T_{0}}{T_{1}}\frac{1}{8}\left(s|u_{1}|+u_{1}\right)^{2},
+E_{x,2}-E_{x,1}=T_{0}R_{s}\ln\left[\left(\frac{p_{2}}{p_{1}}\right)\left(\frac{T_{1}}{T_{2}}\right)^{\frac{\gamma}{\gamma-1}}\right]=K_{2\to1}\frac{T_{0}}{T_{2}}\frac{1}{8}\left(s|u_{2}|+u_{2}\right)^{2}-K_{1\to2}\frac{T_{0}}{T_{1}}\frac{1}{8}\left(s|u_{1}|+u_{1}\right)^{2},
 \end{equation}
 
 \end_inset
@@ -1973,6 +1980,114 @@ where
 \end_inset
 
  for a left inflow side.
+\end_layout
+
+\begin_layout Subsubsection
+Derivatives
+\end_layout
+
+\begin_layout Standard
+Say 
+\begin_inset Formula 
+\begin{equation}
+R=T_{0}R_{s}\ln\left[\left(\frac{p_{2}}{p_{1}}\right)\left(\frac{T_{1}}{T_{2}}\right)^{\frac{\gamma}{\gamma-1}}\right]+K_{1\to2}\frac{T_{0}}{T_{1}}\frac{1}{8}\left(s|u_{1}|+u_{1}\right)^{2}-K_{2\to1}\frac{T_{0}}{T_{2}}\frac{1}{8}\left(s|u_{2}|+u_{2}\right)^{2},
+\end{equation}
+
+\end_inset
+
+then
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $R=T_{0}R_{s}\ln\left[\left(\frac{p_{2}}{p_{1}}\right)\left(\frac{T_{1}}{T_{2}}\right)^{\frac{\gamma}{\gamma-1}}\right]+K_{1\to2}\frac{T_{0}}{T_{1}}\frac{1}{8}\left(s|u_{1}|+u_{1}\right)^{2}-K_{2\to1}\frac{T_{0}}{T_{2}}\frac{1}{8}\left(s|u_{2}|+u_{2}\right)^{2},$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Rewriting:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $R=T_{0}R_{s}\left(\ln\left[\frac{p_{2}}{p_{1}}\right]+\frac{\gamma}{\gamma-1}\ln\left(\frac{T_{1}}{T_{2}}\right)\right)+K_{1\to2}\frac{T_{0}}{T_{1}}\frac{1}{8}\left(s|u_{1}|+u_{1}\right)^{2}-K_{2\to1}\frac{T_{0}}{T_{2}}\frac{1}{8}\left(s|u_{2}|+u_{2}\right)^{2},$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $R=T_{0}R_{s}\left(\ln\left[\frac{p_{2}}{p_{1}}\right]+\frac{\gamma}{\gamma-1}\ln\left(\frac{T_{1}}{T_{2}}\right)\right)+K_{1\to2}\frac{T_{0}}{T_{1}}\frac{1}{8}\left(s|u_{1}|+u_{1}\right)^{2}-K_{2\to1}\frac{T_{0}}{T_{2}}\frac{1}{8}\left(s|u_{2}|+u_{2}\right)^{2},$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Then
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{\partial R}{\partial p_{2}}=T_{0}R_{s}\left(\gamma-1\right)\frac{1}{p_{2}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{\partial R}{\partial p_{1}}=-T_{0}R_{s}\left(\gamma-1\right)\frac{1}{p_{1}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{\partial R}{\partial T_{1}}=T_{0}R_{s}\frac{1}{T_{1}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{\partial R}{\partial T_{1}}=-T_{0}R_{s}\frac{1}{T_{2}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{\partial R}{\partial u_{1}}=K_{1\to2}\frac{T_{0}}{T_{1}}\frac{1}{4}\left(s|u_{1}|+u_{1}\right)\left(1+s\cdot\mathrm{sign}\left(u_{1}\right)\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{\partial R}{\partial u_{2}}=-K_{2\to1}\frac{T_{0}}{T_{2}}\frac{1}{4}\left(s|u_{2}|+u_{2}\right)\left(1+s\cdot\mathrm{sign}\left(u_{2}\right)\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+\frac{\partial R}{\partial p_{2}} & = & T_{0}R_{s}\frac{1}{p_{2}}\\
+\frac{\partial R}{\partial p_{1}} & = & -T_{0}R_{s}\frac{1}{p_{1}}\\
+\frac{\partial R}{\partial T_{1}} & = & T_{0}c_{p}\frac{1}{T_{1}}\\
+\frac{\partial R}{\partial T_{2}} & = & -T_{0}c_{p}\frac{1}{T_{2}}\\
+\frac{\partial R}{\partial m_{1}} & =
+\end{eqnarray}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -2226,7 +2341,6 @@ Create a PhaseConstraint object:
 \end_layout
 
 \begin_layout Verbatim
-
 	pc=PhaseConstraint(Varnr, freqnr, left)
 \end_layout
 
@@ -2235,7 +2349,6 @@ Apply this contraint to a segment which can accept them, for example a Tube:
 \end_layout
 
 \begin_layout Verbatim
-
 	t1.setPhaseConstraint(pc)
 \end_layout
 

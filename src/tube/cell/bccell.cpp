@@ -3,7 +3,7 @@
 #include "momentum.h"
 #include "energy.h"
 #include "jacrow.h"
-
+#include "exception.h"
 #define iDFT (v.gc->iDFT)
 #define fDFT (v.gc->fDFT)
 #define DDTfd (v.gc->DDTfd)
@@ -22,11 +22,14 @@ namespace tube{
     TRACE(10,"BcCell::init(const Cell* left,const Cell* right)");
     Cell::init(left,right);
     Tbc_=var(*gc);
+    pbc_=var(*gc);
     Tbc_.setadata(0,gc->T0());
     mHbc_=var(*gc);
 
     vars.push_back(&Tbc_);
+    vars.push_back(&pbc_);
     vars.push_back(&mHbc_);
+    eqs.insert({EqType::BcEq,new ExtrapolatePressure(*this)});    
   }
   vd BcCell::extrapolateQuant(Varnr v) const {
     TRACE(5,"BcCell::extrapolateQuant()");
@@ -39,9 +42,6 @@ namespace tube{
     case Varnr::rho:
       return Continuity::extrapolateDensity(*this);      
       break;
-    case Varnr::p:
-      return Momentum::extrapolatePressure(*this);      
-      break;
     case Varnr::Q:
       return Energy::extrapolateHeatFlow(*this);
       break;
@@ -49,8 +49,8 @@ namespace tube{
       return Energy::extrapolateEnthalpyFlow(*this);
       break;
     default:
-      WARN("This is not yet implemented!");
-      assert(false);
+      WARN("This is not implemented!");
+      throw MyError("Unextrapolated variable asked");
     }
   }
   JacRow BcCell::dExtrapolateQuant(Varnr p) const {
@@ -64,9 +64,6 @@ namespace tube{
     case Varnr::rho:
       return Continuity::dExtrapolateDensity(*this);      
       break;
-    case Varnr::p:
-      return Momentum::dExtrapolatePressure(*this);      
-      break;
     case Varnr::Q:
       return Energy::dExtrapolateHeatFlow(*this);
       break;
@@ -74,9 +71,8 @@ namespace tube{
       return Energy::dExtrapolateEnthalpyFlow(*this);
       break;
     default:
-      WARN("This is not yet implemented!");
-      assert(false);
-
+      WARN("This is not implemented!");
+      throw MyError("Unextrapolated variable asked");
     }
   }
 

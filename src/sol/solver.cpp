@@ -1,4 +1,6 @@
 #include "solver.h"
+#include <Python.h>
+
 #include "tasystem.h"
 #include "vtypes.h"
 #include "exception.h"
@@ -18,8 +20,13 @@ namespace tasystem{
       maxiter=curmaxiter;
     }
   }
-  void doSolve(Solver* s,TaSystem* thesys) {
+  void doSolve(Solver* s,TaSystem* thesys,bool isThread=false) {
     TRACE(15,"doSolve()");
+    if(isThread){
+      assert(false);
+      Py_Initialize();
+      PyEval_InitThreads();
+    }
     SolverConfiguration& sc=*s;
     assert(thesys && s);
     d funer=1.0;
@@ -29,26 +36,29 @@ namespace tasystem{
     vd oldres=thesys->getRes();
     while((funer>sc.funtol || reler>sc.reltol) && nloop<sc.maxiter)    {
       try{
-        ErrorVals ers=doIter(thesys,&sc);
-        funer=ers.funer;
-        reler=ers.reler;
-        if(funer<0){
-          WARN("Function error: "<< funer << " . Quiting solving procedure.");
-          return;
-        }
-        cout << green <<  "Iteration: "<<nloop<<" , function error: "<<funer<<" , relative error:" << reler<< "."<< def <<"\n";
-        nloop++;
+	ErrorVals ers=doIter(thesys,&sc);
+	funer=ers.funer;
+	reler=ers.reler;
+	if(funer<0){
+	  WARN("Function error: "<< funer << " . Quiting solving procedure.");
+	  return;
+	}
+	cout << green <<  "Iteration: "<<nloop<<" , function error: "<<funer<<" , relative error:" << reler<< "."<< def <<"\n";
+	nloop++;
       }
       catch(...){
-        cout << "Solver failed, probably due to a numerical problem. TaSystem not updated.\n";
-        thesys->setRes(oldres);
-        return;
+	cout << "Solver failed, probably due to a numerical problem. TaSystem not updated.\n";
+	thesys->setRes(oldres);
+	return;
       }
     } // while
     if(nloop==sc.maxiter)
       WARN("Solver reached maximum number of iterations! Results might not be reliable!");
     if(sc.maxiter==0)
       WARN("Solver stopped externally");
+    if(isThread){
+
+    }
     cout << "Solver done.\n";
   }
 
@@ -64,7 +74,7 @@ namespace tasystem{
       doSolve(this,&sys);
     else {
       stop();
-      solverThread.reset(new std::thread(doSolve,this,&sys));
+      solverThread.reset(new std::thread(doSolve,this,&sys,true));
     }
   }
   void Solver::solve(TaSystem& sys,const SolverConfiguration& sc1){
@@ -120,13 +130,13 @@ namespace tasystem{
       sys.setRes(newx);
       newfuner=norm(sys.Error());
       if((newfuner>oldfuner || !(newfuner>0)) && sc->dampfac>sc->mindampfac){
-        if(sc->dampfac*0.5<sc->mindampfac){
-          d temporary=sc->mindampfac;
-          sc->dampfac=temporary;
-        }
-        else
-          sc->dampfac=sc->dampfac*0.5; // *= is not working (is atomic variable)
-        cout << "Decreasing dampfac, new dampfac = " << sc->dampfac << "\n";
+	if(sc->dampfac*0.5<sc->mindampfac){
+	  d temporary=sc->mindampfac;
+	  sc->dampfac=temporary;
+	}
+	else
+	  sc->dampfac=sc->dampfac*0.5; // *= is not working (is atomic variable)
+	cout << "Decreasing dampfac, new dampfac = " << sc->dampfac << "\n";
       }
     } while((newfuner>oldfuner || !(newfuner>0)) && sc->dampfac>sc->mindampfac);
     if(newfuner<oldfuner && sc->dampfac<sc->maxdampfac){

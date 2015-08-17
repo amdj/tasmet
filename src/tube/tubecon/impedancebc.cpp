@@ -99,16 +99,16 @@ namespace tube {
     const BcCell& cell=t->bcCell(pos);
 
     // Impedance error
-    TRACE(15,"Calling impedance function");
+    TRACE(10,"Calling impedance function");
     dmat Z=Zvar(impedanceFunc,gc).freqMultiplyMat();
-    TRACE(15,"Calling impedance function done.");
+    TRACE(10,"Calling impedance function done.");
     // VARTRACE(15,Z);
     d Sf=pos==Pos::left?cell.SfL:cell.SfR;
-    error.subvec(0,Ns-1)=cell.extrapolateQuant(Varnr::p);
+    error.subvec(0,Ns-1)=cell.pbc()();
     error.subvec(0,Ns-1)+=-Z*fDFT*(cell.mbc().tdata()/(Sf*iDFT*cell.extrapolateQuant(Varnr::rho)));
 
     // Isentropic state eq. error
-    const vd p=cell.extrapolateQuant(Varnr::p);
+    const vd& p=cell.pbc()();
     const var& Tbc=cell.Tbc();
     const d p0=gc->p0();
     const d gamma=gc->gas().gamma(T0);
@@ -131,7 +131,7 @@ namespace tube {
     dmat Z=Zvar(impedanceFunc,gc).freqMultiplyMat();
     JacRow impjac(firsteqnr,5); // 5=(2*p,2*rho,1*mbc)
     d Sf=pos==Pos::left?cell.SfL:cell.SfR;
-    impjac+=cell.dExtrapolateQuant(Varnr::p);
+    impjac+=JacCol(cell.pbc(),eye);
     const vd rhobct=iDFT*cell.extrapolateQuant(Varnr::rho);
     impjac+=JacCol(cell.mbc(),-Z*fDFT*diagmat(1/(Sf*rhobct))*iDFT);
     d w1,w2; std::tie(w1,w2)=BcWeightFactorsV(cell);
@@ -151,7 +151,7 @@ namespace tube {
     const var& Tbc=cell.Tbc();
 
     // Pressure part
-    IsentropicJac+=cell.dExtrapolateQuant(Varnr::p);
+    IsentropicJac+=JacCol(cell.pbc(),eye);
     const d p0=gc->p0();
     const d gamma=gc->gas().gamma(T0);
 

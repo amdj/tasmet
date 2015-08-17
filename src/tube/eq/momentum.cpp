@@ -1,7 +1,7 @@
 // #define TRACERPLUS 20
 
 #include "tube.h"
-#include "cell.h"
+#include "bccell.h"
 #include "weightfactors.h"
 #include "jacrow.h"
 #include "var.h"
@@ -33,8 +33,7 @@ namespace tube{
     cout << "Wpm1    : " << Wpim1 << "\n";    
   }
   Momentum::~Momentum(){TRACE(0,"~Momentum()");}
-  void Momentum::init()
-  {
+  void Momentum::init()  {
     TRACE(5,"Momentum::init(tube)");
     t=&v.getTube();
     if(v.left()){
@@ -200,23 +199,35 @@ namespace tube{
     else
       return RIGHT::dExtrapolateMomentumFlow(v);
   }
-  vd Momentum::extrapolatePressure(const Cell& v){
-    TRACE(15,"Momentum::extrapolatePressure(const Cell& v)");
+  
+  ExtrapolatePressure::ExtrapolatePressure(const BcCell& v):Equation(v),v(v){}
+  vd ExtrapolatePressure::error() const {
+    TRACE(55,"ExtrapolatePressure::error()");
     assert((!v.left() && v.right()) || (!v.right() && v.left()));
+    VARTRACE(55,v.pbc()());
     if(!v.left() && v.right())
-      return LEFT::extrapolatePressure(v);
+      return LEFT::extrapolatePressure(v)-v.pbc()();
     else
-      return RIGHT::extrapolatePressure(v);
+      return RIGHT::extrapolatePressure(v)-v.pbc()();
   }
-  JacRow Momentum::dExtrapolatePressure(const Cell& v){
-    TRACE(15,"Momentum::dExtrapolatePressure(const Cell& v)");
+  JacRow ExtrapolatePressure::jac() const{
+    TRACE(15,"ExtrapolatePressure::jac()");
     assert((!v.left() && v.right()) || (!v.right() && v.left()));
+    JacRow dExtrapolatePressure(dofnr,3);
     if(!v.left() && v.right())
-      return LEFT::dExtrapolatePressure(v);
+      dExtrapolatePressure+=LEFT::dExtrapolatePressure(v);
     else
-      return RIGHT::dExtrapolatePressure(v);
-  }
+      dExtrapolatePressure+=RIGHT::dExtrapolatePressure(v);
 
+    dExtrapolatePressure+=JacCol(v.pbc(),-eye);
+    return dExtrapolatePressure;
+  }
+  void ExtrapolatePressure::show() const{
+    cout << "----------------- Extrapolate Pressure\n";
+  }
+  void ExtrapolatePressure::init() {
+    TRACE(15,"ExtrapolatePressure::init()");
+  }
 
 
 

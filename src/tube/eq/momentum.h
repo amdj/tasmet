@@ -16,6 +16,7 @@
 namespace tube{
   SPOILNAMESPACE
   class Cell;
+  class BcCell;
   class Tube;
   class DragResistance;
 
@@ -34,14 +35,29 @@ namespace tube{
     virtual void show() const;
     virtual void domg(vd& domg) const;
 
-    static vd extrapolatePressure(const Cell&);
-    static tasystem::JacRow dExtrapolatePressure(const Cell&);
     // Put in leftmost or rightmost cell and you obtain an
     // extrapolation of the momentumflow to the closest side
     static vd extrapolateMomentumFlow(const Cell&);
     static tasystem::JacRow dExtrapolateMomentumFlow(const Cell&);
   };
-}
+
+  class ExtrapolatePressure:public Equation{
+    const BcCell& v;
+  public:
+    ExtrapolatePressure(const BcCell& v);
+    ~ExtrapolatePressure(){}
+    virtual void init();
+    virtual vd error() const;
+    virtual tasystem::JacRow jac() const;
+    virtual void show() const;
+    virtual void domg(vd& domg) const{}
+    virtual enum EqType getType() const { return EqType::BcEq;}    
+  private:
+    static vd extrapolatePressure(const Cell&);
+    static tasystem::JacRow dExtrapolatePressure(const Cell&);
+  };
+  
+} // namespace tube
 
 #endif // MOMENTUM_H
 //////////////////////////////////////////////////////////////////////
