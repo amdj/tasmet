@@ -1,6 +1,6 @@
 #include "solver.h"
 #include <Python.h>
-
+#include "constants.h"
 #include "tasystem.h"
 #include "vtypes.h"
 #include "exception.h"
@@ -15,18 +15,18 @@ namespace tasystem{
       d curmaxiter=maxiter;
       maxiter=0;
       cout << "Waiting for solver to finish...\n";
+
+      // Safe this thread such that solver can acquire GIL
+      PyThreadState* state = PyEval_SaveThread();   
       solverThread->join();
       solverThread.reset();
+      // And we restore our thread (The GIL is in hands of this function)
+      PyEval_RestoreThread(state);
       maxiter=curmaxiter;
     }
   }
   void doSolve(Solver* s,TaSystem* thesys,bool isThread=false) {
     TRACE(15,"doSolve()");
-    if(isThread){
-      assert(false);
-      Py_Initialize();
-      PyEval_InitThreads();
-    }
     SolverConfiguration& sc=*s;
     assert(thesys && s);
     d funer=1.0;
@@ -56,10 +56,9 @@ namespace tasystem{
       WARN("Solver reached maximum number of iterations! Results might not be reliable!");
     if(sc.maxiter==0)
       WARN("Solver stopped externally");
-    if(isThread){
-
-    }
+    // We have to set this back to false
     cout << "Solver done.\n";
+
   }
 
   void Solver::solve(TaSystem& sys){
