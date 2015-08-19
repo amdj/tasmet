@@ -34,11 +34,6 @@ namespace tube{
     virtual vd error() const;			// Error in momentum equation at node i
     virtual void show() const;
     virtual void domg(vd& domg) const;
-
-    // Put in leftmost or rightmost cell and you obtain an
-    // extrapolation of the momentumflow to the closest side
-    static vd extrapolateMomentumFlow(const Cell&);
-    static tasystem::JacRow dExtrapolateMomentumFlow(const Cell&);
   };
 
   class ExtrapolatePressure:public Equation{
@@ -51,12 +46,29 @@ namespace tube{
     virtual tasystem::JacRow jac() const;
     virtual void show() const;
     virtual void domg(vd& domg) const{}
-    virtual enum EqType getType() const { return EqType::BcEq;}    
-  private:
+    virtual enum EqType getType() const { return EqType::BcEqP;}    
     static vd extrapolatePressure(const Cell&);
     static tasystem::JacRow dExtrapolatePressure(const Cell&);
   };
-  
+ class ExtrapolateMomentumFlow:public Equation{
+  public:
+    static vd extrapolateMomentumFlow(const Cell&);
+    static tasystem::JacRow dExtrapolateMomentumFlow(const Cell&);
+  };
+  class BcVelocity:public Equation{
+    const BcCell& v;
+  public:
+    BcVelocity(const BcCell& v);
+    ~BcVelocity(){}
+    virtual void init();
+    virtual vd error() const;
+    virtual tasystem::JacRow jac() const;
+    virtual void show() const;
+    virtual void domg(vd& domg) const{}
+    virtual enum EqType getType() const { return EqType::BcEqu;}    
+    static vd extrapolatePressure(const Cell&);
+    static tasystem::JacRow dBcVelocity(const Cell&);
+  };
 } // namespace tube
 
 #endif // MOMENTUM_H

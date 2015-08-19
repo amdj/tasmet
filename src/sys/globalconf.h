@@ -45,6 +45,7 @@ namespace tasystem{
     ~Globalconf(){TRACE(-5,"~Globalconf()");}
     d getomg() const {return omg;}
     d getfreq() const {return omg/2/number_pi;}
+    d meshPeclet(d dx,d u) const {return u*dx*rho0()*gas().cp(T0())/gas().kappa(T0());}
     d c0() const {return gas_.cm(T0_);}
     d rho0() const {return gas_.rho(T0_,p0_);}
     d deltanu0() const{ return sqrt(2*gas_.mu(T0_)/(rho0()*omg));}

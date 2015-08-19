@@ -2,6 +2,8 @@
 #include "continuity.h"
 #include "momentum.h"
 #include "energy.h"
+#include "state.h"
+
 #include "jacrow.h"
 #include "exception.h"
 #define iDFT (v.gc->iDFT)
@@ -21,32 +23,33 @@ namespace tube{
   void BcCell::init(const Cell* left,const Cell* right){
     TRACE(10,"BcCell::init(const Cell* left,const Cell* right)");
     Cell::init(left,right);
-    Tbc_=var(*gc);
+    rhobc_=var(*gc,gc->rho0());
+    Tbc_=var(*gc,gc->T0());
     pbc_=var(*gc);
-    Tbc_.setadata(0,gc->T0());
+    ubc_=var(*gc);
+    // mubc_=var(*gc);
     mHbc_=var(*gc);
 
+    vars.push_back(&rhobc_);
     vars.push_back(&Tbc_);
     vars.push_back(&pbc_);
+    vars.push_back(&ubc_);
     vars.push_back(&mHbc_);
-    eqs.insert({EqType::BcEq,new ExtrapolatePressure(*this)});    
+    eqs.insert({EqType::BcEqP,new ExtrapolatePressure(*this)});
+    eqs.insert({EqType::BcEqStateBc,new StateBc(*this)});    
+    eqs.insert({EqType::BcEqu,new BcVelocity(*this)});    
   }
   vd BcCell::extrapolateQuant(Varnr v) const {
     TRACE(5,"BcCell::extrapolateQuant()");
     switch(v){
-    case Varnr::m:
-      return Continuity::extrapolateMassFlow(*this);            
-    case Varnr::mu:
-      return Momentum::extrapolateMomentumFlow(*this);      
-      break;
-    case Varnr::rho:
-      return Continuity::extrapolateDensity(*this);      
-      break;
     case Varnr::Q:
       return Energy::extrapolateHeatFlow(*this);
       break;
+    case Varnr::mu:
+      return ExtrapolateMomentumFlow::extrapolateMomentumFlow(*this);
+      break;
     case Varnr::mH:
-      return Energy::extrapolateEnthalpyFlow(*this);
+      return ExtrapolateEnthalpyFlow::extrapolateEnthalpyFlow(*this);
       break;
     default:
       WARN("This is not implemented!");
@@ -56,19 +59,14 @@ namespace tube{
   JacRow BcCell::dExtrapolateQuant(Varnr p) const {
     TRACE(5,"LeftCell::dExtrapolateQuant()");
     switch(p){
-    case Varnr::m:
-      return Continuity::dExtrapolateMassFlow(*this);            
-    case Varnr::mu:
-      return Momentum::dExtrapolateMomentumFlow(*this);      
-      break;
-    case Varnr::rho:
-      return Continuity::dExtrapolateDensity(*this);      
-      break;
     case Varnr::Q:
       return Energy::dExtrapolateHeatFlow(*this);
       break;
+    case Varnr::mu:
+      return ExtrapolateMomentumFlow::dExtrapolateMomentumFlow(*this);
+      break;
     case Varnr::mH:
-      return Energy::dExtrapolateEnthalpyFlow(*this);
+      return ExtrapolateEnthalpyFlow::dExtrapolateEnthalpyFlow(*this);
       break;
     default:
       WARN("This is not implemented!");

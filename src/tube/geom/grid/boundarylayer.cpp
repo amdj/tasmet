@@ -62,7 +62,7 @@ namespace tube{
     TRACE(15,"AutoBoundaryLayer::AutoBoundaryLayer()");
     this->dxb=dxb;
     this->alpha=alpha;
-    if(dxb>g.getL()/2 || dxb<=1e-8)
+    if(dxb>g.getL()/2 || dxb<=1e-15)
       throw MyError("Illegal minimal boundary layer thickness");
     d dxo=g.getL()/(g.getgp()-1);
     n=(us) int(ceil(log(dxo/dxb)/log(alpha)+1));

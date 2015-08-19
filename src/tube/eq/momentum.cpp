@@ -118,6 +118,7 @@ namespace tube{
     }
   
     static vd extrapolatePressure(const Cell& v){
+      TRACE(15,"LEFT::extrapolatePressure()");
       vd2 w=weightfactors(v); d wL0=w(0),wL1=w(1);
       assert(v.right());
       return wL0*v.p()()+wL1*v.right()->p()();
@@ -141,6 +142,7 @@ namespace tube{
       return jacrow;
     }
   } // namespace LEFT
+
   namespace RIGHT {
    static std::tuple<d,d> weightfactors(const Cell& v){
       d xR=v.xR;
@@ -155,6 +157,7 @@ namespace tube{
       // VARTRACE(25,wRNm2);
       return std::make_tuple(wRNm1,wRNm2);
     }
+
    // Extrapolate momentum flow left side  
    static vd extrapolateMomentumFlow(const Cell& v){
       d wRNm1,wRNm2; std::tie(wRNm1,wRNm2)=weightfactors(v);
@@ -162,6 +165,7 @@ namespace tube{
       return wRNm1*v.mu()()+wRNm2*v.left()->mu()();
     }
    static vd extrapolatePressure(const Cell& v){
+      TRACE(15,"RIGHT::extrapolatePressure()");
       d wRNm1,wRNm2; std::tie(wRNm1,wRNm2)=weightfactors(v);
       assert(v.left());
       return wRNm1*v.p()()+wRNm2*v.left()->p()();
@@ -174,6 +178,7 @@ namespace tube{
       jacrow+=JacCol(v.left()->mu(),wRNm2*eye);
       return jacrow;
     }
+
    static JacRow dExtrapolatePressure(const Cell& v){
       d wRNm1,wRNm2; std::tie(wRNm1,wRNm2)=weightfactors(v);
       assert(v.left());
@@ -182,53 +187,89 @@ namespace tube{
       jacrow+=JacCol(v.left()->p(),wRNm2*eye);
       return jacrow;
     }
+
   } // namespace RIGHT
-  vd Momentum::extrapolateMomentumFlow(const Cell& v){
-    TRACE(15,"Momentum::extrapolateMomentumFlow(const Cell& v)");
-    assert((!v.left() && v.right()) || (!v.right() && v.left()));
+
+  ExtrapolatePressure::ExtrapolatePressure(const BcCell& v):Equation(v),v(v){}
+  BcVelocity::BcVelocity(const BcCell& v):Equation(v),v(v){}
+
+  vd ExtrapolatePressure::extrapolatePressure(const Cell& v) {
+    TRACE(15,"ExtrapolatePressure::extrapolatePressure()");
+
+    if(!v.left() && v.right())
+      return LEFT::extrapolatePressure(v);
+    else
+      return RIGHT::extrapolatePressure(v);
+  }
+  vd ExtrapolateMomentumFlow::extrapolateMomentumFlow(const Cell& v) {
+    TRACE(15,"ExtrapolateMomentumFlow::extrapolateMomentumFlow()");
+
     if(!v.left() && v.right())
       return LEFT::extrapolateMomentumFlow(v);
     else
       return RIGHT::extrapolateMomentumFlow(v);
   }
-  JacRow Momentum::dExtrapolateMomentumFlow(const Cell& v){
-    TRACE(15,"Momentum::dExtrapolateMomentumFlow(const Cell& v)");
+  vd ExtrapolatePressure::error() const {
+    TRACE(15,"ExtrapolatePressure::error()");
+    assert((!v.left() && v.right()) || (!v.right() && v.left()));
+    VARTRACE(15,v.pbc()());
+    return extrapolatePressure(v)-v.pbc()();
+  }
+  vd BcVelocity::error() const {
+    TRACE(15,"BcVelocity::error()");
+    assert((!v.left() && v.right()) || (!v.right() && v.left()));
+   const vd& mbct=v.mbc().tdata();
+    const vd& rhobct=v.rhobc().tdata();
+    return fDFT*(mbct/(rhobct*v.Sfbc()))-v.ubc()();
+  }
+  JacRow ExtrapolatePressure::dExtrapolatePressure(const Cell& v) {
+    TRACE(15,"ExtrapolatePressure::dExtrapolatePressure()");
+    assert((!v.left() && v.right()) || (!v.right() && v.left()));
+    if(!v.left() && v.right())
+      return LEFT::dExtrapolatePressure(v);
+    else
+      return RIGHT::dExtrapolatePressure(v);
+  }
+  JacRow ExtrapolateMomentumFlow::dExtrapolateMomentumFlow(const Cell& v) {
+    TRACE(15,"ExtrapolateMomentumFlow::dExtrapolateMomentumFlow()");
     assert((!v.left() && v.right()) || (!v.right() && v.left()));
     if(!v.left() && v.right())
       return LEFT::dExtrapolateMomentumFlow(v);
     else
       return RIGHT::dExtrapolateMomentumFlow(v);
   }
-  
-  ExtrapolatePressure::ExtrapolatePressure(const BcCell& v):Equation(v),v(v){}
-  vd ExtrapolatePressure::error() const {
-    TRACE(55,"ExtrapolatePressure::error()");
-    assert((!v.left() && v.right()) || (!v.right() && v.left()));
-    VARTRACE(55,v.pbc()());
-    if(!v.left() && v.right())
-      return LEFT::extrapolatePressure(v)-v.pbc()();
-    else
-      return RIGHT::extrapolatePressure(v)-v.pbc()();
-  }
+
   JacRow ExtrapolatePressure::jac() const{
     TRACE(15,"ExtrapolatePressure::jac()");
     assert((!v.left() && v.right()) || (!v.right() && v.left()));
     JacRow dExtrapolatePressure(dofnr,3);
-    if(!v.left() && v.right())
-      dExtrapolatePressure+=LEFT::dExtrapolatePressure(v);
-    else
-      dExtrapolatePressure+=RIGHT::dExtrapolatePressure(v);
-
+    dExtrapolatePressure+=this->dExtrapolatePressure(v);
     dExtrapolatePressure+=JacCol(v.pbc(),-eye);
     return dExtrapolatePressure;
+  }
+  JacRow BcVelocity::jac() const{
+    TRACE(15,"BcVelocity::jac()");
+    assert((!v.left() && v.right()) || (!v.right() && v.left()));
+    JacRow dBcVelocity(dofnr,3);
+    const vd& mbct=v.mbc().tdata();
+    const vd& rhobct=v.rhobc().tdata();
+    d Sfbc=v.Sfbc();
+    dBcVelocity+=JacCol(v.mbc(),fDFT*diagmat(1/(rhobct*Sfbc))*iDFT);
+    dBcVelocity+=JacCol(v.rhobc(),-fDFT*diagmat(mbct/(pow(rhobct,2))*Sfbc)*iDFT);
+    dBcVelocity+=JacCol(v.ubc(),-eye);
+    return dBcVelocity;
   }
   void ExtrapolatePressure::show() const{
     cout << "----------------- Extrapolate Pressure\n";
   }
-  void ExtrapolatePressure::init() {
+ void ExtrapolatePressure::init() {
     TRACE(15,"ExtrapolatePressure::init()");
   }
-
-
-
+  void BcVelocity::show() const{
+    cout << "----------------- BcVelocity\n";
+  }
+ void BcVelocity::init() {
+    TRACE(15,"BcVelocity::init()");
+  }
+  
 } // namespace tube

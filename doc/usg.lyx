@@ -422,8 +422,18 @@ W_{c,Ll}=\frac{S_{f,L}}{x_{i}-x_{i-1}}\quad;\quad W_{c,Lr}=-W_{c,Ll}
 The flow of kinetic energy is computed as
 \begin_inset Formula 
 \begin{equation}
-E_{\mathrm{kin},R}=\frac{1}{2}m_{R}\left(\frac{m_{R}}{S_{f,R}\left(W_{R,l}\rho_{i}+W_{R,r}\rho_{i+1}\right)}\right)^{2},
+E_{\mathrm{kin},R}=\frac{1}{2}m_{R}\left(\frac{m_{R}}{S_{f,R}\left(W_{R,l}\rho_{i}+W_{R,r}\rho_{i+1}\right)}\right)^{2}=\frac{1}{2}m_{R}^{3}S_{f,R}\left(W_{R,l}\rho_{i}+W_{R,r}\rho_{i+1}\right)^{-2},
 \end{equation}
+
+\end_inset
+
+So
+\begin_inset Formula 
+\begin{eqnarray}
+\frac{\partial E_{\mathrm{kin},R}}{\partial m} & = & \frac{3}{2}S_{f,R}\left(W_{R,l}\rho_{i}+W_{R,r}\rho_{i+1}\right)m_{R}^{2}\\
+\frac{\partial E_{\mathrm{kin},R}}{\partial\rho_{i}} & = & -m_{R}^{3}S_{f,R}\left(W_{R,l}\rho_{i}+W_{R,r}\rho_{i+1}\right)^{-3}W_{R,l}\\
+\frac{\partial E_{\mathrm{kin},R}}{\partial\rho_{i+1}} & = & -m_{R}^{3}S_{f,R}\left(W_{R,l}\rho_{i}+W_{R,r}\rho_{i+1}\right)^{-3}W_{R,r}
+\end{eqnarray}
 
 \end_inset
 
@@ -1542,7 +1552,7 @@ Isentropically:
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-c_{p}\frac{T}{T_{0}}=\left(\frac{p}{p_{0}}\right)^{\frac{\gamma-1}{\gamma}}
+\frac{T}{T_{0}}=\left(\frac{p}{p_{0}}\right)^{\frac{\gamma-1}{\gamma}}
 \end{equation}
 
 \end_inset
@@ -1578,7 +1588,21 @@ Rework to:
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Formula $s=s_{0}+c_{v}\ln\left[\left(\frac{p_{0}}{p}\right)^{\gamma-1}\left(\frac{T}{T_{0}}\right)^{\gamma}\right]$
+\begin_inset Formula $s=s_{0}+c_{v}\ln\left[\left(\frac{p}{p_{0}}\right)\left(\frac{p_{0}}{p}\right)^{\gamma}\left(\frac{T}{T_{0}}\right)^{\gamma}\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $s=s_{0}+c_{v}\ln\left[\left(\frac{p}{p_{0}}\right)^{1-\gamma}\left(\frac{T}{T_{0}}\right)^{\gamma}\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $s=s_{0}+-c_{v}\ln\left[\left(\frac{p_{0}}{p}\right)^{1-\gamma}\left(\frac{T}{T_{0}}\right)^{-\gamma}\right]$
 \end_inset
 
 

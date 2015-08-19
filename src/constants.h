@@ -113,7 +113,9 @@ namespace tube{
     Sol=5,			// SolidEnergy
     Mu_is_m_u=6,      // momentumflow is massflow_squared div
                     // density*cs_area
-    BcEq,
+    BcEqP,
+    BcEqu,
+    BcEqStateBc,
   };
   #endif  
 

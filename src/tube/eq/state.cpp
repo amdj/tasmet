@@ -1,4 +1,4 @@
-#include "cell.h"
+#include "bccell.h"
 #include "weightfactors.h"
 #include "jacrow.h"
 #include "state.h"
@@ -30,6 +30,37 @@ namespace tube{
     
     return STATE_SCALE*error;
   }
+  StateBc::StateBc(const BcCell& v):Equation(v),v(v){}
+  vd StateBc::error()
+   const {
+    TRACE(6,"StateBc::Error()");
+    vd error(v.gc->Ns(),fillwith::zeros);
+    error+=v.pbc()();
+    error(0)+=v.gc->p0();	       // Add p0 part
+
+    const vd& rhot=v.rhobc().tdata();
+    const vd& Tt=v.Tbc().tdata();
+
+    d Rs=v.gc->gas().Rs();
+    error+=-fDFT*(Rs*rhot%Tt);
+    
+    return STATE_SCALE*error;
+  }
+  JacRow StateBc::jac() const{
+    TRACE(6,"StateBc::jac()");
+    JacRow jac(dofnr,5);
+    TRACE(0,"StateBc, dofnr jac:"<< dofnr);
+    jac+=JacCol(v.p(),STATE_SCALE*eye());
+
+    const vd& rhot=v.rhobc().tdata();
+    const vd& Tt=v.Tbc().tdata();
+
+    d Rs=v.gc->gas().Rs();
+    jac+=JacCol(v.rhobc(),-STATE_SCALE*Rs*fDFT*diagmat(Tt)*iDFT);
+    jac+=JacCol(v.Tbc(),-STATE_SCALE*Rs*fDFT*diagmat(rhot)*iDFT);
+
+    return jac;
+  }
   JacRow State::jac() const{
     TRACE(6,"State::jac()");
     JacRow jac(dofnr,5);
@@ -50,6 +81,9 @@ namespace tube{
   }
   void State::show() const {
     cout << "----------------- State equation\n";
+  }
+  void StateBc::show() const {
+    cout << "----------------- StateBc equation\n";
   }
 } // namespace tube
 

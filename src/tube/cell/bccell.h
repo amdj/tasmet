@@ -18,7 +18,7 @@ namespace tube{
 
   class BcCell:public Cell{
   protected:
-    tasystem::var Tbc_,mHbc_,pbc_;
+    tasystem::var Tbc_,mubc_,mHbc_,pbc_,rhobc_,ubc_;
   public:
     BcCell(us i,const Tube& t);
     virtual ~BcCell(){}
@@ -33,10 +33,16 @@ namespace tube{
 
     // Return mass flow at the cell wall
     virtual const tasystem::var& mbc() const=0;
-    // Return pressure at the cell wall
+    // Return velocity at the cell wall
+    // virtual const tasystem::var& ubc() const {return ubc_;}
+    // // Return pressure at the cell wall
     virtual const tasystem::var& pbc() const {return pbc_;}
+    // Return density at the cell wall
+    virtual const tasystem::var& rhobc() const {return rhobc_;}
     // Return temperature at the cell wall
     virtual const tasystem::var& Tbc() const {return Tbc_;}
+    // Return  velocity at the cell wall
+    virtual const tasystem::var& ubc() const {return ubc_;}
     // Return total enthalpy flow at the cell wall
     virtual const tasystem::var& mHbc() const {return mHbc_;}
   protected:

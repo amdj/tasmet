@@ -20,7 +20,7 @@ namespace tube{
   class BcCell;
   #endif
   #ifdef SWIG
-  %catches(std::exception,...) SimpleTubeConnector::SimpleTubeConnector(us,Pos,us,Pos);
+  %catches(std::exception,...) SimpleTubeConnector::SimpleTubeConnector(us,Pos,us,Pos,d K1to2=0,d K2to1=0);
     
   #endif // SWIG
   class SimpleTubeConnector:public segment::Connector{
@@ -28,10 +28,11 @@ namespace tube{
     std::array<Pos,2> pos;
     std::array<const BcCell*,2> bccells;
     std::array<d,2> out={{1.0f, 1.0f}};
+    // Minor loss coefficients
+    d K1to2, K2to1;
     us firsteqnr;
-    d dx=0,Sfgem;
   public:
-    SimpleTubeConnector(us seg1,Pos pos1,us seg2,Pos pos2);
+    SimpleTubeConnector(us seg1,Pos pos1,us seg2,Pos pos2,d K1to2=0,d K2to1=0);
     SimpleTubeConnector(const SimpleTubeConnector&)=delete;
     SimpleTubeConnector(const SimpleTubeConnector&,const tasystem::TaSystem&);    
     virtual segment::Connector* copy(const tasystem::TaSystem& s) const {return new SimpleTubeConnector(*this,s);}
@@ -43,8 +44,6 @@ namespace tube{
     virtual void show(us) const;
     virtual void jac(tasystem::Jacobian&) const;
     virtual void updateNf();
-  private:
-    vd kappaSft() const;
     #endif
   };
 

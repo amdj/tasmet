@@ -103,9 +103,9 @@ namespace tube {
     dmat Z=Zvar(impedanceFunc,gc).freqMultiplyMat();
     TRACE(10,"Calling impedance function done.");
     // VARTRACE(15,Z);
-    d Sf=pos==Pos::left?cell.SfL:cell.SfR;
+    d Sf=cell.Sfbc();
     error.subvec(0,Ns-1)=cell.pbc()();
-    error.subvec(0,Ns-1)+=-Z*fDFT*(cell.mbc().tdata()/(Sf*iDFT*cell.extrapolateQuant(Varnr::rho)));
+    error.subvec(0,Ns-1)+=-Z*cell.ubc()();
 
     // Isentropic state eq. error
     const vd& p=cell.pbc()();
@@ -132,17 +132,7 @@ namespace tube {
     JacRow impjac(firsteqnr,5); // 5=(2*p,2*rho,1*mbc)
     d Sf=pos==Pos::left?cell.SfL:cell.SfR;
     impjac+=JacCol(cell.pbc(),eye);
-    const vd rhobct=iDFT*cell.extrapolateQuant(Varnr::rho);
-    impjac+=JacCol(cell.mbc(),-Z*fDFT*diagmat(1/(Sf*rhobct))*iDFT);
-    d w1,w2; std::tie(w1,w2)=BcWeightFactorsV(cell);
-    if(pos==Pos::left) {
-      impjac+=JacCol(cell.rho(),w1*Z*fDFT*diagmat(cell.mbc().tdata()/(Sf*pow(rhobct,2)))*iDFT);      
-      impjac+=JacCol(cell.rhoR(),w2*Z*fDFT*diagmat(cell.mbc().tdata()/(Sf*pow(rhobct,2)))*iDFT);      
-    } else {
-      impjac+=JacCol(cell.rho(),w1*Z*fDFT*diagmat(cell.mbc().tdata()/(Sf*pow(rhobct,2)))*iDFT);      
-      impjac+=JacCol(cell.rhoL(),w2*Z*fDFT*diagmat(cell.mbc().tdata()/(Sf*pow(rhobct,2)))*iDFT);      
-    }
-
+    impjac+=JacCol(cell.ubc(),-Z);
     jac+=impjac;
 
 

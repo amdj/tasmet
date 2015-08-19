@@ -14,6 +14,8 @@
 namespace tube{
   SPOILNAMESPACE
 
+  class BcCell;
+  
   class State:public Equation
   {
   public:
@@ -23,6 +25,17 @@ namespace tube{
     tasystem::JacRow jac() const;
     vd error() const;
     EqType getType() const {return EqType::Sta;}
+  };
+  class StateBc:public Equation
+  {
+    const BcCell& v;
+  public:
+    StateBc(const BcCell& v);
+    virtual void init(){}
+    void show() const;
+    tasystem::JacRow jac() const;
+    vd error() const;
+    EqType getType() const {return EqType::BcEqStateBc;}
   };
   
 }
