@@ -53,6 +53,8 @@
 
   // Solver
   #include "solverconfiguration.h"
+  #include "errorvals.h"
+  #include "solprogress.h"
   #include "solver.h"
 
   // A small wrapper for this function, as TRACERNAME is not
@@ -136,6 +138,8 @@ void setTASMETTracer(int);
 %include "tasystem.h"
 %include "enginesystem.h"
  // Solver
+%include "errorvals.h"
+%include "solprogress.h"
 %include "solverconfiguration.h"
 %include "solver.h"
 

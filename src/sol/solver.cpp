@@ -29,6 +29,7 @@ namespace tasystem{
     TRACE(15,"doSolve()");
     SolverConfiguration& sc=*s;
     assert(thesys && s);
+    SolProgress* sp=&(s->sp);
     d funer=1.0;
     // For sure, we do at least one iteration
     d reler=1.0;
@@ -37,8 +38,9 @@ namespace tasystem{
     while((funer>sc.funtol || reler>sc.reltol) && nloop<sc.maxiter)    {
       try{
 	ErrorVals ers=doIter(thesys,&sc);
-	funer=ers.funer;
-	reler=ers.reler;
+	funer=ers.getFuner();
+	reler=ers.getReler();
+	(*sp)+=ers;
 	if(funer<0){
 	  WARN("Function error: "<< funer << " . Quiting solving procedure.");
 	  return;
@@ -61,7 +63,7 @@ namespace tasystem{
 
   }
 
-  void Solver::solve(TaSystem& sys){
+  SolProgress Solver::solve(TaSystem& sys){
     TRACE(20,"Solver::solve(sys)");
 
     // Check our sysetm
@@ -75,12 +77,13 @@ namespace tasystem{
       stop();
       solverThread.reset(new std::thread(doSolve,this,&sys,true));
     }
+    return sp;
   }
-  void Solver::solve(TaSystem& sys,const SolverConfiguration& sc1){
+  SolProgress Solver::solve(TaSystem& sys,const SolverConfiguration& sc1){
     TRACE(20,"Solver::solve(sys,sc)");
     // Update solver configuration
     SolverConfiguration::operator=(sc1);
-    solve(sys);
+    return solve(sys);
   }
   ErrorVals doIter(TaSystem* sys1,SolverConfiguration* sc) {
     TRACE(15,"Solver::doIter(sc)");

@@ -17,26 +17,10 @@
 #include <thread>
 #include <cassert>
 #include "vtypes.h"
-
+#include "errorvals.h"
+#include "solprogress.h"
 
 namespace tasystem{
-
-  struct ErrorVals{
-    d funer;
-    d reler;
-    ErrorVals(d fe,d re): funer(fe),reler(re){}
-    #ifndef SWIG                // Swig does not know about
-                                // initializer lists
-    ErrorVals(std::initializer_list<d> il)
-    {
-      assert(il.size()==2);
-      auto it=il.begin();
-      funer=*it++;
-      reler=*it;
-    }
-    #endif
-    ~ErrorVals(){ TRACE(5,"~ErrorVals()"); }
-  };
 
   #ifndef SWIG
   class TaSystem;
@@ -52,6 +36,7 @@ namespace tasystem{
   class Solver:public SolverConfiguration  {
     // Solverthread
     std::unique_ptr<std::thread> solverThread;
+    SolProgress sp;
   public:
     Solver(const SolverConfiguration sc=SolverConfiguration()) {
       SolverConfiguration::operator=(sc);
@@ -61,14 +46,17 @@ namespace tasystem{
 
     // Stop all solver threads
     void stop();
+    #ifndef SWIG
+    friend void doSolve(Solver* s,TaSystem* thesys,bool isThread);
+    #endif
 
     #ifdef SWIG
     %newobject solve;
     #endif
     // Start solving a system
-    void solve(TaSystem&);
-    void solve(TaSystem&,const SolverConfiguration& sc);
-
+    SolProgress solve(TaSystem&);
+    SolProgress solve(TaSystem&,const SolverConfiguration& sc);
+    SolProgress getSp() const {return sp;}
     ~Solver();
   };
 
