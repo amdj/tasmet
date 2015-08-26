@@ -210,7 +210,7 @@ namespace tube {
 
       // Second equation: extrapolated pressure equals pressure in
       // volume (later on to be adjusted for minor losses)
-      error.subvec(eqnr,eqnr+Ns-1)=con.c->extrapolateQuant(Varnr::p)
+      error.subvec(eqnr,eqnr+Ns-1)=con.c->pbc()()
 	-p_();
       eqnr+=Ns;
 
@@ -312,8 +312,8 @@ namespace tube {
 
       // Second equation: extrapolated pressure equals pressure in
       // volume (later on to be adjusted for minor losses)
-      JacRow preseq(eqnr,4);
-      preseq+=con.c->dExtrapolateQuant(Varnr::p);
+      JacRow preseq(eqnr,2);
+      preseq+=JacCol(con.c->pbc(),eye);
       preseq+=JacCol(p_,-eye);
       jac+=preseq;
       eqnr+=Ns;

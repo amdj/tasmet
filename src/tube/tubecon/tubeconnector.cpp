@@ -86,7 +86,14 @@ namespace tube {
     const vd& rho0tbc=bccells[0]->rhobc().tdata();	\
     const vd& rho1tbc=bccells[1]->rhobc().tdata();	\
   const vd& u0tbc=bccells[0]->ubc().tdata();		\
-  const vd& u1tbc=bccells[1]->ubc().tdata();		
+  const vd& u1tbc=bccells[1]->ubc().tdata();		\
+  vd half_u0sqt_div_cpT=pow(u0tbc,2)/(2*cp*T0tbc);		\
+  vd half_u1sqt_div_cpT=pow(u1tbc,2)/(2*cp*T1tbc);		\
+  d gampow=gamma/(gamma-1);					\
+  vd facM0=pow(1+half_u0sqt_div_cpT,gampow);			\
+  vd facM1=pow(1+half_u1sqt_div_cpT,gampow);		\
+  vd diff_facM0=gampow*pow(1+half_u0sqt_div_cpT,gampow-1);			\
+  vd diff_facM1=gampow*pow(1+half_u1sqt_div_cpT,gampow-1);			
 
   vd SimpleTubeConnector::error() const{
     TRACE(10,"SimpleTubeConnector::error()");
@@ -133,15 +140,20 @@ namespace tube {
       +out[1]*bccells[1]->extrapolateQuant(Varnr::Q);
     nr++;
 
-    // 6th equation: Change in exergy due to minor loss
+    // 6th equation: Change in total pressure over density due to minor loss
     TRACE(15," 6th equation: Change in exergy due to minor loss");
     d one_eight=1.0/8.0;
+
+    vd ptot1=fDFT*(p1tbc%facM1);
+    vd ptot0=fDFT*(p0tbc%facM0);
+    error.subvec(Ns*nr,Ns*(nr+1)-1)=\
+      ptot1-ptot0;
     // vd DeltaEx=fDFT*log((p1tbc/p0tbc)%pow(rho0tbc/rho1tbc,gamma));
  
-    vd DeltaEx=fDFT*log((p0tbc/p1tbc)%pow(T1tbc/T0tbc,gamma/(gamma-1)));
+    // vd DeltaEx=fDFT*log((p0tbc/p1tbc)%pow(T1tbc/T0tbc,gamma/(gamma-1)));
     // vd DeltaEx=fDFT*log(p1tbc/p0tbc);
     // vd DeltaEx=fDFT*(p1tbc-p0tbc);
-    VARTRACE(15,DeltaEx);
+    // VARTRACE(15,DeltaEx);
     // vd u0t=(iDFT*bccells[0]->extrapolateQuant(Varnr::mu))/bccells[0]->mbc().tdata();
     // vd u1t=(iDFT*bccells[1]->extrapolateQuant(Varnr::mu))/bccells[1]->mbc().tdata();
     // vd minus_minorLoss=K1to2*(T0/T1t)*one_eight	\
@@ -149,8 +161,8 @@ namespace tube {
     //   K2to1*(T0/T2t)*one_eight\
     //   *pow(out[1]*abs(u2t)+u2t,2);
     // vd minus_minorLoss=zeros(Ns);
-    error.subvec(Ns*nr,Ns*(nr+1)-1)=\
-      DeltaEx;//		    \
+
+      // DeltaEx;//		    \
     //+minus_minorLoss;
     // error.subvec(Ns*nr,Ns*(nr+1)-1)=\
     // Sfgem*(bccells[1]->extrapolateQuant(Varnr::p)\
@@ -206,18 +218,25 @@ namespace tube {
     jac+=Qintjac;
     eqnr+=Ns;
 
-    // 6th equation: Change in exergy due to minor loss
-    TRACE(15," 6th equation: Change in exergy due to minor loss");
+    // 6th equation: Change in total pressure over density due to
+    // minor loss
 
-    JacRow Exjac(eqnr,6);
+    JacRow Minor(eqnr,8);
     d one_eight=1.0/8.0;
-    // Exjac+=JacCol(bccells[1]->pbc(),eye);
-    // Exjac+=JacCol(bccells[0]->pbc(),-eye);
-    Exjac+=JacCol(bccells[0]->pbc(),fDFT*diagmat(1/p0tbc)*iDFT);
-    Exjac+=JacCol(bccells[1]->pbc(),-fDFT*diagmat(1/p1tbc)*iDFT);
-    Exjac+=JacCol(bccells[1]->Tbc(),fDFT*diagmat(gamma/(T1tbc*(gamma-1)))*iDFT);
-    Exjac+=JacCol(bccells[0]->Tbc(),-fDFT*diagmat(gamma/(T0tbc*(gamma-1)))*iDFT);
-    jac+=Exjac;
+
+    Minor+=JacCol(bccells[0]->pbc(),-fDFT*diagmat(facM0)*iDFT);
+    Minor+=JacCol(bccells[0]->ubc(),-fDFT*diagmat(p0tbc%	\
+						  diff_facM0%(u0tbc/(cp*T0tbc)))*iDFT);
+    Minor+=JacCol(bccells[0]->Tbc(),-fDFT*diagmat(p0tbc%	\
+						  diff_facM0%(0.5*pow(u0tbc,2)/(cp*pow(T0tbc,2))))*iDFT);
+
+    Minor+=JacCol(bccells[1]->pbc(),fDFT*diagmat(facM1)*iDFT);
+    Minor+=JacCol(bccells[1]->ubc(),fDFT*diagmat(p1tbc%	\
+						  diff_facM1%(u1tbc/(cp*T1tbc)))*iDFT);
+    Minor+=JacCol(bccells[1]->Tbc(),fDFT*diagmat(p1tbc%	\
+						  diff_facM1%(0.5*pow(u1tbc,2)/(cp*pow(T1tbc,2))))*iDFT);
+
+    jac+=Minor;
   }
   void SimpleTubeConnector::setEqNrs(us firsteqnr){
   TRACE(15,"SimpleTubeConnector::setEqNrs()");

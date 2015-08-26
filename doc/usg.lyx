@@ -1528,13 +1528,164 @@ Minor loss - conversion of kinetic energy to thermal energy
 \end_layout
 
 \begin_layout Standard
+Minor loss generates a decrease in the total (stagnation) pressure:
+\begin_inset Formula 
+\begin{equation}
+\Delta p_{\mathrm{tot}}=-\frac{1}{2}K\rho_{u}u_{u}^{2}.
+\end{equation}
+
+\end_inset
+
+For incompressible flow, the stagnation pressure over density is
+\begin_inset Formula 
+\begin{equation}
+p_{\mathrm{tot}}=p+\frac{1}{2}\rho u^{2}.
+\end{equation}
+
+\end_inset
+
+For compressible flow, the stagnation pressure over density is
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Formula $p_{tot}=p\left(1+\frac{\gamma-1}{2}M^{2}\right)^{\frac{\gamma}{\gamma-1}}\Rightarrow\frac{p_{tot}}{p}=\left(1+\frac{\gamma-1}{2}M^{2}\right)^{\frac{\gamma}{\gamma-1}}\Rightarrow\frac{p}{p_{tot}}=\left(1+\frac{\gamma-1}{2}M^{2}\right)^{\frac{\gamma}{1-\gamma}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\rho=\rho_{tot}\left(\frac{p}{p_{tot}}\right)^{\frac{1}{\gamma}}\Rightarrow\rho_{tot}=\rho\left(\frac{p_{tot}}{p}\right)^{\frac{1}{\gamma}}\Rightarrow\rho_{tot}=\rho\left(1+\frac{\gamma-1}{2}M^{2}\right)^{\frac{\gamma}{\gamma-1}\frac{1}{\gamma}}=\rho\left(1+\frac{\gamma-1}{2}M^{2}\right)^{\frac{1}{\gamma-1}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{p_{tot}}{\rho_{tot}}=\frac{p\left(1+\frac{\gamma-1}{2}M^{2}\right)^{\frac{\gamma}{\gamma-1}}}{\rho\left(1+\frac{\gamma-1}{2}M^{2}\right)^{\frac{1}{\gamma-1}}}=\frac{p}{\rho}\left(1+\frac{\gamma-1}{2}M^{2}\right)^{\frac{\gamma}{\gamma-1}-\frac{1}{\gamma-1}}=\frac{p}{\rho}\left(1+\frac{\gamma-1}{2}M^{2}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+p_{\mathrm{tot}}=p\left(1+\frac{1}{2}\frac{u^{2}}{c_{p}T}\right)^{\frac{\gamma}{\gamma-1}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A change in total pressure over density results in an increase in entropy.
+ For a callorically perfect gas, the entropy is
+\begin_inset Formula 
+\begin{equation}
+s=s_{0}+c_{v}\ln\left[\left(\frac{p}{p_{0}}\right)\left(\frac{\rho_{0}}{\rho}\right)^{\gamma}\right],
+\end{equation}
+
+\end_inset
+
+so the change in entropy from state 1 to 2 is
+\begin_inset Formula 
+\begin{equation}
+s_{2}-s_{1}=c_{v}\ln\left[\left(\frac{p_{2}}{p_{1}}\right)\left(\frac{\rho_{1}}{\rho_{2}}\right)^{\gamma}\right]=-R_{s}\ln\left(\frac{p_{\mathrm{tot},2}}{p_{\mathrm{tot},1}}\right)
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Using Hoeijmakers eq 6.15e:
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+For incompressible flow the total enthalpy is
+\begin_inset Formula 
+\begin{equation}
+dH=T\mathrm{d}s+\rho^{-1}\mathrm{d}p+u\mathrm{d}u
+\end{equation}
+
+\end_inset
+
+hence from the internal energy we can derive
+\begin_inset Formula 
+\begin{equation}
+s=s_{0}+c\ln\left(T/T_{0}\right),
+\end{equation}
+
+\end_inset
+
+which is, since 
+\begin_inset Formula $H_{d}=H_{u}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+s_{d}-s_{u}=c\ln\left(\frac{T_{d}}{T_{u}}\right)=-c\ln\left(\frac{\frac{p_{\mathrm{tot}}}{\rho}_{d}}{\frac{p_{\mathrm{tot}}}{\rho}_{u}}\right)=-c\ln\left(1+\frac{\Delta p_{\mathrm{tot}}}{p_{\mathrm{tot},u}}\right)
+\end{equation}
+
+\end_inset
+
+such that the change in exergy flow is
+\begin_inset Formula 
+\begin{equation}
+m\Delta E_{x}=-T_{0}m\left(s_{d}-s_{u}\right),
+\end{equation}
+
+\end_inset
+
+so
+\begin_inset Formula 
+\begin{equation}
+\Delta E_{x}=T_{0}c\ln\left(1-\frac{1}{2}\frac{Ku_{u}^{2}}{\left(\frac{p_{\mathrm{tot},u}}{\rho}\right)}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Subsubsection
+Generalization for compressible flow
+\end_layout
+
+\begin_layout Plain Layout
 At a sharp interface, generally turbulence is created, which converts kinetic
  energy to thermal energy.
  To model this effect, minor loss coefficients are introduced.
  If the minor loss coefficient is zero, no entropy is generated at an interface.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula 
 \begin{equation}
 \mathrm{d}h=T\mathrm{d}s+\rho^{-1}\mathrm{d}p
@@ -1545,11 +1696,11 @@ At a sharp interface, generally turbulence is created, which converts kinetic
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Isentropically:
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula 
 \begin{equation}
 \frac{T}{T_{0}}=\left(\frac{p}{p_{0}}\right)^{\frac{\gamma-1}{\gamma}}
@@ -1560,10 +1711,10 @@ Isentropically:
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 For a calorically perfect gas, the entropy is
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
 From Hoeijmakers:
@@ -1918,6 +2069,11 @@ the minor loss directly converts kinetic energy to thermal energy for an
  incompressible flow.
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Generalization for oscillating flow
 \end_layout
@@ -1950,14 +2106,14 @@ reference "eq:DeltaE_steady"
 
 ):
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
 Flow from 1 to 2
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Formula $E_{x,2}-E_{x,1}=-K_{1\to2}\left(\frac{T_{0}}{T_{1}}\right)\frac{1}{8}\left(s|u_{1}|+u_{1}\right)^{2}$
+\begin_inset Formula $p_{\mathrm{tot},2}-p_{\mathrm{tot},1}=-K_{1\to2}\frac{1}{8}\rho_{1}\left(s|u_{1}|+u_{1}\right)^{2}$
 \end_inset
 
 
@@ -1968,7 +2124,7 @@ Flow from 2 to 1
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Formula $E_{x,1}-E_{x,2}=-K_{2\to1}\left(\frac{T_{0}}{T_{2}}\right)\frac{1}{8}\left(s|u_{2}|+u_{2}\right)^{2}$
+\begin_inset Formula $p_{\mathrm{tot},1}-p_{\mathrm{tot},2}=-K_{2\to1}\rho_{2}\frac{1}{8}\left(s|u_{2}|+u_{2}\right)^{2}$
 \end_inset
 
 
@@ -1979,7 +2135,7 @@ Mutual exclusive sum:
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Formula $E_{x,2}-E_{x,1}=K_{2\to1}\left(\frac{T_{0}}{T_{2}}\right)\frac{1}{8}\left(s|u_{2}|+u_{2}\right)^{2}-K_{1\to2}\left(\frac{T_{0}}{T_{1}}\right)\frac{1}{8}\left(s|u_{1}|+u_{1}\right)^{2}$
+\begin_inset Formula $p_{\mathrm{tot},2}-p_{\mathrm{tot},1}=K_{2\to1}\rho_{2}\frac{1}{8}\left(s|u_{2}|+u_{2}\right)^{2}-K_{1\to2}\rho_{1}\frac{1}{8}\left(s|u_{1}|+u_{1}\right)^{2}$
 \end_inset
 
 
@@ -1990,124 +2146,8 @@ Mutual exclusive sum:
 
 \begin_inset Formula 
 \begin{equation}
-E_{x,2}-E_{x,1}=T_{0}R_{s}\ln\left[\left(\frac{p_{2}}{p_{1}}\right)\left(\frac{T_{1}}{T_{2}}\right)^{\frac{\gamma}{\gamma-1}}\right]=K_{2\to1}\frac{T_{0}}{T_{2}}\frac{1}{8}\left(s|u_{2}|+u_{2}\right)^{2}-K_{1\to2}\frac{T_{0}}{T_{1}}\frac{1}{8}\left(s|u_{1}|+u_{1}\right)^{2},
+p_{\mathrm{tot},2}-p_{\mathrm{tot},1}=K_{2\to1}\frac{\rho_{2}}{8}\left(s|u_{2}|+u_{2}\right)^{2}-K_{1\to2}\frac{\rho_{1}}{8}\left(s|u_{1}|+u_{1}\right)^{2}.
 \end{equation}
-
-\end_inset
-
-where 
-\begin_inset Formula $s=1$
-\end_inset
-
- for a right outflow side of a tube and 
-\begin_inset Formula $s=-1$
-\end_inset
-
- for a left inflow side.
-\end_layout
-
-\begin_layout Subsubsection
-Derivatives
-\end_layout
-
-\begin_layout Standard
-Say 
-\begin_inset Formula 
-\begin{equation}
-R=T_{0}R_{s}\ln\left[\left(\frac{p_{2}}{p_{1}}\right)\left(\frac{T_{1}}{T_{2}}\right)^{\frac{\gamma}{\gamma-1}}\right]+K_{1\to2}\frac{T_{0}}{T_{1}}\frac{1}{8}\left(s|u_{1}|+u_{1}\right)^{2}-K_{2\to1}\frac{T_{0}}{T_{2}}\frac{1}{8}\left(s|u_{2}|+u_{2}\right)^{2},
-\end{equation}
-
-\end_inset
-
-then
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-\begin_inset Formula $R=T_{0}R_{s}\ln\left[\left(\frac{p_{2}}{p_{1}}\right)\left(\frac{T_{1}}{T_{2}}\right)^{\frac{\gamma}{\gamma-1}}\right]+K_{1\to2}\frac{T_{0}}{T_{1}}\frac{1}{8}\left(s|u_{1}|+u_{1}\right)^{2}-K_{2\to1}\frac{T_{0}}{T_{2}}\frac{1}{8}\left(s|u_{2}|+u_{2}\right)^{2},$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-Rewriting:
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Formula $R=T_{0}R_{s}\left(\ln\left[\frac{p_{2}}{p_{1}}\right]+\frac{\gamma}{\gamma-1}\ln\left(\frac{T_{1}}{T_{2}}\right)\right)+K_{1\to2}\frac{T_{0}}{T_{1}}\frac{1}{8}\left(s|u_{1}|+u_{1}\right)^{2}-K_{2\to1}\frac{T_{0}}{T_{2}}\frac{1}{8}\left(s|u_{2}|+u_{2}\right)^{2},$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Formula $R=T_{0}R_{s}\left(\ln\left[\frac{p_{2}}{p_{1}}\right]+\frac{\gamma}{\gamma-1}\ln\left(\frac{T_{1}}{T_{2}}\right)\right)+K_{1\to2}\frac{T_{0}}{T_{1}}\frac{1}{8}\left(s|u_{1}|+u_{1}\right)^{2}-K_{2\to1}\frac{T_{0}}{T_{2}}\frac{1}{8}\left(s|u_{2}|+u_{2}\right)^{2},$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-Then
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Formula $\frac{\partial R}{\partial p_{2}}=T_{0}R_{s}\left(\gamma-1\right)\frac{1}{p_{2}}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Formula $\frac{\partial R}{\partial p_{1}}=-T_{0}R_{s}\left(\gamma-1\right)\frac{1}{p_{1}}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Formula $\frac{\partial R}{\partial T_{1}}=T_{0}R_{s}\frac{1}{T_{1}}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Formula $\frac{\partial R}{\partial T_{1}}=-T_{0}R_{s}\frac{1}{T_{2}}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Formula $\frac{\partial R}{\partial u_{1}}=K_{1\to2}\frac{T_{0}}{T_{1}}\frac{1}{4}\left(s|u_{1}|+u_{1}\right)\left(1+s\cdot\mathrm{sign}\left(u_{1}\right)\right)$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Formula $\frac{\partial R}{\partial u_{2}}=-K_{2\to1}\frac{T_{0}}{T_{2}}\frac{1}{4}\left(s|u_{2}|+u_{2}\right)\left(1+s\cdot\mathrm{sign}\left(u_{2}\right)\right)$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{eqnarray}
-\frac{\partial R}{\partial p_{2}} & = & T_{0}R_{s}\frac{1}{p_{2}}\\
-\frac{\partial R}{\partial p_{1}} & = & -T_{0}R_{s}\frac{1}{p_{1}}\\
-\frac{\partial R}{\partial T_{1}} & = & T_{0}c_{p}\frac{1}{T_{1}}\\
-\frac{\partial R}{\partial T_{2}} & = & -T_{0}c_{p}\frac{1}{T_{2}}\\
-\frac{\partial R}{\partial m_{1}} & =
-\end{eqnarray}
 
 \end_inset
 
@@ -2121,14 +2161,6 @@ SimpleTubeConnector
 \begin_layout Standard
 The SimpleTubeConnector can connect two Tube segments together.
  At the interface, continuity of mass and energy flow is enforced.
-\begin_inset Formula 
-\begin{equation}
-S_{gem}\left(p_{bc,2}-p_{bc,1}\right)+mu|_{2}-mu|_{1}=0
-\end{equation}
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Section
