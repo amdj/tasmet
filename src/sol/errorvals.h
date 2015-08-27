@@ -9,9 +9,12 @@
 #ifndef ERRORVALS_H
 #define ERRORVALS_H
 #include <atomic>
+#include <cassert>
+#include "vtypes.h"
 
 namespace tasystem {
-  
+  SPOILNAMESPACE
+
   class ErrorVals{
     std::atomic<d> funer;
     std::atomic<d> reler;

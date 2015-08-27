@@ -30,6 +30,13 @@ namespace tasystem {
 	funer(i)=ev.at(i).getFuner();
       return funer;
     }
+    vd Reler() const {
+      us siz=ev.size();
+      vd reler(siz);
+      for(us i=0;i<siz;i++)
+	reler(i)=ev.at(i).getReler();
+      return reler;
+    }
   };
 
   

@@ -147,28 +147,13 @@ namespace tube {
     vd ptot1=fDFT*(p1tbc%facM1);
     vd ptot0=fDFT*(p0tbc%facM0);
     error.subvec(Ns*nr,Ns*(nr+1)-1)=\
-      ptot1-ptot0;
-    // vd DeltaEx=fDFT*log((p1tbc/p0tbc)%pow(rho0tbc/rho1tbc,gamma));
- 
-    // vd DeltaEx=fDFT*log((p0tbc/p1tbc)%pow(T1tbc/T0tbc,gamma/(gamma-1)));
-    // vd DeltaEx=fDFT*log(p1tbc/p0tbc);
-    // vd DeltaEx=fDFT*(p1tbc-p0tbc);
-    // VARTRACE(15,DeltaEx);
-    // vd u0t=(iDFT*bccells[0]->extrapolateQuant(Varnr::mu))/bccells[0]->mbc().tdata();
-    // vd u1t=(iDFT*bccells[1]->extrapolateQuant(Varnr::mu))/bccells[1]->mbc().tdata();
+      (ptot1-ptot0)/p0;
     // vd minus_minorLoss=K1to2*(T0/T1t)*one_eight	\
     //   *pow(out[0]*abs(u1t)+u1t,2)-\
     //   K2to1*(T0/T2t)*one_eight\
     //   *pow(out[1]*abs(u2t)+u2t,2);
     // vd minus_minorLoss=zeros(Ns);
 
-      // DeltaEx;//		    \
-    //+minus_minorLoss;
-    // error.subvec(Ns*nr,Ns*(nr+1)-1)=\
-    // Sfgem*(bccells[1]->extrapolateQuant(Varnr::p)\
-    // 	     -bccells[0]->extrapolateQuant(Varnr::p));//+
-    // bccells[1]->extrapolateQuant(Varnr::mu)
-    // -bccells[0]->extrapolateQuant(Varnr::mu);
     nr++;
 
     return error;
@@ -224,16 +209,16 @@ namespace tube {
     JacRow Minor(eqnr,8);
     d one_eight=1.0/8.0;
 
-    Minor+=JacCol(bccells[0]->pbc(),-fDFT*diagmat(facM0)*iDFT);
-    Minor+=JacCol(bccells[0]->ubc(),-fDFT*diagmat(p0tbc%	\
+    Minor+=JacCol(bccells[0]->pbc(),fDFT*diagmat(-(1/p0)*facM0)*iDFT);
+    Minor+=JacCol(bccells[0]->ubc(),fDFT*diagmat(-(1/p0)*p0tbc%		\
 						  diff_facM0%(u0tbc/(cp*T0tbc)))*iDFT);
-    Minor+=JacCol(bccells[0]->Tbc(),-fDFT*diagmat(p0tbc%	\
+    Minor+=JacCol(bccells[0]->Tbc(),fDFT*diagmat((1/p0)*p0tbc%		\
 						  diff_facM0%(0.5*pow(u0tbc,2)/(cp*pow(T0tbc,2))))*iDFT);
 
-    Minor+=JacCol(bccells[1]->pbc(),fDFT*diagmat(facM1)*iDFT);
-    Minor+=JacCol(bccells[1]->ubc(),fDFT*diagmat(p1tbc%	\
+    Minor+=JacCol(bccells[1]->pbc(),fDFT*diagmat((1/p0)*facM1)*iDFT);
+    Minor+=JacCol(bccells[1]->ubc(),fDFT*diagmat((1/p0)*p1tbc%		\
 						  diff_facM1%(u1tbc/(cp*T1tbc)))*iDFT);
-    Minor+=JacCol(bccells[1]->Tbc(),fDFT*diagmat(p1tbc%	\
+    Minor+=JacCol(bccells[1]->Tbc(),fDFT*diagmat(-(1/p0)*p1tbc%		\
 						  diff_facM1%(0.5*pow(u1tbc,2)/(cp*pow(T1tbc,2))))*iDFT);
 
     jac+=Minor;
