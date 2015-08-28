@@ -53,9 +53,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -march=native -mtune=native -fopenmp
 # For Nf=9: 361
 # For Nf=10: 441
 # For Nf=11: 529
-
+# For Nf=12: 625
 # Watch out! Setting prealloc too high can give too much overhead for smaller Nf's
-# add_definitions(-DARMA_MAT_PREALLOC=9)
+# add_definitions(-DARMA_MAT_PREALLOC=625)
 
 
 # To disable bound checking on std::vector, and to disable assertions

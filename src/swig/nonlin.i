@@ -47,6 +47,7 @@
   // Tubes
   #include "grid.h"
   #include "tube.h"
+  #include "cell.h"
   #include "isentropictube.h"
   #include "laminarduct.h"
   #include "hopkinslaminarduct.h"
@@ -129,6 +130,7 @@ void setTASMETTracer(int);
 %include "conetube.h"
 %include "vertplates.h"
  // Tubes
+%include "cell.h"
 %include "tube.h"
 %include "isentropictube.h"
 %include "laminarduct.h"

@@ -32,6 +32,7 @@ namespace tube{
   %catches(std::exception,...) Tube::getValue(Varnr,us freqnr) const;
   %catches(std::exception,...) Tube::getValueC(Varnr,us freqnr) const;
   %catches(std::exception,...) Tube::getErrorAt(us eqnr,us freqnr) const;
+  %catches(std::exception,...) Tube::getCell(int i) const;
   #endif
   class Tube:public segment::Seg {
     // Pointer to possible PhaseConstraint instance
@@ -125,10 +126,14 @@ namespace tube{
 
     // Get reference to one of the boundary Cells
     const BcCell& bcCell(Pos) const;
+    #endif
     // Access to cells
-    const Cell& getCell(us i) const;
+
+    // Can handle negative numbers
+    // (-1 is last Cell
+    const Cell& getCell(int i) const;
+    #ifndef SWIG
     const Cell& operator[](us i) const;
-    
     virtual const drag::DragResistance& getDragResistance() const=0;
     virtual const HeatSource& getHeatSource() const=0;
     #endif

@@ -74,8 +74,11 @@ namespace tube {
     delete pc_;
     utils::purge(cells);
   }
-  const Cell& Tube::getCell(us i) const{
-    return *cells.at(i);
+  const Cell& Tube::getCell(int i) const{
+    if(i>=0)
+      return *cells.at(i);
+    else
+      return *cells.at(cells.size()+i);
   }
   const Cell& Tube::operator[](us i) const{
     return *cells[i];

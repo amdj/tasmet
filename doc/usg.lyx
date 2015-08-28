@@ -2173,30 +2173,6 @@ The TubePistonConnector connects a Piston segment to a Tube.
 \end_layout
 
 \begin_layout Subsection
-Heat conduction between tube and piston
-\end_layout
-
-\begin_layout Standard
-The typical length scale for conduction is
-\begin_inset Formula 
-\begin{equation}
-L_{\mathrm{con}}=\frac{V_{0}}{S_{0}},
-\end{equation}
-
-\end_inset
-
-such that the heat conduction is
-\begin_inset Formula 
-\begin{equation}
-Q_{\mathrm{piston}\rightarrow\mathrm{tube}}=\frac{\kappa S_{f}}{L_{\mathrm{con}}}\left(T_{p}-T_{bc}\right)
-\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
 Piston energy balance
 \end_layout
 
@@ -2217,6 +2193,61 @@ Transition of kinetic energy to heat
 
 \begin_layout Section
 TubePistonConnector
+\end_layout
+
+\begin_layout Section
+ConnectorVolume
+\end_layout
+
+\begin_layout Standard
+A 
+\noun on
+ConnectorVolume 
+\noun default
+is a special kind of gas volume on which 
+\noun on
+Tube
+\noun default
+s and 
+\noun on
+Piston
+\noun default
+s can be connected.
+ This way, branches can be created 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+V_{c}\frac{\partial\rho}{\partial t}+\sum\nolimits _{i}m_{i}=0
+\end{equation}
+
+\end_inset
+
+energy:
+\begin_inset Formula 
+\begin{equation}
+\frac{V_{c}}{\gamma-1}\frac{\partial p}{\partial t}+\sum\nolimits _{i}mH_{i}+Q_{i}=0
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+mH_{i}=\mathrm{extrapolated\,from\,tube}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Minor loss
 \end_layout
 
 \begin_layout Chapter

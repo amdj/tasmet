@@ -11,10 +11,15 @@
 namespace tasystem{class Jacobian;}
 namespace tube {    
 
+  #ifndef SWIG
   SPOILNAMESPACE;
   class Tube;
   class Equation;
+  #endif
 
+  #ifdef  SWIG
+  %nodefaultctor Cell;
+  #endif //  SWIG
   class Cell {
     //Gridpoint at a position
     //in a Tube
@@ -56,6 +61,7 @@ namespace tube {
     d rhR=0;            // Hydraulic radius at right cell wall
     // End geometric data ********************
 
+    #ifndef SWIG
     Cell(us i,const Tube&);
     virtual ~Cell();
 
@@ -65,10 +71,12 @@ namespace tube {
     // No copy constructors
     Cell(const Cell& )=delete;
 
+
     virtual void init(const Cell* left,const Cell* right);   
 
     const Cell* left() const {return left_;}
     const Cell* right() const {return right_;}
+
     const Tube& getTube() const {return *tube;}
     us geti() const {return i;}
     Equation* Eq(EqType et) {return eqs.at(et);}
@@ -121,7 +129,6 @@ namespace tube {
     // Compute the error for all equations on this gridpoint
     vd error() const;
                                       
-
     // const methods
     virtual void show(us detailnr=1) const;
     vd errorAt(us i) const;
@@ -136,7 +143,11 @@ namespace tube {
     virtual vd getRes() const;			  // Extract current result
                                           // vector
     d getValue(Varnr,us freqnr) const;
+
+    #endif
+    // Exposed to SWIG
     tasystem::var getValue(Varnr) const;
+    #ifndef SWIG
     virtual void updateNf();
 
     // Convenience function, we need a lot of static (background
@@ -152,7 +163,9 @@ namespace tube {
     virtual vd csource() const;	// Continuity source
     virtual vd msource() const;	// Momentum source
     virtual vd esource() const;	// Energy source
+    #endif
   };				// Cell class
+  
 } // namespace tube
 
 #endif /* _CELL_H_ */

@@ -13,7 +13,10 @@
 #include "vtypes.h"
 
 namespace tasystem {
+
+  #ifndef SWIG
   SPOILNAMESPACE
+  #endif
 
   class ErrorVals{
     std::atomic<d> funer;

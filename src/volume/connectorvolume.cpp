@@ -145,23 +145,36 @@ namespace tube {
     res.subvec(dofnr,dofnr+Ns-1)=p_(); 
     return res;
   }
+
+  // Definitions
+  #define Definitions				\
+    const d p0=gc->p0();			\
+    const d T0=gc->T0();			\
+    const d cp=gc->gas().cp(T0);		\
+    const d rho0=gc->gas().rho(T0,p0);		\
+    const d Rs=gc->gas().Rs();			\
+    const d gamma=gc->gas().gamma(T0);		\
+    const d gamfac=1/(gamma-1);			\
+    const d gampow=gamma/(gamma-1);		\
+    const vd& rhot=rho_.tdata();		\
+    const vd pt=p_.tdata()+p0;			\
+    const vd& Tt=T_.tdata();
+
+  #define TubeDefinitions				\
+    const vd& utbc=con.c->ubc().tdata();		\
+    const vd& Ttbc=con.c->Tbc().tdata();		\
+    vd half_ubcsqt_div_cpT=pow(utbc,2)/(2*cp*Ttbc);	\
+    const vd ptbc=con.c->pbc().tdata()+p0;		\
+    const  vd facM0=pow(1+half_ubcsqt_div_cpT,gampow);			\
+    const vd diff_facM0=gampow*pow(1+half_ubcsqt_div_cpT,gampow-1);	
+
   vd ConnectorVolume::error() const {
     TRACE(15,"void ConnectorVolume::error()");
     
     vd error(getNEqs());
     us eqnr=0;
 
-    // Definitions
-    const d p0=gc->p0();
-    const d T0=gc->T0();
-    const d rho0=gc->gas().rho(T0,p0);
-    const d Rs=gc->gas().Rs();
-    const d gamma=gc->gas().gamma(T0);
-    const d gamfac=1/(gamma-1);
-
-    const vd& rhot=rho_.tdata();
-    const vd pt=p_.tdata()+p0;
-    const vd& Tt=T_.tdata();
+    Definitions
 
     // ************************************************************
     // Mass conservation equation
@@ -202,21 +215,18 @@ namespace tube {
     // Tube equations
     for(const TubeConnection& con: tubeConnections){
       assert(con.c&&con.t);
-
+      TubeDefinitions
       // First tube equation: extrapolated mH equals mH
       error.subvec(eqnr,eqnr+Ns-1)=con.c->extrapolateQuant(Varnr::mH)
 	-con.c->mHbc()();
       eqnr+=Ns;
 
-      // Second equation: extrapolated pressure equals pressure in
-      // volume (later on to be adjusted for minor losses)
-      error.subvec(eqnr,eqnr+Ns-1)=con.c->pbc()()
-	-p_();
+      // Second equation: total pressure in tube equals total pressure
+      // in volume
+      error.subvec(eqnr,eqnr+Ns-1)=fDFT*(ptbc%facM0-pt);
       eqnr+=Ns;
 
-      // Third equation: heat flow out of Tube equals heat flow from
-      // volume to tube
-
+      // Third equation: conduction from tube to volume
       // Compute conduction path length
       d Lcon=pow(volume,1.0/3.0);
       // Compute cross sectional area of tube exit
@@ -244,17 +254,7 @@ namespace tube {
 
     us eqnr=firsteqnr;
 
-    // Definitions
-    const d p0=gc->p0();
-    const d T0=gc->T0();
-    const d rho0=gc->gas().rho(T0,p0);
-    const d Rs=gc->gas().Rs();
-    const d gamma=gc->gas().gamma(T0);
-    const d gamfac=1/(gamma-1);
-
-    const vd& rhot=rho_.tdata();
-    const vd pt=p_.tdata()+p0;
-    const vd& Tt=T_.tdata();
+    Definitions
 
     // ************************************************************
     // Mass conservation equation
@@ -302,7 +302,7 @@ namespace tube {
     // Tube equations
     for(const TubeConnection& con: tubeConnections){
       assert(con.c&&con.t);
-
+      TubeDefinitions
       // First tube equation: extrapolated mH equals mH
       JacRow mHismH(eqnr,5);
       mHismH+=con.c->dExtrapolateQuant(Varnr::mH);
@@ -310,10 +310,13 @@ namespace tube {
       jac+=mHismH;
       eqnr+=Ns;
 
-      // Second equation: extrapolated pressure equals pressure in
-      // volume (later on to be adjusted for minor losses)
+      // Second equation: total pressure in tube equals total pressure
+      // in volume
       JacRow preseq(eqnr,2);
-      preseq+=JacCol(con.c->pbc(),eye);
+      preseq+=JacCol(con.c->pbc(),fDFT*diagmat(facM0)*iDFT);
+      preseq+=JacCol(con.c->ubc(),fDFT*\
+		     diagmat(diff_facM0%(utbc/(cp*Ttbc)))	\
+		     *iDFT);      
       preseq+=JacCol(p_,-eye);
       jac+=preseq;
       eqnr+=Ns;
