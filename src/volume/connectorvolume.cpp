@@ -37,7 +37,7 @@ namespace tube {
 
   void TubeConnection::setPtr(const TaSystem& sys){
     TRACE(15,"TubeConnection::getPtr()");
-    t=&sys.getTube(segnr);
+    t=&sys.getTube(segid);
     c=&(t->bcCell(position));
   }
   ConnectorVolume::ConnectorVolume(const tasystem::TaSystem& sys,const ConnectorVolume& other):
@@ -59,11 +59,11 @@ namespace tube {
     // Check if all pistons are really pistons
     // for(Connection& con:pistonConnections){
     //   try{
-    // 	const mech::Piston&p=sys.getPiston(con.segnr);
+    // 	const mech::Piston&p=sys.getPiston(con.segid);
     // 	p.setConnected(con.position);
     //   }
     //   catch(...){
-    // 	throw MyError(msg("Error: segment %d is not of type Piston!",con.segnr));
+    // 	throw MyError(msg("Error: segment %d is not of type Piston!",con.segid));
     //   }
     // }
 
@@ -73,21 +73,21 @@ namespace tube {
 	con.setPtr(sys);
       }
       catch(...){
-	throw MyError(msg("Error: segment %d is not of type Tube!",con.segnr));
+	throw MyError(msg("Error: segment %s is not of type Tube!",con.segid.c_str()));
       }
       
     }
     
   }
-  void ConnectorVolume::addTube(us segnr,Pos pos){
+  void ConnectorVolume::addTube(const string& segid,Pos pos){
     TRACE(15,"ConnectorVolume::addTube()");
-    tubeConnections.push_back(TubeConnection(segnr,pos));
+    tubeConnections.push_back(TubeConnection(segid,pos));
   }
-  void ConnectorVolume::addPiston(us segnr,Pos pos){
+  void ConnectorVolume::addPiston(const string& segid,Pos pos){
     TRACE(15,"ConnectorVolume::addPiston()");
     WARN("Not yet working!");
     assert(false);
-    // pistonConnections.push_back(Connection(segnr,pos));    
+    // pistonConnections.push_back(Connection(segid,pos));    
   }
   ConnectorVolume::ConnectorVolume(d volume):
     volume(volume)

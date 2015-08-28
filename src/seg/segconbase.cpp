@@ -12,10 +12,14 @@ namespace segment{
     globnr_++;
     string s="Nameless ";
     s+=std::to_string(globnr_);
+    string id="n";
+    id+=std::to_string(globnr_);
     name_=s;
+    id_=id;
   }
   SegConBase::SegConBase(const SegConBase& o,const TaSystem& sys):
-    name_(o.name_)
+    name_(o.name_),
+    id_(o.id_)
   {/* Copy constructor */
     this->gc=&sys.gc();
   }

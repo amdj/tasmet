@@ -29,19 +29,15 @@ namespace tube {
   // Number of equations corresponding to this connection:
   const int Neq=6;
 
-  SimpleTubeConnector::SimpleTubeConnector(us seg1,Pos pos1,\
-                                           us seg2,Pos pos2,d K1to2,d K2to1):
+  SimpleTubeConnector::SimpleTubeConnector(const string& seg1,Pos pos1,\
+                                           const string& seg2,Pos pos2,d K1to2,d K2to1):
     K1to2(K1to2),
     K2to1(K2to1)
   {
     TRACE(15,"SimpleTubeConnector::SimpleTubeConnector()");
   
-    if(max(seg1,seg2)>constants::maxsegs)
-      throw MyError("Too high segment number given");
-    if(seg1==seg2)
-      throw MyError("Segments cannot be the same");
-    segnrs[0]=seg1;
-    segnrs[1]=seg2;
+    segids[0]=seg1;
+    segids[1]=seg2;
     pos[0]=pos1;
     pos[1]=pos2;
       
@@ -49,14 +45,14 @@ namespace tube {
   SimpleTubeConnector::SimpleTubeConnector(const SimpleTubeConnector& o,
                                            const TaSystem& sys):
     Connector(o,sys),
-    segnrs(o.segnrs),
+    segids(o.segids),
     pos(o.pos),
     K1to2(o.K1to2),
     K2to1(o.K2to1)
   {
     
-    bccells[0]=&sys.getTube(segnrs[0]).bcCell(pos[0]);
-    bccells[1]=&sys.getTube(segnrs[1]).bcCell(pos[1]);
+    bccells[0]=&sys.getTube(segids[0]).bcCell(pos[0]);
+    bccells[1]=&sys.getTube(segids[1]).bcCell(pos[1]);
     assert(bccells[0]&&bccells[1]);
 
     if(pos[0]==Pos::left) 
@@ -235,8 +231,8 @@ void SimpleTubeConnector::show(us) const{
   TRACE(15,"SimpleTubeConnector::show()");
   checkInit();
     
-  cout << "SimpleTubeConnector which connects tube " << segnrs[0] <<
-    " at the " << posWord(pos[0]) << " side to tube " << segnrs[1] <<
+  cout << "SimpleTubeConnector which connects tube " << segids[0] <<
+    " at the " << posWord(pos[0]) << " side to tube " << segids[1] <<
     " on the " << posWord(pos[1]) << " side.\n";
 }
 void SimpleTubeConnector::updateNf(){

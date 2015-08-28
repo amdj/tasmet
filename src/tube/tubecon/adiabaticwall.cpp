@@ -14,8 +14,8 @@ namespace tube{
   using tasystem::Jacobian;
   using tasystem::JacRow;
   using tasystem::JacCol;
-  AdiabaticWall::AdiabaticWall(us segnr,Pos position,bool arbitrateMass):
-      TubeBc(segnr,position),
+  AdiabaticWall::AdiabaticWall(const string& segid,Pos position,bool arbitrateMass):
+      TubeBc(segid,position),
       arbitrateMass(arbitrateMass)
   {}
 
@@ -37,7 +37,7 @@ namespace tube{
   void AdiabaticWall::show(us i) const {
     TRACE(5,"AdiabaticWall::show()");
     checkInit();
-    cout << "AdiabaticWall boundary condition set at "<< posWord(pos) <<" side of segment "<<segnr<<".\n";
+    cout << "AdiabaticWall boundary condition set at "<< posWord(pos) <<" side of segment "<<segid<<".\n";
   }
   int AdiabaticWall::arbitrateMassEq() const {
     TRACE(15,"AdiabaticWall::arbitrateMassEq()");

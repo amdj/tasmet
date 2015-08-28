@@ -21,7 +21,7 @@ namespace tube{
     PrescribeQty enthalpyflowzero;
     bool arbitrateMass;
   public:
-    AdiabaticWall(us segnr,Pos position,bool arbitrateMass=false);
+    AdiabaticWall(const string& segid,Pos position,bool arbitrateMass=false);
   private:
     AdiabaticWall(const AdiabaticWall& o,const tasystem::TaSystem& sys);
   public:

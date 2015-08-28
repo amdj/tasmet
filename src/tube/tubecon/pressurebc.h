@@ -24,9 +24,9 @@ namespace tasystem{
 
 namespace tube{
   #ifdef SWIG
-  %catches(std::exception,...) PressureBc::PressureBc(us segnr,Pos position,const tasystem::var& p,const tasystem::var& T,const tasystem::var& Ts);
-  %catches(std::exception,...) PressureBc::PressureBc(us segnr,Pos position,const tasystem::var& p,const tasystem::var& T); 
-  %catches(std::exception,...) PressureBc::PressureBc(us segnr,Pos position,const tasystem::var& p);  // %feature("notabstract") PressureBc;
+  %catches(std::exception,...) PressureBc::PressureBc(const string& segid,Pos position,const tasystem::var& p,const tasystem::var& T,const tasystem::var& Ts);
+  %catches(std::exception,...) PressureBc::PressureBc(const string& segid,Pos position,const tasystem::var& p,const tasystem::var& T); 
+  %catches(std::exception,...) PressureBc::PressureBc(const string& segid,Pos position,const tasystem::var& p);  // %feature("notabstract") PressureBc;
   #endif // SWIG
 
   class PressureBc:public TubeBc {
@@ -38,11 +38,11 @@ namespace tube{
   public:
     PressureBc& operator=(const PressureBc&)=delete;
     // Set all variables
-    PressureBc(us segnr,Pos position,const tasystem::var& p,const tasystem::var& T,const tasystem::var& Ts);
+    PressureBc(const string& segid,Pos position,const tasystem::var& p,const tasystem::var& T,const tasystem::var& Ts);
     // Assume solid temperature constant at gc.T0;
-    PressureBc(us segnr,Pos position,const tasystem::var& p,const tasystem::var& T); 
+    PressureBc(const string& segid,Pos position,const tasystem::var& p,const tasystem::var& T); 
     // Assume above and adiabatic compresion/expansion
-    PressureBc(us segnr,Pos position,const tasystem::var& p);
+    PressureBc(const string& segid,Pos position,const tasystem::var& p);
     PressureBc(const PressureBc& other)=delete;
 
     segment::Connector* copy(const tasystem::TaSystem& s) const { return new PressureBc(*this,s);}

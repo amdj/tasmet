@@ -20,12 +20,12 @@
 namespace mech {
   class Piston;
   #ifdef SWIG
-  %catches(std::exception,...) MechBc::MechBc(us segnr,Varnr var,const tasystem::var& bc);
+  %catches(std::exception,...) MechBc::MechBc(const string& segid,Varnr var,const tasystem::var& bc);
   #endif
 
   class MechBc:public segment::Connector{
-    // The segnr should be a Piston!
-    us segnr;
+    // The segid should be a Piston!
+    string segid;
     const Piston *p=nullptr;
     // Type of b.c. (F,x, or Z)
     Varnr type;
@@ -33,7 +33,7 @@ namespace mech {
     tasystem::var bc;
     us firsteqnr;
   public:
-    MechBc(us segnr,Varnr var,const tasystem::var& bc);
+    MechBc(const string& segid,Varnr var,const tasystem::var& bc);
     MechBc(const MechBc&,const tasystem::TaSystem&);
     ~MechBc();
     vd error() const;

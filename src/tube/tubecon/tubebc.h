@@ -12,14 +12,14 @@ namespace tube{
 
   class TubeBc:public segment::Connector {
   protected:
-    us segnr;
+    std::string segid;
     Pos pos;
     us firsteqnr;
   protected:
     const Tube* t=nullptr;
     const tasystem::TaSystem* sys=nullptr;
     TubeBc(const TubeBc& other,const tasystem::TaSystem& sys);
-    TubeBc(us segnr,Pos position):segnr(segnr),pos(position){}
+    TubeBc(const string& segid,Pos position):segid(segid),pos(position){}
     void setEqNrs(us firsteqnr1) { firsteqnr=firsteqnr1;}
   public:
     virtual ~TubeBc(){}

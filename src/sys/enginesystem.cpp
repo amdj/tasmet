@@ -51,14 +51,15 @@ namespace tasystem{
     phaseConSeg=-1;
     // Getting the PhaseConstraint Dof
 
-    for(us segnr=0;segnr<segs.size();segnr++) {
-      int thissegPhaseDof=segs[segnr]->providePhaseDof();
+    for(auto& segmap: segs) {
+      Seg* seg=segmap.second;
+      int thissegPhaseDof=seg->providePhaseDof();
       if(thissegPhaseDof>=0) {
         if(phaseConDof<0) {
           // set the phaseConDof to this seg its 
           phaseConDof=thissegPhaseDof;
           // Set the pointer to the right segment
-          phaseConSeg=segnr;
+          phaseConSeg=segmap.first;
           TRACE(20,"Phase constraint set on segment " << phaseConSeg);
 
         }
@@ -87,7 +88,7 @@ namespace tasystem{
   vd EngineSystem::Error(){
     TRACE(18,"EngineSystem::Error()");
     checkInit();
-    assert(phaseConSeg>=0);
+    assert(phaseConSeg!="");
     // Add one Dof for the timing constraint  
     us Ndofs=getNDofs()+1;
 
@@ -210,8 +211,8 @@ namespace tasystem{
     us segdofs;
     us startdof=0;
     us Nsegs=nSegs();
-    for(us i=0;i<Nsegs;i++){
-      segs[i]->domg(domg);
+    for(auto& segmap: segs){
+      segmap.second->domg(domg);
     }
     // Eigen::SparseVector()
     return domg;

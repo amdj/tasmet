@@ -14,6 +14,7 @@
 #include <memory>
 #include "vtypes.h"
 #include "globalconf.h"
+#include <map>
 
 #ifndef SWIG
 namespace segment{
@@ -38,11 +39,11 @@ namespace tasystem{
   #endif  
 
   #ifdef SWIG
-  %catches(std::exception,...) TaSystem::getTube(us i) const;
-  %catches(std::exception,...) TaSystem::getConnnectorVolume(us i) const;
-  %catches(std::exception,...) TaSystem::getPiston(us i) const;
-  %catches(std::exception,...) TaSystem::getSeg(us i) const;
-  %catches(std::exception,...) TaSystem::getConnector(us i) const;
+  %catches(std::exception,...) TaSystem::getTube(const string& i) const;
+  %catches(std::exception,...) TaSystem::getConnnectorVolume(const string& i) const;
+  %catches(std::exception,...) TaSystem::getPiston(const string& i) const;
+  %catches(std::exception,...) TaSystem::getSeg(const string& i) const;
+  %catches(std::exception,...) TaSystem::getConnector(const string& i) const;
   %catches(std::exception,...) TaSystem::TaSystem();
   %catches(std::exception,...) TaSystem::TaSystem(const Globalconf&);
   %catches(std::exception,...) TaSystem::Error();
@@ -65,8 +66,8 @@ namespace tasystem{
     // pressure boundary condition is present.
     int arbitrateMassEq=-1;
 
-    vector<segment::Seg*> segs;		
-    vector<segment::Connector*> connectors;    // Yes, connectors are just like segments
+    std::map<string,segment::Seg*> segs;		
+    std::map<string,segment::Connector*> connectors;    // Yes, connectors are just like segments
     bool driven=true;
     Globalconf gc_;             // Global configuration parameters
   public:
@@ -118,15 +119,14 @@ namespace tasystem{
     // void delseg(us n); // Not yet implemented.  Delete a segment
     // from the system (we have to determine how elaborated the API
     // has to be.)
-    const tube::Tube& getTube(us i) const;
-    const tube::ConnectorVolume& getConnnectorVolume(us i) const;
-    const mech::Piston& getPiston(us i) const;
-
+    const tube::Tube& getTube(const string& ID) const;
+    const tube::ConnectorVolume& getConnnectorVolume(const string& ID) const;
+    const mech::Piston& getPiston(const string& ID) const;
     us getNDofs() const;	// Compute DOFS in system, set     
     us getNEqs() const;    
 
-    const segment::Connector* getConnector(us i) const;    
-    const segment::Seg* getSeg(us i) const;
+    const segment::Connector* getConnector(const string& id) const;    
+    const segment::Seg* getSeg(const string& id) const;
 
   protected:
     // Return the mass of the system. If mass is arbitrated, this

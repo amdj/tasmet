@@ -53,8 +53,8 @@ namespace tube {
     }
   }
 
-  ImpedanceBc::ImpedanceBc(us segnr,Pos position,PyObject* impedancefunc,d T0):
-    TubeBc(segnr,position),
+  ImpedanceBc::ImpedanceBc(const string& segid,Pos position,PyObject* impedancefunc,d T0):
+    TubeBc(segid,position),
     T0(T0)
   {
     TRACE(15,"ImpedanceBc::ImpedanceBc()");
@@ -165,7 +165,7 @@ namespace tube {
       side="left";
     else
       side="right";
-    cout << "ImpedanceBc boundary condition set at "<<side <<" side of segment "<< segnr<<".\n";
+    cout << "ImpedanceBc boundary condition set at "<<side <<" side of segment "<< segid<<".\n";
     if(detailnr>1){
       cout << "Prescribed impedance:" << Zvar(impedanceFunc,gc).getcRes() << "\n";
       cout << "Prescribed fluid temperature:" << T0 << "\n";      

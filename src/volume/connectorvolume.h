@@ -22,9 +22,9 @@ namespace tube {
   
   #ifndef SWIG
   struct Connection{
-    us segnr;
+    std::string segid;
     Pos position;
-    Connection(us segnr,Pos position):segnr(segnr),position(position){}
+    Connection(const string& segid,Pos position):segid(segid),position(position){}
   };
   class Tube;
   class BcCell;
@@ -59,8 +59,8 @@ namespace tube {
     const tasystem::var& rho() const {return rho_;}
     const tasystem::var& T() const {return T_;}
 
-    void addTube(us segnr,Pos position);
-    void addPiston(us segnr,Pos position);
+    void addTube(const string& segid,Pos position);
+    void addPiston(const string& segid,Pos position);
 
     virtual vd error() const;
 

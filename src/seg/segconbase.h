@@ -34,6 +34,7 @@ namespace segment{
     int number=-1;		// Required for TaSystem. Not used in
     // any segment/connector code
     std::string name_;
+    std::string id_;
     bool init_=false;
   protected:
     const tasystem::Globalconf* gc=nullptr;	// Global configuration of the system
@@ -45,12 +46,11 @@ namespace segment{
     virtual ~SegConBase(){}
 
     const char* __repr__() const {return getName().c_str();}
-
     // Get and set name
-    const char* __str__() const {return name_.c_str();}
     const std::string& getName() const{return name_;} // This one is just the name
+    const std::string& getID() const{return id_;} // This one is just the name
     void setName(const std::string& name){ name_=name;} // This one is just the name
-
+    void setID(const std::string& id){ id_=id;} // Set ID
     // Tell a TaSystem whether this Segment of Connector arbitrates
     // Mass or not. The special return value of -1 tells it does
     // not. If it does, the derived class should return which equation

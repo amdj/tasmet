@@ -25,7 +25,7 @@ namespace tube{
   SPOILNAMESPACE
   #endif
   #ifdef SWIG
-  %catches(std::exception,...) ImpedanceBc::ImpedanceBc(us segnr,Pos position,PyObject* pyfunc,d T0=constants::T0);  // %feature("notabstract") PressureBc;
+  %catches(std::exception,...) ImpedanceBc::ImpedanceBc(const string& segid,Pos position,PyObject* pyfunc,d T0=constants::T0);  // %feature("notabstract") PressureBc;
   #endif // SWIG
 
 
@@ -36,7 +36,7 @@ namespace tube{
   public:
     // pyfunc is impedance function, which should return a complex
     // number as a function of omega: z=Z(omega)
-    ImpedanceBc(us segnr,Pos pos,PyObject* pyfunc,d T0=constants::T0);
+    ImpedanceBc(const string& segid,Pos pos,PyObject* pyfunc,d T0=constants::T0);
     ImpedanceBc(const ImpedanceBc&)=delete;
     virtual ~ImpedanceBc();
 

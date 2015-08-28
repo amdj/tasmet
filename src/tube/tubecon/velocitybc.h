@@ -18,7 +18,7 @@ namespace tube{
   SPOILNAMESPACE
   #endif
   #ifdef SWIG
-  %catches(std::exception,...) VelocityBc::VelocityBc(us segnr,Pos position,const tasystem::var& u,\
+  %catches(std::exception,...) VelocityBc::VelocityBc(const string& segid,Pos position,const tasystem::var& u,\
                                                       d T0=constants::T0,bool arbitrateMass=false);  // %feature("notabstract") PressureBc;
   #endif // SWIG
 
@@ -31,7 +31,7 @@ namespace tube{
     VelocityBc(const VelocityBc& other,const tasystem::TaSystem&);
   public:
     // u is prescribed velocity field
-    VelocityBc(us segnr,Pos pos,const tasystem::var& u,d T0=constants::T0,bool arbitrateMass=false);
+    VelocityBc(const string& segid,Pos pos,const tasystem::var& u,d T0=constants::T0,bool arbitrateMass=false);
     VelocityBc(const VelocityBc&)=delete;
     virtual ~VelocityBc();
 

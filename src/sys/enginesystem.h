@@ -23,7 +23,7 @@ namespace tasystem{
     // The Dof which should be used for the phase constraint
     int phaseConDof=-1;
     // Pointer to the segment which provide a phaseDof
-    int phaseConSeg=-1;
+    string phaseConSeg;
 
   public:    
     EngineSystem(const Globalconf& gc);

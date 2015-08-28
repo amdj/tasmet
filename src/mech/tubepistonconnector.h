@@ -35,7 +35,7 @@ namespace mech{
   #endif
   
   class TubePistonConnector:public segment::Connector{
-    us pistonNr,tubeNr;
+    string pistonid,tubeid;
     Pos pistonPos,tubePos;
     us firsteqnr;
     // d dx=0,Sfgem;
@@ -50,7 +50,7 @@ namespace mech{
     // See documentation for more information.
     
   public:
-    TubePistonConnector(us tubenr,Pos tubepos,us pistonnr,Pos pistonpos,d KTubePiston=0,d KPistonTube=0);
+    TubePistonConnector(const string& tubeid,Pos tubepos,const string& pistonid,Pos pistonpos,d KTubePiston=0,d KPistonTube=0);
     TubePistonConnector(const TubePistonConnector&)=delete;
     TubePistonConnector(const TubePistonConnector&,const tasystem::TaSystem&);    
     virtual segment::Connector* copy(const tasystem::TaSystem& s) const {return new TubePistonConnector(*this,s);}

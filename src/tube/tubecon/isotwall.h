@@ -32,14 +32,14 @@ namespace tube{
   private:
     IsoTWall(const IsoTWall& o,const tasystem::TaSystem&);
   public:
-    // segnr: segment number to apply this b.c. to. Position: left or
+    // segid: segment number to apply this b.c. to. Position: left or
     // right side.
     // Tbc: temperature boundary condition value.
     // arbitrateMass: whether this b.c. returns an equation number
     // such that a TaSystem can overwrite this equation with global
     // mass conservation.
     // provide
-    IsoTWall(us segnr,Pos position,const tasystem::var& Tbc
+    IsoTWall(const string& segid,Pos position,const tasystem::var& Tbc
              ,bool arbitrateMass=false);
     IsoTWall(const IsoTWall& o)=delete;
     virtual segment::Connector* copy(const tasystem::TaSystem& sys) const {

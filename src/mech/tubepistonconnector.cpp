@@ -34,12 +34,12 @@ namespace mech {
 
 
   
-  TubePistonConnector::TubePistonConnector(us tubenr,Pos tubepos,\
-                                           us pistonnr,Pos pistonpos,\
+  TubePistonConnector::TubePistonConnector(const string& tubeid,Pos tubepos,\
+                                           const string& pistonid,Pos pistonpos,\
                                            d KTubePiston,d KPistonTube):
     Connector(),
-    pistonNr(pistonnr),
-    tubeNr(tubenr),
+    pistonid(pistonid),
+    tubeid(tubeid),
     pistonPos(pistonpos),
     tubePos(tubepos),
     KTubePiston(KTubePiston),
@@ -55,25 +55,25 @@ namespace mech {
   }
   TubePistonConnector::TubePistonConnector(const TubePistonConnector& other,const tasystem::TaSystem& sys):
     Connector(other,sys),
-    pistonNr(other.pistonNr),
-    tubeNr(other.tubeNr),
+    pistonid(other.pistonid),
+    tubeid(other.tubeid),
     pistonPos(other.pistonPos),
     tubePos(other.tubePos),
     KTubePiston(other.KTubePiston),
     KPistonTube(other.KPistonTube)
   {
     TRACE(15,"TubePistonConnector::TubePistonConnector()");
-    if((piston=&sys.getPiston(pistonNr))==nullptr){
-      throw MyError(msg("Segment %g is not of type Piston",pistonNr));
+    if((piston=&sys.getPiston(pistonid))==nullptr){
+      throw MyError(msg("Segment %s is not of type Piston",pistonid.c_str()));
     }
-    if((tube=&sys.getTube(tubeNr))==nullptr){
-      throw MyError(msg("Segment %g is not of type Tube",tubeNr));
+    if((tube=&sys.getTube(tubeid))==nullptr){
+      throw MyError(msg("Segment %g is not of type Tube",tubeid.c_str()));
     }
     
     // Check if piston is already connected. If so, throw error
     if(piston->isConnected(pistonPos))
        throw MyError(msg("Error: piston %d is already connected to "
-                         "a segment at side %s.",pistonNr,tube::posWord(pistonPos)));
+                         "a segment at side %s.",pistonid.c_str(),tube::posWord(pistonPos)));
 
     // Tell the Piston that it is connected at some side
     piston->setConnected(pistonPos);
@@ -207,8 +207,8 @@ namespace mech {
   }
   void TubePistonConnector::show(us detailnr) const{
 
-    std::cout << "TubePistonConnector which connects tube " << tubeNr <<
-      " at the " << tube::posWord(tubePos) << " side to Piston " << pistonNr <<
+    std::cout << "TubePistonConnector which connects tube " << tubeid <<
+      " at the " << tube::posWord(tubePos) << " side to Piston " << pistonid <<
       " on the " << tube::posWord(pistonPos) << " side.\n";
   }
 

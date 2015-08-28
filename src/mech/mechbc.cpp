@@ -26,9 +26,9 @@ namespace mech {
   using tasystem::JacRow;
   using tasystem::JacCol;
 
-  MechBc::MechBc(us segnr,Varnr var,const tasystem::var& bc):
+  MechBc::MechBc(const string& segid,Varnr var,const tasystem::var& bc):
     Connector(),
-    segnr(segnr),
+    segid(segid),
     type(var),
     bc(bc)
   {
@@ -42,13 +42,13 @@ namespace mech {
   }
   MechBc::MechBc(const MechBc& other,const tasystem::TaSystem& sys):
     Connector(other,sys),
-    segnr(other.segnr),
+    segid(other.segid),
     type(other.type),
     bc(other.bc)
   {
     TRACE(15,"MechBc::MechBc()");
     try{
-      p=&dynamic_cast<const Piston&>(*sys.getSeg(segnr));
+      p=&dynamic_cast<const Piston&>(*sys.getSeg(segid));
     }
     catch(...) {
       throw MyError("Segment is not a Piston or does not exist.");
@@ -72,7 +72,7 @@ namespace mech {
       bctext="piston displacement b.c.";
     else
       bctext="Mechanical impedance b.c.";
-    cout << "Mechanical domain boundary condition set for segment "<< segnr \
+    cout << "Mechanical domain boundary condition set for segment "<< segid \
          << ".\n Type of boundary condition:" << bctext << endl;
     if(detailnr>2)
       cout << "Value of bc: " << bc() << endl;

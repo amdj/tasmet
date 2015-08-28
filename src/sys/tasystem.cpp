@@ -25,10 +25,10 @@ namespace tasystem{
   {
     TRACE(25,"TaSystem::TaSystem(TaSystem&) copy");
     for(auto it=o.segs.begin();it!=o.segs.end();it++){
-      (*this)+=*(*it);
+      segs[it->first]=it->second->copy(*this);
     }
     for(auto it=o.connectors.begin();it!=o.connectors.end();it++){
-      (*this)+=*(*it);
+      connectors[it->first]=it->second->copy(*this);
     }
     hasInit=false;
   }
@@ -49,23 +49,23 @@ namespace tasystem{
     utils::purge(connectors);
     hasInit=false;
   }
-  TaSystem& TaSystem::operator+=(const Seg& seg){
+  TaSystem& TaSystem::operator+=(const Seg& s){
     TRACE(14,"TaSystem::operator+=(Seg)");
     hasInit=false;
-    segs.emplace_back(seg.copy(*this));
-    segs[nSegs()-1]->setNumber(nSegs()-1);
+    segs[s.getID()]=s.copy(*this);
+    segs[s.getID()]->setNumber(nSegs()-1);
     return *this;
   }
-  TaSystem& TaSystem::operator+=(const Connector& con){
+  TaSystem& TaSystem::operator+=(const Connector& c){
     TRACE(24,"TaSystem::operator+=(Connector)");
     hasInit=false;
-    connectors.emplace_back(con.copy(*this));
-    connectors[nConnectors()-1]->setNumber(nConnectors()-1);
+    connectors[c.getID()]=c.copy(*this);
+    connectors[c.getID()]->setNumber(nConnectors()-1);
     return *this;
   }
 
-  const Seg* TaSystem::getSeg(us i) const { return segs.at(i);}
-  const Connector* TaSystem::getConnector(us i) const { return connectors.at(i);}
+  const Seg* TaSystem::getSeg(const string& i) const { return segs.at(i);}
+  const Connector* TaSystem::getConnector(const string& i) const { return connectors.at(i);}
 
   void TaSystem::init(){
     TRACE(14,"TaSystem::init()");
@@ -74,16 +74,16 @@ namespace tasystem{
     us firstdof=0;
     us firsteq=0;
     d mass=0;
-    for(auto seg=segs.begin();seg!=segs.end();seg++) {
+    for(auto seg: segs) {
       // Set the dofnrs
       VARTRACE(10,firstdof);
       VARTRACE(10,firsteq);
-      (*seg)->setDofNrs(firstdof);
-      (*seg)->setEqNrs(firsteq);
-      firstdof+=(*seg)->getNDofs();
-      firsteq+=(*seg)->getNEqs();
+      (seg.second)->setDofNrs(firstdof);
+      (seg.second)->setEqNrs(firsteq);
+      firstdof+=(seg.second)->getNDofs();
+      firsteq+=(seg.second)->getNEqs();
 
-      mass+=(*seg)->getMass();
+      mass+=(seg.second)->getMass();
 
     }
     // Update the mass in the system if it is undefined   (set by the
@@ -91,10 +91,10 @@ namespace tasystem{
     if(mass_<0)
       setMass(mass);
 
-    for(auto con=connectors.begin();con!=connectors.end();con++) {
+    for(auto con: connectors) {
       VARTRACE(10,firsteq)
-      (*con)->setEqNrs(firsteq);
-      firsteq+=(*con)->getNEqs();
+      con.second->setEqNrs(firsteq);
+      firsteq+=con.second->getNEqs();
     }
 
     // Iterate over all segments and connectors to find one segment of
@@ -103,8 +103,11 @@ namespace tasystem{
     using segment::SegConBase;
     // Build an fill a vector of all segments and connectors
     vector<const SegConBase*> segcons;
-    segcons.insert(segcons.end(),segs.begin(),segs.end());
-    segcons.insert(segcons.end(),connectors.begin(),connectors.end());
+    for(auto seg:segs)
+      segcons.push_back(seg.second);
+    for(auto con:connectors)
+      segcons.push_back(con.second);
+
     // Find a probable equation for mass arbitration. This should
     // indeed be done AFTER all segments and connectors have equation
     // and DOF numbers, as done in the previous for loops
@@ -148,11 +151,11 @@ namespace tasystem{
     checkInit();
     TRACE(30,"TaSystem::setNf()");
     gc_.setNf(Nf);
-    for(auto seg=segs.begin();seg!=segs.end();seg++)      {
-      (*seg)->updateNf();
+    for(auto seg: segs)      {
+      seg.second->updateNf();
     }
-    for(auto con=connectors.begin();con!=connectors.end();con++)      {
-      (*con)->updateNf();
+    for(auto con: connectors)      {
+      con.second->updateNf();
     }
     TRACE(25,"New Ns:"<< gc_.Ns() << " . Adres gc: " << &gc_);
 
@@ -162,8 +165,8 @@ namespace tasystem{
   us TaSystem::getNDofs() const  {
     TRACE(0,"TaSystem::getNDofs()");
     us Ndofs=0;
-    for (auto seg = segs.begin(); seg != segs.end(); ++seg) {
-      Ndofs+=(*seg)->getNDofs();
+    for (auto seg : segs) {
+      Ndofs+=seg.second->getNDofs();
     }  
     return Ndofs;
   }
@@ -171,11 +174,11 @@ namespace tasystem{
     TRACE(0,"TaSystem::getNDofs()");
     us Neqs=0;
 
-    for (auto seg = segs.begin(); seg != segs.end(); ++seg) {
-      Neqs+=(*seg)->getNEqs();
+    for (auto seg :segs) {
+      Neqs+=seg.second->getNEqs();
     }
-    for (auto con = connectors.begin(); con != connectors.end(); ++con) {
-      Neqs+=(*con)->getNEqs();
+    for (auto con :connectors) {
+      Neqs+=con.second->getNEqs();
     }
     return Neqs;
   }
@@ -187,14 +190,12 @@ namespace tasystem{
     gc_.show();
     if(detailnr>0){
       cout << "Now showing connectors in TaSystem...\n";
-      for(us i=0;i<nConnectors();i++){
-        TRACE(13,"Showing connector"<<i <<"..");
-        connectors[i]->show(detailnr);
+      for(auto con:connectors){
+        con.second->show(detailnr);
       }
       cout << "Now showing segments in TaSystem...\n";
-      for(us i=0;i<nSegs();i++){
-        TRACE(13,"Showing segment "<<i <<"..");
-        segs[i]->show(detailnr);
+      for(auto seg:segs){
+        seg.second->show(detailnr);
       }
     } // detailnr>0
   }
@@ -203,10 +204,10 @@ namespace tasystem{
     us ndofs=getNDofs();
     Jacobian j(ndofs);
 
-    for(const Seg* seg :segs)
-      seg->jac(j);
+    for(auto seg :segs)
+      seg.second->jac(j);
     for(auto con: connectors)
-      con->jac(j);
+      con.second->jac(j);
     // Convert to tripletlist
     TripletList jac=j;
 
@@ -247,17 +248,21 @@ namespace tasystem{
     us segeqs,coneqs;
     us starteq=0;
     TRACE(-1,"Nsegs:"<< Nsegs);
-    for(us i=0;i<Nsegs;i++){
+    us i=0;			// iterator
+    for(auto seg:segs){
       TRACE(15,"Segment " << i);
-      segeqs=segs[i]->getNEqs();
-      error.subvec(starteq,starteq+segeqs-1)=segs[i]->error();
+      segeqs=seg.second->getNEqs();
+      error.subvec(starteq,starteq+segeqs-1)=seg.second->error();
       starteq+=segeqs;
+      i++;
     }
-    for(us i=0;i<Ncon;i++){
+    i=0;
+    for(auto con: connectors){
       TRACE(15,"Connector " << i);
-      coneqs=connectors[i]->getNEqs();
-      error.subvec(starteq,starteq+coneqs-1)=connectors[i]->error();
+      coneqs=con.second->getNEqs();
+      error.subvec(starteq,starteq+coneqs-1)=con.second->error();
       starteq+=coneqs;
+      i++;
     }
 
     assert(arbitrateMassEq< (int) Ndofs);
@@ -274,9 +279,9 @@ namespace tasystem{
     us Ndofs=getNDofs();
     vd Res(Ndofs);
     us startdof=0,segdofs;
-    for(const Seg* seg: segs){
-      segdofs=seg->getNDofs();
-      Res.subvec(startdof,startdof+segdofs-1)=seg->getRes();
+    for(auto seg: segs){
+      segdofs=seg.second->getNDofs();
+      Res.subvec(startdof,startdof+segdofs-1)=seg.second->getRes();
       startdof+=segdofs;
     }
     return Res;
@@ -297,17 +302,17 @@ namespace tasystem{
   void TaSystem::resetHarmonics(){
     checkInit();
     assert(!segs.empty());
-    for(auto seg=segs.begin();seg!=segs.end();seg++)
-      (*seg)->resetHarmonics();
+    for(auto seg: segs)
+      seg.second->resetHarmonics();
   }
-  const tube::Tube& TaSystem::getTube(us i)  const {
-    return dynamic_cast<const tube::Tube&>(*segs.at(i));
+  const tube::Tube& TaSystem::getTube(const string& id)  const {
+    return dynamic_cast<const tube::Tube&>(*segs.at(id));
   }
-  const tube::ConnectorVolume& TaSystem::getConnnectorVolume(us i)  const {
-    return dynamic_cast<const tube::ConnectorVolume&>(*segs.at(i));
+  const tube::ConnectorVolume& TaSystem::getConnnectorVolume(const string& id)  const {
+    return dynamic_cast<const tube::ConnectorVolume&>(*segs.at(id));
   }
-  const mech::Piston& TaSystem::getPiston(us i)  const {
-    return dynamic_cast<const mech::Piston&>(*segs.at(i));
+  const mech::Piston& TaSystem::getPiston(const string& id)  const {
+    return dynamic_cast<const mech::Piston&>(*segs.at(id));
   }
   void TaSystem::setRes(const vd& Res){
     checkInit();
@@ -318,9 +323,9 @@ namespace tasystem{
       us segdofs;
       us startdof=0;
       us Nsegs=nSegs();
-      for(Seg* seg: segs){
-        segdofs=seg->getNDofs();
-        seg->setRes(Res.subvec(startdof,startdof+segdofs-1));
+      for(auto seg: segs){
+        segdofs=seg.second->getNDofs();
+        seg.second->setRes(Res.subvec(startdof,startdof+segdofs-1));
         startdof+=segdofs;
       } // for
       // Update the mass of the system from the result of the segments
@@ -335,8 +340,8 @@ namespace tasystem{
     TRACE(10,"TaSystem::getCurrentMass()");
     checkInit();
     d mass=0;
-    for(const Seg* seg: segs){
-      mass+=seg->getMass();
+    for(auto seg: segs){
+      mass+=seg.second->getMass();
     } // for loop
     return mass;
   }
@@ -345,8 +350,8 @@ namespace tasystem{
     // Should become a row vector, but anyway.
     vd dmtotdx(getNDofs(),fillwith::zeros);
     us Nsegs=nSegs();
-    for(const Seg* seg:segs){
-      seg->dmtotdx(dmtotdx);
+    for(auto seg:segs){
+      seg.second->dmtotdx(dmtotdx);
     }
     return dmtotdx;
   }

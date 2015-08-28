@@ -27,8 +27,8 @@
 namespace tube {
   using namespace tasystem;
 
-  VelocityBc::VelocityBc(us segnr,Pos position,const var& up,d T0,bool arbitrateMass):
-    TubeBc(segnr,position),
+  VelocityBc::VelocityBc(const string& segid,Pos position,const var& up,d T0,bool arbitrateMass):
+    TubeBc(segid,position),
     arbitrateMass(arbitrateMass),
     T0(T0),
     u_p(up)    
@@ -139,7 +139,7 @@ namespace tube {
     checkInit();
     const char* side=posWord(pos);
 
-    cout << "VelocityBc boundary condition set at "<<side <<" side of segment "<< segnr<<".\n";
+    cout << "VelocityBc boundary condition set at "<<side <<" side of segment "<< segid<<".\n";
     if(detailnr>1){
       cout << "Prescribed velocity:" << u_p() << "\n";
       cout << "Prescribed fluid temperature:" << T0 << "\n";      

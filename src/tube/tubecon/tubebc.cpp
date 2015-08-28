@@ -9,15 +9,15 @@ namespace tube{
 
   TubeBc::TubeBc(const TubeBc& other,const TaSystem& sys):
       Connector(other,sys),
-      segnr(other.segnr),
+      segid(other.segid),
       pos(other.pos)
   {
     this->sys=&sys;
     try{
-      t=&sys.getTube(segnr);
+      t=&sys.getTube(segid);
     }
     catch(const std::exception& b){
-      WARN("Seg nr " << segnr << " is not a Tube! Initialization of TubeBc failed.");
+      WARN("Seg id" << segid << " is not a Tube! Initialization of TubeBc failed.");
       WARN("In: " << typeid(*this).name() << " with name "<< getName() <<", and number:" << getNumber());
       throw MyError(b.what());
     }

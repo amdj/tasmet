@@ -21,10 +21,11 @@ namespace tube{
   #endif
   #ifdef SWIG
   %catches(std::exception,...) SimpleTubeConnector::SimpleTubeConnector(us,Pos,us,Pos,d K1to2=0,d K2to1=0);
-    
   #endif // SWIG
+
+  
   class SimpleTubeConnector:public segment::Connector{
-    std::array<us,2> segnrs;
+    std::array<string,2> segids;
     std::array<Pos,2> pos;
     std::array<const BcCell*,2> bccells;
     std::array<d,2> out={{1.0f, 1.0f}};
@@ -32,7 +33,7 @@ namespace tube{
     d K1to2, K2to1;
     us firsteqnr;
   public:
-    SimpleTubeConnector(us seg1,Pos pos1,us seg2,Pos pos2,d K1to2=0,d K2to1=0);
+    SimpleTubeConnector(const string& seg1,Pos pos1,const string& seg2,Pos pos2,d K1to2=0,d K2to1=0);
     SimpleTubeConnector(const SimpleTubeConnector&)=delete;
     SimpleTubeConnector(const SimpleTubeConnector&,const tasystem::TaSystem&);    
     virtual segment::Connector* copy(const tasystem::TaSystem& s) const {return new SimpleTubeConnector(*this,s);}

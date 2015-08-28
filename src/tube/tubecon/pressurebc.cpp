@@ -24,8 +24,8 @@ namespace tube{
   using tasystem::JacRow;
   using tasystem::JacCol;
 
-  PressureBc::PressureBc(us segnr,Pos position,const var& pres,const var& temp,const var& stemp):
-    TubeBc(segnr,position),
+  PressureBc::PressureBc(const string& segid,Pos position,const var& pres,const var& temp,const var& stemp):
+    TubeBc(segid,position),
     p_prescribed(pres),
     prescribeT(temp)
   {
@@ -33,11 +33,11 @@ namespace tube{
     TRACE(8,"PressureBc full constructor");
 
   }
-  PressureBc::PressureBc(us segnr,Pos position,const var& pres,const var& temp):
-    PressureBc(segnr,position,pres,temp,coldTemp(pres))
+  PressureBc::PressureBc(const string& segid,Pos position,const var& pres,const var& temp):
+    PressureBc(segid,position,pres,temp,coldTemp(pres))
   {}
-  PressureBc::PressureBc(us segnr,Pos position,const var& pres):
-    PressureBc(segnr,position,pres,adiabaticTemp(pres))
+  PressureBc::PressureBc(const string& segid,Pos position,const var& pres):
+    PressureBc(segid,position,pres,adiabaticTemp(pres))
   {}
   PressureBc::PressureBc(const PressureBc& other,const TaSystem& sys):
     TubeBc(other,sys),
@@ -149,7 +149,7 @@ namespace tube{
       side="left";
     else
       side="right";
-    cout << "PressureBc boundary condition set at "<<side <<" side of segment "<< segnr<<".\n";
+    cout << "PressureBc boundary condition set at "<<side <<" side of segment "<< segid<<".\n";
     if(detailnr>1){
       cout << "Prescribed pressure:" << p_prescribed() << "\n";
       cout << "Prescribed fluid temperature:" << prescribeT.getVals()() << "\n";      
