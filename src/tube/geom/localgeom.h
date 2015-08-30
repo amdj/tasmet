@@ -27,12 +27,12 @@ namespace tube {
     d vVf=0;			// Cell cell fluid volume
     d vVs=0;			// Cell cell solid volume
 
-    d SfL=0,SfR=0;		// Fluid surface area at cell walls. *WARNING*
+    d Sfl=0,Sfr=0;		// Fluid surface area at cell walls. *WARNING*
     // use these only for end boundary *conditions!!
-    d SsL=0,SsR=0;    
+    d Ssl=0,Ssr=0;    
     d vrh=0;			// Current cell hydraulic radius
-    d xR=0;			// Absolute position of right cell wall
-    d xL=0;			// Absolute position of left cell wall
+    d xr=0;			// Absolute position of right cell wall
+    d xl=0;			// Absolute position of left cell wall
 
     d vx=0;
     // right cell.

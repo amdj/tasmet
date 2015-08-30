@@ -38,8 +38,8 @@ namespace tube{
     t=&v.getTube();
     if(v.left()){
       Wddt=v.vx-v.left()->vx;;
-      Wpi=v.SfL;
-      Wpim1=-v.SfL;
+      Wpi=v.Sfl;
+      Wpim1=-v.Sfl;
     }
   }
   vd Momentum::error() const {		// Error in momentum equation
@@ -51,7 +51,7 @@ namespace tube{
     vd error=zeros();
     const vd& rhoti=v.rho().tdata();
 
-    error+=Wddt*DDTfd*v.mL()();
+    error+=Wddt*DDTfd*v.ml()();
 
     // Pressure right
     error+=Wpi*v.p()();
@@ -79,7 +79,7 @@ namespace tube{
     assert(v.i>0);
 
     // Time-derivative of mass flow
-    jac+=JacCol(v.mL(),Wddt*DDTfd);
+    jac+=JacCol(v.ml(),Wddt*DDTfd);
 
     jac+=JacCol(v.p(),Wpi*eye);
     jac+=JacCol(v.left()->p(),Wpim1*eye);
@@ -88,7 +88,7 @@ namespace tube{
 
  
     #ifndef NODRAG
-    jac+=JacCol(v.mL(),Wddt*t->getDragResistance().dm(v));
+    jac+=JacCol(v.ml(),Wddt*t->getDragResistance().dm(v));
     #endif
    
     return jac;
@@ -96,7 +96,7 @@ namespace tube{
   void Momentum::domg(vd & domg_) const {
     TRACE(18,"Momentum::domg()");
     // Possibly later adding drag->domg();
-    vd domg_full=(Wddt/v.gc->getomg())*DDTfd*v.mL()();
+    vd domg_full=(Wddt/v.gc->getomg())*DDTfd*v.ml()();
     domg_.subvec(dofnr,dofnr+Ns-1)=domg_full;
     TRACE(0,"Momentum::domg() done");
   }
@@ -145,13 +145,13 @@ namespace tube{
 
   namespace RIGHT {
    static std::tuple<d,d> weightfactors(const Cell& v){
-      d xR=v.xR;
+      d xr=v.xr;
       d vxm1=v.vx;
       d vxm2=v.left()->vx;
 
       // Compute weight factors
-      d wRNm1=(vxm2-xR)/(vxm2-vxm1);
-      d wRNm2=(xR-vxm1)/(vxm2-vxm1);
+      d wRNm1=(vxm2-xr)/(vxm2-vxm1);
+      d wRNm2=(xr-vxm1)/(vxm2-vxm1);
 
       // VARTRACE(25,wRNm1);
       // VARTRACE(25,wRNm2);

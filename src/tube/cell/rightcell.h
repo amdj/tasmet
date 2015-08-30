@@ -6,7 +6,7 @@
 namespace tube{
 
   class RightCell:public BcCell{
-    tasystem::var mR_;
+    tasystem::var mr_;
   public:
     RightCell(us i,const Tube& t);
     virtual ~RightCell(){}
@@ -14,9 +14,9 @@ namespace tube{
     virtual Pos getPos() const {return Pos::right;}
     virtual void show(us detailnr=1) const;
 
-    const d& Sfbc() const {return SfR;}
-    const tasystem::var& mbc() const{return mR_;}
-    const tasystem::var& mR() const { return mR_;}
+    const d& Sfbc() const {return Sfr;}
+    const tasystem::var& mbc() const{return mr_;}
+    const tasystem::var& mr() const { return mr_;}
     const tasystem::var& TR() const { return Tbc_;}    
 
 

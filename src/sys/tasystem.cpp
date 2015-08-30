@@ -189,12 +189,12 @@ namespace tasystem{
     cout << "Showing Global configuration...\n";
     gc_.show();
     if(detailnr>0){
-      cout << "Now showing connectors in TaSystem...\n";
       for(auto con:connectors){
+	cout << "Showing connector with ID " << con.first << "\n";
         con.second->show(detailnr);
       }
-      cout << "Now showing segments in TaSystem...\n";
       for(auto seg:segs){
+	cout << "Showing segment with ID " << seg.first << "\n";
         seg.second->show(detailnr);
       }
     } // detailnr>0

@@ -39,11 +39,11 @@ namespace tube{
     // Resistance force for laminar flow for the zero-frequency. 
     d zerodrag_vert(const Cell& v){
       TRACE(5,"zerodrag_vert");
-      return 3*mu(v)/(rho(v)*pow(v.rhL,2));
+      return 3*mu(v)/(rho(v)*pow(v.rhl,2));
     }
     d zerodrag_circ(const Cell& v){
       TRACE(5,"zerodrag_circ");
-      return 2*mu(v)/(rho(v)*pow(v.rhL,2));
+      return 2*mu(v)/(rho(v)*pow(v.rhl,2));
     }
     d zerodrag_inviscid(const Cell& v){
       TRACE(5,"zerodrag_inviscid");
@@ -92,7 +92,7 @@ namespace tube{
     }
     vd LaminarDragResistance::drag(const Cell& v) const {
       TRACE(10,"LaminarDragResistance::drag(v)");
-      vd drag=dm(v)*v.mL()();
+      vd drag=dm(v)*v.ml()();
       return drag; 		// No momentum scale here, since this is already done in dUi!!!!
     }
     dmat LaminarDragResistance::dm(const Cell& v) const { // Derivative of drag resistance to velocity
@@ -108,7 +108,7 @@ namespace tube{
       const us& Nf=v.gc->Nf();
       const us& i=v.geti();
     
-      const d& rh=v.rhL;
+      const d& rh=v.rhl;
 
       vc rescoef(Nf+1);
       rescoef(0)=(*zfd)(v);	// Zero frequency drag divided by zero-frequency velocity

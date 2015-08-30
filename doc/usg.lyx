@@ -243,7 +243,7 @@ where
  Quasi-discrete form:
 \begin_inset Formula 
 \begin{equation}
-W_{\mathrm{ddt}}\frac{\partial\rho_{i}}{\partial t}+m{}_{R}-m_{L}=0,
+W_{\mathrm{ddt}}\frac{\partial\rho_{i}}{\partial t}+m{}_{r}-m_{l}=0,
 \end{equation}
 
 \end_inset
@@ -253,14 +253,168 @@ where
 \end_inset
 
  is the volume of a cell, which is 
-\begin_inset Formula $S_{f,i}\left(x_{R}-x_{L}\right)$
+\begin_inset Formula $S_{f,i}\left(x_{r}-x_{l}\right)$
 \end_inset
 
 , where 
-\begin_inset Formula $S_{f,i}=\frac{1}{2}\left(S_{f,L}+S_{f,R}\right)$
+\begin_inset Formula $S_{f,i}=\frac{1}{2}\left(S_{f,l}+S_{f,r}\right)$
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Subsection
+First order second order factor
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $W_{fo}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+If 
+\begin_inset Formula $W_{fo}=0$
+\end_inset
+
+, 
+\begin_inset Formula $w=W_{lL}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+If 
+\begin_inset Formula $W_{fo}=-1$
+\end_inset
+
+ 
+\begin_inset Formula $w=1$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+If 
+\begin_inset Formula $W_{fo}=1$
+\end_inset
+
+ 
+\begin_inset Formula $w=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Second order function:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $w(W_{fo})=a+bW_{fo}+cW_{fo}^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Fill in 
+\begin_inset Formula $w(0)=W_{lL}=a$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Fill in 
+\begin_inset Formula $w(-1)=1=W_{lL}-b+c$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Fill in 
+\begin_inset Formula $w(1)=0=W_{lL}+b+c$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Substract 
+\begin_inset Formula $w(-1)-w(1)\Rightarrow$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $1=-2b\Rightarrow b=-\frac{1}{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Add : 
+\begin_inset Formula $1=2W_{lL}+2c\Rightarrow c=\frac{1}{2}-W_{lL}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Fill in:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $w(W_{fo})=W_{lL}-\frac{1}{2}W_{fo}+\left(\frac{1}{2}-W_{lL}\right)W_{fo}^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Test: 
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $w(-1)=W_{lL}+\frac{1}{2}+\left(\frac{1}{2}-W_{lL}\right)=1$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $w(0)=W_{lL}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $w(1)=W_{lL}-\frac{1}{2}+\left(\frac{1}{2}-W_{lL}\right)=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+CHECK
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -304,7 +458,7 @@ where,
 Quasi-discrete form
 \begin_inset Formula 
 \begin{equation}
-\left(x_{i}-x_{i-1}\right)\frac{\partial m_{L}}{\partial t}+\left(mu\right)_{i}-\left(mu\right)_{i-1}+S_{f,L}\left(p_{i}-p_{i-1}\right)+\left(x_{i}-x_{i-1}\right)\mathcal{D}=0.
+\left(x_{i}-x_{i-1}\right)\frac{\partial m_{l}}{\partial t}+\left(mu\right)_{i}-\left(mu\right)_{i-1}+S_{f,l}\left(p_{i}-p_{i-1}\right)+\left(x_{i}-x_{i-1}\right)\mathcal{D}=0.
 \end{equation}
 
 \end_inset
@@ -319,7 +473,7 @@ Accompanied, we use an equation to compute
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\frac{1}{2}\frac{\left(m_{L}^{2}+m_{R}^{2}\right)}{\rho_{i}S_{f,i}}-\left(mu\right)_{i}=0
+\frac{\left(\frac{1}{2}\left(1-W_{\mathrm{fo}}\right)m_{l}^{2}+\frac{1}{2}\left(1+W_{\mathrm{fo}}\right)m_{r}^{2}\right)}{\rho_{i}S_{f,i}}-\left(mu\right)_{i}=0
 \end{equation}
 
 \end_inset
@@ -341,9 +495,43 @@ Since
 \end_inset
 
 The energy equation can be written as
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{\partial}{\partial t}\left(S_{f}\rho E\right)+\frac{\partial}{\partial x}\left(mH\right)-\frac{\partial}{\partial x}\left(\kappa\frac{\partial T}{\partial x}\right)=Q_{in}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $S_{f}\rho E=S_{f}\rho\left(c_{v}T+\frac{1}{2}u^{2}\right)=S_{f}\left(\rho c_{v}T+\frac{1}{2}\rho u^{2}\right)=\left(S_{f}\frac{p}{\gamma-1}+\frac{1}{2}S_{f}\rho u^{2}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $S_{f}\rho E=S_{f}\rho\left(c_{v}T+\frac{1}{2}u^{2}\right)=S_{f}\left(\rho c_{v}T+\frac{1}{2}\rho u^{2}\right)=\left(S_{f}\frac{p}{\gamma-1}+\frac{1}{2}S_{f}\rho u^{2}\right)=S_{f}\frac{p}{\gamma-1}+\frac{1}{2}mu$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{\partial}{\partial t}\left(S_{f}\rho E\right)+\frac{\partial}{\partial x}\left(mH\right)-\frac{\partial}{\partial x}\left(\kappa\frac{\partial T}{\partial x}\right)=Q_{in}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \begin_inset Formula 
 \begin{equation}
-\frac{S_{f}}{\gamma-1}\frac{\partial p}{\partial t}+\frac{1}{2}\frac{\partial mu}{\partial t}+\frac{\partial}{\partial x}\left(mc_{p}T+E_{\mathrm{kin}}+Q_{\mathrm{ax}}\right)=Q_{s\to f},
+\frac{S_{f}}{\gamma-1}\frac{\partial p}{\partial t}+\frac{1}{2}\frac{\partial mu}{\partial t}+\frac{\partial}{\partial x}\left(mc_{p}T+mE_{\mathrm{kin}}+Q_{\mathrm{ax}}\right)=Q_{s\to f},
 \end{equation}
 
 \end_inset
@@ -351,7 +539,7 @@ The energy equation can be written as
 where
 \begin_inset Formula 
 \[
-E_{\mathrm{kin}}=m\tfrac{1}{2}u^{2}
+E_{\mathrm{kin}}=\tfrac{1}{2}u^{2}
 \]
 
 \end_inset
@@ -379,10 +567,10 @@ and,
 The quasi-discretized form of this equation is
 \begin_inset Formula 
 \begin{multline}
-\frac{V_{f}}{\gamma-1}\frac{\partial p_{i}}{\partial t}+\frac{1}{2}\left(x_{R}-x_{L}\right)\frac{\partial\left(mu\right)_{i}}{\partial t}+\\
-c_{p}m_{R}\left(W_{R,l}T_{i}+W_{R,r}T_{i+1}\right)-c_{p}m_{L}\left(W_{L,r}T_{i}+W_{L,l}T_{i-1}\right)+\\
+\frac{V_{f}}{\gamma-1}\frac{\partial p_{i}}{\partial t}+\frac{1}{2}\left(x_{r}-x_{l}\right)\frac{\partial\left(mu\right)_{i}}{\partial t}+\\
+c_{p}m_{R}\left(W_{r,L}T_{i}+W_{r,R}T_{i+1}\right)-c_{p}m_{l}\left(W_{l,R}T_{i}+W_{l,L}T_{i-1}\right)+\\
 \kappa_{R}\left(W_{c,Rl}T_{i}+W_{c,Rr}T_{i+1}\right)-\kappa_{L}\left(W_{c,Lr}T_{i}+W_{c,Ll}T_{i-1}\right)+\\
-E_{\mathrm{kin},R}-E_{\mathrm{kin},L}-\left(x_{R}-x_{L}\right)Q_{s\to f}=0,
+m_{r}E_{\mathrm{kin},r}-mE_{\mathrm{kin},l}-\left(x_{R}-x_{L}\right)Q_{s\to f}=0,
 \end{multline}
 
 \end_inset
@@ -390,7 +578,7 @@ E_{\mathrm{kin},R}-E_{\mathrm{kin},L}-\left(x_{R}-x_{L}\right)Q_{s\to f}=0,
 , where
 \begin_inset Formula 
 \begin{equation}
-W_{R,l}=\frac{x_{i+1}-x_{R}}{x_{i+1}-x_{i}}\quad;\quad W_{R,r}=1-W_{R,l}
+W_{R,l}=\frac{x_{i+1}-x_{R}}{x_{i+1}-x_{i}}+\quad;\quad W_{R,r}=1-W_{R,l}
 \end{equation}
 
 \end_inset

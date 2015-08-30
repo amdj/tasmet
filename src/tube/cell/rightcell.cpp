@@ -21,8 +21,8 @@ namespace tube{
     assert(left);
     BcCell::init(left,right);
 
-    mR_=var(*gc);
-    vars.push_back(&mR_);
+    mr_=var(*gc);
+    vars.push_back(&mr_);
   }
   void RightCell::show(us detailnr) const{
     cout << "------------- RightCell ---------\n";

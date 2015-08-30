@@ -3,7 +3,7 @@
 // Author: J.A. de Jong 
 //
 // Description:
-// Returns weight factors WLl,WLr,WRl,WRr in that order.
+// Returns weight factors WlL,WlR,WrL,WrR in that order.
 //////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef _WEIGHTFACTORS_H_
@@ -18,8 +18,9 @@ namespace tube{
 
   class WeightFactors{
   public:
-    d WRr=0,WRl=0,WLr=0,WLl=0;
+    d WrR=0,WrL=0,WlR=0,WlL=0;
     WeightFactors(const Cell& c);
+    void show() const;
   };
   // anonymous weightfactors for extrapolation from cell walls at
   // interior to cell wall at end of tube.

@@ -96,7 +96,10 @@ namespace tasystem{
       sc_local.reset(new SolverConfiguration());
       sc=sc_local.get();
     }
-      
+    if(sc->dampfac<sc->mindampfac){
+      d dampfac=sc->mindampfac;
+      sc->dampfac=dampfac;
+    }
     // Wrap to reference
     TaSystem& sys=(*sys1);
     // old error

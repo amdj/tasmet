@@ -17,10 +17,10 @@ namespace tube{
     // located on the left...
     // virtual const tasystem::var& pL() const {return pL_;}
 
-    const d& Sfbc() const {return SfL;}
+    const d& Sfbc() const {return Sfl;}
     // OVerloaded virtuals from BcCell
     void show(us detailnr=1) const;
-    const tasystem::var& mbc() const {return mL_;}
+    const tasystem::var& mbc() const {return ml_;}
     const tasystem::var& TL() const { return Tbc_;}
   };  
 

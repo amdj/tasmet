@@ -77,17 +77,18 @@ namespace tasystem {
     void resetHarmonics();
     void updateNf();
 
-    // Obtain time response vector. 
-    d timeresponse(us ninst=100) const;
+    #endif
+
     
     void setadata(const vd& values); //Set amplitude data vector to these values
     void settdata(double value); //Set time data to specific value for all time
     void settdata(const vd& values);
     void setadata(us freq,double val); //Set result vector at specific frequency
     void setadata(const vc& values); //Set result vector to these values,
+
+    #ifndef SWIG
     us size() const {return adata_.size();}
     // Specific methods to the result using time domain data
-
     // Operations ********************
 
     // Time derivative of this tasystem

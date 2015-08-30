@@ -23,13 +23,13 @@ namespace tube{
     vx=geom.vx(i);
     // initialize distances to next node to zero
 
-    SfL=geom.Sf(i);
-    SfR=geom.Sf(i+1);
-    SsL=geom.Ss(i);
-    SsR=geom.Ss(i+1);
+    Sfl=geom.Sf(i);
+    Sfr=geom.Sf(i+1);
+    Ssl=geom.Ss(i);
+    Ssr=geom.Ss(i+1);
 
-    xR=geom.x(i+1);		// Position of right cell wall
-    xL=geom.x(i);			// Position of left cell wall
+    xr=geom.x(i+1);		// Position of right cell wall
+    xl=geom.x(i);			// Position of left cell wall
     // Left and right cross-sectional area
 
     // Geometric parameters
@@ -45,12 +45,12 @@ namespace tube{
     cout <<"i     :" << i<<"\n";
     cout <<"vx    :" << vx<<"\n";
     cout <<"vSf   :" << vSf<<"\n";
-    cout <<"SfL   :" << SfL<<"\n";
-    cout <<"SfR   :" << SfR<<"\n";    
+    cout <<"Sfl   :" << Sfl<<"\n";
+    cout <<"Sfr   :" << Sfr<<"\n";    
     cout <<"vVf   :" << vVf<<"\n";
     cout <<"vrh   :" << vrh<<"\n";
-    cout <<"xL    :" << xL<<"\n";            
-    cout <<"xR    :" << xR<<"\n";
+    cout <<"xl    :" << xl<<"\n";            
+    cout <<"xr    :" << xr<<"\n";
 
   }
 } // namespace tube

@@ -40,21 +40,21 @@ namespace tube{
     // vd Qb(v.gc->Ns());
     // if(!v.left()){
     //   vd kappaLt=kappaL();
-    //   d SsL;
-    //   if(w.SsL>0)
-    //     SsL=w.SsL;
+    //   d Ssl;
+    //   if(w.Ssl>0)
+    //     Ssl=w.Ssl;
     //   else
-    //     SsL=1.0;
-    //   Qb=(SsL/w.vx)*fDFT*(kappaLt%(v.TsL().tdata()-v.Ts().tdata()));
+    //     Ssl=1.0;
+    //   Qb=(Ssl/w.vx)*fDFT*(kappaLt%(v.TsL().tdata()-v.Ts().tdata()));
     // }
     // else if(!v.right()){
     //   vd kappaRt=kappaR();
-    //   d SsR;
-    //   if(w.SsR>0)
-    //     SsR=w.SsR;
+    //   d Ssr;
+    //   if(w.Ssr>0)
+    //     Ssr=w.Ssr;
     //   else
-    //     SsR=1.0;
-    //   Qb=(SsR/(w.xR-w.vx))*fDFT*(kappaRt%(v.T().tdata()-v.TR().tdata()));
+    //     Ssr=1.0;
+    //   Qb=(Ssr/(w.xr-w.vx))*fDFT*(kappaRt%(v.T().tdata()-v.TR().tdata()));
     // }
     // else{
     //   WARN("That went fatally wrong!");
@@ -67,24 +67,24 @@ namespace tube{
     // JacRow dQb(-1,2);
 
     // if(!v.left()){
-    //   d SsL;
-    //   if(w.SsL>0)
-    //     SsL=w.SsL;
+    //   d Ssl;
+    //   if(w.Ssl>0)
+    //     Ssl=w.Ssl;
     //   else
-    //     SsL=1.0;
+    //     Ssl=1.0;
     //   vd kappaLt=kappaL();
-    //   dQb+=JacCol(v.Ts(),-(SsL/w.vx)*fDFT*diagmat(kappaLt)*iDFT);
-    //   dQb+=JacCol(v.TsL(),(SsL/w.vx)*fDFT*diagmat(kappaLt)*iDFT);
+    //   dQb+=JacCol(v.Ts(),-(Ssl/w.vx)*fDFT*diagmat(kappaLt)*iDFT);
+    //   dQb+=JacCol(v.TsL(),(Ssl/w.vx)*fDFT*diagmat(kappaLt)*iDFT);
     // }
     // else if(!v.right()){
     //   vd kappaRt=kappaR();
-    //   d SsR;
-    //   if(w.SsR>0)
-    //     SsR=w.SsR;
+    //   d Ssr;
+    //   if(w.Ssr>0)
+    //     Ssr=w.Ssr;
     //   else
-    //     SsR=1.0;
-    //   dQb+=JacCol(v.Ts(),(SsR/(w.xR-w.vx))*fDFT*diagmat(kappaRt)*iDFT);
-    //   dQb+=JacCol(v.TsR(),-(SsR/(w.xR-w.vx))*fDFT*diagmat(kappaRt)*iDFT);
+    //     Ssr=1.0;
+    //   dQb+=JacCol(v.Ts(),(Ssr/(w.xr-w.vx))*fDFT*diagmat(kappaRt)*iDFT);
+    //   dQb+=JacCol(v.TsR(),-(Ssr/(w.xr-w.vx))*fDFT*diagmat(kappaRt)*iDFT);
     // }
     // else{
     //   WARN("That went fatally wrong!");

@@ -34,6 +34,12 @@ namespace tasystem{
     us Ns_;			// Corresponding number of time samples
     d T0_,p0_;			/* Reference temperature and pressure (used to initialize a lot of variables. */
     gases::Gas gas_;
+    // d Wfo_=0;			// First order 'upwind' factor. If
+				// Wfo=-1, interpolation is done from
+				// the left side. If Wfo=0,
+				// interpolation is second order. If
+				// Wfo=1, interpolation is done from
+				// the right side
   public:
     Globalconf(us Nf,d freq,const string& gasstring,d T0,d p0);
     static Globalconf airSTP(us Nf,d freq);
@@ -52,7 +58,8 @@ namespace tasystem{
     d deltanu0min() const{ return deltanu0()/sqrt((d) (max<us>(1,Nf())));}
     d T0() const {return T0_;}
     d p0() const {return p0_;}
-
+    // d getWfo() const {return Wfo_;}
+    // void setWfo(d Wf) {Wfo_=Wf;}    
     void setNf(us);
     #ifndef SWIG
     void set(us Nf,d freq);	// Set data for new frequency and

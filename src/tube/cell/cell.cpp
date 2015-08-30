@@ -3,7 +3,7 @@
 #include "geom.h"
 #include "globalconf.h"
 #include "jacobian.h"
-
+#include "weightfactors.h"
 #include "continuity.h"
 #include "momentum.h"
 #include "mu.h"
@@ -30,14 +30,14 @@ namespace tube{
     assert(gc);
 
     vx=geom.vx(i);
-    xR=geom.x(i+1);		// Position of right cell wall
-    xL=geom.x(i);			// Position of left cell wall
+    xr=geom.x(i+1);		// Position of right cell wall
+    xl=geom.x(i);			// Position of left cell wall
 
     // Geometric parameters
-    SfL=geom.Sf(i);
-    SfR=geom.Sf(i+1);
-    SsL=geom.Ss(i);
-    SsR=geom.Ss(i+1);
+    Sfl=geom.Sf(i);
+    Sfr=geom.Sf(i+1);
+    Ssl=geom.Ss(i);
+    Ssr=geom.Ss(i+1);
 
     vSf=geom.vSf(i);
     vSs=geom.vSs(i);
@@ -45,17 +45,17 @@ namespace tube{
     vVs=geom.vVs(i);
     vrh=geom.vrh(i);
 
-    rhL=geom.rh(i);
-    rhR=geom.rh(i+1);
+    rhl=geom.rh(i);
+    rhr=geom.rh(i+1);
     
     // Intialize the variables for the right number of harmonics.
-    mL_=var(*gc);
+    ml_=var(*gc);
     rho_=var(*gc);    
     T_=var(*gc);
     p_=var(*gc);
     Ts_=var(*gc);
     mu_=var(*gc);
-    // mHL_=var(*gc);
+    // mHl_=var(*gc);
     // Initialize temperature and density variables to something sane
     T_.setadata(0,gc->T0());
     Ts_.setadata(0,gc->T0());
@@ -63,7 +63,7 @@ namespace tube{
 
     vars.reserve(constants::nvars_reserve);
     vars.push_back(&rho_);
-    vars.push_back(&mL_);
+    vars.push_back(&ml_);
     vars.push_back(&T_);
     vars.push_back(&p_);
     vars.push_back(&Ts_);
@@ -221,10 +221,10 @@ namespace tube{
         return rho();
         break;
       case Varnr::m:                 // Volume flown
-        return 0.5*(mL()+mR());
+        return 0.5*(ml()+mr());
         break;
       case Varnr::mH:                 // Volume flown
-        return var(*gc,0.5*(Energy::mHL(*this)+Energy::mHR(*this)));
+        return var(*gc,0.5*(Energy::mHl(*this)+Energy::mHr(*this)));
         break;
       case Varnr::Q:                 // Volume flown
         // TRACE(15,"getValue: Q");
@@ -293,22 +293,29 @@ namespace tube{
   }    
   void Cell::show(us detailnr) const{
     cout << "----------------- Cell " << i << "----\n";
-    cout <<"Showing LocalGeom data...\n";
-    cout <<"i     :" << i<<"\n";
-    cout <<"vx    :" << vx<<"\n";
-    cout <<"vSf   :" << vSf<<"\n";
-    cout <<"SfL   :" << SfL<<"\n";
-    cout <<"SfR   :" << SfR<<"\n";    
-    cout <<"vVf   :" << vVf<<"\n";
-    cout <<"vrh   :" << vrh<<"\n";
-    cout <<"xL    :" << xL<<"\n";            
-    cout <<"xR    :" << xR<<"\n";
-    if(detailnr>=2){
+    if(detailnr>=4){    
+      cout <<"Showing LocalGeom data...\n";
+      cout <<"i     :" << i<<"\n";
+      cout <<"vx    :" << vx<<"\n";
+      cout <<"vSf   :" << vSf<<"\n";
+      cout <<"Sfl   :" << Sfl<<"\n";
+      cout <<"Sfr   :" << Sfr<<"\n";    
+      cout <<"vVf   :" << vVf<<"\n";
+      cout <<"vrh   :" << vrh<<"\n";
+      cout <<"xl    :" << xl<<"\n";            
+      cout <<"xr    :" << xr<<"\n";
+    }
+    if(detailnr>=5){
       cout << "Showing weight factors of equations...\n";
+      WeightFactors(*this).show();
+    }
+    if(detailnr>=6) {
+      cout << "Showing equations...\n";
       for (auto& eq : eqs) {
         eq.second->show();
       }
-    }
+    } // show
+
     // cout << "Number of eqs :" << getNEqs() << "\n";
     // cout << "Number of dofs:" << getNDofs() << "\n";    
     // cout << "Dofnr rho: " << rho.getDofNr() << "\n";

@@ -130,7 +130,7 @@ namespace tube {
     // VARTRACE(25,cell.extrapolateQuant(Varnr::rho));
     dmat Z=Zvar(impedanceFunc,gc).freqMultiplyMat();
     JacRow impjac(firsteqnr,5); // 5=(2*p,2*rho,1*mbc)
-    d Sf=pos==Pos::left?cell.SfL:cell.SfR;
+    d Sf=pos==Pos::left?cell.Sfl:cell.Sfr;
     impjac+=JacCol(cell.pbc(),eye);
     impjac+=JacCol(cell.ubc(),-Z);
     jac+=impjac;

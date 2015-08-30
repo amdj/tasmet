@@ -31,8 +31,8 @@ namespace tube {
     const Cell* right_=nullptr;
 
     tasystem::var rho_;         // Density at vertex
-    tasystem::var mL_;		// Mass flow at left cell wall
-    // tasystem::var mHL_;		// Total enthalpy flow at left cell wall
+    tasystem::var ml_;		// Mass flow at left cell wall
+    // tasystem::var mHl_;		// Total enthalpy flow at left cell wall
     tasystem::var mu_;      // Momentum flow at vertex
     tasystem::var T_;		// Temperature
     tasystem::var p_;      // Pressure at left cell wall
@@ -45,20 +45,20 @@ namespace tube {
     // Geometric data ********************
     us i=0;                       // number of this cell
     d vx=0;                       // Vertex position
-    d xL=0;                     // Absolute position of left cell wall
-    d xR=0;                     // Absolute position of right cell wall    
+    d xl=0;                     // Absolute position of left cell wall
+    d xr=0;                     // Absolute position of right cell wall    
 
     d vSf=0;			// Cell fluid cross-sectional area
     d vSs=0;			// Cell solid cross-sectional area
     d vVf=0;			// Cell cell fluid volume
     d vVs=0;			// Cell cell solid volume
 
-    d SfL=0,SfR=0;		// Fluid surface area at cell walls.
+    d Sfl=0,Sfr=0;		// Fluid surface area at cell walls.
 
-    d SsL=0,SsR=0;    
+    d Ssl=0,Ssr=0;    
     d vrh=0;			// Current cell hydraulic radius
-    d rhL=0;            // Hydraulic radius at left cell wall
-    d rhR=0;            // Hydraulic radius at right cell wall
+    d rhl=0;            // Hydraulic radius at left cell wall
+    d rhr=0;            // Hydraulic radius at right cell wall
     // End geometric data ********************
 
     #ifndef SWIG
@@ -82,10 +82,10 @@ namespace tube {
     Equation* Eq(EqType et) {return eqs.at(et);}
     // Momentum flow at vertex position
     const tasystem::var& mu() const {return mu_;}
-    const tasystem::var& mL() const {return mL_;}
-    // const tasystem::var& mHL() const {return mHL_;}
-    virtual const tasystem::var& mR() const {assert(right_); return right_->mL();}
-    // virtual const tasystem::var& mHR() const { assert(right_); return right_->mHL();}
+    const tasystem::var& ml() const {return ml_;}
+    // const tasystem::var& mHl() const {return mHl_;}
+    virtual const tasystem::var& mr() const {assert(right_); return right_->ml();}
+    // virtual const tasystem::var& mHr() const { assert(right_); return right_->mHl();}
     const tasystem::var& p() const{return p_;}
 
     // These are variables for the left and right vertices, but are on

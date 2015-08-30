@@ -19,7 +19,8 @@ namespace tube {
   using tasystem::JacCol;
 
   inline vd mu_td(const Cell& v) {
-    return 0.5*(pow(v.mL().tdata(),2)+pow(v.mR().tdata(),2))/(v.vSf*v.rho().tdata());
+    d Wfo=0;//v.gc->getWfo();
+    return 0.5*((1-Wfo)*pow(v.ml().tdata(),2)+(1+Wfo)*pow(v.mr().tdata(),2))/(v.vSf*v.rho().tdata());
   }
     
   vd MuEq::error() const{
@@ -36,10 +37,10 @@ namespace tube {
 
     const vd& rhot=v.rho().tdata();
 
-
+    d Wfo=0;//v.gc->getWfo();    
     jac+=JacCol(v.rho(),-fDFT*diagmat(mu_td(v)/rhot)*iDFT);
-    jac+=JacCol(v.mL(),fDFT*diagmat(0.5*v.mL().tdata()/(v.vSf*rhot))*iDFT);
-    jac+=JacCol(v.mR(),fDFT*diagmat(0.5*v.mR().tdata()/(v.vSf*rhot))*iDFT);
+    jac+=JacCol(v.ml(),fDFT*diagmat(0.5*(1-Wfo)*v.ml().tdata()/(v.vSf*rhot))*iDFT);
+    jac+=JacCol(v.mr(),fDFT*diagmat(0.5*(1+Wfo)*v.mr().tdata()/(v.vSf*rhot))*iDFT);
     return jac;
   }
   

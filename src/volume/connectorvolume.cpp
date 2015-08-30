@@ -357,8 +357,6 @@ namespace tube {
     TRACE(15,"void ConnectorVolume::dmtotdx()");
     us rhodof=rho_.getDofNr();
     dmtotdx(rhodof)=volume;
-    // WARN("Not finished code");
-    // assert(false);
   }
   void ConnectorVolume::domg(vd& domg) const{
     TRACE(15,"void ConnectorVolume::domg()");

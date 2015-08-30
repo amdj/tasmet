@@ -32,11 +32,11 @@ namespace tube{
     static tasystem::JacRow dExtrapolateHeatFlow(const Cell&);
 
     // Total enthalpy flow through left cell wall
-    static vd mHL(const Cell&);
+    static vd mHl(const Cell&);
     // Total enthalpy flow through righ cell wall
-    static vd mHR(const Cell&);
-    static tasystem::JacRow dmHL(const Cell&);
-    static tasystem::JacRow dmHR(const Cell&);
+    static vd mHr(const Cell&);
+    static tasystem::JacRow dmHl(const Cell&);
+    static tasystem::JacRow dmHr(const Cell&);
 
     static vd QL(const Cell&);              // Heat conduction trough left wall
     static vd QR(const Cell&);              // Heat conduction trough right wall

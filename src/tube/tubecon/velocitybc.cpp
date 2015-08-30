@@ -72,7 +72,7 @@ namespace tube {
     const BcCell& cell=t->bcCell(pos);
 
     // Velocity error
-    d Sf=pos==Pos::left?cell.SfL:cell.SfR;
+    d Sf=pos==Pos::left?cell.Sfl:cell.Sfr;
     error.subvec(0,Ns-1)=fDFT*(cell.mbc().tdata()/(Sf*iDFT*cell.extrapolateQuant(Varnr::rho)))
       -u_p();
 
@@ -98,7 +98,7 @@ namespace tube {
     // VARTRACE(25,cell.extrapolateQuant(Varnr::rho));
 
     JacRow impjac(firsteqnr,5); // 5=(2*p,2*rho,1*mbc)
-    d Sf=pos==Pos::left?cell.SfL:cell.SfR;
+    d Sf=pos==Pos::left?cell.Sfl:cell.Sfr;
     const vd rhobct=iDFT*cell.extrapolateQuant(Varnr::rho);
     impjac+=JacCol(cell.mbc(),fDFT*diagmat(1/(Sf*rhobct))*iDFT);
     d w1,w2; std::tie(w1,w2)=BcWeightFactorsV(cell);

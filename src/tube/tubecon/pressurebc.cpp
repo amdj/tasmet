@@ -74,7 +74,7 @@ namespace tube{
       d Wddt=cell.vx;
       errorM+=Wddt*DDTfd*cell.mbc()();
       errorM+=cell.vSf*cell.p()();
-      errorM-=cell.SfL*p_prescribed();
+      errorM-=cell.Sfl*p_prescribed();
       errorM+=cell.mu()();       // 
       errorM-=cell.extrapolateQuant(Varnr::mu);
       #ifndef NODRAG
@@ -82,10 +82,10 @@ namespace tube{
       #endif
     }
     else{
-      d Wddt=cell.xR-cell.vx;
+      d Wddt=cell.xr-cell.vx;
       errorM+=Wddt*DDTfd*cell.mbc()();
       errorM-=cell.vSf*cell.p()();
-      errorM+=cell.SfR*p_prescribed();
+      errorM+=cell.Sfr*p_prescribed();
       errorM-=cell.mu()();
       errorM+=cell.extrapolateQuant(Varnr::mu);      
       #ifndef NODRAG
@@ -114,12 +114,12 @@ namespace tube{
       jacr+=JacCol(cell.mu(),eye);
       jacr+=-cell.dExtrapolateQuant(Varnr::mu);
       #ifndef NODRAG
-      jacr+=JacCol(cell.mL(),Wddt*(t->getDragResistance().dm(cell)));
+      jacr+=JacCol(cell.ml(),Wddt*(t->getDragResistance().dm(cell)));
       #endif  // NODRAG
       jac+=jacr;
     }
     else{
-      d Wddt=cell.xR-cell.vx;
+      d Wddt=cell.xr-cell.vx;
       // VARTRACE(25,Wddt);
       JacRow jacr(firsteqnr,4);
       jacr+=JacCol(cell.mbc(),Wddt*DDTfd);
@@ -127,7 +127,7 @@ namespace tube{
       jacr+=JacCol(cell.mu(),-eye);
       jacr+=cell.dExtrapolateQuant(Varnr::mu);
       #ifndef NODRAG
-      jacr+=JacCol(cell.mR(),Wddt*(t->getDragResistance().dm(cell)));
+      jacr+=JacCol(cell.mr(),Wddt*(t->getDragResistance().dm(cell)));
       #endif  // NODRAG
       jac+=jacr;
     }

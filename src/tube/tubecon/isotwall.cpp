@@ -57,7 +57,7 @@ namespace tube{
   }
   void IsoTWall::show(us i) const {
     TRACE(5,"IsoTWall::show()");
-    cout << "IsoTWall boundary condition set at << "<<posWord(pos) <<" side of segment .\n";
+    cout << "IsoTWall boundary condition set at "<<posWord(pos) <<" side of segment .\n";
   }
   us IsoTWall::getNEqs() const {
     return 3*Ns;
@@ -69,8 +69,8 @@ namespace tube{
     const BcCell& cell=t->bcCell(pos);
     massflowzero.set(firsteqnr,cell.mbc(),zero);
     enthalpyflowzero.set(firsteqnr+Ns,cell.mHbc(),zero);
-    Tbc.set(firsteqnr+2*Ns,cell.TL()); // vals are set in constructor
-    // Tsbc.set(firsteqnr+2*Ns,cell.TsL()); // idem
+    Tbc.set(firsteqnr+2*Ns,cell.Tbc()); // vals are set in constructor
+    // Tsbc.set(firsteqnr+2*Ns,cell.Tsbc()); // idem
   }
   vd IsoTWall::error() const {
     TRACE(15,"IsoTWall::error()");

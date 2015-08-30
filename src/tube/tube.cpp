@@ -164,9 +164,18 @@ namespace tube {
     checkInit();
     return geom().vx_vec();
   }
-    
+  vd Tube::getValueT(Varnr v,d timeinst) const{
+    TRACE(15,"Tube::getValueT()");
+    vd res=getValue(v,0);	// Time-averaged part
+    // omega*T=2*pi
+    us Nf=gc->Nf();
+    for(us i=1; i<Nf+1 ;i++){
+      res+=real(getValueC(v,i)*exp((2.0*I*number_pi)*((d) i)*timeinst));
+    }
+    return res;
+  }
   vd Tube::getValue(Varnr v,us freqnr) const {
-    TRACE(10,"Tube::getValue("<<(int)v<<","<<freqnr<<")");
+    TRACE(15,"Tube::getValue("<<(int)v<<","<<freqnr<<")");
     checkInit();
     if(freqnr>=gc->Ns())
       throw MyError("Illegal frequency number");
@@ -179,7 +188,7 @@ namespace tube {
     return res;
   }
   vc Tube::getValueC(Varnr v,us freqnr) const {
-    TRACE(10,"Tube::getResAt("<<(int)v<<","<<freqnr<<")");
+    TRACE(15,"Tube::getValueC("<<(int)v<<","<<freqnr<<")");
     const us nCells=geom().nCells();
     if(freqnr>gc->Nf() || freqnr<1)
       throw MyError("Illegal frequency number");

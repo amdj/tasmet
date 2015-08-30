@@ -93,7 +93,7 @@ namespace tube{
     TRACE(5,"HopkinsHeatSource::heat(v)");
     vd heat(v.gc->Ns(),fillwith::zeros);
     heat+=dTi(v)*(v.T()()-v.Ts()());
-    heat+=dmi(v)*(0.5*(v.mL()()+v.mR()()) );    
+    heat+=dmi(v)*(0.5*(v.ml()()+v.mr()()) );    
     return heat;    
   }
   dmat HopkinsHeatSource::dTi(const Cell& v) const{
@@ -111,7 +111,7 @@ namespace tube{
     dmat dmi(v.gc->Ns(),v.gc->Ns(),fillwith::zeros);
     // Obtain dTwdx
     d dTwdx=this->dTwdx(v.geti());
-    dmi=(-dTwdx*(v.xR-v.xL))*htcoefQ.freqMultiplyMat();
+    dmi=(-dTwdx*(v.xr-v.xl))*htcoefQ.freqMultiplyMat();
     return dmi;
   }  
   vc HopkinsHeatSource::HeatTransferCoefQ(const Cell& v) const{

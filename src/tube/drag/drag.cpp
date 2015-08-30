@@ -14,8 +14,8 @@ namespace tube{
       assert(v.left());
       const d& xim1=v.left()->vx;
       const d& xi=v.vx;
-      const d& xL=v.xL;
-      const d wim1=(xi-xL)/(xi-xim1);
+      const d& xl=v.xl;
+      const d wim1=(xi-xl)/(xi-xim1);
       return make_tuple(wim1,1-wim1);
     }
 
@@ -41,7 +41,7 @@ namespace tube{
 
       const d omg=v.gc->getomg();
       const vd omgvec=linspace(0,Nf*omg,Nf+1);
-      const d& rh=v.rhL;
+      const d& rh=v.rhl;
 
       return rh*sqrt((rho0/mu0)*omgvec);
 

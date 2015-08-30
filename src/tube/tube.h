@@ -31,6 +31,7 @@ namespace tube{
   %catches(std::exception,...) Tube::setPhaseContraint(tasystem::PhaseConstraint v);
   %catches(std::exception,...) Tube::getValue(Varnr,us freqnr) const;
   %catches(std::exception,...) Tube::getValueC(Varnr,us freqnr) const;
+  %catches(std::exception,...) Tube::getValueT(Varnr,d) const;
   %catches(std::exception,...) Tube::getErrorAt(us eqnr,us freqnr) const;
   %catches(std::exception,...) Tube::getCell(int i) const;
   #endif
@@ -68,6 +69,9 @@ namespace tube{
     // Extract a result vector for given variable number
     // (rho,U,T,p,Ts) and frequency number.
     vd getValue(Varnr,us freqnr) const;
+
+    // get result at certain time instance, normalized with period
+    vd getValueT(Varnr,d timeinst) const;
 
     // Extract a  result vector  for given variable  number (rho,U,T,p,Ts)
     // and frequency number.
