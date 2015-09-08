@@ -111,6 +111,7 @@ AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/sys sys)
 AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/var var)
 AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/geom/grid grid)
 AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/eq eq)
+AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/eq/solid solideq)
 AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/tube tube)
 AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/geom geom)
 AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/drag drag)
@@ -130,6 +131,7 @@ set (nonlinear_SRC
   ${tubecon}
   ${drag}
   ${eq}
+  ${solideq}
   ${geom}
   ${grid}
   ${heat}
@@ -155,6 +157,7 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/src/tube/tubecon
   ${PROJECT_SOURCE_DIR}/src/tube/cell
   ${PROJECT_SOURCE_DIR}/src/tube/eq
+  ${PROJECT_SOURCE_DIR}/src/tube/eq/solid
   ${PROJECT_SOURCE_DIR}/src/tube/heat
   )
 link_directories(${PROJECT_SOURCE_DIR}/common)

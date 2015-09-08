@@ -13,33 +13,34 @@
 #include "heat.h"
 #include "rottfuncs.h"
 
-
+namespace tasystem {
+  class JacRow;
+} // namespace tasystem
 namespace tube{
   SPOILNAMESPACE
   class Cell;
-  class Tube;
+  class LaminarDuct;
   class Geom;
   
   class HopkinsHeatSource:public HeatSource{
     string cshape;
+    //  Pointer to function that computes heat transfer from wall to
+    //  fluid at frequency zero
     d (*zeroheatH_funptr)(d,d)=nullptr;
     d zeroheatQ=0;
+    const LaminarDuct* t;
     rottfuncs::RottFuncs rf;
-    // This function computes for all nonzero frequencies the heat
-    // transfer coeficient mathcalH.
-    vd dTwdx;
   public:
-    HopkinsHeatSource(const Tube& t);
+    HopkinsHeatSource(const LaminarDuct& t);
     HopkinsHeatSource& operator=(const HopkinsHeatSource&)=delete;
     HopkinsHeatSource(const HopkinsHeatSource& o)=delete;
-    void setdTwdx(const vd& dTwdx);
-    vd heat(const Cell& v) const;
-    dmat dmi(const Cell& v) const;
-    dmat dTi(const Cell& v) const;
-  // private:
+    vd Qsf(const Cell& v) const;
+    tasystem::JacRow dQsf(const Cell&) const;
+  private:
     void setZeroFreq(const string&);
     vc HeatTransferCoefH(const Cell&) const;
-    vc HeatTransferCoefQ(const Cell&) const;    
+    vc HeatTransferCoefQ(const Cell&) const;
+    d dTwdx(const Cell&) const;
   };
 
 } // namespace tube

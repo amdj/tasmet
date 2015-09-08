@@ -11,24 +11,56 @@
 #include "tube.h"
 #include "vtypes.h"
 #include "laminardrag.h"
+#include "hopkinsheat.h"
+
+namespace solids{
+  class Solid;
+}
 
 namespace tube{
   #ifndef SWIG
   SPOILNAMESPACE
   #endif
+  #ifdef SWIG
+  %catches(std::exception,...) LaminarDuct::LaminarDuct(const Geom&,const string& solid);
+  %catches(std::exception,...) LaminarDuct::LaminarDuct(const Geom&);
+  %catches(std::exception,...) LaminarDuct::setSolid(const string& solid);
+  #endif
 
   class LaminarDuct:public Tube
   {
     drag::LaminarDragResistance laminardrag;
+    HopkinsHeatSource hopkinsheat;
+    // If isolated, no time-averaged heat transfer is allowed between
+    // tube and
+    bool isolated=false;
+    // If present a solid
+    const solids::Solid* solid=nullptr;
+
+    // Temporary for testing
+    d Tl=-1,Tr=-1;
+
   protected:
-    LaminarDuct(const Geom& geom);
-    LaminarDuct(const LaminarDuct&)=delete;
     LaminarDuct(const LaminarDuct&,const tasystem::TaSystem&);
-    LaminarDuct& operator=(const LaminarDuct&)=delete;
   public:
+    LaminarDuct(const Geom& geom,d Tl,d Tr);
+    LaminarDuct(const Geom& geom);
+    LaminarDuct(const Geom& geom,const string& solid);
+    LaminarDuct(const LaminarDuct&)=delete;
+    void init();
+    void setIsolated(bool i){isolated=i;}
+    bool isIsolated() const {return isolated;}
+    void setSolid(const string& solid);
+    bool hasSolid() const {return solid?true:false;}
+    const solids::Solid& getSolid() const;
+    void setVarsEqs(Cell&) const;
+    LaminarDuct& operator=(const LaminarDuct&)=delete;
+    void show(us) const;
+    segment::Seg* copy(const tasystem::TaSystem& s) const {return new LaminarDuct(*this,s);}
     #ifndef SWIG
     virtual ~LaminarDuct();
-    virtual const drag::DragResistance& getDragResistance() const {return laminardrag;}
+    const HeatSource& heatSource() const { return hopkinsheat;}
+    virtual const drag::DragResistance& dragResistance() const {return laminardrag;}
     #endif
   };
 

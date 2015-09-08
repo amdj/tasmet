@@ -46,7 +46,6 @@ namespace tube {
     assert(gc);
     u_p.setGc(*gc);
 
-    setInit(true);
   }
   VelocityBc::~VelocityBc(){}
   int VelocityBc::arbitrateMassEq() const {
@@ -136,7 +135,6 @@ namespace tube {
   }
   void VelocityBc::show(us detailnr) const {
     TRACE(5,"VelocityBc::show()");
-    checkInit();
     const char* side=posWord(pos);
 
     cout << "VelocityBc boundary condition set at "<<side <<" side of segment "<< segid<<".\n";

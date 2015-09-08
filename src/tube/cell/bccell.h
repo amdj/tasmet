@@ -18,10 +18,11 @@ namespace tube{
 
   class BcCell:public Cell{
   protected:
-    tasystem::var Tbc_,mubc_,mHbc_,pbc_,rhobc_,ubc_;
+    tasystem::var Tbc_,Tsbc_,mubc_,mHbc_,pbc_,rhobc_,ubc_;
   public:
     BcCell(us i,const Tube& t);
     virtual ~BcCell(){}
+    friend class Tube;
     virtual Pos getPos() const=0;
     virtual void init(const Cell* left,const Cell* right);
     vd extrapolateQuant(Varnr) const;
@@ -36,15 +37,17 @@ namespace tube{
     // Return velocity at the cell wall
     // virtual const tasystem::var& ubc() const {return ubc_;}
     // // Return pressure at the cell wall
-    virtual const tasystem::var& pbc() const {return pbc_;}
+    const tasystem::var& pbc() const {return pbc_;}
     // Return density at the cell wall
-    virtual const tasystem::var& rhobc() const {return rhobc_;}
+    const tasystem::var& rhobc() const {return rhobc_;}
     // Return temperature at the cell wall
-    virtual const tasystem::var& Tbc() const {return Tbc_;}
+    const tasystem::var& Tbc() const {return Tbc_;}
     // Return  velocity at the cell wall
-    virtual const tasystem::var& ubc() const {return ubc_;}
+    const tasystem::var& Tsbc() const {return Tsbc_;}
+    // Return  velocity at the cell wall
+    const tasystem::var& ubc() const {return ubc_;}
     // Return total enthalpy flow at the cell wall
-    virtual const tasystem::var& mHbc() const {return mHbc_;}
+    const tasystem::var& mHbc() const {return mHbc_;}
   protected:
     
   };

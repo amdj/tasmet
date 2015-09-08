@@ -22,22 +22,14 @@ namespace tube{
   {}
   void BcCell::init(const Cell* left,const Cell* right){
     TRACE(10,"BcCell::init(const Cell* left,const Cell* right)");
-    Cell::init(left,right);
     rhobc_=var(*gc,gc->rho0());
     Tbc_=var(*gc,gc->T0());
+    Tsbc_=var(*gc,gc->T0());
     pbc_=var(*gc);
     ubc_=var(*gc);
-    // mubc_=var(*gc);
+    mubc_=var(*gc);
     mHbc_=var(*gc);
-
-    vars.push_back(&rhobc_);
-    vars.push_back(&Tbc_);
-    vars.push_back(&pbc_);
-    vars.push_back(&ubc_);
-    vars.push_back(&mHbc_);
-    eqs.insert({EqType::BcEqP,new ExtrapolatePressure(*this)});
-    eqs.insert({EqType::BcEqStateBc,new StateBc(*this)});    
-    eqs.insert({EqType::BcEqu,new BcVelocity(*this)});    
+    Cell::init(left,right);
   }
   vd BcCell::extrapolateQuant(Varnr v) const {
     TRACE(5,"BcCell::extrapolateQuant()");

@@ -15,8 +15,6 @@ namespace tasystem{
   class JacRow;
   class JacCol;
 }
-namespace variable{class var;}
-
 namespace tube{
   
   SPOILNAMESPACE  

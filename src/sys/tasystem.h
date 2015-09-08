@@ -47,6 +47,7 @@ namespace tasystem{
   %catches(std::exception,...) TaSystem::TaSystem();
   %catches(std::exception,...) TaSystem::TaSystem(const Globalconf&);
   %catches(std::exception,...) TaSystem::Error();
+  %catches(std::exception,...) TaSystem::getRes();
   %catches(std::exception,...) TaSystem::init();
   %catches(std::exception,...) TaSystem::setRes(const vd& res);
   %catches(std::exception,...) TaSystem::showJac();
@@ -55,7 +56,8 @@ namespace tasystem{
   %catches(std::exception,...) TaSystem::operator+=(const segment::Seg&);
   #endif // SWIG
 
-  class TaSystem{
+  // Inherit all global configuration members
+  class TaSystem: public Globalconf{
   protected:
     bool hasInit=false;
     // This is the mass in the sytem. 
@@ -68,15 +70,11 @@ namespace tasystem{
 
     std::map<string,segment::Seg*> segs;		
     std::map<string,segment::Connector*> connectors;    // Yes, connectors are just like segments
-    bool driven=true;
-    Globalconf gc_;             // Global configuration parameters
   public:
-    const Globalconf& gc() const {return gc_;} // Reset globalconf configuration
-    TaSystem():gc_(Globalconf::airSTP(0,100)){}
+    TaSystem(): Globalconf(Globalconf::airSTP(0,100)){}
     TaSystem(const Globalconf& g);
     TaSystem(const TaSystem& o);
     TaSystem& operator=(const TaSystem& other)=delete;
-
 
     // Set globalconf configuration. Applies updateNf as well.
     void setGc(const Globalconf& gc);
@@ -91,8 +89,6 @@ namespace tasystem{
     virtual ~TaSystem();
     virtual TaSystem* copy() const {return new TaSystem(*this);}
 
-    void setDriven(bool dr) {driven=dr;}
-    bool isDriven() const {return driven;}
     us nSegs() const {return segs.size();}
     us nConnectors() const {return connectors.size();}
     TaSystem& operator+=(const segment::Connector& c);

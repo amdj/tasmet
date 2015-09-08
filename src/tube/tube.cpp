@@ -14,15 +14,24 @@
 #include "exception.h"
 #include "utils.h"
 
+#include "continuity.h"
+#include "momentum.h"
+#include "mu.h"
+#include "energy.h"
+#include "state.h"
+#include "solidenergy.h"
+#include "isentropic.h"
+
+
 // Tried to keep the method definition a bit in order in which a
-  // tube is created, including all its components. First a tube is
-  // created, which has a geometry and a global
-  // configuration. Moreover, the tube has gridpoints, "Cell"
-  // instants. Of these, a tube has gp of them, stored in a vector. In
-  // each gridpoint, variables live, which represent the current
-  // solution. Moreover, we have equations in each gridpoint. More
-  // precisely, in the final solution the continuity, momentum, energy
-  // and a suitable equation of state should hold.
+// tube is created, including all its components. First a tube is
+// created, which has a geometry and a global
+// configuration. Moreover, the tube has gridpoints, "Cell"
+// instants. Of these, a tube has gp of them, stored in a vector. In
+// each gridpoint, variables live, which represent the current
+// solution. Moreover, we have equations in each gridpoint. More
+// precisely, in the final solution the continuity, momentum, energy
+// and a suitable equation of state should hold.
 
 namespace tube {
   using tasystem::PhaseConstraint;
@@ -42,19 +51,22 @@ namespace tube {
     if(other.pc_)
       this->pc_=new PhaseConstraint(*other.pc_);
     TRACE(13,"Filling vertices. Current size:"<<cells.size());
-      // Left *probable* boundary condition
-      // cells.emplace_back(new LeftCell(0,g));
+    // Left *probable* boundary condition
+    // cells.emplace_back(new LeftCell(0,g));
     // WARN("Lot wrong here");
     cells.emplace_back(new LeftCell(0,*this));
-    us i;
-    for(i=1;i<getNCells()-1;i++)
+    for(us i=1;i<getNCells()-1;i++)
       cells.emplace_back(new Cell(i,*this));
     cells.emplace_back(new RightCell(getNCells()-1,*this));
+
+  } // Tube::Tube(copy)
+  void Tube::init(){
+    TRACE(15,"Tube::init()");
 
     us nCell=cells.size();    
     assert(nCell==getNCells());
     // And initialize again.
-    for(i=0;i<cells.size();i++){
+    for(us i=0;i<cells.size();i++){
       TRACE(13,"Starting intialization of Cell "<< i);
       Cell* thiscell=cells[i];
       Cell* left=nullptr;
@@ -63,11 +75,52 @@ namespace tube {
         right=cells[i+1];
       if(i>0)
         left=cells[i-1];
-      TRACE(15,"Initializing tube");
+      TRACE(15,"Initializing cell");
       thiscell->init(left,right);
     } // for
-  } // Tube::Tube(copy)
 
+  }
+  void Tube::setVarsEqs(Cell& c) const {
+    TRACE(15,"Tube::setVarsEqs()");
+    
+    auto& vars=c.getVars();
+    // Assuming this is the first function that fills the vars vector
+    utils::purge(vars);
+    vars.reserve(constants::nvars_reserve);
+
+    // Assuming this is the first function that fills the eqs map
+    auto& eqs=c.getEqs();
+    utils::purge(eqs);
+
+    // These should always be put in
+    vars.push_back(&c.rho_);
+    vars.push_back(&c.ml_);
+    vars.push_back(&c.T_);
+    vars.push_back(&c.p_);
+    vars.push_back(&c.mu_);
+
+    if((!c.left()) || (!c.right())) {
+      auto& d=static_cast<BcCell&>(c);
+      vars.push_back(&d.rhobc_);
+      vars.push_back(&d.Tbc_);
+      vars.push_back(&d.pbc_);
+      vars.push_back(&d.ubc_);
+      vars.push_back(&d.mHbc_);
+
+      eqs.insert({EqType::BcEqP,new ExtrapolatePressure(d)});
+      eqs.insert({EqType::BcEqStateBc,new StateBc(d)});    
+      eqs.insert({EqType::BcEqu,new BcVelocity(d)});
+    }
+
+    eqs.insert({EqType::Con,new Continuity(c)});
+    if(c.left())
+      eqs.insert({EqType::Mom,new Momentum(c)});
+
+    eqs.insert({EqType::Ene,new Energy(c)});
+    eqs.insert({EqType::Sta,new State(c)});
+    eqs.insert({EqType::Mu_is_m_u,new MuEq(c)});    
+
+  }
   Tube::~Tube(){
     TRACE(25,"~Tube()");
     delete geom_;
@@ -161,7 +214,6 @@ namespace tube {
   }
   vd Tube::getx() const {
     TRACE(10,"Tube::getx()");
-    checkInit();
     return geom().vx_vec();
   }
   vd Tube::getValueT(Varnr v,d timeinst) const{
@@ -176,7 +228,6 @@ namespace tube {
   }
   vd Tube::getValue(Varnr v,us freqnr) const {
     TRACE(15,"Tube::getValue("<<(int)v<<","<<freqnr<<")");
-    checkInit();
     if(freqnr>=gc->Ns())
       throw MyError("Illegal frequency number");
     const us nCells=geom().nCells();
@@ -231,7 +282,7 @@ namespace tube {
     }
     if(pc_->freqnr>Gc().Ns()-1){
       WARN("Frequency number given for phase constraint is "
-           "too high! Given: " << pc_->freqnr);
+	   "too high! Given: " << pc_->freqnr);
       throw MyError("Illegal frequency given. See warnings.");
     }
     if(pc_->var == Varnr::p) 
@@ -288,8 +339,8 @@ namespace tube {
       TRACE(3,"Obtaining cell Jacobian...");
       cells.at(j)->jac(tofill);
     }	// end for
-    // cout <<"Segment" << getNumber() <<" Jacobian done. Jac is:\n"<< Jacobian;
-    // cout << "Number of colums in this jacobian" << Jacobian.n_cols<<"\n";
+	// cout <<"Segment" << getNumber() <<" Jacobian done. Jac is:\n"<< Jacobian;
+	// cout << "Number of colums in this jacobian" << Jacobian.n_cols<<"\n";
     TRACE(8,"Tubement Jacobian done.");
   }
   vd Tube::getRes() const {

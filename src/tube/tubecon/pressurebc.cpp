@@ -50,7 +50,6 @@ namespace tube{
     // Decouple from old globalconf pointer
     p_prescribed.setGc(*gc);
     prescribeT.setGc(*gc);
-    setInit(true);
   }
  
   void PressureBc::updateNf(){
@@ -78,7 +77,7 @@ namespace tube{
       errorM+=cell.mu()();       // 
       errorM-=cell.extrapolateQuant(Varnr::mu);
       #ifndef NODRAG
-      errorM+=Wddt*(t->getDragResistance().drag(cell));
+      errorM+=Wddt*(t->dragResistance().drag(cell));
       #endif
     }
     else{
@@ -89,7 +88,7 @@ namespace tube{
       errorM-=cell.mu()();
       errorM+=cell.extrapolateQuant(Varnr::mu);      
       #ifndef NODRAG
-      errorM+=Wddt*(t->getDragResistance().drag(cell));
+      errorM+=Wddt*(t->dragResistance().drag(cell));
       #endif
     }      
     error.subvec(0,Ns-1)=errorM;
@@ -114,7 +113,7 @@ namespace tube{
       jacr+=JacCol(cell.mu(),eye);
       jacr+=-cell.dExtrapolateQuant(Varnr::mu);
       #ifndef NODRAG
-      jacr+=JacCol(cell.ml(),Wddt*(t->getDragResistance().dm(cell)));
+      jacr+=JacCol(cell.ml(),Wddt*(t->dragResistance().dm(cell)));
       #endif  // NODRAG
       jac+=jacr;
     }
@@ -127,7 +126,7 @@ namespace tube{
       jacr+=JacCol(cell.mu(),-eye);
       jacr+=cell.dExtrapolateQuant(Varnr::mu);
       #ifndef NODRAG
-      jacr+=JacCol(cell.mr(),Wddt*(t->getDragResistance().dm(cell)));
+      jacr+=JacCol(cell.mr(),Wddt*(t->dragResistance().dm(cell)));
       #endif  // NODRAG
       jac+=jacr;
     }
@@ -143,7 +142,6 @@ namespace tube{
   }
   void PressureBc::show(us detailnr) const {
     TRACE(5,"PressureBc::show()");
-    checkInit();
     const char* side;
     if(pos==Pos::left)
       side="left";

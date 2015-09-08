@@ -132,7 +132,7 @@ titleM
 
 
 \backslash
-end{titlingpage} 
+end{titlingpage}
 \end_layout
 
 \end_inset
@@ -155,6 +155,67 @@ TASMET Basics
 
 \begin_layout Chapter
 Ducts
+\end_layout
+
+\begin_layout Section
+Some definitions
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+s=r_{h}\sqrt{\frac{\rho_{0}\omega}{\mu}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{subequations}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray}
+s & = & \sqrt{2}\frac{r_{h}}{\delta_{\nu}}\\
+s_{t} & = & s\sqrt{\Pr}=\sqrt{2}\frac{r_{h}}{\delta_{\kappa}}\\
+s_{s} & = & \sqrt{2}\frac{r_{h,s}}{\delta_{s}}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{subequations}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Duct geometry
 \end_layout
 
 \begin_layout Standard
@@ -276,7 +337,7 @@ First order second order factor
 
 \begin_layout Standard
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
 If 
@@ -531,7 +592,7 @@ status collapsed
 
 \begin_inset Formula 
 \begin{equation}
-\frac{S_{f}}{\gamma-1}\frac{\partial p}{\partial t}+\frac{1}{2}\frac{\partial mu}{\partial t}+\frac{\partial}{\partial x}\left(mc_{p}T+mE_{\mathrm{kin}}+Q_{\mathrm{ax}}\right)=Q_{s\to f},
+\frac{S_{f}}{\gamma-1}\frac{\partial p}{\partial t}+\frac{1}{2}\frac{\partial mu}{\partial t}+\frac{\partial}{\partial x}\left(mc_{p}T+mE_{\mathrm{kin}}+Q_{\mathrm{ax}}\right)-Q_{s\to f}=0,
 \end{equation}
 
 \end_inset
@@ -816,30 +877,35 @@ f=\frac{4C_{f}}{d}u|u
 \end_layout
 
 \begin_layout Section
-HopkinsLaminarDuct
+LaminarDuct
+\end_layout
+
+\begin_layout Subsection
+Wall temperature prescribed
 \end_layout
 
 \begin_layout Standard
 In the HopkinsLaminarDuct, 
 \begin_inset Formula 
 \begin{equation}
-Q_{s\to f}=\mathcal{H}-\mathcal{Q}\frac{\mathrm{d}\hat{T}_{s,0}}{\mathrm{d}x},
+Q_{s\to f}=\mathcal{H}-\mathcal{Q}\frac{\mathrm{d}\hat{T}_{w,0}}{\mathrm{d}x},
 \end{equation}
 
 \end_inset
 
 where
 \begin_inset Formula 
-\begin{equation}
-\boldsymbol{\mathcal{H}}=\hat{\mathbf{H}}\diamond\left(\hat{\mathbf{T}}-\hat{\mathbf{T}}_{s}\right),
-\end{equation}
+\begin{align}
+\hat{\boldsymbol{\mathcal{H}}} & =-S_{f}\hat{H}\hat{T} & ; & n>0\\
+\hat{\mathcal{\boldsymbol{\mathcal{H}}}}_{0} & =S_{f}\hat{H}_{0}\left(\hat{T}_{w,0}-\hat{T}_{0}\right) & ; & n=0
+\end{align}
 
 \end_inset
 
 where
 \begin_inset Formula 
 \begin{equation}
-\hat{H}_{n}=\frac{i\hat{\rho}_{0}\omega nf_{\kappa,n}}{1-f_{\kappa,n}}.
+\hat{H}=\frac{i\hat{\rho}_{0}c_{p}\frac{f_{\kappa}}{1+\epsilon_{s}}}{1-\frac{f_{\kappa}}{1+\epsilon_{s}}}
 \end{equation}
 
 \end_inset
@@ -854,7 +920,7 @@ where
  is
 \begin_inset Formula 
 \begin{equation}
-\boldsymbol{\mathcal{Q}}=\frac{1}{2}\tilde{\mathbf{Q}}\diamond\left(\tilde{\mathbf{m}}_{L}+\tilde{\mathbf{m}}_{R}\right),
+\boldsymbol{\mathcal{Q}}=\tilde{\mathbf{Q}}\hat{\mathbf{m}},
 \end{equation}
 
 \end_inset
@@ -862,7 +928,7 @@ where
 where
 \begin_inset Formula 
 \[
-\tilde{Q}_{n}=-\frac{c_{p}}{1-\Pr}\left(\frac{f_{\nu,n}}{1-f_{\nu,n}}-\Pr\nolimits _{0}\frac{f_{\kappa,n}}{1-f_{\kappa,n}}\right)
+\tilde{Q}_{n}=\frac{c_{p}}{1-\Pr}\left(\frac{f_{\nu,n}}{1-f_{\nu,n}}-\Pr\nolimits _{0}\frac{f_{\kappa,n}}{1-f_{\kappa,n}}\right)
 \]
 
 \end_inset
@@ -872,6 +938,602 @@ where
 
 \begin_layout Section
 TurbulentDuct
+\end_layout
+
+\begin_layout Section
+Tubes with solids
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\rho_{s}c_{s}S_{s}\frac{\partial T_{s}}{\partial t}-\frac{\partial}{\partial x}\left(\kappa_{s}S_{s}\frac{\partial T_{s}}{\partial x}\right)=-Q_{s\to f}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Discretized:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+\rho_{s}c_{s}S_{s}\frac{\partial T_{s}}{\partial t}-\frac{\partial}{\partial x}\left(\kappa_{s}S_{s}\frac{\partial T_{s}}{\partial x}\right)=-Q_{s\to f}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+V_{vs}\rho_{s}c_{s}\frac{\partial T_{s,i}}{\partial t}+Q_{r}-Q_{l}+Q_{s\to f}=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+where 
+\begin_inset Formula $T_{s}$
+\end_inset
+
+ is the area-averaged temperature of the solid and 
+\begin_inset Formula 
+\begin{equation}
+Q_{s\to f}=Q_{s\to f}\left(T_{w},\dots\right)=S_{s}\hat{H}_{s}\left(\hat{T}_{s}-\hat{T}_{w}\right)
+\end{equation}
+
+\end_inset
+
+is the transverse heat transfer, which is a function of the 
+\emph on
+wall
+\emph default
+ temperature.
+ The wall temperature, on its turn is a function of the time-averaged temperatur
+e of the solid and the transverse heat transfer:
+\begin_inset Formula 
+\begin{equation}
+T_{w}=T_{w}\left(T_{s},Q_{s\to f}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Local 
+\begin_inset Formula $T_{s}$
+\end_inset
+
+ is 
+\begin_inset Formula $T_{s,l}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $i\omega T_{s,l}-\alpha_{s}\frac{\partial^{2}T_{s,l}}{\partial y^{2}}=0$
+\end_inset
+
+ with symmetric boundary conditions: 
+\begin_inset Formula $T_{s,l}\left(\pm y_{0}\right)=T_{w}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\Rightarrow T_{s,l}=A+B\cosh\left(\left(1+i\right)\frac{y}{\delta_{\kappa,s}}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left\langle T_{s,l}\right\rangle =T_{s}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+-----
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $T_{s,l}=A+B\cosh\left(\left(1+i\right)\frac{y}{\delta_{\kappa,s}}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+-- Using boundary conditions:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $T_{s,l}(y_{0})=T_{w}=A+B\cosh\left(\left(1+i\right)\frac{y_{0}}{\delta_{\kappa,s}}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $A=T_{w}-B\cosh\left(\left(1+i\right)\frac{y_{0}}{\delta_{\kappa,s}}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+such that:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $T_{s,l}=T_{w}+B\left(\cosh\left(\left(1+i\right)\frac{y}{\delta_{\kappa,s}}\right)-\cosh\left(\left(1+i\right)\frac{y_{0}}{\delta_{\kappa,s}}\right)\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+and:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left\langle T_{s,l}\right\rangle =T_{s}=T_{w}+B\left[\frac{\sinh\left(\left(1+i\right)\frac{y_{0}}{\delta_{\kappa,s}}\right)}{\left(1+i\right)\frac{y}{\delta_{\kappa,s}}}-B\cosh\left(\left(1+i\right)\frac{y_{0}}{\delta_{\kappa,s}}\right)\right]\Rightarrow\frac{T_{s}-T_{w}}{\frac{\sinh\left(\left(1+i\right)\frac{y_{0}}{\delta_{\kappa,s}}\right)}{\left(1+i\right)\frac{y}{\delta_{\kappa,s}}}-\cosh\left(\left(1+i\right)\frac{y_{0}}{\delta_{\kappa,s}}\right)}=B$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Sucht that
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $T_{s,l}=T_{w}+\left(T_{s}-T_{w}\right)\frac{1-\frac{\cosh\left(\left(1+i\right)\frac{y}{\delta_{\kappa,s}}\right)}{\cosh\left(\left(1+i\right)\frac{y_{0}}{\delta_{\kappa,s}}\right)}}{1-\frac{\sinh\left(\left(1+i\right)\frac{y_{0}}{\delta_{\kappa,s}}\right)}{\left(1+i\right)\frac{y_{0}}{\delta_{\kappa,s}}\cosh\left(\left(1+i\right)\frac{y_{0}}{\delta_{\kappa,s}}\right)}}=T_{w}+\left(T_{s}-T_{w}\right)\frac{1-h_{\kappa,s}}{1-f_{\kappa,s}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+The temperature distribution in the solid obeys
+\begin_inset Formula 
+\begin{equation}
+T_{s,l}=T_{w}+\left(T_{s}-T_{w}\right)\frac{1-h_{s}}{1-f_{s}},
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And the heat input equals
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Formula $Q_{s\to f}=\kappa_{s}\Pi\frac{\partial T_{s,l}}{\partial n}=-\kappa_{s}\Pi\frac{\partial T_{s}}{\partial y}|_{y_{0}}\overset{\mathrm{par.\,plates}}{=}=$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+with 
+\begin_inset Formula $\mathbf{n}$
+\end_inset
+
+ pointing from the fluid into the solid (do not know if this is according
+ to my definition)
+\end_layout
+
+\begin_layout Plain Layout
+for parallel plates:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $T_{s,l}=T_{w}+\left(T_{s}-T_{w}\right)\frac{1-h_{s}}{1-f_{s}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $s_{t}=r_{h}\sqrt{\frac{\rho_{0}c_{p}\omega}{\kappa}}=\sqrt{\Pr}s$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $s_{s}=r_{h,s}\sqrt{\frac{\rho_{s}c_{s}\omega}{\kappa_{s}}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+For parallel plates:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $Q_{s\to f}=-\kappa_{s}\Pi\frac{\partial T_{s,l}}{\partial y}|_{y=r_{h,s}}=-\kappa_{s}\frac{S_{s}}{r_{h,s}}\left(T_{s}-T_{w}\right)\frac{1}{1-f_{s}}\frac{\partial}{\partial y}\left(\frac{-\cosh\left(\sqrt{i}s_{s}\frac{y}{r_{h,s}}\right)}{\cosh\left(\sqrt{i}s_{s}\right)}\right)|_{y=r_{h,s}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+--- For parallel-plates
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $Q_{s\to f}=\kappa_{s}\frac{S_{s}}{r_{h,s}}\left(T_{s}-T_{w}\right)\frac{1}{1-f_{s}}\frac{\partial}{\partial y}\left(\frac{\cosh\left(\sqrt{i}s_{s}\frac{y}{r_{h,s}}\right)}{\cosh\left(\sqrt{i}s_{s}\right)}\right)|_{y=r_{h,s}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $Q_{s\to f}=\frac{\kappa_{s}S_{s}}{r_{h,s}^{2}}\left(T_{s}-T_{w}\right)\frac{\sqrt{i}s_{s}}{1-f_{s}}\tanh\left(\sqrt{i}s_{s}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+---
+\end_layout
+
+\begin_layout Plain Layout
+Using: 
+\begin_inset Formula $f_{s}=\frac{\tanh\left(\sqrt{i}s_{s}\right)}{\sqrt{i}s_{s}}\Rightarrow\tanh\left(\sqrt{i}s_{s}\right)=f_{s}\sqrt{i}s_{s}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Fill in: 
+\begin_inset Formula $Q_{s\to f}=\frac{\kappa_{s}S_{s}}{r_{h,s}^{2}}\left(T_{s}-T_{w}\right)\frac{is_{s}^{2}f_{s}}{1-f_{s}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+Q_{s\to f}\overset{\mathrm{par.\,plates}}{=}=-\kappa_{s}\Pi\frac{\partial T_{s}}{\partial y}|_{y_{0}}=\frac{\kappa_{s}S_{s}}{r_{h,s}^{2}}\left(T_{s}-T_{w}\right)\frac{is_{s}^{2}f_{s}}{1-f_{s}}
+\end{equation}
+
+\end_inset
+
+Hence
+\begin_inset Formula 
+\begin{equation}
+Q_{s\to f}=S_{s}H_{s}\left(T_{s}-T_{w}\right)
+\end{equation}
+
+\end_inset
+
+Such that
+\begin_inset Formula 
+\begin{equation}
+H_{s}=\frac{\kappa_{s}}{r_{h,s}^{2}}\frac{is_{s}^{2}f_{s}}{1-f_{s}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Wall temperature not prescribed
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Check if this is in agreement with other one
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+Q_{s\to f}=S_{f}\frac{i\hat{\rho}_{0}c_{p}\omega\frac{f_{\kappa}}{1+\epsilon_{s}}}{1-\frac{f_{\kappa}}{1+\epsilon_{s}}}\hat{T}-\frac{c_{p}}{\left(1-\Pr\right)\left(1+\epsilon_{s}\right)}\left[\dfrac{f_{\kappa}}{1-\frac{f_{\kappa}}{1+\epsilon_{s}}}\left(\frac{1-\lambda f_{\kappa}-\Pr\left(1-f_{\nu}\right)}{1-f_{\nu}}\right)-\frac{f_{\kappa}-f_{\nu}}{1-f_{\nu}}\right]\hat{m}\frac{\mathrm{d}\hat{T}_{w,0}}{\mathrm{d}x}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Using:
+\begin_inset Formula $\lambda=\frac{1+\frac{\epsilon_{s}f_{\nu}}{f_{\kappa}}}{1+\epsilon_{s}}$
+\end_inset
+
+, 
+\begin_inset Formula $\lambda\to1$
+\end_inset
+
+, 
+\begin_inset Formula $\epsilon_{s}=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+Q_{s\to f}=S_{f}\frac{i\hat{\rho}_{0}c_{p}\omega f_{\kappa}}{1-f_{\kappa}}\hat{T}-\frac{c_{p}}{\left(1-\Pr\right)\left(1+\epsilon_{s}\right)}\left[\dfrac{f_{\kappa}}{1-f_{\kappa}}\left(\frac{1-f_{\kappa}-\Pr\left(1-f_{\nu}\right)}{1-f_{\nu}}\right)-\frac{f_{\kappa}-f_{\nu}}{1-f_{\nu}}\right]\hat{m}\frac{\mathrm{d}\hat{T}_{w,0}}{\mathrm{d}x}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Work under same denominator:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+Q_{s\to f}=S_{f}\frac{i\hat{\rho}_{0}\omega c_{p}f_{\kappa,n}}{1-f_{\kappa,n}}\hat{T}-\frac{c_{p}}{\left(1-\Pr\right)\left(1+\epsilon_{s}\right)}\left[\frac{f_{\kappa}\left(1-f_{\kappa}-\Pr\left(1-f_{\nu}\right)\right)-\left(1-f_{\kappa}\right)\left(f_{\kappa}-f_{\nu}\right)}{\left(1-f_{\kappa}\right)\left(1-f_{\nu}\right)}\right]\hat{m}\frac{\mathrm{d}\hat{T}_{w,0}}{\mathrm{d}x}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Split off Prandtl term:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+Q_{s\to f}=S_{f}\frac{i\hat{\rho}_{0}c_{p}\omega f_{\kappa}}{1-f_{\kappa}}\hat{T}-\frac{c_{p}}{\left(1-\Pr\right)\left(1+\epsilon_{s}\right)}\left[\frac{f_{\kappa}\left(1-f_{\kappa}\right)-\left(1-f_{\kappa}\right)\left(f_{\kappa}-f_{\nu}\right)}{\left(1-f_{\kappa}\right)\left(1-f_{\nu}\right)}-\frac{\Pr f_{\kappa}}{\left(1-f_{\kappa}\right)}\right]\hat{m}\frac{\mathrm{d}\hat{T}_{w,0}}{\mathrm{d}x}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+-- Work out rest
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+Q_{s\to f}=S_{f}\frac{i\hat{\rho}_{0}c_{p}\omega f_{\kappa}}{1-f_{\kappa}}\hat{T}-\frac{c_{p}}{\left(1-\Pr\right)\left(1+\epsilon_{s}\right)}\left[\frac{\left(1-f_{\kappa}\right)f_{\nu}}{\left(1-f_{\kappa}\right)\left(1-f_{\nu}\right)}-\frac{\Pr f_{\kappa}}{\left(1-f_{\kappa}\right)}\right]\hat{m}\frac{\mathrm{d}\hat{T}_{w,0}}{\mathrm{d}x}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Finally:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+Q_{s\to f}=S_{f}\frac{i\hat{\rho}_{0}c_{p}\omega f_{\kappa}}{1-f_{\kappa}}\hat{T}-\frac{c_{p}}{\left(1-\Pr\right)\left(1+\epsilon_{s}\right)}\left[\frac{f_{\nu}}{\left(1-f_{\nu}\right)}-\frac{\Pr f_{\kappa}}{\left(1-f_{\kappa}\right)}\right]\hat{m}\frac{\mathrm{d}\hat{T}_{w,0}}{\mathrm{d}x}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+What happens for 
+\begin_inset Formula $\omega\to0$
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+\lim_{\omega\to0}\epsilon_{s}=\sqrt{\frac{\kappa_{0}\rho_{0}c_{p}}{\kappa_{s}\rho_{s}c_{s}}}\frac{\tanh\left(\sqrt{i\frac{\rho_{0}c_{p}\omega}{\kappa}}r_{h,s}\right)}{\tanh\left(\sqrt{i\frac{\rho_{s}c_{s}\omega}{\kappa_{s}}}r_{h,s}\right)}=\sqrt{\frac{\kappa_{0}\rho_{0}c_{p}}{\kappa_{s}\rho_{s}c_{s}}}\frac{\tanh\left(\sqrt{i\frac{\rho_{0}c_{p}\omega}{\kappa}}r_{h,s}\right)}{\tanh\left(\sqrt{i\frac{\rho_{s}c_{s}\omega}{\kappa_{s}}}r_{h,s}\right)}=\sqrt{\frac{\kappa_{0}\rho_{0}c_{p}}{\kappa_{s}\rho_{s}c_{s}}}\frac{\sqrt{i\frac{\rho_{0}c_{p}\omega}{\kappa_{0}}}r_{h}}{\sqrt{i\frac{\rho_{s}c_{s}\omega}{\kappa_{s}}}r_{h,s}}=\frac{\rho_{0}c_{p}r_{h}}{\rho_{s}c_{s}r_{h,s}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+For 
+\begin_inset Formula $\omega\to0$
+\end_inset
+
+, 
+\begin_inset Formula $\lambda\to1$
+\end_inset
+
+, 
+\begin_inset Formula $\epsilon_{s}\to g_{s}\frac{\rho_{0}c_{p}r_{h}}{\rho_{s}c_{s}r_{h,s}}$
+\end_inset
+
+, 
+\begin_inset Formula $f_{\nu,\kappa}\to1$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\lim\limits _{\omega\to0}Q_{s\to f}==S_{f}\frac{i\hat{\rho}_{0}c_{p}\omega f_{\kappa}}{1+\epsilon_{s}-f_{\kappa}}\hat{T}-\frac{c_{p}}{\left(1-\Pr\right)\left(1+\epsilon_{s}\right)}\left[\dfrac{f_{\kappa}}{1-\frac{f_{\kappa}}{1+\epsilon_{s}}}\left(\frac{1-\lambda f_{\kappa}-\Pr\left(1-f_{\nu}\right)}{1-f_{\nu}}\right)-\frac{f_{\kappa}-f_{\nu}}{1-f_{\nu}}\right]\hat{m}\frac{\mathrm{d}\hat{T}_{w,0}}{\mathrm{d}x}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\lambda=\frac{1+\frac{\epsilon_{s}f_{\nu}}{f_{\kappa}}}{1+\epsilon_{s}}$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Plain Layout
+For parallel plates
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+\epsilon_{s}=\sqrt{\frac{\kappa_{0}\rho_{0}c_{p}}{\kappa_{s}\rho_{s}c_{s}}}\frac{\tanh\left(\sqrt{i\Pr}s\right)}{\tanh\left(\sqrt{i}s_{t,s}\right)}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Limit for 
+\begin_inset Formula $s$
+\end_inset
+
+ and 
+\begin_inset Formula $s_{t,s}$
+\end_inset
+
+ to zero gives:
+\end_layout
+
+\begin_layout Plain Layout
+Filling this in in 
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+Q_{s\to f}=S_{f}\frac{i\hat{\rho}_{0}c_{p}\omega f_{\kappa}}{1+\epsilon_{s}-f_{\kappa}}\hat{T}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+which is 
+\begin_inset Formula $Q_{s\to f}=\frac{i\hat{\rho}_{0}\omega f_{\kappa}}{1-f_{\kappa}}\left(\hat{T}-\hat{T}_{w}\right)-\frac{c_{p}}{1-\Pr}\left(\frac{f_{\nu,n}}{1-f_{\nu,n}}-\Pr\nolimits _{0}\frac{f_{\kappa,n}}{1-f_{\kappa,n}}\right)m\frac{\mathrm{d}\hat{T}_{w,0}}{\mathrm{d}x}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Filling in for 
+\begin_inset Formula $T_{w}$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $Q_{s\to f}=\frac{i\hat{\rho}_{0}\omega f_{\kappa}}{1-f_{\kappa}}\left(\hat{T}-\left(T_{s}-\frac{Q_{s\to f}}{J_{s}S_{f}}\right)\right)-\frac{c_{p}}{1-\Pr}\left(\frac{f_{\nu,n}}{1-f_{\nu,n}}-\Pr\nolimits _{0}\frac{f_{\kappa,n}}{1-f_{\kappa,n}}\right)m\frac{\mathrm{d}\hat{T}_{w,0}}{\mathrm{d}x}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Boundary conditions
+\end_layout
+
+\begin_layout Subsubsection
+Tube with solid to tube without solid
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Q_{s}=hS_{s}\left(T_{s}-T\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Tube with solid to tube with solid
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+Q_{s,1} & = & Q_{s,2}\\
+T_{s,1} & = & T_{s,2}
+\end{eqnarray}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -2452,6 +3114,18 @@ EngineSystem
 
 \begin_layout Standard
 The EngineSystem class solves for the unknown frequency as well.
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+m
 \end_layout
 
 \begin_layout Standard
@@ -2616,6 +3290,7 @@ Create a PhaseConstraint object:
 \end_layout
 
 \begin_layout Verbatim
+
 	pc=PhaseConstraint(Varnr, freqnr, left)
 \end_layout
 
@@ -2624,6 +3299,7 @@ Apply this contraint to a segment which can accept them, for example a Tube:
 \end_layout
 
 \begin_layout Verbatim
+
 	t1.setPhaseConstraint(pc)
 \end_layout
 

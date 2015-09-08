@@ -53,8 +53,6 @@ namespace mech {
     catch(...) {
       throw MyError("Segment is not a Piston or does not exist.");
     }
-    
-    setInit(true);
   }
 
   MechBc::~MechBc(){  }

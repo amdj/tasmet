@@ -39,7 +39,6 @@ namespace tube{
     enthalpyflowzero.setGc(*gc);
     Tbc.setGc(*gc);
     Tsbc.setGc(*gc);
-    setInit(true);
   }
   void IsoTWall::updateNf(){
     TRACE(15,"IsoTWall::updateNf()");
@@ -60,7 +59,10 @@ namespace tube{
     cout << "IsoTWall boundary condition set at "<<posWord(pos) <<" side of segment .\n";
   }
   us IsoTWall::getNEqs() const {
-    return 3*Ns;
+    if(t->hasSolid())
+      return 4*Ns;
+    else
+      return 3*Ns;
   }
   void IsoTWall::setEqNrs(us firsteqnr){
     TRACE(2,"IsoTWall::setEqNrs()");
@@ -69,8 +71,9 @@ namespace tube{
     const BcCell& cell=t->bcCell(pos);
     massflowzero.set(firsteqnr,cell.mbc(),zero);
     enthalpyflowzero.set(firsteqnr+Ns,cell.mHbc(),zero);
-    Tbc.set(firsteqnr+2*Ns,cell.Tbc()); // vals are set in constructor
-    // Tsbc.set(firsteqnr+2*Ns,cell.Tsbc()); // idem
+    Tbc.set(firsteqnr+2*Ns,cell.Tbc()); 
+    if(t->hasSolid())
+      Tsbc.set(firsteqnr+3*Ns,cell.Tsbc()); 
   }
   vd IsoTWall::error() const {
     TRACE(15,"IsoTWall::error()");
@@ -80,9 +83,8 @@ namespace tube{
     error.subvec(0,Ns-1)=massflowzero.error();
     error.subvec(Ns,2*Ns-1)=enthalpyflowzero.error();    
     error.subvec(2*Ns,3*Ns-1)=Tbc.error();
-    // error.subvec(3*Ns,4*Ns-1)=Tsbc.error();
-
-
+    if(t->hasSolid())
+      error.subvec(3*Ns,4*Ns-1)=Tsbc.error();
     return error;
   }
   void IsoTWall::jac(Jacobian& jac) const {
@@ -91,7 +93,8 @@ namespace tube{
     jac+=massflowzero.jac();
     jac+=enthalpyflowzero.jac();
     jac+=Tbc.jac();
-
+    if(t->hasSolid())
+      jac+=Tsbc.jac();
   }
 } // namespace tube
 

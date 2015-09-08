@@ -19,9 +19,8 @@ namespace tube{
     assert(!right);             // Otherwise, this is not the
                                 // rightmost!
     assert(left);
-    BcCell::init(left,right);
-
     mr_=var(*gc);
+    BcCell::init(left,right);
     vars.push_back(&mr_);
   }
   void RightCell::show(us detailnr) const{

@@ -8,8 +8,9 @@
 
 
 #include "hopkinsheat.h"
+#include "jacrow.h"
 #include "cell.h"
-#include "tube.h"
+#include "laminarduct.h"
 #include "geom.h"
 
 /* For obtaining time-averaged heat transfer, we have to find the
@@ -23,16 +24,19 @@
    Heat transfer is related to temperature difference, according to the
    Hopkins papers with:
 
-   Qin = H*(Tw-T) + Q*dTwdx*u
+   Qin = H*(Tw-T) - Q*dTwdx*u
 
 
 */
 
-
-
 namespace tube{
+  using tasystem::JacRow;
+  using tasystem::JacCol;
+  using rottfuncs::RottFuncs;
+  using tasystem::var;
+
   namespace H{
-    SPOILNAMESPACE
+    typedef  double d;
     namespace{ 
       d zeroheat_vert(d kappa,d rh){
         return 3*kappa/pow(rh,2);
@@ -41,36 +45,33 @@ namespace tube{
         return 2*kappa/pow(rh,2);
       }
       d zeroheat_inviscid(d,d){
-        TRACE(2,"zeroheat_inviscid");
         return 0;
       }
     }
   } // namespace H
+  
 
-  
-  
-  using rottfuncs::RottFuncs;
-  HopkinsHeatSource::HopkinsHeatSource(const Tube& t):
+  HopkinsHeatSource::HopkinsHeatSource(const LaminarDuct& t):
     cshape(t.geom().shape())
   {
     TRACE(10,"HopkinsHeatSource::HopKinsHeatSource(Tube)");
+    this->t=&t;			// Save pointer to tube
     setZeroFreq(cshape);
     if(t.geom().isBlApprox())
       rf=RottFuncs("blapprox");
     else
       rf=RottFuncs(t.geom().shape()); // Reinitialize thermoviscous functions with right shape
-    dTwdx=zeros(t.geom().nCells());
     TRACE(11,"Exiting redefinition of Rottfuncs");
   }
   void HopkinsHeatSource::setZeroFreq(const string& shape){
     TRACE(10,"HopkinsHeatSource::setZeroFreq()");
     if(shape.compare("vert")==0){
       zeroheatH_funptr=&H::zeroheat_vert;
-      zeroheatQ=0.2;      
+      zeroheatQ=1.0/5.0;      
     }
     else if(shape.compare("circ")==0){
       zeroheatH_funptr=&H::zeroheat_circ;
-      zeroheatQ=1/3;      
+      zeroheatQ=1.0/3.0;      
     }
     else if(shape.compare("vert")==0){
       zeroheatH_funptr=&H::zeroheat_vert;
@@ -86,34 +87,111 @@ namespace tube{
         abort();
       }
   }
-  void HopkinsHeatSource::setdTwdx(const vd& dTwdx){
-    this->dTwdx=dTwdx;
+  std::tuple<d,d,d> wfacs(d xi,d xj,d xk) {
+    d dj=xj-xi;
+    d dk=xk-xi;
+    d denom=dk*pow(dj,2)-dj*pow(dk,2);    
+    d Wi=(pow(dk,2)-pow(dj,2))/denom;
+    d Wj=-pow(dk,2)/denom;
+    d Wk=pow(dj,2)/denom;
+    return std::make_tuple(Wi,Wj,Wk);
   }
-  vd HopkinsHeatSource::heat(const Cell& v) const{
+  d HopkinsHeatSource::dTwdx(const Cell& v) const {
+    TRACE(15,"HopkinsHeatSource::dTwdx()");
+    d xi,xj,xk,Wi,Wj,Wk;
+    // VARTRACE(45,v.Tw()(0));
+    if(v.left()&&v.right()){
+      xi=v.vx;
+      xj=v.left()->vx;
+      xk=v.right()->vx;
+      std::tie(Wi,Wj,Wk)=wfacs(xi,xj,xk);
+      return Wi*v.Tw()(0)+Wj*v.TwL()(0)+Wk*v.TwR()(0);    
+    }
+    else if(!v.left()&&v.right()){
+      xi=v.vx;
+      xj=v.right()->vx;
+      xk=v.right()->right()->vx;
+      std::tie(Wi,Wj,Wk)=wfacs(xi,xj,xk);
+      return Wi*v.Tw()(0)+Wj*v.TwR()(0)+Wk*v.right()->TwR()(0);    
+    }
+    else{
+      xi=v.vx;
+      xj=v.left()->vx;
+      xk=v.left()->left()->vx;
+      std::tie(Wi,Wj,Wk)=wfacs(xi,xj,xk);
+      return Wi*v.Tw()(0)+Wj*v.TwL()(0)+Wk*v.left()->TwL()(0);    
+    }
+  }
+  vd HopkinsHeatSource::Qsf(const Cell& v) const{
     TRACE(5,"HopkinsHeatSource::heat(v)");
-    vd heat(v.gc->Ns(),fillwith::zeros);
-    heat+=dTi(v)*(v.T()()-v.Ts()());
-    heat+=dmi(v)*(0.5*(v.ml()()+v.mr()()) );    
+    
+    dmat H=var(*v.gc,HeatTransferCoefH(v)).freqMultiplyMat();
+    vd heat=-v.vSf*(H*v.T()());
+    heat(0)+=v.vSf*(H(0,0)*v.Tw()(0)); // Time-averaged component subtracted
+
+    dmat Q=var(*v.gc,HeatTransferCoefQ(v)).freqMultiplyMat();
+    heat-=Q*(dTwdx(v)*0.5*(v.ml()()+v.mr()()) );   
+    
     return heat;    
   }
-  dmat HopkinsHeatSource::dTi(const Cell& v) const{
-    TRACE(5,"HopkinsHeatSource::dTi(v)");
-    tasystem::var htcoefH(*v.gc);
-    htcoefH.setadata(HeatTransferCoefH(v));
-    dmat dTi(v.gc->Ns(),v.gc->Ns(),fillwith::zeros);
-    dTi=-v.vVf*htcoefH.freqMultiplyMat();
-    return dTi;
-  }
-  dmat HopkinsHeatSource::dmi(const Cell& v) const{
-    TRACE(5,"HopkinsHeatSource::dUi(v)");
-    tasystem::var htcoefQ(*v.gc);
-    htcoefQ.setadata(HeatTransferCoefQ(v));
-    dmat dmi(v.gc->Ns(),v.gc->Ns(),fillwith::zeros);
+  JacRow HopkinsHeatSource::dQsf(const Cell& v) const{
+    TRACE(15,"HopkinsHeatSource::dQsf()");
+    JacRow dQsf(-1,4);
+    dmat H=var(*v.gc,HeatTransferCoefH(v)).freqMultiplyMat();
+    dmat Q=var(*v.gc,HeatTransferCoefQ(v)).freqMultiplyMat();    
+
+    dmat H11=zeros(v.gc->Ns(),v.gc->Ns());
+    H11(0,0)=H(0,0);
     // Obtain dTwdx
-    d dTwdx=this->dTwdx(v.geti());
-    dmi=(-dTwdx*(v.xr-v.xl))*htcoefQ.freqMultiplyMat();
-    return dmi;
-  }  
+    d dTwdx=this->dTwdx(v);
+    dQsf+=JacCol(v.T(),-v.vSf*H);
+
+    if(t->hasSolid()){
+
+      dQsf+=JacCol(v.Tw(),v.vSf*H11);
+
+      vd m=0.5*(v.ml()()+v.mr()());
+      // Only zero in right top
+      dmat lt=zeros(v.gc->Ns(),v.gc->Ns()); lt.col(0).fill(1.0);
+      VARTRACE(35,lt);
+      d xi,xj,xk,Wi,Wj,Wk;
+      if(v.left()&&v.right()){
+	xi=v.vx;
+	xj=v.left()->vx;
+	xk=v.right()->vx;
+	std::tie(Wi,Wj,Wk)=wfacs(xi,xj,xk);
+	dQsf+=JacCol(v.Tw(),-Wi*lt*m);
+	dQsf+=JacCol(v.TwL(),-Wj*lt*m);
+	dQsf+=JacCol(v.TwR(),-Wk*lt*m);      
+      }
+      else if(!v.left()&&v.right()){
+	// Leftmost cell
+	xi=v.vx;
+	xj=v.right()->vx;
+	xk=v.right()->right()->vx;
+	std::tie(Wi,Wj,Wk)=wfacs(xi,xj,xk);
+	dQsf+=JacCol(v.Tw(),-Wi*lt*m);
+	dQsf+=JacCol(v.TwR(),-Wj*lt*m);
+	dQsf+=JacCol(v.right()->TwR(),-Wk*lt*m);      
+      }
+      else{
+	// Rightmost cell
+	xi=v.vx;
+	xj=v.left()->vx;
+	xk=v.left()->left()->vx;
+	std::tie(Wi,Wj,Wk)=wfacs(xi,xj,xk);
+	dQsf+=JacCol(v.Tw(),-Wi*lt*m);
+	dQsf+=JacCol(v.TwL(),-Wj*lt*m);
+	dQsf+=JacCol(v.left()->TwL(),-Wk*lt*m);      
+	return Wi*v.Tw()(0)+Wj*v.TwL()(0)+Wk*v.left()->TwL()(0);    
+      }
+    } // end t has solid
+    
+    dQsf+=JacCol(v.ml(),-0.5*dTwdx*Q);
+    dQsf+=JacCol(v.mr(),-0.5*dTwdx*Q);    
+    return dQsf;
+  }
+
   vc HopkinsHeatSource::HeatTransferCoefQ(const Cell& v) const{
     TRACE(10,"HopkinsHeatSource::HeatTransferCoefQ(const Cell& v)");
     const us& Nf=v.gc->Nf();

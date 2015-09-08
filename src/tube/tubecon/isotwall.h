@@ -22,12 +22,10 @@ namespace tube{
     // Equation to make volume flow zero at wall
     PrescribeQty enthalpyflowzero;
 
-    // 
     PrescribeQty Tbc;
     // Not yet implemented!
     PrescribeQty Tsbc;
-    
-    // 
+
     bool arbitrateMass=false;
   private:
     IsoTWall(const IsoTWall& o,const tasystem::TaSystem&);

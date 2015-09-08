@@ -10,7 +10,7 @@ namespace tube{
   class Energy:public Equation
   {
     const Tube* t=nullptr;
-    d Wddt=0,Wddtkin=0,WheatQ;
+    d Wddt=0,Wddtkin=0;
 
   public:
     Energy(const Cell& v):Equation(v){}
@@ -22,10 +22,6 @@ namespace tube{
     virtual vd error() const;			// Error in Energy equation at node i
     virtual void domg(vd&) const;
 
-    static vd kappaLt(const Cell&);		// Thermal conducticity at the left
-    // boundary of the cell
-    static vd kappaRt(const Cell&);		// Thermal conductivity at the right
-    // boundary of the cell
     d gamma() const;			// Time-avg ratio of specific heats
 
     static vd extrapolateHeatFlow(const Cell&); 

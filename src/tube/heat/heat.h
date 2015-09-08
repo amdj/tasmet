@@ -3,20 +3,21 @@
 #define _HEAT_H_
 #include "vtypes.h"
 
+namespace tasystem {
+    class JacRow;
+} // tasystem
+
 namespace tube{
   SPOILNAMESPACE
   class Cell;
   // Stub for a DragResistance class
   class HeatSource{
   public:
-    virtual vd heat(const Cell& v) const;
-    virtual dmat dmi(const Cell& v) const;
-    virtual dmat dTi(const Cell& v) const;
-    // virtual dmat drhoi(const Cell& v) const;
-    // virtual dmat dpi(const Cell& v) const;
-
-    // See if comment automatically line on new line das dsag dsag
-    // dsag gdsa
+    // Returns heat flow from solid to fluid in W/m of tube length. Should be added
+    // possitively to heat balance of fluid and negatively to heat
+    // balance of solid
+    virtual vd Qsf(const Cell& v) const;
+    virtual tasystem::JacRow dQsf(const Cell& v) const;
     
   };
 

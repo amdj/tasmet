@@ -19,7 +19,6 @@ namespace tasystem{
   {
     TRACE(20,"EngineSystem::EngineSystem(gc,tc)");
     // Since an EngineSystem cannot be driven:
-    setDriven(false);
     if(gc.Nf()<1)
       throw MyError("Too low frequency number given. Should be at "
                     "least 1 for an EngineSystem");
@@ -28,7 +27,6 @@ namespace tasystem{
     TaSystem(sys)
   {
     TRACE(15,"EngineSystem::EngineSystem(EngineSystem))");
-    setDriven(false);
   }
   EngineSystem::EngineSystem(const TaSystem& sys):TaSystem(sys){}
   void EngineSystem::show(us detailnr) {
@@ -170,7 +168,7 @@ namespace tasystem{
     us Ndofs=getNDofs()+1;
     vd res(Ndofs);		// Add one for the timing constraint
     res.subvec(0,Ndofs-2)=TaSystem::getRes();
-    res(Ndofs-1)=gc_.getomg();
+    res(Ndofs-1)=getomg();
     return res;
   }
   void EngineSystem::setRes(const vd& res){
@@ -186,10 +184,10 @@ namespace tasystem{
     if(ressize==ndofs){
       TaSystem::setRes(res.subvec(0,ndofs-2));
       d fac=1;
-      d oldomg=gc_.getomg();
+      d oldomg=getomg();
       d newomg=res(ndofs-1);
       d setomg=oldomg+fac*(newomg-oldomg);
-      gc_.setomg(setomg);
+      this->setomg(setomg);
     }
     else if(ressize==ndofs-1){
       TaSystem::setRes(res);
@@ -198,7 +196,7 @@ namespace tasystem{
     else {
       throw MyError("Result vector has inappropriate length!");
     }
-    cout << "Current frequency: " << gc_.getfreq() << endl;
+    cout << "Current frequency: " << getfreq() << endl;
 
     TRACE(18,"New freq:"<< res(ndofs)/2/number_pi);
   }

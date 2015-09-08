@@ -77,7 +77,6 @@ namespace tube {
     // Increase reference to impedanceFunc
     TRACE(15,"Incref impedance func");
     Py_INCREF(impedanceFunc);    
-    setInit(true);
   }
   ImpedanceBc::~ImpedanceBc(){
     TRACE(15,"ImpedanceBc::~ImpedanceBc()");
@@ -159,7 +158,6 @@ namespace tube {
   }
   void ImpedanceBc::show(us detailnr) const {
     TRACE(5,"ImpedanceBc::show()");
-    checkInit();
     const char* side;
     if(pos==Pos::left)
       side="left";

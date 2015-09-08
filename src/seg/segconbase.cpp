@@ -21,7 +21,7 @@ namespace segment{
     name_(o.name_),
     id_(o.id_)
   {/* Copy constructor */
-    this->gc=&sys.gc();
+    this->gc=&sys;
   }
   void SegConBase::setNumber(us number) {
     TRACE(15,"setNumber called for type " << typeid(*this).name());

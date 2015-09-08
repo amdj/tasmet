@@ -27,6 +27,7 @@ namespace segment{
 
   #ifdef SWIG
   %catches(std::exception,...) SegConBase::setName();
+  %catches(std::exception,...) SegConBase::init();
   #endif // SWIG
 
   class SegConBase{
@@ -35,7 +36,6 @@ namespace segment{
     // any segment/connector code
     std::string name_;
     std::string id_;
-    bool init_=false;
   protected:
     const tasystem::Globalconf* gc=nullptr;	// Global configuration of the system
     SegConBase();
@@ -46,11 +46,13 @@ namespace segment{
     virtual ~SegConBase(){}
 
     const char* __repr__() const {return getName().c_str();}
+
     // Get and set name
     const std::string& getName() const{return name_;} // This one is just the name
     const std::string& getID() const{return id_;} // This one is just the name
     void setName(const std::string& name){ name_=name;} // This one is just the name
     void setID(const std::string& id){ id_=id;} // Set ID
+    
     // Tell a TaSystem whether this Segment of Connector arbitrates
     // Mass or not. The special return value of -1 tells it does
     // not. If it does, the derived class should return which equation
@@ -71,15 +73,13 @@ namespace segment{
     // Return reference to Glocalconf
     const tasystem::Globalconf& Gc() const {return *gc;}
 
-    // Initialization functions
-
-    // Initialize the Segment or connecter. Should only be done once
-    // it is part of a TaSystem. Not doing this will result in
-    // SegFaults, as pointers to this TaSystem will be saved.
-
-    void setInit(bool init){init_=init;}
-    bool isInit() const{return init_;}
-    void checkInit() const {if(!isInit()) throw MyError("Not initialized"); }
+    // After the constructor is called, the initialization function is
+    // called by the TaSystem object. This is done because sometimes
+    // the initialization requires calling virtual functions. When
+    // something goes wrong, the function should throw an
+    // exception. When this happens, the TaSystem class will delete
+    // the allocated segment or connector and rethrow the error.
+    virtual void init() {}
 
     // Get and set number. These functions are accessed from TaSystem
     void setNumber(us number);

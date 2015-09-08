@@ -65,6 +65,7 @@ enum class Varnr{
     T,                          // Temperature
     p,                          // Pressure
     Ts,                         // Temperature of the solid
+    Tw,                         // Temperature of the solid wall
     mH,                         // Enthalpy flow (Watts)
     U,                          // Volume flow (m^3/s)
     u,                          // Velocity (U/Sf)
@@ -105,13 +106,14 @@ namespace tube{
   #ifndef SWIG
   
   enum EqType{
-    Con=0,			// Continuity
-    Mom=1,			// Momentum
-    Ene=2,			// Energy-like equation
-    Ise=3,			// Isentropic
-    Sta=4,			// State
-    Sol=5,			// SolidEnergy
-    Mu_is_m_u=6,      // momentumflow is massflow_squared div
+    Con,			// Continuity
+    Mom,			// Momentum
+    Ene,			// Energy-like equation
+    Ise,			// Isentropic
+    Sta,			// State
+    Sol,			// SolidEnergy
+    SolTwEq,			// Solid wall temperature equation
+    Mu_is_m_u,      // momentumflow is massflow_squared div
                     // density*cs_area
     BcEqP,
     BcEqu,

@@ -22,6 +22,7 @@ namespace tube{
     void show(us detailnr=1) const;
     const tasystem::var& mbc() const {return ml_;}
     const tasystem::var& TL() const { return Tbc_;}
+    const tasystem::var& TsL() const { return Tsbc_;}
   };  
 
 } // namespace tube

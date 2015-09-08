@@ -18,7 +18,7 @@ namespace tube{
     const tasystem::var& mbc() const{return mr_;}
     const tasystem::var& mr() const { return mr_;}
     const tasystem::var& TR() const { return Tbc_;}    
-
+    const tasystem::var& TsR() const { return Tsbc_;}    
 
   };  
 

@@ -4,13 +4,7 @@
 #include "globalconf.h"
 #include "jacobian.h"
 #include "weightfactors.h"
-#include "continuity.h"
-#include "momentum.h"
-#include "mu.h"
 #include "energy.h"
-#include "state.h"
-#include "solidenergy.h"
-#include "isentropic.h"
 
 #include "utils.h"
 
@@ -30,6 +24,9 @@ namespace tube{
     assert(gc);
 
     vx=geom.vx(i);
+    xr=geom.x(i+1);		// Position of right cell wall
+    xl=geom.x(i);			// Position of left cell wall
+
     xr=geom.x(i+1);		// Position of right cell wall
     xl=geom.x(i);			// Position of left cell wall
 
@@ -53,31 +50,16 @@ namespace tube{
     rho_=var(*gc);    
     T_=var(*gc);
     p_=var(*gc);
+    Tw_=var(*gc);
     Ts_=var(*gc);
     mu_=var(*gc);
-    // mHl_=var(*gc);
+
     // Initialize temperature and density variables to something sane
     T_.setadata(0,gc->T0());
+    Tw_.setadata(0,gc->T0());
     Ts_.setadata(0,gc->T0());
     rho_.setadata(0,gc->rho0());    
 
-    vars.reserve(constants::nvars_reserve);
-    vars.push_back(&rho_);
-    vars.push_back(&ml_);
-    vars.push_back(&T_);
-    vars.push_back(&p_);
-    vars.push_back(&Ts_);
-    vars.push_back(&mu_);
- 
-    eqs.insert({EqType::Con,new Continuity(*this)});
-    eqs.insert({EqType::Mom,new Momentum(*this)});
-    eqs.insert({EqType::Ene,new Energy(*this)});
-    eqs.insert({EqType::Sta,new State(*this)});
-    eqs.insert({EqType::Sol,new SolidTPrescribed(*this)});    
-    eqs.insert({EqType::Mu_is_m_u,new MuEq(*this)});    
-    // eqs.insert({EqType::mH_is_m_H,new mHEq(*this)});    
-    // WARN("Set on ISENTROPIC!!");
-    // setIsentropic();
   }
   Cell::~Cell(){
     TRACE(15,"Cell::~Cell()");
@@ -92,6 +74,7 @@ namespace tube{
     this->left_=left;
     this->right_=right;
 
+    tube->setVarsEqs(*this);
     for (auto& eq : eqs) {
       eq.second->init();
     }
@@ -125,15 +108,6 @@ namespace tube{
     for(var* v : vars)
       v->resetHarmonics();
   }
-  void Cell::setIsentropic(){
-    TRACE(15,"Cell::setIsentropic()");
-    // Replace energy equation with isentropic energy equation
-    assert(eqs.find(EqType::Ene)!=eqs.end());
-    Isentropic* is=new Isentropic(*this);
-    delete eqs.at(EqType::Ene);
-    eqs.at(EqType::Ene)=is;
-  }
-  
   vd Cell::errorAt(us eqnr) const{
     TRACE(10,"Cell::errorAt()");
     // assert(eqnr<eqs.size());
@@ -201,6 +175,9 @@ namespace tube{
     case Varnr::p:                   // Pressure
       p_.setadata(res);
       break;
+    case Varnr::Tw:                 // Temp
+      Tw_.setadata(res);
+      break;
     case Varnr::Ts:                 // Temp
       Ts_.setadata(res);
       break;
@@ -226,9 +203,9 @@ namespace tube{
       case Varnr::mH:                 // Volume flown
         return var(*gc,0.5*(Energy::mHl(*this)+Energy::mHr(*this)));
         break;
+      // case Varnr::Qs:
+      // 	if(eqs.find(Varnr::Sol)!=eqs.end())
       case Varnr::Q:                 // Volume flown
-        // TRACE(15,"getValue: Q");
-        // return var(*gc,(Energy::QL(*this)));
         return var(*gc,0.5*(Energy::QL(*this)+Energy::QR(*this)));
         break;
       case Varnr::p:                   // Pressure
@@ -241,8 +218,11 @@ namespace tube{
       case Varnr::T:                 // Temp
         return T();
         break;
-      case Varnr::Ts:                 // Tempc
+      case Varnr::Ts:                 // Temp
         return Ts();
+        break;
+      case Varnr::Tw:                 // Tempc
+        return Tw();
         break;
       case Varnr::U:
         return getValue(Varnr::m)/getValue(Varnr::rho);
@@ -322,7 +302,7 @@ namespace tube{
     // cout << "Dofnr U  : " << U.getDofNr() << "\n";
     // cout << "Dofnr p  : " << p.getDofNr() << "\n";
     // cout << "Dofnr T  : " << T.getDofNr() << "\n";
-    // cout << "Dofnr Ts : " << Ts.getDofNr() << "\n";
+    // cout << "Dofnr Tw : " << Tw.getDofNr() << "\n";
     // cout << "Cell on left  side:" << left <<"\n";
     // cout << "This Cell         :" << this <<"\n";
     // cout << "Cell on right side:" << right <<"\n"   ;

@@ -36,8 +36,8 @@ namespace tube {
     tasystem::var mu_;      // Momentum flow at vertex
     tasystem::var T_;		// Temperature
     tasystem::var p_;      // Pressure at left cell wall
-    tasystem::var Ts_;		// Solid temperature
-
+    tasystem::var Tw_;		// Solid wall temperature
+    tasystem::var Ts_;		// Area-averaged temperature in the solid
     vector<tasystem::var*> vars;
     std::map<EqType,Equation*> eqs; // Vector of pointers to the equations
 
@@ -62,7 +62,10 @@ namespace tube {
     // End geometric data ********************
 
     #ifndef SWIG
+    friend class Tube;
     Cell(us i,const Tube&);
+    vector<tasystem::var*>& getVars() {return vars;}
+    std::map<EqType,Equation*>& getEqs() {return eqs;}    
     virtual ~Cell();
 
     // No copy assignments allowed
@@ -102,17 +105,19 @@ namespace tube {
     const tasystem::var& T() const { return T_;}
     virtual const tasystem::var& TL() const { assert(left_); return left_->T();}
     virtual const tasystem::var& TR() const {assert(right_); return right_->T();}
+    virtual const tasystem::var& TsL() const { assert(left_); return left_->Ts();}
+    virtual const tasystem::var& TsR() const {assert(right_); return right_->Ts();}
     const tasystem::var& pL() const { assert(left_); return left_->p();}
     const tasystem::var& pR() const {assert(right_); return right_->p();}
     const tasystem::var& rhoL() const { assert(left_); return left_->rho();}
     const tasystem::var& rhoR() const {assert(right_); return right_->rho();}
 
     const tasystem::var& Ts() const {return Ts_;}
-    virtual const tasystem::var& TsL() const {assert(left_); return left_->Ts();}
-    virtual const tasystem::var& TsR() const {assert(right_); return right_->Ts();}
-
-    // Set this cell to be isentropically
-    void setIsentropic();
+    const tasystem::var& Tw() const {return Tw_;}
+    // Watch it! These methods are NOT virtual, as Tw has no Twbc
+    // equivalent and is only solved in the internal.
+    const tasystem::var& TwL() const {assert(left_); return left_->Tw();}
+    const tasystem::var& TwR() const {assert(right_); return right_->Tw();}
 
     // Resets all higher harmonics. Can throw
     void resetHarmonics();

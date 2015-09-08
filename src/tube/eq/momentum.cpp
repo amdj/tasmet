@@ -65,7 +65,7 @@ namespace tube{
     // Drag term
     #ifndef NODRAG
     assert(t);
-    error+=Wddt*t->getDragResistance().drag(v);
+    error+=Wddt*t->dragResistance().drag(v);
     #endif
     // (Boundary) source term
     error+=v.msource();
@@ -88,7 +88,7 @@ namespace tube{
 
  
     #ifndef NODRAG
-    jac+=JacCol(v.ml(),Wddt*t->getDragResistance().dm(v));
+    jac+=JacCol(v.ml(),Wddt*t->dragResistance().dm(v));
     #endif
    
     return jac;

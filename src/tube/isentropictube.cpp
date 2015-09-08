@@ -15,6 +15,7 @@
 // and a suitable equation of state should hold.
 //////////////////////////////////////////////////////////////////////
 #include "isentropictube.h"
+#include "isentropic.h"
 #include "cell.h"
 #include "geom.h"
 
@@ -30,11 +31,17 @@ namespace tube {
     Tube(other,sys){
     TRACE(23,"IsentropicTube copy");
 
-    for(auto cell=cells.begin();cell!=cells.end();cell++){
-      Cell& ccell=**cell;
-      ccell.setIsentropic();
-    }
-    setInit(true);
+  }
+  void IsentropicTube::setVarsEqs(Cell& c) const {
+    TRACE(15,"IsentropicTube::setVarsEqs()");
+    Tube::setVarsEqs(c);
+    auto& eqs=c.getEqs();
+      //   TRACE(15,"Cell::setIsentropic()");
+    // Replace energy equation with isentropic energy equation
+      assert(eqs.find(EqType::Ene)!=eqs.end());
+      Isentropic* is=new Isentropic(c);
+      delete eqs.at(EqType::Ene);
+      eqs.at(EqType::Ene)=is;
   }
   segment::Seg* IsentropicTube::copy(const tasystem::TaSystem& sys) const {
     return new IsentropicTube(*this,sys);

@@ -27,7 +27,6 @@ namespace tube{
     if(dynamic_cast<const IsentropicTube*>(t)){
       TRACE(40,"Tube is isentropic");
     }
-    setInit(true);
   }
   void AdiabaticWall::updateNf(){
     TRACE(15,"AdiabaticWall::updateNf()");
@@ -36,7 +35,6 @@ namespace tube{
   }
   void AdiabaticWall::show(us i) const {
     TRACE(5,"AdiabaticWall::show()");
-    checkInit();
     cout << "AdiabaticWall boundary condition set at "<< posWord(pos) <<" side of segment "<<segid<<".\n";
   }
   int AdiabaticWall::arbitrateMassEq() const {

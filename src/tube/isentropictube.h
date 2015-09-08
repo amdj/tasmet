@@ -26,10 +26,14 @@ namespace tube{
     IsentropicTube(const Geom& geom);
     virtual segment::Seg* copy(const tasystem::TaSystem&) const;
     virtual ~IsentropicTube();
+
+    // Push the right variables and equations
+    virtual void setVarsEqs(Cell&) const;
     #ifndef SWIG
+
     vd dragCoefVec(us i) const;
-    virtual const drag::DragResistance& getDragResistance() const {return nodrag;}
-    virtual const HeatSource& getHeatSource() const {return noheat;}
+    virtual const drag::DragResistance& dragResistance() const {return nodrag;}
+    virtual const HeatSource& heatSource() const {return noheat;}
     void cleanup();
     #endif  // ifndef SWIG
   };

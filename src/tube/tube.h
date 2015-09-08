@@ -53,6 +53,11 @@ namespace tube{
   public:
     virtual ~Tube();          // Define this class as abstract
 
+    void init();		// Initialize Tube
+
+    // Push the right variables and equations
+    virtual void setVarsEqs(Cell&) const;
+    
     // Return a reference to the Geometry instance
     const Geom& geom() const;
 
@@ -78,7 +83,7 @@ namespace tube{
     vc getValueC(Varnr,us freqnr) const;
 
     // Extract a result vector for given variable number
-    // (rho,U,T,p,Ts) and frequency number.
+    // (rho,U,T,p,Tw) and frequency number.
     vd getErrorAt(us eqnr,us freqnr) const;
 
     // Return number of Cells 
@@ -99,7 +104,7 @@ namespace tube{
     #ifndef SWIG
     void show(us showvertices=0) const;
 
-    // ******************** Overloaded virtual methods
+    
     // Return number of DOFS
     us getNDofs() const;
     // Return # equations
@@ -137,9 +142,12 @@ namespace tube{
     // (-1 is last Cell
     const Cell& getCell(int i) const;
     #ifndef SWIG
+    // If Tube has solid. Wall temperature is one of the variables
+    // being solved. Otherwise not.
+    virtual bool hasSolid() const {return false;}
     const Cell& operator[](us i) const;
-    virtual const drag::DragResistance& getDragResistance() const=0;
-    virtual const HeatSource& getHeatSource() const=0;
+    virtual const drag::DragResistance& dragResistance() const=0;
+    virtual const HeatSource& heatSource() const=0;
     #endif
   private:
     void cleanup_cells();

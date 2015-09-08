@@ -60,7 +60,6 @@ namespace tube {
     if(pos[1]==Pos::left)
       out[1]=-1;
     
-    setInit(true);
   }
 
   #define Defs						\
@@ -229,7 +228,6 @@ us SimpleTubeConnector::getNEqs() const {
 }
 void SimpleTubeConnector::show(us) const{
   TRACE(15,"SimpleTubeConnector::show()");
-  checkInit();
     
   cout << "SimpleTubeConnector which connects tube " << segids[0] <<
     " at the " << posWord(pos[0]) << " side to tube " << segids[1] <<

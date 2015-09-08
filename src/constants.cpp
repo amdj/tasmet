@@ -18,6 +18,8 @@ const char* toString(Varnr v) {
     return "p";
   case Varnr::Ts:
     return "Ts";
+  case Varnr::Tw:
+    return "Tw";
   case Varnr::mH:
     return "mH";
   case Varnr::U:

@@ -8,6 +8,7 @@
 #include "piston.h"
 #include "utils.h"
 #include <cassert>
+#include <stdexcept>
 #include "staticmsg.h"
 
 namespace tasystem{
@@ -16,30 +17,32 @@ namespace tasystem{
   using arma::sp_mat;
   common::StaticMsg<> ermsg;
 
-  TaSystem::TaSystem(const Globalconf& gc):gc_(gc){
+  TaSystem::TaSystem(const Globalconf& gc):Globalconf(Globalconf::airSTP(0,100)) {
     TRACE(14,"TaSystem::TaSystem(gc)");
-    this->setDriven(true);
+    Globalconf::operator=(gc);
   }
-  TaSystem::TaSystem(const TaSystem& o):
-    gc_(o.gc_)
+  TaSystem::TaSystem(const TaSystem& o):Globalconf(o)
   {
     TRACE(25,"TaSystem::TaSystem(TaSystem&) copy");
+    hasInit=false;
+    // First a constructor is called. After that, a function init() is
+    // called. in TaSystem::init(). This way, virtual functions of the object can be called.
+
     for(auto it=o.segs.begin();it!=o.segs.end();it++){
       segs[it->first]=it->second->copy(*this);
     }
     for(auto it=o.connectors.begin();it!=o.connectors.end();it++){
       connectors[it->first]=it->second->copy(*this);
     }
-    hasInit=false;
   }
   void TaSystem::setGc(const Globalconf& gc){
     TRACE(14,"TaSystem::setGc()");
 
-    if(gc_.Nf()!=gc.Nf()){
-      gc_.setNf(gc.Nf());
+    if(Nf()!=gc.Nf()){
+      setNf(gc.Nf());
       updateNf(gc.Nf());
     }
-    gc_=gc;
+    Globalconf::operator=(gc);
     
     hasInit=false;
   }
@@ -50,7 +53,7 @@ namespace tasystem{
     hasInit=false;
   }
   TaSystem& TaSystem::operator+=(const Seg& s){
-    TRACE(14,"TaSystem::operator+=(Seg)");
+    TRACE(24,"TaSystem::operator+=(Seg)");
     hasInit=false;
     segs[s.getID()]=s.copy(*this);
     segs[s.getID()]->setNumber(nSegs()-1);
@@ -76,6 +79,7 @@ namespace tasystem{
     d mass=0;
     for(auto seg: segs) {
       // Set the dofnrs
+      seg.second->init();
       VARTRACE(10,firstdof);
       VARTRACE(10,firsteq);
       (seg.second)->setDofNrs(firstdof);
@@ -92,7 +96,7 @@ namespace tasystem{
       setMass(mass);
 
     for(auto con: connectors) {
-      VARTRACE(10,firsteq)
+      con.second->init();
       con.second->setEqNrs(firsteq);
       firsteq+=con.second->getNEqs();
     }
@@ -150,14 +154,14 @@ namespace tasystem{
   void TaSystem::updateNf(us Nf){
     checkInit();
     TRACE(30,"TaSystem::setNf()");
-    gc_.setNf(Nf);
+    setNf(Nf);
     for(auto seg: segs)      {
       seg.second->updateNf();
     }
     for(auto con: connectors)      {
       con.second->updateNf();
     }
-    TRACE(25,"New Ns:"<< gc_.Ns() << " . Adres gc: " << &gc_);
+    TRACE(25,"New Ns:"<< Ns());
 
     init();
   }
@@ -187,7 +191,7 @@ namespace tasystem{
     checkInit();
     cout << "########################## Showing TaSystem...\n";
     cout << "Showing Global configuration...\n";
-    gc_.show();
+    Globalconf::show();
     if(detailnr>0){
       for(auto con:connectors){
 	cout << "Showing connector with ID " << con.first << "\n";

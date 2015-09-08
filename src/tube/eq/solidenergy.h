@@ -11,29 +11,38 @@
 #include "tubeequation.h"
 #include "constants.h"
 
-namespace tube{
+namespace solids{
+  class Solid;
+}
 
-  class SolidTPrescribed:public Equation
+namespace tube{
+  
+  class SolidEnergy:public Equation
   {
-    d Tsmirror=constants::T0;
+    const Tube* t=nullptr;
+    d ksfrac;
+    const solids::Solid* solid;
   public:
-    SolidTPrescribed(const Cell& v):Equation(v){}
+    SolidEnergy(const Cell& v,const solids::Solid* s,d ksfrac=1.0);
     virtual void init();
+    virtual tasystem::JacRow jac() const;
     virtual enum EqType getType() const { return EqType::Sol;}
-    tasystem::JacRow jac() const;
-    
-    vd error() const;			// Error in Solidenergy equation at
-                                // node i
-    vd extrapolateHeatFlow() const;
-    tasystem::JacRow dExtrapolateHeatFlow() const;
-    void setTs(d Ts) {Tsmirror=Ts;}
-    vd kappaL() const;
-    vd kappaR() const;
-    void show() const;
-  private:
-    tasystem::JacCol dTsi() const;
-    
-  };
+    virtual void show() const; 
+    virtual vd error() const;			// Error in Energy equation at node i
+    virtual void domg(vd&) const;
+
+    static vd extrapolateHeatFlow(const Cell&); 
+    static tasystem::JacRow dExtrapolateHeatFlow(const Cell&);
+    vd kappaLt(const Cell&) const;
+    vd kappaRt(const Cell&) const;
+
+    vd QL(const Cell&) const;              // Heat conduction trough left wall
+    vd QR(const Cell&) const;              // Heat conduction trough right wall
+    tasystem::JacRow dQL(const Cell&) const;
+    tasystem::JacRow dQR(const Cell&) const;
+
+  };				// SolidEnergy
+
 }
 
 #endif // SOLIDENERGY_H
