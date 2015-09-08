@@ -6,12 +6,13 @@
 // 
 //////////////////////////////////////////////////////////////////////
 
-
 #include "hopkinsheat.h"
 #include "jacrow.h"
 #include "cell.h"
 #include "laminarduct.h"
 #include "geom.h"
+
+#define Ns (v.gc->Ns())
 
 /* For obtaining time-averaged heat transfer, we have to find the
    time-average of the following parameter:
@@ -140,7 +141,7 @@ namespace tube{
     dmat H=var(*v.gc,HeatTransferCoefH(v)).freqMultiplyMat();
     dmat Q=var(*v.gc,HeatTransferCoefQ(v)).freqMultiplyMat();    
 
-    dmat H11=zeros(v.gc->Ns(),v.gc->Ns());
+    dmat H11=zeros(Ns,Ns);
     H11(0,0)=H(0,0);
     // Obtain dTwdx
     d dTwdx=this->dTwdx(v);
@@ -152,18 +153,16 @@ namespace tube{
 
       vd m=0.5*(v.ml()()+v.mr()());
       // Only zero in right top
-      dmat lt=zeros(v.gc->Ns(),v.gc->Ns()); lt.col(0).fill(1.0);
-      VARTRACE(35,lt);
+      dmat row(1,Ns,fillwith::zeros); row(0,0)=1;
       d xi,xj,xk,Wi,Wj,Wk;
       if(v.left()&&v.right()){
 	xi=v.vx;
 	xj=v.left()->vx;
 	xk=v.right()->vx;
 	std::tie(Wi,Wj,Wk)=wfacs(xi,xj,xk);
-	assert(false);
-	// dQsf+=JacCol(v.Tw(),-Wi*lt*m);
-	// dQsf+=JacCol(v.TwL(),-Wj*lt*m);
-	// dQsf+=JacCol(v.TwR(),-Wk*lt*m);      
+	dQsf+=JacCol(v.Tw(),-Wi*(Q*m)*row);
+	dQsf+=JacCol(v.TwL(),-Wj*(Q*m)*row);
+	dQsf+=JacCol(v.TwR(),-Wk*(Q*m)*row);      
       }
       else if(!v.left()&&v.right()){
 	// Leftmost cell
@@ -171,9 +170,9 @@ namespace tube{
 	xj=v.right()->vx;
 	xk=v.right()->right()->vx;
 	std::tie(Wi,Wj,Wk)=wfacs(xi,xj,xk);
-	// dQsf+=JacCol(v.Tw(),-Wi*lt*m);
-	// dQsf+=JacCol(v.TwR(),-Wj*lt*m);
-	// dQsf+=JacCol(v.right()->TwR(),-Wk*lt*m);      
+	dQsf+=JacCol(v.Tw(),-Wi*(Q*m)*row);
+	dQsf+=JacCol(v.TwR(),-Wj*(Q*m)*row);
+	dQsf+=JacCol(v.right()->TwR(),-Wk*(Q*m)*row);      
       }
       else{
 	// Rightmost cell
@@ -181,9 +180,9 @@ namespace tube{
 	xj=v.left()->vx;
 	xk=v.left()->left()->vx;
 	std::tie(Wi,Wj,Wk)=wfacs(xi,xj,xk);
-	// dQsf+=JacCol(v.Tw(),-Wi*lt*m);
-	// dQsf+=JacCol(v.TwL(),-Wj*lt*m);
-	// dQsf+=JacCol(v.left()->TwL(),-Wk*lt*m);      
+	dQsf+=JacCol(v.Tw(),-Wi*(Q*m)*row);
+	dQsf+=JacCol(v.TwL(),-Wj*(Q*m)*row);
+	dQsf+=JacCol(v.left()->TwL(),-Wk*(Q*m)*row);      
       }
     } // end t has solid
     

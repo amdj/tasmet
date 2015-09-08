@@ -59,7 +59,6 @@ namespace tube {
 	vc  rh_ov_deltas=s_s/rottfuncs::sq2;
 	// Thermal rott functi<on in solid
 	vc fs=rottfuncs::f_vert(rh_ov_deltas);
-	TRACE(80,"SFSG");
 	H.subvec(1,Nf)=kappas*I*pow(s_s,2)*fs/(pow(rhs,2)*(1.0-fs));
       }
     return var(*v.gc,H).freqMultiplyMat();

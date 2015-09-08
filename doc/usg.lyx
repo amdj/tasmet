@@ -888,8 +888,46 @@ Wall temperature prescribed
 In the HopkinsLaminarDuct, 
 \begin_inset Formula 
 \begin{equation}
-Q_{s\to f}=\mathcal{H}-\mathcal{Q}\frac{\mathrm{d}\hat{T}_{w,0}}{\mathrm{d}x},
+Q_{s\to f}=\mathcal{H}-\hat{Q}\frac{\mathrm{d}\hat{T}_{w,0}}{\mathrm{d}x}\hat{m},
 \end{equation}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+\begin_inset Formula $\hat{\mathbf{Q}}_{s\to f}=\mathcal{H}-\hat{Q}\frac{\mathrm{d}\hat{T}_{w,0}}{\mathrm{d}x}\hat{m}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{\partial\hat{\mathbf{Q}}_{s\to f}}{\partial\frac{\mathrm{d}\hat{T}_{w,0}}{\mathrm{d}x}}=-\hat{Q}\hat{m}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+--
+\begin_inset Formula $T_{w,0}=\left[\begin{array}{cccc}
+1 & 0 & 0 & \dots\end{array}\right]\hat{\mathbf{T}}_{w}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{\partial\frac{\mathrm{d}\hat{T}_{w,0}}{\mathrm{d}x}}{\partial\frac{\mathrm{d}\hat{\mathbf{T}}}{\mathrm{d}x}}=$
+\end_inset
+
+
+\end_layout
 
 \end_inset
 

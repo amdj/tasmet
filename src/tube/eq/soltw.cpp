@@ -5,7 +5,6 @@
 // Description:
 //
 //////////////////////////////////////////////////////////////////////
-#define TRACERPLUS 60
 #include "solidh.h"
 #include "soltw.h"
 #include "cell.h"
@@ -46,11 +45,7 @@ namespace tube {
     TRACE(15,"SolTw::jac()");
     assert(solid);
     JacRow jac(dofnr,6);
-    VARTRACE(25,dofnr)
-    TRACE(25,v.Tw().getDofNr());
-    TRACE(25,v.Ts().getDofNr());
     dmat H=h->H(v,*solid);
-    VARTRACE(25,H);
     jac+=JacCol(v.Ts(),v.vSs*H);
     jac+=JacCol(v.Tw(),-v.vSs*H);
     jac+=(tube->heatSource().dQsf(v)*=-1);
