@@ -43,7 +43,7 @@ namespace tube{
     }
   }
   vd Momentum::error() const {		// Error in momentum equation
-    TRACE(6,"Momentum::Error()");
+    TRACE(15,"Momentum::Error()");
 
     // Solve momentum equation only for interior walls
     assert(v.i>0);
@@ -72,7 +72,7 @@ namespace tube{
     return error;
   }
   JacRow Momentum::jac() const {
-    TRACE(6,"Momentum::jac()");
+    TRACE(15,"Momentum::jac()");
     JacRow jac(dofnr,9);
 
     // Solve momentum equation only for interior walls

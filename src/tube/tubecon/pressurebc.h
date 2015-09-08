@@ -33,14 +33,14 @@ namespace tube{
     tasystem::var p_prescribed;
     // PrescribeQty prescribep;			// Pressure boundary condition
     PrescribeQty prescribeT;			// Temperature boundary condition
-    // PrescribeQty prescribeTs;			// Solid temperature boundary condition
+    PrescribeQty prescribeTs;			// Solid temperature boundary condition
     PressureBc(const PressureBc& other,const tasystem::TaSystem&);
   public:
     PressureBc& operator=(const PressureBc&)=delete;
     // Set all variables
-    PressureBc(const string& segid,Pos position,const tasystem::var& p,const tasystem::var& T,const tasystem::var& Ts);
+    PressureBc(const string& segid,Pos position,const tasystem::var& p,const tasystem::var& Ts,const tasystem::var& T);
     // Assume solid temperature constant at gc.T0;
-    PressureBc(const string& segid,Pos position,const tasystem::var& p,const tasystem::var& T); 
+    PressureBc(const string& segid,Pos position,const tasystem::var& p,const tasystem::var& Ts); 
     // Assume above and adiabatic compresion/expansion
     PressureBc(const string& segid,Pos position,const tasystem::var& p);
     PressureBc(const PressureBc& other)=delete;
@@ -49,7 +49,7 @@ namespace tube{
     virtual vd error() const;
     virtual ~PressureBc(){}
     #ifndef SWIG
-    us getNEqs() const {return 3*gc->Ns();}    
+    us getNEqs() const;
     virtual void updateNf();
     virtual void setEqNrs(us firsteqnr);    
     virtual void jac(tasystem::Jacobian&) const;

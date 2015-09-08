@@ -46,8 +46,13 @@ namespace tube {
     TRACE(15,"SolTw::jac()");
     assert(solid);
     JacRow jac(dofnr,6);
-    jac+=JacCol(v.Ts(),v.vSs*h->H(v,*solid));
-    jac+=JacCol(v.Tw(),-v.vSs*h->H(v,*solid));
+    VARTRACE(25,dofnr)
+    TRACE(25,v.Tw().getDofNr());
+    TRACE(25,v.Ts().getDofNr());
+    dmat H=h->H(v,*solid);
+    VARTRACE(25,H);
+    jac+=JacCol(v.Ts(),v.vSs*H);
+    jac+=JacCol(v.Tw(),-v.vSs*H);
     jac+=(tube->heatSource().dQsf(v)*=-1);
     return jac;
   }

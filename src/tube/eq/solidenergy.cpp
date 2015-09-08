@@ -138,6 +138,36 @@ namespace tube{
     dQR+=JacCol(v.TsR(),fDFT*diagmat(w.WcrR*kappaRt(v))*iDFT);
     return dQR;
   }
+  vd SolidEnergy::extrapolateHeatFlow() const {
+    TRACE(5,"Energy::extrapolateHeatFlow()");
+    const heatW w(v);
+    assert((!v.left() && v.right()) || (v.left() && !v.right()));
+    if(!v.left()){
+      return fDFT*(ksfrac*kappaLt(v)%(w.WclL*v.TsL().tdata()+w.WclR*v.Ts().tdata()));
+    }
+    else {
+      return fDFT*(ksfrac*kappaRt(v)%(w.WcrL*v.Ts().tdata()+w.WcrR*v.TsR().tdata()));
+    }
+  }
+  JacRow SolidEnergy::dExtrapolateHeatFlow() const {
+    TRACE(5,"Energy::dExtrapolateHeatFlow()");
+    assert((!v.left() && v.right()) || (v.left() && !v.right()));    
+    JacRow dQb(-1,2);
+    const heatW w(v);
+    if(!v.left()){
+      vd kappaLt_=kappaLt(v);
+      dQb+=JacCol(v.Ts(),fDFT*diagmat(ksfrac*w.WclR*kappaLt_)*iDFT);
+      dQb+=JacCol(v.TsL(),fDFT*diagmat(ksfrac*w.WclL*kappaLt_)*iDFT);
+      return dQb;
+    }
+    else {
+      vd kappaRt_=kappaRt(v);
+      dQb+=JacCol(v.Ts(),fDFT*diagmat(ksfrac*w.WcrL*kappaRt_)*iDFT);
+      dQb+=JacCol(v.TsR(),fDFT*diagmat(ksfrac*w.WcrR*kappaRt_)*iDFT);
+      return dQb;
+    }
+  }
+
 } // namespace tube
 
 

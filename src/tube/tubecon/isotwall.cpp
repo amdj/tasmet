@@ -18,10 +18,12 @@ namespace tube{
   using tasystem::JacRow;
   using tasystem::JacCol;
 
-  IsoTWall::IsoTWall(const string& segid,Pos position,const var& Tbc,bool arbitrateMass):
+  IsoTWall::IsoTWall(const string& segid,Pos position,const var& Tbcval,bool arbitrateMass):
     TubeBc(segid,position),
-    Tbc(Tbc),
-    Tsbc(Tbc),
+    Tbc(Tbcval),			// This equation should set
+					// Tbc to Tbcval
+    Tsbc(Tbcval),			// This equation should set
+					// Tsbc to Tbcval
     arbitrateMass(arbitrateMass)
   {
     TRACE(15,"IsoTWall::IsoTWall()");

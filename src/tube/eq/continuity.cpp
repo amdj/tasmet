@@ -24,7 +24,7 @@ namespace tube{
     Wddt=v.vVf;
   } // init
   JacRow Continuity::jac() const{
-    TRACE(6,"Continuity::jac()");
+    TRACE(15,"Continuity::jac()");
     JacRow jac(dofnr,3);
     // TRACE(0,"Continuity, dofnr jac:"<< dofnr);
     jac+=JacCol(v.rho(),Wddt*DDTfd);    
@@ -33,7 +33,7 @@ namespace tube{
     return jac;
   }
   vd Continuity::error() const {	
-    TRACE(6,"Continuity::Error()");
+    TRACE(15,"Continuity::Error()");
     vd error(Ns,fillwith::zeros);
     error+=Wddt*DDTfd*v.rho()();
     error+=v.mr()();

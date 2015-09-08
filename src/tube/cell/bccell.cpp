@@ -2,6 +2,7 @@
 #include "continuity.h"
 #include "momentum.h"
 #include "energy.h"
+#include "solidenergy.h"
 #include "state.h"
 
 #include "jacrow.h"
@@ -9,7 +10,7 @@
 #define iDFT (v.gc->iDFT)
 #define fDFT (v.gc->fDFT)
 #define DDTfd (v.gc->DDTfd)
-#define Ns (v.gc->Ns())
+#define Ns (gc->Ns())
 
 namespace tube{
 
@@ -37,6 +38,12 @@ namespace tube{
     case Varnr::Q:
       return Energy::extrapolateHeatFlow(*this);
       break;
+    case Varnr::Qs:
+      if(eqs.find(EqType::Sol)!=eqs.end())
+	return static_cast<const SolidEnergy*>(eqs.at(EqType::Sol))->extrapolateHeatFlow();
+      else
+	return vd(Ns,fillwith::zeros);
+      break;
     case Varnr::mu:
       return ExtrapolateMomentumFlow::extrapolateMomentumFlow(*this);
       break;
@@ -53,6 +60,12 @@ namespace tube{
     switch(p){
     case Varnr::Q:
       return Energy::dExtrapolateHeatFlow(*this);
+      break;
+    case Varnr::Qs:
+      if(eqs.find(EqType::Sol)!=eqs.end())
+	return static_cast<const SolidEnergy*>(eqs.at(EqType::Sol))->dExtrapolateHeatFlow();
+      else
+	return JacRow(-1,0);
       break;
     case Varnr::mu:
       return ExtrapolateMomentumFlow::dExtrapolateMomentumFlow(*this);

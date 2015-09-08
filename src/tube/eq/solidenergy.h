@@ -16,11 +16,12 @@ namespace solids{
 }
 
 namespace tube{
-  
+  class Tube;
+
   class SolidEnergy:public Equation
   {
     const Tube* t=nullptr;
-    d ksfrac;
+    d ksfrac;			// Factor reducing
     const solids::Solid* solid;
   public:
     SolidEnergy(const Cell& v,const solids::Solid* s,d ksfrac=1.0);
@@ -31,8 +32,8 @@ namespace tube{
     virtual vd error() const;			// Error in Energy equation at node i
     virtual void domg(vd&) const;
 
-    static vd extrapolateHeatFlow(const Cell&); 
-    static tasystem::JacRow dExtrapolateHeatFlow(const Cell&);
+    vd extrapolateHeatFlow() const; 
+    tasystem::JacRow dExtrapolateHeatFlow() const;
     vd kappaLt(const Cell&) const;
     vd kappaRt(const Cell&) const;
 

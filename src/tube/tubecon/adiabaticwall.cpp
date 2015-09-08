@@ -49,7 +49,10 @@ namespace tube{
   }
   us AdiabaticWall::getNEqs() const {
     TRACE(15,"AdiabaticWall::getNEqs()");
-    return 3*Ns;
+    if(t->hasSolid())
+      return 4*Ns;
+    else
+      return 3*Ns;
   }
   void AdiabaticWall::setEqNrs(us firsteqnr){
     TRACE(2,"AdiabaticWall::setEqNrs()");
@@ -64,6 +67,8 @@ namespace tube{
     error.subvec(0,Ns-1)=massflowzero.error();
     error.subvec(Ns,2*Ns-1)=enthalpyflowzero.error();
     error.subvec(2*Ns,3*Ns-1)=cell.extrapolateQuant(Varnr::Q);
+    if(t->hasSolid())
+      error.subvec(3*Ns,4*Ns-1)=cell.extrapolateQuant(Varnr::Qs);
     return error;
   }
   void AdiabaticWall::jac(Jacobian& jac) const {
@@ -74,5 +79,11 @@ namespace tube{
     JacRow heatflowjac(firsteqnr+2*Ns,2);
     heatflowjac+=cell.dExtrapolateQuant(Varnr::Q);
     jac+=heatflowjac;
+    // If solid is present, set this heat flow also to zero
+    if(t->hasSolid()){
+      JacRow solidheatflowjac(firsteqnr+3*Ns,2);
+      solidheatflowjac+=cell.dExtrapolateQuant(Varnr::Qs);
+      jac+=solidheatflowjac;
+    }
   }
 } // namespace tube

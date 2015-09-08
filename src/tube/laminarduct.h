@@ -1,10 +1,10 @@
-/*
- * tube.h
- *
- *  Created on: Oct 8, 2013
- *      Author: anne
- */
-
+// laminarduct.h
+//
+// Author: J.A. de Jong 
+//
+// Description:
+// 
+//////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef LAMINARDUCT_H_
 #define LAMINARDUCT_H__
@@ -50,7 +50,7 @@ namespace tube{
     void init();
     void setIsolated(bool i){isolated=i;}
     bool isIsolated() const {return isolated;}
-    void setSolid(const string& solid);
+    void setSolid(const string& solid,d ksfrac=1);
     bool hasSolid() const {return solid?true:false;}
     const solids::Solid& getSolid() const;
     void setVarsEqs(Cell&) const;

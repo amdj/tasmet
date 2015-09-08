@@ -30,22 +30,6 @@ namespace tube{
     void setGc(const tasystem::Globalconf& gc){vals.setGc(gc);}
     const tasystem::var& getVals() const {return vals;}
   };
-  class PrescribeddxQty{
-    const tasystem::var *Qi,*Qj,*Qk; // Quantities as position i,j,k
-    d Wi,Wj,Wk;
-    tasystem::var vals;
-    us eqnr;
-  public:
-    PrescribeddxQty(){}
-    #define varref const tasystem::var&
-    void set(us eqnr,varref Qi,varref Qj,varref Qk,d xi,d xj, d xk,const tasystem::var& vals);
-    #undef varref
-    vd error() const;
-    tasystem::JacRow jac() const;
-    void updateNf() {vals.updateNf();}
-    void setGc(const tasystem::Globalconf& gc){vals.setGc(gc);}
-    const tasystem::var& getVals() const {return vals;}
-  };
 
 } // namespace tube
 

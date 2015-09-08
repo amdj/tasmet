@@ -357,7 +357,7 @@ namespace tube{
   JacRow Energy::dExtrapolateHeatFlow(const Cell& v){
     TRACE(5,"Energy::dExtrapolateHeatFlow()");
     assert((!v.left() && v.right()) || (v.left() && !v.right()));    
-    JacRow dQb(2);
+    JacRow dQb(-1,2);
     const heatW w(v);
     // VARTRACE(30,kappaLt)      ;
     // VARTRACE(30,kappaRt);

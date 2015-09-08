@@ -17,7 +17,7 @@ namespace tube{
 
   vd State::error()
    const {
-    TRACE(6,"State::Error()");
+    TRACE(15,"State::Error()");
     vd error(v.gc->Ns(),fillwith::zeros);
     error+=v.p()();
     error(0)+=v.gc->p0();	       // Add p0 part
@@ -33,7 +33,7 @@ namespace tube{
   StateBc::StateBc(const BcCell& v):Equation(v),v(v){}
   vd StateBc::error()
    const {
-    TRACE(6,"StateBc::Error()");
+    TRACE(15,"StateBc::Error()");
     vd error(v.gc->Ns(),fillwith::zeros);
     error+=v.pbc()();
     error(0)+=v.gc->p0();	       // Add p0 part
@@ -47,7 +47,7 @@ namespace tube{
     return STATE_SCALE*error;
   }
   JacRow StateBc::jac() const{
-    TRACE(6,"StateBc::jac()");
+    TRACE(15,"StateBc::jac()");
     JacRow jac(dofnr,5);
     TRACE(0,"StateBc, dofnr jac:"<< dofnr);
     jac+=JacCol(v.p(),STATE_SCALE*eye());
@@ -62,7 +62,7 @@ namespace tube{
     return jac;
   }
   JacRow State::jac() const{
-    TRACE(6,"State::jac()");
+    TRACE(15,"State::jac()");
     JacRow jac(dofnr,5);
     TRACE(0,"State, dofnr jac:"<< dofnr);
     jac+=JacCol(v.p(),STATE_SCALE*eye());

@@ -24,7 +24,7 @@
    Heat transfer is related to temperature difference, according to the
    Hopkins papers with:
 
-   Qin = H*(Tw-T) - Q*dTwdx*u
+   Qin = Sf*H*(Tw-T) - Q*dTwdx*m
 
 
 */
@@ -160,9 +160,10 @@ namespace tube{
 	xj=v.left()->vx;
 	xk=v.right()->vx;
 	std::tie(Wi,Wj,Wk)=wfacs(xi,xj,xk);
-	dQsf+=JacCol(v.Tw(),-Wi*lt*m);
-	dQsf+=JacCol(v.TwL(),-Wj*lt*m);
-	dQsf+=JacCol(v.TwR(),-Wk*lt*m);      
+	assert(false);
+	// dQsf+=JacCol(v.Tw(),-Wi*lt*m);
+	// dQsf+=JacCol(v.TwL(),-Wj*lt*m);
+	// dQsf+=JacCol(v.TwR(),-Wk*lt*m);      
       }
       else if(!v.left()&&v.right()){
 	// Leftmost cell
@@ -170,9 +171,9 @@ namespace tube{
 	xj=v.right()->vx;
 	xk=v.right()->right()->vx;
 	std::tie(Wi,Wj,Wk)=wfacs(xi,xj,xk);
-	dQsf+=JacCol(v.Tw(),-Wi*lt*m);
-	dQsf+=JacCol(v.TwR(),-Wj*lt*m);
-	dQsf+=JacCol(v.right()->TwR(),-Wk*lt*m);      
+	// dQsf+=JacCol(v.Tw(),-Wi*lt*m);
+	// dQsf+=JacCol(v.TwR(),-Wj*lt*m);
+	// dQsf+=JacCol(v.right()->TwR(),-Wk*lt*m);      
       }
       else{
 	// Rightmost cell
@@ -180,10 +181,9 @@ namespace tube{
 	xj=v.left()->vx;
 	xk=v.left()->left()->vx;
 	std::tie(Wi,Wj,Wk)=wfacs(xi,xj,xk);
-	dQsf+=JacCol(v.Tw(),-Wi*lt*m);
-	dQsf+=JacCol(v.TwL(),-Wj*lt*m);
-	dQsf+=JacCol(v.left()->TwL(),-Wk*lt*m);      
-	return Wi*v.Tw()(0)+Wj*v.TwL()(0)+Wk*v.left()->TwL()(0);    
+	// dQsf+=JacCol(v.Tw(),-Wi*lt*m);
+	// dQsf+=JacCol(v.TwL(),-Wj*lt*m);
+	// dQsf+=JacCol(v.left()->TwL(),-Wk*lt*m);      
       }
     } // end t has solid
     

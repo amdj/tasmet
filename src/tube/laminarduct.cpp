@@ -55,9 +55,8 @@ namespace tube {
     if(o.solid)
       solid=new solids::Solid(*o.solid);
   }
-  void LaminarDuct::setSolid(const string& solidname) {
+  void LaminarDuct::setSolid(const string& solidname,d ksfrac) {
     TRACE(15,"LaminarDuct::setSolid()");
-
     if(solid)			// Delete old solid
       delete solid;
     solid=new solids::Solid(solidname);
