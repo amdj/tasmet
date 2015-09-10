@@ -5,7 +5,7 @@
 #include "jacobian.h"
 #include "weightfactors.h"
 #include "energy.h"
-
+#include "solidenergy.h"
 #include "utils.h"
 
 #define Ns (gc->Ns())
@@ -203,8 +203,13 @@ namespace tube{
       case Varnr::mH:                 // Volume flown
         return var(*gc,0.5*(Energy::mHl(*this)+Energy::mHr(*this)));
         break;
-      // case Varnr::Qs:
-      // 	if(eqs.find(Varnr::Sol)!=eqs.end())
+      case Varnr::Qs:
+      	if(eqs.find(EqType::Sol)!=eqs.end()){
+	  const SolidEnergy* e=static_cast<const SolidEnergy*>(eqs.at(EqType::Sol));
+          return var(*gc,0.5*(e->QL()+e->QR()));
+	}
+	else
+	  return var(*gc,0);
       case Varnr::Q:                 // Volume flown
         return var(*gc,0.5*(Energy::QL(*this)+Energy::QR(*this)));
         break;

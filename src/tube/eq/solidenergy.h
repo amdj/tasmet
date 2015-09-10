@@ -34,13 +34,13 @@ namespace tube{
 
     vd extrapolateHeatFlow() const; 
     tasystem::JacRow dExtrapolateHeatFlow() const;
-    vd kappaLt(const Cell&) const;
-    vd kappaRt(const Cell&) const;
+    vd kappaLt() const;
+    vd kappaRt() const;
 
-    vd QL(const Cell&) const;              // Heat conduction trough left wall
-    vd QR(const Cell&) const;              // Heat conduction trough right wall
-    tasystem::JacRow dQL(const Cell&) const;
-    tasystem::JacRow dQR(const Cell&) const;
+    vd QL() const;              // Heat conduction trough left wall
+    vd QR() const;              // Heat conduction trough right wall
+    tasystem::JacRow dQL() const;
+    tasystem::JacRow dQR() const;
 
   };				// SolidEnergy
 

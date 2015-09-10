@@ -32,7 +32,7 @@ namespace tube{
   void SolidEnergy::init() {
     t=&v.getTube();
   }
-  vd SolidEnergy::kappaRt(const Cell& v) const {		// Returns thermal conductivity time domain data
+  vd SolidEnergy::kappaRt() const {		// Returns thermal conductivity time domain data
     TRACE(15,"Energy::kappaRt()");
     assert(solid);
     const WeightFactors w(v);
@@ -41,7 +41,7 @@ namespace tube{
     VARTRACE(10,solid->kappa(w.WrR*TtR+w.WrL*Tt));
     return solid->kappa(w.WrR*TtR+w.WrL*Tt);
   }
-  vd SolidEnergy::kappaLt(const Cell& v) const {		// Returns thermal conductivity time domain data
+  vd SolidEnergy::kappaLt() const {		// Returns thermal conductivity time domain data
     TRACE(15,"Energy::kappaRt()");
     const WeightFactors w(v);
     const vd& Tt=v.Ts().tdata();
@@ -86,8 +86,8 @@ namespace tube{
   vd SolidEnergy::error() const {		// Error in momentum equation
     TRACE(15,"SolidEnergy::Error(), i="<<v.geti());
     d rhoc=solid->rho(v.Ts()(0))*solid->c(v.Ts()(0));
-    VARTRACE(10,v.vVs*rhoc*DDTfd*v.Ts()()+QR(v)-QL(v));
-    return v.vVs*rhoc*DDTfd*v.Ts()()+QR(v)-QL(v) \
+    VARTRACE(10,v.vVs*rhoc*DDTfd*v.Ts()()+QR()-QL());
+    return v.vVs*rhoc*DDTfd*v.Ts()()+QR()-QL() \
       +(v.xr-v.xl)*t->heatSource().Qsf(v);
   }
   JacRow SolidEnergy::jac() const {
@@ -96,8 +96,8 @@ namespace tube{
     d rhoc=solid->rho(v.Ts()(0))*solid->c(v.Ts()(0));
     VARTRACE(40,v.vVs);
     jac+=JacCol(v.Ts(),v.vVs*rhoc*DDTfd);
-    jac+=dQR(v);
-    jac+=(dQL(v)*=-1);
+    jac+=dQR();
+    jac+=(dQL()*=-1);
     jac+=(t->heatSource().dQsf(v)*=(v.xr-v.xl));
 
     return jac;
@@ -108,34 +108,34 @@ namespace tube{
     d rhoc=solid->rho(v.Ts()(0))*solid->c(v.Ts()(0));
     domg.subvec(dofnr,dofnr+Ns-1)=(v.vVs*rhoc/v.gc->getomg())*DDTfd*v.Ts()();
   }
-  vd SolidEnergy::QR(const Cell& v) const {
+  vd SolidEnergy::QR() const {
     TRACE(15,"SolidEnergy::QR()");
     const heatW w(v);
     const vd& Tt=v.Ts().tdata();
     const vd& Ttr=v.TsR().tdata();
-    return fDFT*(ksfrac*kappaRt(v)%(w.WcrL*Tt+w.WcrR*Ttr));
+    return fDFT*(ksfrac*kappaRt()%(w.WcrL*Tt+w.WcrR*Ttr));
   }
-  vd SolidEnergy::QL(const Cell& v) const {
+  vd SolidEnergy::QL() const {
     TRACE(15,"SolidEnergy::QL()");
     const heatW w(v);
     const vd& Tt=v.Ts().tdata();
     const vd& Ttl=v.TsL().tdata();
-    return fDFT*(kappaLt(v)%(w.WclL*Ttl+w.WclR*Tt));
+    return fDFT*(kappaLt()%(w.WclL*Ttl+w.WclR*Tt));
   }
-  JacRow SolidEnergy::dQL(const Cell& v) const {
+  JacRow SolidEnergy::dQL() const {
     TRACE(15,"SolidEnergy::dQL()");
     const heatW w(v);
     JacRow dQL(-1,2);
-    dQL+=JacCol(v.Ts(),fDFT*diagmat(w.WclR*kappaLt(v))*iDFT);
-    dQL+=JacCol(v.TsL(),fDFT*diagmat(w.WclL*kappaLt(v))*iDFT);
+    dQL+=JacCol(v.Ts(),fDFT*diagmat(w.WclR*kappaLt())*iDFT);
+    dQL+=JacCol(v.TsL(),fDFT*diagmat(w.WclL*kappaLt())*iDFT);
     return dQL;
   }
-  JacRow SolidEnergy::dQR(const Cell& v) const {
+  JacRow SolidEnergy::dQR() const {
     TRACE(15,"SolidEnergy::dQR()");
     const heatW w(v);
     JacRow dQR(-1,2);
-    dQR+=JacCol(v.Ts(),fDFT*diagmat(w.WcrL*kappaRt(v))*iDFT);
-    dQR+=JacCol(v.TsR(),fDFT*diagmat(w.WcrR*kappaRt(v))*iDFT);
+    dQR+=JacCol(v.Ts(),fDFT*diagmat(w.WcrL*kappaRt())*iDFT);
+    dQR+=JacCol(v.TsR(),fDFT*diagmat(w.WcrR*kappaRt())*iDFT);
     return dQR;
   }
   vd SolidEnergy::extrapolateHeatFlow() const {
@@ -143,10 +143,10 @@ namespace tube{
     const heatW w(v);
     assert((!v.left() && v.right()) || (v.left() && !v.right()));
     if(!v.left()){
-      return fDFT*(ksfrac*kappaLt(v)%(w.WclL*v.TsL().tdata()+w.WclR*v.Ts().tdata()));
+      return fDFT*(ksfrac*kappaLt()%(w.WclL*v.TsL().tdata()+w.WclR*v.Ts().tdata()));
     }
     else {
-      return fDFT*(ksfrac*kappaRt(v)%(w.WcrL*v.Ts().tdata()+w.WcrR*v.TsR().tdata()));
+      return fDFT*(ksfrac*kappaRt()%(w.WcrL*v.Ts().tdata()+w.WcrR*v.TsR().tdata()));
     }
   }
   JacRow SolidEnergy::dExtrapolateHeatFlow() const {
@@ -155,13 +155,13 @@ namespace tube{
     JacRow dQb(-1,2);
     const heatW w(v);
     if(!v.left()){
-      vd kappaLt_=kappaLt(v);
+      vd kappaLt_=kappaLt();
       dQb+=JacCol(v.Ts(),fDFT*diagmat(ksfrac*w.WclR*kappaLt_)*iDFT);
       dQb+=JacCol(v.TsL(),fDFT*diagmat(ksfrac*w.WclL*kappaLt_)*iDFT);
       return dQb;
     }
     else {
-      vd kappaRt_=kappaRt(v);
+      vd kappaRt_=kappaRt();
       dQb+=JacCol(v.Ts(),fDFT*diagmat(ksfrac*w.WcrL*kappaRt_)*iDFT);
       dQb+=JacCol(v.TsR(),fDFT*diagmat(ksfrac*w.WcrR*kappaRt_)*iDFT);
       return dQb;

@@ -6,7 +6,7 @@
 // Connect two tube-type segments by using conservation of mass,
 // momentum and energy. Number of equations 
 //////////////////////////////////////////////////////////////////////
-// #define TRACERPLUS (20)
+
 #include "tubeconnector.h"
 #include "tasystem.h"
 #include "tube.h"
@@ -26,15 +26,13 @@ namespace tube {
   using tasystem::TaSystem;
   using tasystem::JacRow;
   using tasystem::JacCol;
-  // Number of equations corresponding to this connection:
-  const int Neq=6;
 
-  SimpleTubeConnector::SimpleTubeConnector(const string& seg1,Pos pos1,\
-                                           const string& seg2,Pos pos2,d K1to2,d K2to1):
+  TubeConnector::TubeConnector(const string& seg1,Pos pos1,\
+			       const string& seg2,Pos pos2,d K1to2,d K2to1):
     K1to2(K1to2),
     K2to1(K2to1)
   {
-    TRACE(15,"SimpleTubeConnector::SimpleTubeConnector()");
+    TRACE(15,"TubeConnector::TubeConnector()");
   
     segids[0]=seg1;
     segids[1]=seg2;
@@ -42,8 +40,8 @@ namespace tube {
     pos[1]=pos2;
       
   }
-  SimpleTubeConnector::SimpleTubeConnector(const SimpleTubeConnector& o,
-                                           const TaSystem& sys):
+  TubeConnector::TubeConnector(const TubeConnector& o,
+			       const TaSystem& sys):
     Connector(o,sys),
     segids(o.segids),
     pos(o.pos),
@@ -62,40 +60,40 @@ namespace tube {
     
   }
 
-  #define Defs						\
-    d T0=gc->T0();					\
-    d gamma=gc->gas().gamma(T0);			\
-    d p0=gc->p0();					\
-    d cp=gc->gas().cp(T0);				\
-    d Rs=gc->gas().Rs();				\
-    d Sf0=bccells[0]->Sfbc();				\
-    d Sf1=bccells[1]->Sfbc();				\
-    const vd p0tbc=bccells[0]->pbc().tdata()+p0;	\
-    const vd p1tbc=bccells[1]->pbc().tdata()+p0;	\
-    const vd& T0tbc=bccells[0]->Tbc().tdata();		\
-    const vd& T1tbc=bccells[1]->Tbc().tdata();		\
-    const vd& m0tbc=bccells[0]->mbc().tdata();		\
-    const vd& m1tbc=bccells[1]->mbc().tdata();		\
-    const vd& T0t=bccells[0]->T().tdata();		\
-    const vd& T1t=bccells[1]->T().tdata();		\
-    const vd& rho0tbc=bccells[0]->rhobc().tdata();	\
-    const vd& rho1tbc=bccells[1]->rhobc().tdata();	\
-  const vd& u0tbc=bccells[0]->ubc().tdata();		\
-  const vd& u1tbc=bccells[1]->ubc().tdata();		\
-  vd half_u0sqt_div_cpT=pow(u0tbc,2)/(2*cp*T0tbc);		\
-  vd half_u1sqt_div_cpT=pow(u1tbc,2)/(2*cp*T1tbc);		\
-  d gampow=gamma/(gamma-1);					\
-  vd facM0=pow(1+half_u0sqt_div_cpT,gampow);			\
-  vd facM1=pow(1+half_u1sqt_div_cpT,gampow);		\
-  vd diff_facM0=gampow*pow(1+half_u0sqt_div_cpT,gampow-1);			\
-  vd diff_facM1=gampow*pow(1+half_u1sqt_div_cpT,gampow-1);			
+  #define Defs							\
+    d T0=gc->T0();						\
+    d gamma=gc->gas().gamma(T0);				\
+    d p0=gc->p0();						\
+    d cp=gc->gas().cp(T0);					\
+    d Rs=gc->gas().Rs();					\
+    d Sf0=bccells[0]->Sfbc();					\
+    d Sf1=bccells[1]->Sfbc();					\
+    const vd p0tbc=bccells[0]->pbc().tdata()+p0;		\
+    const vd p1tbc=bccells[1]->pbc().tdata()+p0;		\
+    const vd& T0tbc=bccells[0]->Tbc().tdata();			\
+    const vd& T1tbc=bccells[1]->Tbc().tdata();			\
+    const vd& m0tbc=bccells[0]->mbc().tdata();			\
+    const vd& m1tbc=bccells[1]->mbc().tdata();			\
+    const vd& T0t=bccells[0]->T().tdata();			\
+    const vd& T1t=bccells[1]->T().tdata();			\
+    const vd& rho0tbc=bccells[0]->rhobc().tdata();		\
+    const vd& rho1tbc=bccells[1]->rhobc().tdata();		\
+    const vd& u0tbc=bccells[0]->ubc().tdata();			\
+    const vd& u1tbc=bccells[1]->ubc().tdata();			\
+    vd half_u0sqt_div_cpT=pow(u0tbc,2)/(2*cp*T0tbc);		\
+    vd half_u1sqt_div_cpT=pow(u1tbc,2)/(2*cp*T1tbc);		\
+    d gampow=gamma/(gamma-1);					\
+    vd facM0=pow(1+half_u0sqt_div_cpT,gampow);			\
+    vd facM1=pow(1+half_u1sqt_div_cpT,gampow);			\
+    vd diff_facM0=gampow*pow(1+half_u0sqt_div_cpT,gampow-1);	\
+    vd diff_facM1=gampow*pow(1+half_u1sqt_div_cpT,gampow-1);			
 
-  vd SimpleTubeConnector::error() const{
-    TRACE(10,"SimpleTubeConnector::error()");
+  vd TubeConnector::error() const{
+    TRACE(10,"TubeConnector::error()");
 
     us nr=0;
-    vd error(Neq*Ns);
-
+    vd error(getNEqs());
+    VARTRACE(60,getNEqs());
     Defs
     
       // First equation: mass balance
@@ -124,19 +122,12 @@ namespace tube {
     // Fourth equation: continuity of total enthalpy
     error.subvec(Ns*nr,Ns*(nr+1)-1)=\
       fDFT*(cp*T0tbc+0.5*pow(u0tbc,2)-cp*T1tbc-0.5*pow(u1tbc,2));
-      // fDFT*(kappaSft%(T0t-T1t)/dx)\
-      // -out[0]*bccells[0]->extrapolateQuant(Varnr::Q);
+    // fDFT*(kappaSft%(T0t-T1t)/dx)\
+    // -out[0]*bccells[0]->extrapolateQuant(Varnr::Q);
     nr++;      
 
-    // Fifth equation: heat out of one segment goes into the other
-    TRACE(15," Fifth equation: heat out of one segment goes into the other");
-    error.subvec(Ns*nr,Ns*(nr+1)-1)=\
-      out[0]*bccells[0]->extrapolateQuant(Varnr::Q)\
-      +out[1]*bccells[1]->extrapolateQuant(Varnr::Q);
-    nr++;
 
-    // 6th equation: Change in total pressure over density due to minor loss
-    TRACE(15," 6th equation: Change in exergy due to minor loss");
+    // 5th equation: Change in total pressure over density due to minor loss
     d one_eight=1.0/8.0;
 
     vd ptot1=fDFT*(p1tbc%facM1);
@@ -148,13 +139,57 @@ namespace tube {
     //   K2to1*(T0/T2t)*one_eight\
     //   *pow(out[1]*abs(u2t)+u2t,2);
     // vd minus_minorLoss=zeros(Ns);
-
     nr++;
 
+    // 6th eq: continuity of total heat flow
+    error.subvec(Ns*nr,Ns*(nr+1)-1)=		\
+      out[0]*bccells[0]->extrapolateQuant(Varnr::Qs)+	\
+      out[0]*bccells[0]->extrapolateQuant(Varnr::Q)+	\
+      out[1]*bccells[1]->extrapolateQuant(Varnr::Q)+	\
+      out[1]*bccells[1]->extrapolateQuant(Varnr::Qs);
+    nr++;
+    TRACE(40,"SFSG");
+    // Solid equations ***********************************************
+    bool sol0=bccells[0]->getTube().hasSolid();
+    bool sol1=bccells[1]->getTube().hasSolid();
+    if(sol0&&sol1) {
+      // Simple case: continuity of temperature and solid heat flow
+      error.subvec(Ns*nr,Ns*(nr+1)-1)=			\
+	bccells[0]->Tsbc()()-bccells[1]->Tsbc()();
+      nr++;
+      error.subvec(Ns*nr,Ns*(nr+1)-1)=			\
+	out[0]*bccells[0]->extrapolateQuant(Varnr::Qs)+\
+	out[1]*bccells[1]->extrapolateQuant(Varnr::Qs);
+      return error;
+    }
+    else if(sol0) { // Only Tube 0 has solid
+      TRACE(40,"SFSG");
+      d Ss=bccells[0]->vSs;
+      d rhs=bccells[0]->vrh*Ss/bccells[0]->vSf;
+      d kappaf=gc->gas().kappa(bccells[1]->Tbc()(0));
+      d h=Nu2*kappaf/rhs;
+      error.subvec(Ns*nr,Ns*(nr+1)-1)=		\
+	h*Ss*(bccells[0]->Tsbc()()-bccells[1]->Tbc()())		\
+	-out[0]*bccells[0]->extrapolateQuant(Varnr::Qs);
+      TRACE(40,"SFSG");
+      return error;
+    } // Only Tube 0 has solid
+    else if(sol1) { // Only Tube 1 has solid
+      TRACE(40,"SFSG");
+      d Ss=bccells[1]->vSs;
+      d rhs=bccells[1]->vrh*Ss/bccells[1]->vSf;
+      d kappaf=gc->gas().kappa(bccells[0]->Tbc()(0));
+      d h=Nu1*kappaf/rhs;
+      error.subvec(Ns*nr,Ns*(nr+1)-1)=		\
+	h*Ss*(bccells[1]->Tsbc()()-bccells[1]->Tbc()())		\
+	-out[1]*bccells[1]->extrapolateQuant(Varnr::Qs);
+      TRACE(40,"SFSG");
+      return error;
+    }      // Only Tube 1 has a solid
     return error;
   }
-  void SimpleTubeConnector::jac(tasystem::Jacobian& jac) const {
-    TRACE(15,"SimpleTubeconnector::jac()");
+  void TubeConnector::jac(tasystem::Jacobian& jac) const {
+    TRACE(15,"Tubeconnector::jac()");
     us eqnr=firsteqnr;
 
     Defs
@@ -191,14 +226,8 @@ namespace tube {
     jac+=conHjac;
     eqnr+=Ns;
 
-    // Fifth equation: heat out of one segment goes into the other
-    JacRow Qintjac(eqnr,5);
-    Qintjac+=(bccells[0]->dExtrapolateQuant(Varnr::Q)*=out[0]);
-    Qintjac+=(bccells[1]->dExtrapolateQuant(Varnr::Q)*=out[1]);
-    jac+=Qintjac;
-    eqnr+=Ns;
 
-    // 6th equation: Change in total pressure over density due to
+    // 5th equation: Change in total pressure over density due to
     // minor loss
 
     JacRow Minor(eqnr,8);
@@ -206,36 +235,93 @@ namespace tube {
 
     Minor+=JacCol(bccells[0]->pbc(),fDFT*diagmat(-(1/p0)*facM0)*iDFT);
     Minor+=JacCol(bccells[0]->ubc(),fDFT*diagmat(-(1/p0)*p0tbc%		\
-						  diff_facM0%(u0tbc/(cp*T0tbc)))*iDFT);
+						 diff_facM0%(u0tbc/(cp*T0tbc)))*iDFT);
     Minor+=JacCol(bccells[0]->Tbc(),fDFT*diagmat((1/p0)*p0tbc%		\
-						  diff_facM0%(0.5*pow(u0tbc,2)/(cp*pow(T0tbc,2))))*iDFT);
+						 diff_facM0%(0.5*pow(u0tbc,2)/(cp*pow(T0tbc,2))))*iDFT);
 
     Minor+=JacCol(bccells[1]->pbc(),fDFT*diagmat((1/p0)*facM1)*iDFT);
     Minor+=JacCol(bccells[1]->ubc(),fDFT*diagmat((1/p0)*p1tbc%		\
-						  diff_facM1%(u1tbc/(cp*T1tbc)))*iDFT);
+						 diff_facM1%(u1tbc/(cp*T1tbc)))*iDFT);
     Minor+=JacCol(bccells[1]->Tbc(),fDFT*diagmat(-(1/p0)*p1tbc%		\
-						  diff_facM1%(0.5*pow(u1tbc,2)/(cp*pow(T1tbc,2))))*iDFT);
+						 diff_facM1%(0.5*pow(u1tbc,2)/(cp*pow(T1tbc,2))))*iDFT);
 
     jac+=Minor;
+    eqnr+=Ns;
+
+    // 6th eq: continuity of total heat flow
+    JacRow Qintjac(eqnr,5);
+    Qintjac+=(bccells[0]->dExtrapolateQuant(Varnr::Q)*=out[0]);
+    Qintjac+=(bccells[0]->dExtrapolateQuant(Varnr::Qs)*=out[0]);
+    Qintjac+=(bccells[1]->dExtrapolateQuant(Varnr::Q)*=out[1]);
+    Qintjac+=(bccells[1]->dExtrapolateQuant(Varnr::Qs)*=out[1]);
+    jac+=Qintjac;
+    eqnr+=Ns;
+
+    // Solid equations ***********************************************
+    bool sol0=bccells[0]->getTube().hasSolid();
+    bool sol1=bccells[1]->getTube().hasSolid();
+    if(sol0&&sol1) {
+      // Simple case: continuity of temperature and solid heat flow
+      JacRow Ts_is_Ts(eqnr,2);
+      Ts_is_Ts+=JacCol(bccells[0]->Tsbc(),eye);
+      Ts_is_Ts+=JacCol(bccells[1]->Tsbc(),-eye);	
+      jac+=Ts_is_Ts;
+      eqnr+=Ns;
+
+      JacRow Qs_is_Qs(eqnr,4);
+      Qs_is_Qs+=(bccells[0]->dExtrapolateQuant(Varnr::Qs)*=out[0]);
+      Qs_is_Qs+=(bccells[1]->dExtrapolateQuant(Varnr::Qs)*=out[1]);
+      jac+=Qs_is_Qs;
+      return;
+    }
+    else if(sol0) { // Only Tube 0 has solid
+      d Ss=bccells[0]->vSs;
+      d rhs=bccells[0]->vrh*Ss/bccells[0]->vSf;
+      d kappaf=gc->gas().kappa(bccells[1]->Tbc()(0));
+      d h=Nu2*kappaf/rhs;
+      JacRow Qseq(eqnr,4);
+      Qseq+=JacCol(bccells[0]->Tsbc(),h*Ss*eye);
+      Qseq+=JacCol(bccells[1]->Tbc(),-h*Ss*eye);
+      Qseq+=(bccells[0]->dExtrapolateQuant(Varnr::Qs)*=-out[0]);
+      jac+=Qseq;
+      // eqnr+=Ns;			// Not required anymore
+      return;
+    } // Only Tube 0 has solid
+    else if(sol1) { // Only Tube 1 has solid
+      d Ss=bccells[1]->vSs;
+      d rhs=bccells[1]->vrh*Ss/bccells[1]->vSf;
+      d kappaf=gc->gas().kappa(bccells[0]->Tbc()(0));
+      d h=Nu1*kappaf/rhs;
+      JacRow Qseq(eqnr,4);
+      Qseq+=JacCol(bccells[1]->Tsbc(),h*Ss*eye);
+      Qseq+=JacCol(bccells[0]->Tbc(),-h*Ss*eye);
+      Qseq+=(bccells[1]->dExtrapolateQuant(Varnr::Qs)*=-out[1]);
+      jac+=Qseq;
+      // eqnr+=Ns;			// Not required anymore
+    } // Only Tube 1 has solid
   }
-  void SimpleTubeConnector::setEqNrs(us firsteqnr){
-  TRACE(15,"SimpleTubeConnector::setEqNrs()");
-  this->firsteqnr=firsteqnr;
-}
-us SimpleTubeConnector::getNEqs() const {
-  TRACE(15,"SimpleTubeConnector::getNEqs()");
-  return Neq*Ns;
-}
-void SimpleTubeConnector::show(us) const{
-  TRACE(15,"SimpleTubeConnector::show()");
+  void TubeConnector::setEqNrs(us firsteqnr){
+    TRACE(15,"TubeConnector::setEqNrs()");
+    this->firsteqnr=firsteqnr;
+  }
+  us TubeConnector::getNEqs() const {
+    TRACE(15,"TubeConnector::getNEqs()");
+    us neq=6;
+    for(us i=0;i<2;i++)
+      if(bccells[i]->getTube().hasSolid())
+	neq++;
+    return neq*Ns;
+  }
+  void TubeConnector::show(us) const{
+    TRACE(15,"TubeConnector::show()");
     
-  cout << "SimpleTubeConnector which connects tube " << segids[0] <<
-    " at the " << posWord(pos[0]) << " side to tube " << segids[1] <<
-    " on the " << posWord(pos[1]) << " side.\n";
-}
-void SimpleTubeConnector::updateNf(){
-  TRACE(15,"SimpleTubeConnector::updateNf()");
-}
+    cout << "TubeConnector which connects tube " << segids[0] <<
+      " at the " << posWord(pos[0]) << " side to tube " << segids[1] <<
+      " on the " << posWord(pos[1]) << " side.\n";
+  }
+  void TubeConnector::updateNf(){
+    TRACE(15,"TubeConnector::updateNf()");
+  }
 
 } // namespace tube
 //////////////////////////////////////////////////////////////////////
