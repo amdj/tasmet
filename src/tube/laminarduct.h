@@ -33,7 +33,7 @@ namespace tube{
     HopkinsHeatSource hopkinsheat;
     // If isolated, no time-averaged heat transfer is allowed between
     // tube and
-    bool isolated=false;
+    bool insulated=false;
     // If present a solid
     const solids::Solid* solid=nullptr;
 
@@ -48,8 +48,8 @@ namespace tube{
     LaminarDuct(const Geom& geom,const string& solid);
     LaminarDuct(const LaminarDuct&)=delete;
     void init();
-    void setIsolated(bool i){isolated=i;}
-    bool isIsolated() const {return isolated;}
+    void setInsulated(bool i){insulated=i;}
+    bool isInsulated() const {return insulated;}
     void setSolid(const string& solid,d ksfrac=1);
     bool hasSolid() const {return solid?true:false;}
     const solids::Solid& getSolid() const;

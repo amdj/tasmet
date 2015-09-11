@@ -29,7 +29,7 @@ namespace tube {
   class SolTw:public Equation
   {
     const solids::Solid* solid;
-    const Tube* tube=nullptr;
+    const LaminarDuct* tube=nullptr;
     // Shape-dependent implementation of heat transfer coefficient.
   const SolidH* h=nullptr;
   public:

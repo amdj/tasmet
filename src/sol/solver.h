@@ -43,7 +43,7 @@ namespace tasystem{
     }
     Solver(const Solver& other)=delete;    // No assignments as well
     Solver& operator=(const Solver& other)=delete;
-
+    void setSc(const SolverConfiguration& sc){ SolverConfiguration::operator=(sc); }
     // Stop all solver threads
     void stop();
     #ifndef SWIG

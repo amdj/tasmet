@@ -48,6 +48,7 @@ namespace tube {
     Tube(o,sys),
     laminardrag(*this),
     hopkinsheat(*this),
+    insulated(o.insulated),
     Tl(o.Tl),
     Tr(o.Tr)
   {
@@ -59,6 +60,9 @@ namespace tube {
     TRACE(15,"LaminarDuct::setSolid()");
     if(solid)			// Delete old solid
       delete solid;
+    if(isInsulated())
+      throw MyError("Error: insulated duct cannot contain solid."
+		    " See user guide for more information");
     solid=new solids::Solid(solidname);
   }
   void LaminarDuct::init() {
@@ -110,25 +114,27 @@ namespace tube {
   void LaminarDuct::setVarsEqs(Cell& c) const {
     TRACE(15,"LaminarDuct::setVarsEqs()");
     Tube::setVarsEqs(c);
-    if(hasSolid()) {
+
+    if(hasSolid() || isInsulated()){
       auto& eqs=c.getEqs();
       auto& vars=c.getVars();
 
       // LaminarDuct is not a friend of Cell. Therefore, a const_cast
       // hack is used to put these variables in the vector of
       // variables to solve for.
-
-      vars.push_back(&const_cast<var&>(c.Ts()));
       vars.push_back(&const_cast<var&>(c.Tw()));
-      eqs.insert({EqType::Sol,new SolidEnergy(c,solid)});
       eqs.insert({EqType::SolTwEq,new SolTw(c,*this)});
+      if(hasSolid()) {
+	vars.push_back(&const_cast<var&>(c.Ts()));
+	eqs.insert({EqType::Sol,new SolidEnergy(c,solid)});
 
-      if((!c.left()) || (!c.right())) {
-	// Downcast as we know the cells at the boundaries are BcCells
-	auto& d=static_cast<BcCell&>(c);
-	vars.push_back(&const_cast<var&>(d.Tsbc()));
-      }
-    } // hasSolid()
+	if((!c.left()) || (!c.right())) {
+	  // Downcast as we know the cells at the boundaries are BcCells
+	  auto& d=static_cast<BcCell&>(c);
+	  vars.push_back(&const_cast<var&>(d.Tsbc()));
+	}
+      } // hasSolid()
+    }	// hasSold() || isInsulated()
   }
   LaminarDuct::~LaminarDuct(){
     TRACE(15,"~LaminarDuct()");

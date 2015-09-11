@@ -132,7 +132,6 @@ namespace tube{
 
     dmat Q=var(*v.gc,HeatTransferCoefQ(v)).freqMultiplyMat();
     heat-=Q*(dTwdx(v)*0.5*(v.ml()()+v.mr()()) );   
-    
     return heat;    
   }
   JacRow HopkinsHeatSource::dQsf(const Cell& v) const{

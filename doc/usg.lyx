@@ -22,6 +22,41 @@
 \vspace*{2\drop}
 \endgroup}
 \makeatother
+
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\lstset{ %
+  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  deletekeywords={...},            % if you want to delete keywords from the given language
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  frame=single,	                   % adds a frame around the code
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},       % keyword style
+  language=Octave,                 % the language of the code
+  otherkeywords={*,...},            % if you want to add more keywords to the set
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  stepnumber=2,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{mymauve},     % string literal style
+  tabsize=2,	                   % sets default tabsize to 2 spaces
+  title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
 \end_preamble
 \options a4paper
 \use_default_options true
@@ -32,7 +67,7 @@
 \fontencoding global
 \font_roman default
 \font_sans default
-\font_typewriter default
+\font_typewriter libertine-mono
 \font_math auto
 \font_default_family default
 \use_non_tex_fonts false
@@ -94,6 +129,7 @@
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
+\listings_params "breaklines=true,captionpos=b,frame=tb,language=Python,keywordstyle={\color{blue}},morekeywords={ta, TaSystem, Globalconf, Solver, SolverConfiguration, setSc, Solve}"
 \tracking_changes false
 \output_changes false
 \html_math_output 0
@@ -150,7 +186,349 @@ LatexCommand tableofcontents
 \end_layout
 
 \begin_layout Part
-TASMET Basics
+User's guide
+\end_layout
+
+\begin_layout Chapter
+Introduction
+\end_layout
+
+\begin_layout Standard
+Welcome to the user's guide of the ThermoAcoustic System Modeling Environment
+ Twente, or TASMET.
+ TASMET is a computer guide to model thermoacoustic (TA) engines, refrigerators
+ and combined systems.
+ The main ideas of this code are developed as part of my PhD work
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+bron
+\end_layout
+
+\end_inset
+
+.
+ I hope this code will be of use for future projects.
+\end_layout
+
+\begin_layout Standard
+TASMET is a computer code for nonlinear modeling of TA systems.
+ The code has been developed with a strong focus on computational cost.
+ This has led 
+\end_layout
+
+\begin_layout Standard
+The code is OPEN SOURCE...
+\end_layout
+
+\begin_layout Standard
+bla bla python, C++
+\end_layout
+
+\begin_layout Section
+Purpose of this code
+\end_layout
+
+\begin_layout Itemize
+More in-depth insight in behavior of TA systems
+\end_layout
+
+\begin_layout Itemize
+More detailed modeling of nonlinear effects
+\end_layout
+
+\begin_layout Standard
+In this user's guide, we assume that the reader has already gained some
+ knowledge and experience with (modeling of) TA systems.
+ Moreover, we expect that the user of 
+\noun on
+TaSMET
+\noun default
+ has already modeled TA systems with a linear TA code, such as the well-known
+ 
+\noun on
+DELTAEC
+\noun default
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+bron
+\end_layout
+
+\end_inset
+
+.
+ A great deal of inspiration of 
+\noun on
+TaSMET
+\noun default
+ has been obtained by the way 
+\noun on
+DELTAEC
+\noun default
+ is 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ddd
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+GUI or not?
+\end_layout
+
+\begin_layout Standard
+This release version of 
+\noun on
+TaSMET
+\noun default
+ does not provide a graphical user interface to the code.
+\end_layout
+
+\begin_layout Section
+Bug reporting and contributing
+\end_layout
+
+\begin_layout Standard
+--
+\end_layout
+
+\begin_layout Section
+Basic ideas
+\end_layout
+
+\begin_layout Standard
+With 
+\noun on
+TaSMET
+\noun default
+, the periodic steady-state of a TA system is modeled.
+\end_layout
+
+\begin_layout Chapter
+Installation guide
+\end_layout
+
+\begin_layout Itemize
+A working compiler (LLVM), GCC
+\end_layout
+
+\begin_layout Itemize
+Armadillo linear algebra package, including LAPACK and BLAS
+\end_layout
+
+\begin_layout Itemize
+Git
+\end_layout
+
+\begin_layout Itemize
+Linux
+\end_layout
+
+\begin_layout Standard
+Optional but highly recommended
+\end_layout
+
+\begin_layout Itemize
+Matplotlib, scipy, numpy
+\end_layout
+
+\begin_layout Itemize
+IPython notebook/qtconsole
+\end_layout
+
+\begin_layout Chapter
+Tutorial
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+In this chapter, the usage of 
+\noun on
+TaSMET
+\noun default
+ is described by example.
+ Two TA systems will be described to show the main capabilities of 
+\noun on
+TaSMET
+\noun default
+.
+ Focus will also be given on the post-processing capabilities.
+ As all 
+\noun on
+TaSMET
+\noun default
+ objects are exposed to Python, the user of 
+\noun on
+TaSMET
+\noun default
+ can easily create script to customize post-processing.
+\end_layout
+
+\begin_layout Standard
+Each TA system in 
+\noun on
+TaSMET
+\noun default
+ is an object of type 
+\noun on
+TaSystem
+\noun default
+, a 
+\noun on
+TaSystem
+\noun default
+ contains data about the global configuration of the system, such as the
+ working gas in the system and the fundamental oscillation frequency (
+\begin_inset Formula $\omega$
+\end_inset
+
+).
+ The physical configuration of a typical TA system is defined by the segments
+ in a 
+\noun on
+TaSystem
+\noun default
+.
+ Each segment can represent a part of the TA system, such as resonator tubes,
+ heat exchangers, stacks/regenerators and pistons.
+ The combination of these segments, including the connecting and boundary
+ conditions and the working gas results in a (nonlinear) system of equations.
+ This system of equations can be solved by a 
+\noun on
+Solver
+\noun default
+ object.
+ Often, the user creates a Python scripts which has approximately the following
+ shape:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+lstinputlisting{tutorial/program_overview.py}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The main difference between connectors and segments is that only the latter
+ has provides both 
+\emph on
+equations
+\emph default
+ as well as 
+\emph on
+degrees of freedom
+\emph default
+ (DOFs), while connectors often only provide equations.
+ Hence, a complete system comprises at least one segment.
+ So far, 
+\noun on
+TaSMET
+\noun default
+ contains three main type of segments.
+ A short overview of these segments is given below.
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Duct
+\end_layout
+
+\begin_layout Standard
+A Duct is probably the most important type of segment.
+ In a 
+\noun on
+Duct
+\noun default
+, 1D dynamic gas flow can be modeled including its interaction with a solid.
+ Depending on the geometry, a 
+\noun on
+Duct 
+\noun default
+can model resonators with variable cross-sectional area, stacks, and heat
+ exchangers.
+ The interaction model of the flow with its surrounding solid is provided
+ in an object-oriented way with a derived class.
+ Examples of derived classes are 
+\noun on
+LaminarDuct
+\noun default
+, 
+\noun on
+IsentropicDuct
+\noun default
+, and 
+\noun on
+TurbulentDuct.
+\end_layout
+
+\begin_layout Subsection
+
+\noun on
+Piston
+\end_layout
+
+\begin_layout Standard
+This 
+\noun on
+Piston 
+\noun default
+provides a means to exchange mechanical energy between the gas domain and
+ the mechanical domain.
+ The implementation of the 
+\noun on
+Piston
+\noun default
+ segment is done in such a way that both the front and back volume can be
+ used.
+ The front and back volume are assumed to be small compared to the wavelength,
+ because no momentum equation is solved for the gas volumes.
+\end_layout
+
+\begin_layout Subsection
+
+\noun on
+ConnectorVolume
+\end_layout
+
+\begin_layout Standard
+...
+\end_layout
+
+\begin_layout Section
+Resonance tube
+\end_layout
+
+\begin_layout Section
+Hofler's refrigerator (Hofler1)
+\end_layout
+
+\begin_layout Standard
+In this section, 
+\end_layout
+
+\begin_layout Part
+Reference
 \end_layout
 
 \begin_layout Chapter
@@ -264,8 +642,10 @@ Cross-sectional area jumps at the cell walls
 What variables do live where?
 \end_layout
 
-\begin_layout Section
-Tube
+\begin_layout Standard
+
+\noun on
+Duct
 \end_layout
 
 \begin_layout Subsection
@@ -702,7 +1082,11 @@ The last term,
 \begin_inset Formula $Q_{s\to f}$
 \end_inset
 
- is dependent on the specific model implemented in a derived class of Tube.
+ is dependent on the specific model implemented in a derived class of 
+\noun on
+Duct
+\noun default
+.
  See for example the HopkinsLaminarDuct.Laminar flow
 \end_layout
 
@@ -880,6 +1264,141 @@ f=\frac{4C_{f}}{d}u|u
 LaminarDuct
 \end_layout
 
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="3">
+<features rotate="0" tabularvalignment="middle" tabularwidth="100text%">
+<column alignment="left" valignment="top" width="0pt">
+<column alignment="left" valignment="top" width="40text%">
+<column alignment="left" valignment="top" width="40text%">
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Insulated
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Not insulated
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+With solid
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Impossible combination
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Itemize
+Wall temperature is determined by balance in heat flow from fluid domain
+ to solid domain
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Without solid
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Itemize
+Time-averaged heat transfer from fluid to solid is zero by setting wall
+ temperature equal to fluid temperature.
+ Hence 
+\begin_inset Formula $\frac{d\hat{T}_{w,0}}{dx}=\frac{d\hat{T}_{0}}{dx}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Itemize
+Wall temperature is prescribed, heat flow through solid material is zero
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Overview
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Wall temperature prescribed
 \end_layout
@@ -888,14 +1407,14 @@ Wall temperature prescribed
 In the HopkinsLaminarDuct, 
 \begin_inset Formula 
 \begin{equation}
-Q_{s\to f}=\mathcal{H}-\hat{Q}\frac{\mathrm{d}\hat{T}_{w,0}}{\mathrm{d}x}\hat{m},
+\hat{Q}_{s\to f}=\hat{\mathcal{H}}-\hat{Q}\frac{\mathrm{d}\hat{T}_{w,0}}{\mathrm{d}x}\hat{m},
 \end{equation}
 
 \end_inset
 
 
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
 
@@ -948,21 +1467,6 @@ where
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula $\mathcal{Q}$
-\end_inset
-
- is
-\begin_inset Formula 
-\begin{equation}
-\boldsymbol{\mathcal{Q}}=\tilde{\mathbf{Q}}\hat{\mathbf{m}},
-\end{equation}
-
-\end_inset
-
 where
 \begin_inset Formula 
 \[
@@ -979,7 +1483,11 @@ TurbulentDuct
 \end_layout
 
 \begin_layout Section
-Tubes with solids
+
+\noun on
+Duct
+\noun default
+s with solids
 \end_layout
 
 \begin_layout Standard
@@ -1544,7 +2052,15 @@ Boundary conditions
 \end_layout
 
 \begin_layout Subsubsection
-Tube with solid to tube without solid
+
+\noun on
+Duct
+\noun default
+ with solid to 
+\noun on
+Duct
+\noun default
+ without solid
 \end_layout
 
 \begin_layout Standard
@@ -1559,7 +2075,15 @@ Q_{s}=hS_{s}\left(T_{s}-T\right)
 \end_layout
 
 \begin_layout Subsubsection
-Tube with solid to tube with solid
+
+\noun on
+Duct
+\noun default
+ with solid to 
+\noun on
+Duct
+\noun default
+ with solid
 \end_layout
 
 \begin_layout Standard
@@ -1575,7 +2099,11 @@ T_{s,1} & = & T_{s,2}
 \end_layout
 
 \begin_layout Section
-Tube boundary conditions
+
+\noun on
+Duct
+\noun default
+ boundary conditions
 \end_layout
 
 \begin_layout Standard
@@ -2408,7 +2936,11 @@ mH_{boundary}=\frac{1}{2}\left(mH_{1}+mH_{2}\right)
 \end_layout
 
 \begin_layout Standard
-Heat flow between tubes
+Heat flow between 
+\noun on
+Duct
+\noun default
+s
 \end_layout
 
 \begin_layout Subsection
@@ -3328,7 +3860,6 @@ Create a PhaseConstraint object:
 \end_layout
 
 \begin_layout Verbatim
-
 	pc=PhaseConstraint(Varnr, freqnr, left)
 \end_layout
 
@@ -3337,7 +3868,6 @@ Apply this contraint to a segment which can accept them, for example a Tube:
 \end_layout
 
 \begin_layout Verbatim
-
 	t1.setPhaseConstraint(pc)
 \end_layout
 

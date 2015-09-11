@@ -38,18 +38,31 @@ namespace tube {
   vd SolTw::error() const {		// Error in momentum equation
     TRACE(15,"SolTw::Error(), i="<<v.geti());
     assert(solid);
-    return v.vSs*h->H(v,*solid)*(v.Ts()()-v.Tw()())\
-      -tube->heatSource().Qsf(v);
+    if(tube->isInsulated())
+      return v.T()()-v.Tw()();	// Set wall temp equal to fluid
+    // temp. Such that dTwdx equals dTdx
+
+    else
+      return v.vSs*h->H(v,*solid)*(v.Ts()()-v.Tw()())	\
+	-tube->heatSource().Qsf(v);
   }
   JacRow SolTw::jac() const {
     TRACE(15,"SolTw::jac()");
     assert(solid);
-    JacRow jac(dofnr,6);
-    dmat H=h->H(v,*solid);
-    jac+=JacCol(v.Ts(),v.vSs*H);
-    jac+=JacCol(v.Tw(),-v.vSs*H);
-    jac+=(tube->heatSource().dQsf(v)*=-1);
-    return jac;
+    if(tube->isInsulated()){
+      JacRow jac(dofnr,2);
+      jac+=JacCol(v.T() ,eye(v));
+      jac+=JacCol(v.Tw(),-eye(v));
+      return jac;
+    }
+    else{
+      JacRow jac(dofnr,6);
+      dmat H=h->H(v,*solid);
+      jac+=JacCol(v.Ts(),v.vSs*H);
+      jac+=JacCol(v.Tw(),-v.vSs*H);
+      jac+=(tube->heatSource().dQsf(v)*=-1);
+      return jac;
+    }
   }
   
   void SolTw::domg(vd& domg) const {
