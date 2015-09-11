@@ -4,7 +4,7 @@
 #include "seg.h"
 #include "connector.h"
 #include "connectorvolume.h"
-#include "tube.h"
+#include "duct.h"
 #include "piston.h"
 #include "utils.h"
 #include <cassert>
@@ -292,7 +292,7 @@ namespace tasystem{
   }
   // void TaSystem::setRes(const TaSystem& other){
   //   TRACE(25,"TaSystem::setRes(TaSystem)");
-  //   WARN("This only works for Tube segments so far");
+  //   WARN("This only works for Duct segments so far");
   //   if(!checkInit())
   //     return;
   //   us nsegs=nSegs();
@@ -309,11 +309,11 @@ namespace tasystem{
     for(auto seg: segs)
       seg.second->resetHarmonics();
   }
-  const tube::Tube& TaSystem::getTube(const string& id)  const {
-    return dynamic_cast<const tube::Tube&>(*segs.at(id));
+  const duct::Duct& TaSystem::getDuct(const string& id)  const {
+    return dynamic_cast<const duct::Duct&>(*segs.at(id));
   }
-  const tube::ConnectorVolume& TaSystem::getConnnectorVolume(const string& id)  const {
-    return dynamic_cast<const tube::ConnectorVolume&>(*segs.at(id));
+  const duct::ConnectorVolume& TaSystem::getConnnectorVolume(const string& id)  const {
+    return dynamic_cast<const duct::ConnectorVolume&>(*segs.at(id));
   }
   const mech::Piston& TaSystem::getPiston(const string& id)  const {
     return dynamic_cast<const mech::Piston&>(*segs.at(id));

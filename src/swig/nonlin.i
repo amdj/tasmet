@@ -29,9 +29,9 @@
   #include "connectorvolume.h"
   // Connectors
   #include "connector.h"
-  #include "tubebc.h"
-  #include "tubeconnector.h"
-  #include "tubepistonconnector.h"
+  #include "ductbc.h"
+  #include "ductconnector.h"
+  #include "ductpistonconnector.h"
 
   #include "pressurebc.h"
   #include "impedancebc.h"
@@ -44,9 +44,9 @@
   #include "piston.h"
   #include "mechbc.h"
 
-  // Tubes
+  // Ducts
   #include "grid.h"
-  #include "tube.h"
+  #include "duct.h"
   #include "cell.h"
   #include "isentropictube.h"
   #include "laminarduct.h"
@@ -106,9 +106,9 @@ void setTASMETTracer(int);
 %include "phaseconstraint.h"
  // Connectors
 %include "connector.h"
-%include "tubebc.h"
-%include "tubeconnector.h"
-%include "tubepistonconnector.h"
+%include "ductbc.h"
+%include "ductconnector.h"
+%include "ductpistonconnector.h"
 
 // Other connectors
 %include "pressurebc.h"
@@ -121,16 +121,16 @@ void setTASMETTracer(int);
 %include "seg.h"
 %include "piston.h"
 %include "connectorvolume.h"
- // Tubes
+ // Ducts
 %include "grid.h"
 %include "boundarylayer.h"
 %include "geom.h"
  // Geom instances
 %include "conetube.h"
 %include "vertplates.h"
- // Tubes
+ // Ducts
 %include "cell.h"
-%include "tube.h"
+%include "duct.h"
 %include "isentropictube.h"
 %include "laminarduct.h"
 

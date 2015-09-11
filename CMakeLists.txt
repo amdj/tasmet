@@ -109,15 +109,15 @@ AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/seg seg)
 AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/sol sol)
 AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/sys sys)
 AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/var var)
-AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/geom/grid grid)
-AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/eq eq)
-AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/eq/solid solideq)
-AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/tube tube)
-AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/geom geom)
-AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/drag drag)
-AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/cell cell)
-AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/heat heat)
-AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/tube/tubecon tubecon)
+AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/duct/geom/grid grid)
+AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/duct/eq eq)
+AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/duct/eq/solid solideq)
+AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/duct duct)
+AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/duct/geom geom)
+AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/duct/drag drag)
+AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/duct/cell cell)
+AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/duct/heat heat)
+AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/duct/connectors connectors)
 
 set (nonlinear_SRC
   ${src}
@@ -127,8 +127,8 @@ set (nonlinear_SRC
   ${sol}
   ${sys}
   ${var}
-  ${tube}
-  ${tubecon}
+  ${duct}
+  ${connectors}
   ${drag}
   ${eq}
   ${solideq}
@@ -150,15 +150,15 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/src/seg
   ${PROJECT_SOURCE_DIR}/src/var
   ${PROJECT_SOURCE_DIR}/src/volume
-  ${PROJECT_SOURCE_DIR}/src/tube
-  ${PROJECT_SOURCE_DIR}/src/tube/geom
-  ${PROJECT_SOURCE_DIR}/src/tube/geom/grid
-  ${PROJECT_SOURCE_DIR}/src/tube/drag
-  ${PROJECT_SOURCE_DIR}/src/tube/tubecon
-  ${PROJECT_SOURCE_DIR}/src/tube/cell
-  ${PROJECT_SOURCE_DIR}/src/tube/eq
-  ${PROJECT_SOURCE_DIR}/src/tube/eq/solid
-  ${PROJECT_SOURCE_DIR}/src/tube/heat
+  ${PROJECT_SOURCE_DIR}/src/duct
+  ${PROJECT_SOURCE_DIR}/src/duct/geom
+  ${PROJECT_SOURCE_DIR}/src/duct/geom/grid
+  ${PROJECT_SOURCE_DIR}/src/duct/drag
+  ${PROJECT_SOURCE_DIR}/src/duct/connectors
+  ${PROJECT_SOURCE_DIR}/src/duct/cell
+  ${PROJECT_SOURCE_DIR}/src/duct/eq
+  ${PROJECT_SOURCE_DIR}/src/duct/eq/solid
+  ${PROJECT_SOURCE_DIR}/src/duct/heat
   )
 link_directories(${PROJECT_SOURCE_DIR}/common)
 # For a shared lib:

@@ -147,6 +147,10 @@ namespace tasystem{
     if(newfuner<oldfuner && sc->dampfac<sc->maxdampfac){
       cout << "Increasing dampfac, new dampfac = " << sc->dampfac << " . Max dampfac: "<< sc->maxdampfac << "\n";
       sc->dampfac=sc->dampfac*2;
+      if(sc->dampfac>sc->maxdampfac){
+	d temp=sc->maxdampfac;
+	sc->dampfac=temp;
+      }
     }
 
     else{

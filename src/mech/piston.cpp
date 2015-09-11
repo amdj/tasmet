@@ -581,7 +581,7 @@ namespace mech {
     TRACE(15,"void Piston::setConnected()");
     bool& connected=(side==Pos::left?leftConnected:rightConnected);
     if(connected)
-      throw MyError(msg("Error: piston is already connected on side %s.",tube::posWord(side)));
+      throw MyError(msg("Error: piston is already connected on side %s.",duct::posWord(side)));
     connected=true;
   }
 } // namespace mech

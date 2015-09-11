@@ -11,7 +11,7 @@
 #include "staticmsg.h"
 #include "tasystem.h"
 #include "piston.h"
-#include "tube.h"
+#include "duct.h"
 #include "bccell.h"
 
 #define fDFT (gc->fDFT)
@@ -23,7 +23,7 @@
 #define eye (eye(Ns,Ns))
 
 
-namespace tube {
+namespace duct {
   SPOILNAMESPACE
   common::StaticMsg<> msg;
 
@@ -35,15 +35,15 @@ namespace tube {
   using tasystem::var;
   using tasystem::Globalconf;
 
-  void TubeConnection::setPtr(const TaSystem& sys){
-    TRACE(15,"TubeConnection::getPtr()");
-    t=&sys.getTube(segid);
+  void DuctConnection::setPtr(const TaSystem& sys){
+    TRACE(15,"DuctConnection::getPtr()");
+    t=&sys.getDuct(segid);
     c=&(t->bcCell(position));
   }
   ConnectorVolume::ConnectorVolume(const tasystem::TaSystem& sys,const ConnectorVolume& other):
     Seg(other,sys),
     volume(other.volume),
-    tubeConnections(other.tubeConnections),
+    ductConnections(other.ductConnections),
     pistonConnections(other.pistonConnections)
   {
     TRACE(15,"ConnectorVolume::ConnectorVolume()");
@@ -53,7 +53,7 @@ namespace tube {
     rho_=var(*gc,gc->rho0());
 
     // Check if list of connections is not empty
-    if(tubeConnections.size()+pistonConnections.size()==0)
+    if(ductConnections.size()+pistonConnections.size()==0)
       throw MyError("No connections made with this volume. At least one connection is required");
 
     // Check if all pistons are really pistons
@@ -67,21 +67,21 @@ namespace tube {
     //   }
     // }
 
-    // Check if all tubes are really tubes
-    for(TubeConnection& con:tubeConnections){
+    // Check if all ducts are really ducts
+    for(DuctConnection& con:ductConnections){
       try{
 	con.setPtr(sys);
       }
       catch(...){
-	throw MyError(msg("Error: segment %s is not of type Tube!",con.segid.c_str()));
+	throw MyError(msg("Error: segment %s is not of type Duct!",con.segid.c_str()));
       }
       
     }
     
   }
-  void ConnectorVolume::addTube(const string& segid,Pos pos){
-    TRACE(15,"ConnectorVolume::addTube()");
-    tubeConnections.push_back(TubeConnection(segid,pos));
+  void ConnectorVolume::addDuct(const string& segid,Pos pos){
+    TRACE(15,"ConnectorVolume::addDuct()");
+    ductConnections.push_back(DuctConnection(segid,pos));
   }
   void ConnectorVolume::addPiston(const string& segid,Pos pos){
     TRACE(15,"ConnectorVolume::addPiston()");
@@ -119,8 +119,8 @@ namespace tube {
     // the volume. And perfectgas equation
     // of state
     us neqs=3*Ns;
-    // 3 equations for each tube connected to this volume
-    neqs+=3*Ns*tubeConnections.size();
+    // 3 equations for each duct connected to this volume
+    neqs+=3*Ns*ductConnections.size();
 
     return neqs;
   }
@@ -160,7 +160,7 @@ namespace tube {
     const vd pt=p_.tdata()+p0;			\
     const vd& Tt=T_.tdata();
 
-  #define TubeDefinitions				\
+  #define DuctDefinitions				\
     const vd& utbc=con.c->ubc().tdata();		\
     const vd& Ttbc=con.c->Tbc().tdata();		\
     vd half_ubcsqt_div_cpT=pow(utbc,2)/(2*cp*Ttbc);	\
@@ -179,8 +179,8 @@ namespace tube {
     // ************************************************************
     // Mass conservation equation
     error.subvec(eqnr,eqnr+Ns-1)=DDTfd*(rho_()*volume);
-    // Mass flow contribution from connected tubes
-    for(const TubeConnection& con: tubeConnections){
+    // Mass flow contribution from connected ducts
+    for(const DuctConnection& con: ductConnections){
       assert(con.c&&con.t);
       // Flow out of the volume is defined positive
       d sign=(con.position==Pos::left?1:-1);
@@ -193,8 +193,8 @@ namespace tube {
     // ************************************************************
     // Energy conservation equation
     error.subvec(eqnr,eqnr+Ns-1)=DDTfd*(gamfac*p_()*volume);
-    // Energy flow contribution from connected tubes
-    for(const TubeConnection& con: tubeConnections){
+    // Energy flow contribution from connected ducts
+    for(const DuctConnection& con: ductConnections){
       assert(con.c&&con.t);
       // Flow out of the volume is defined positive
       d sign=(con.position==Pos::left?1:-1);
@@ -212,40 +212,40 @@ namespace tube {
     eqnr+=Ns;
 
     // ************************************************************
-    // Tube equations
-    for(const TubeConnection& con: tubeConnections){
+    // Duct equations
+    for(const DuctConnection& con: ductConnections){
       assert(con.c&&con.t);
-      TubeDefinitions
-      // First tube equation: extrapolated mH equals mH
+      DuctDefinitions
+      // First duct equation: extrapolated mH equals mH
       error.subvec(eqnr,eqnr+Ns-1)=con.c->extrapolateQuant(Varnr::mH)
 	-con.c->mHbc()();
       eqnr+=Ns;
 
-      // Second equation: total pressure in tube equals total pressure
+      // Second equation: total pressure in duct equals total pressure
       // in volume
       error.subvec(eqnr,eqnr+Ns-1)=fDFT*(ptbc%facM0-pt);
       eqnr+=Ns;
 
-      // Third equation: conduction from tube to volume
+      // Third equation: conduction from duct to volume
       // Compute conduction path length
       d Lcon=pow(volume,1.0/3.0);
-      // Compute cross sectional area of tube exit
+      // Compute cross sectional area of duct exit
       d Sf=con.c->Sfbc();
       // Kappa of volume in time domain.
       vd kappat=gc->gas().kappa(Tt);
 
       // Watch it! This sign is DIFFERENT from the one above!!! Here
-      // OUTFLOW from the TUBE is defined POSITIVE
+      // OUTFLOW from the DUCT is defined POSITIVE
       d sign=(con.position==Pos::left?-1:1);
 
       error.subvec(eqnr,eqnr+Ns-1)=\
-	// Heat flow from volume to tube
+	// Heat flow from volume to duct
 	fDFT*((Sf/Lcon)*kappat%(Tt-con.c->Tbc().tdata()))+	\
-	// Heat flow from the tube to the volume
+	// Heat flow from the duct to the volume
 	sign*con.c->extrapolateQuant(Varnr::Q);
 
       eqnr+=Ns;
-    } // Tube equations
+    } // Duct equations
 
     return error;
   }
@@ -258,10 +258,10 @@ namespace tube {
 
     // ************************************************************
     // Mass conservation equation
-    JacRow continuityeq(eqnr,1+tubeConnections.size()+pistonConnections.size());
+    JacRow continuityeq(eqnr,1+ductConnections.size()+pistonConnections.size());
     continuityeq+=JacCol(rho_,volume*DDTfd);
-    // Mass flow contribution from connected tubes
-    for(const TubeConnection& con: tubeConnections){
+    // Mass flow contribution from connected ducts
+    for(const DuctConnection& con: ductConnections){
       assert(con.c&&con.t);
       // Flow out of the volume is defined positive
       d sign=(con.position==Pos::left?1:-1);
@@ -274,10 +274,10 @@ namespace tube {
 
     // ************************************************************
     // Energy conservation equation
-    JacRow energyeq(eqnr,1+tubeConnections.size()+pistonConnections.size());
+    JacRow energyeq(eqnr,1+ductConnections.size()+pistonConnections.size());
     energyeq+=JacCol(p_,volume*gamfac*DDTfd);
-    // Energy flow contribution from connected tubes
-    for(const TubeConnection& con: tubeConnections){
+    // Energy flow contribution from connected ducts
+    for(const DuctConnection& con: ductConnections){
       assert(con.c&&con.t);
       // Flow out of the volume is defined positive
       d sign=(con.position==Pos::left?1:-1);
@@ -299,18 +299,18 @@ namespace tube {
     eqnr+=Ns;
 
     // ************************************************************
-    // Tube equations
-    for(const TubeConnection& con: tubeConnections){
+    // Duct equations
+    for(const DuctConnection& con: ductConnections){
       assert(con.c&&con.t);
-      TubeDefinitions
-      // First tube equation: extrapolated mH equals mH
+      DuctDefinitions
+      // First duct equation: extrapolated mH equals mH
       JacRow mHismH(eqnr,5);
       mHismH+=con.c->dExtrapolateQuant(Varnr::mH);
       mHismH+=JacCol(con.c->mHbc(),-eye);
       jac+=mHismH;
       eqnr+=Ns;
 
-      // Second equation: total pressure in tube equals total pressure
+      // Second equation: total pressure in duct equals total pressure
       // in volume
       JacRow preseq(eqnr,2);
       preseq+=JacCol(con.c->pbc(),fDFT*diagmat(facM0)*iDFT);
@@ -321,18 +321,18 @@ namespace tube {
       jac+=preseq;
       eqnr+=Ns;
 
-      // Third equation: heat flow out of Tube equals heat flow from
-      // volume to tube
+      // Third equation: heat flow out of Duct equals heat flow from
+      // volume to duct
 
       // Compute conduction path length
       d Lcon=pow(volume,1.0/3.0);
-      // Compute cross sectional area of tube exit
+      // Compute cross sectional area of duct exit
       d Sf=con.c->Sfbc();
       // Kappa of volume in time domain.
       vd kappat=gc->gas().kappa(Tt);
 
       // Watch it! This sign is DIFFERENT from the one above!!! Here
-      // OUTFLOW from the TUBE is defined POSITIVE
+      // OUTFLOW from the DUCT is defined POSITIVE
       d sign=(con.position==Pos::left?-1:1);
 
       JacRow condeq(eqnr,4);
@@ -343,7 +343,7 @@ namespace tube {
       jac+=condeq;
       eqnr+=Ns;
 
-    } // Tube equations
+    } // Duct equations
   }
   void ConnectorVolume::show(us detailnr) const {
     TRACE(15,"void ConnectorVolume::show()");
@@ -377,5 +377,5 @@ namespace tube {
     rho_.resetHarmonics();
   }
 
-} // namespace tube
+} // namespace duct
 //////////////////////////////////////////////////////////////////////

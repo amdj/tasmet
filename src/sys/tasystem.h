@@ -25,8 +25,8 @@ namespace mech {
   class Piston;
 } // namespace mech
 
-namespace tube{
-  class Tube;
+namespace duct{
+  class Duct;
   class ConnectorVolume;
 }
 #endif
@@ -39,7 +39,7 @@ namespace tasystem{
   #endif  
 
   #ifdef SWIG
-  %catches(std::exception,...) TaSystem::getTube(const string& i) const;
+  %catches(std::exception,...) TaSystem::getDuct(const string& i) const;
   %catches(std::exception,...) TaSystem::getConnnectorVolume(const string& i) const;
   %catches(std::exception,...) TaSystem::getPiston(const string& i) const;
   %catches(std::exception,...) TaSystem::getSeg(const string& i) const;
@@ -49,6 +49,7 @@ namespace tasystem{
   %catches(std::exception,...) TaSystem::Error();
   %catches(std::exception,...) TaSystem::getRes();
   %catches(std::exception,...) TaSystem::init();
+  %catches(std::exception,...) TaSystem::updateNf(us);
   %catches(std::exception,...) TaSystem::setRes(const vd& res);
   %catches(std::exception,...) TaSystem::showJac();
   %catches(std::exception,...) TaSystem::show(us detailnr=0);
@@ -115,8 +116,8 @@ namespace tasystem{
     // void delseg(us n); // Not yet implemented.  Delete a segment
     // from the system (we have to determine how elaborated the API
     // has to be.)
-    const tube::Tube& getTube(const string& ID) const;
-    const tube::ConnectorVolume& getConnnectorVolume(const string& ID) const;
+    const duct::Duct& getDuct(const string& ID) const;
+    const duct::ConnectorVolume& getConnnectorVolume(const string& ID) const;
     const mech::Piston& getPiston(const string& ID) const;
     us getNDofs() const;	// Compute DOFS in system, set     
     us getNEqs() const;    

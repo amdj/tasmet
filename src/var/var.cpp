@@ -100,7 +100,7 @@ namespace tasystem {
   }
   var& var::operator=(const var& other){
     // THIS WOULD COUPLE TO THE WRONG GLOBALCONF when setRes is used
-    // between tubes!!!!!
+    // between ducts!!!!!
     if(this!=&other){
       if(this->gc_==nullptr)
         this->gc_=other.gc_;

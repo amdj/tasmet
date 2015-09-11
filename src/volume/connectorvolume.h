@@ -14,7 +14,7 @@
 #include "constants.h"
 
 
-namespace tube {
+namespace duct {
 
   #ifdef SWIG
   %catches(std::exception,...) ConnectorVolume::ConnectorVolume(d volume);
@@ -26,10 +26,10 @@ namespace tube {
     Pos position;
     Connection(const string& segid,Pos position):segid(segid),position(position){}
   };
-  class Tube;
+  class Duct;
   class BcCell;
-  struct TubeConnection:public Connection{
-    const Tube* t=nullptr;
+  struct DuctConnection:public Connection{
+    const Duct* t=nullptr;
     const BcCell* c=nullptr;
     // As we only need the base constructor
     using Connection::Connection;
@@ -42,8 +42,8 @@ namespace tube {
     us firsteqnr;               // First equation of this segment
     d volume;                   // The fluid volume
 
-    // Vector containing all Tube connections
-    std::vector<TubeConnection> tubeConnections;
+    // Vector containing all Duct connections
+    std::vector<DuctConnection> ductConnections;
     std::vector<PistonConnection> pistonConnections;
     
     tasystem::var p_,T_,rho_;
@@ -59,7 +59,7 @@ namespace tube {
     const tasystem::var& rho() const {return rho_;}
     const tasystem::var& T() const {return T_;}
 
-    void addTube(const string& segid,Pos position);
+    void addDuct(const string& segid,Pos position);
     void addPiston(const string& segid,Pos position);
 
     virtual vd error() const;
@@ -86,7 +86,7 @@ namespace tube {
 
   };
   
-} // namespace tube
+} // namespace duct
 
 #endif // CONNECTORVOLUME_H
 //////////////////////////////////////////////////////////////////////

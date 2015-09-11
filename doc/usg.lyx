@@ -3575,7 +3575,7 @@ p_{\mathrm{tot},2}-p_{\mathrm{tot},1}=K_{2\to1}\frac{\rho_{2}}{8}\left(s|u_{2}|+
 \end_layout
 
 \begin_layout Section
-SimpleTubeConnector
+TubeConnector
 \end_layout
 
 \begin_layout Standard

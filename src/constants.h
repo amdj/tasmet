@@ -91,7 +91,7 @@ namespace tasystem{
 namespace mech{
   typedef segment::Pos Pos;
 }
-namespace tube{
+namespace duct{
   typedef segment::Pos Pos;
 
   #ifndef SWIG
@@ -122,6 +122,6 @@ namespace tube{
   #endif  
 
 
-}                // namespace tube
+}                // namespace duct
 
 #endif // CONSTANTS_H
