@@ -148,7 +148,7 @@ namespace duct {
       out[1]*bccells[1]->extrapolateQuant(Varnr::Q)+	\
       out[1]*bccells[1]->extrapolateQuant(Varnr::Qs);
     nr++;
-    TRACE(40,"SFSG");
+
     // Solid equations ***********************************************
     bool sol0=bccells[0]->getDuct().hasSolid();
     bool sol1=bccells[1]->getDuct().hasSolid();
@@ -163,7 +163,7 @@ namespace duct {
       return error;
     }
     else if(sol0) { // Only Duct 0 has solid
-      TRACE(40,"SFSG");
+
       d Ss=bccells[0]->vSs;
       d rhs=bccells[0]->vrh*Ss/bccells[0]->vSf;
       d kappaf=gc->gas().kappa(bccells[1]->Tbc()(0));
@@ -171,11 +171,11 @@ namespace duct {
       error.subvec(Ns*nr,Ns*(nr+1)-1)=		\
 	h*Ss*(bccells[0]->Tsbc()()-bccells[1]->Tbc()())		\
 	-out[0]*bccells[0]->extrapolateQuant(Varnr::Qs);
-      TRACE(40,"SFSG");
+
       return error;
     } // Only Duct 0 has solid
     else if(sol1) { // Only Duct 1 has solid
-      TRACE(40,"SFSG");
+
       d Ss=bccells[1]->vSs;
       d rhs=bccells[1]->vrh*Ss/bccells[1]->vSf;
       d kappaf=gc->gas().kappa(bccells[0]->Tbc()(0));
@@ -183,7 +183,7 @@ namespace duct {
       error.subvec(Ns*nr,Ns*(nr+1)-1)=		\
 	h*Ss*(bccells[1]->Tsbc()()-bccells[1]->Tbc()())		\
 	-out[1]*bccells[1]->extrapolateQuant(Varnr::Qs);
-      TRACE(40,"SFSG");
+
       return error;
     }      // Only Duct 1 has a solid
     return error;

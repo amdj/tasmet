@@ -56,19 +56,6 @@ namespace duct {
     TRACE(15,"LaminarDuct::LaminarDuct(copy)");
     if(o.solid)
       solid=new solids::Solid(*o.solid);
-  }
-  void LaminarDuct::setSolid(const string& solidname,d ksfrac) {
-    TRACE(15,"LaminarDuct::setSolid()");
-    if(solid)			// Delete old solid
-      delete solid;
-    if(isInsulated())
-      throw MyError("Error: insulated duct cannot contain solid."
-		    " See user guide for more information");
-    solid=new solids::Solid(solidname);
-  }
-  void LaminarDuct::init() {
-    TRACE(45,"LaminarDuct::init()");
-    Duct::init();
     d L=geom().L();
     if(Tl<0)
       Tl=gc->T0();
@@ -82,11 +69,24 @@ namespace duct {
 
     for(auto& cell : cells){
       tasystem::var Tvar(*gc,Tmirror(cell->i));
-      cell->setResVar(Varnr::Ts,Tvar);      
-      cell->setResVar(Varnr::Tw,Tvar);      
-      cell->setResVar(Varnr::T,Tvar);
+      // cell->setResVar(Varnr::Ts,Tvar);      
+      // cell->setResVar(Varnr::Tw,Tvar);      
+      // cell->setResVar(Varnr::T,Tvar);
     }  // // Set time-avg data to make solving bit easier
 
+  }
+  void LaminarDuct::setSolid(const string& solidname,d ksfrac) {
+    TRACE(15,"LaminarDuct::setSolid()");
+    if(solid)			// Delete old solid
+      delete solid;
+    if(isInsulated())
+      throw MyError("Error: insulated duct cannot contain solid."
+		    " See user guide for more information");
+    solid=new solids::Solid(solidname);
+  }
+  void LaminarDuct::init() {
+    TRACE(45,"LaminarDuct::init()");
+    Duct::init();
   }
   void LaminarDuct::setQsin(d Qsin) {
     TRACE(15,"LaminarDuct::setQsin()");

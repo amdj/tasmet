@@ -39,12 +39,11 @@ namespace tasystem{
     TRACE(14,"TaSystem::setGc()");
 
     if(Nf()!=gc.Nf()){
-      setNf(gc.Nf());
       updateNf(gc.Nf());
     }
     Globalconf::operator=(gc);
     
-    hasInit=false;
+    init();
   }
   void TaSystem::cleanup(){
     TRACE(25,"TaSystem::cleanup()");
@@ -152,8 +151,8 @@ namespace tasystem{
     }
   }
   void TaSystem::updateNf(us Nf){
+    TRACE(30,"TaSystem::updateNf()");
     checkInit();
-    TRACE(30,"TaSystem::setNf()");
     setNf(Nf);
     for(auto seg: segs)      {
       seg.second->updateNf();

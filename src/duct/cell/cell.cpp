@@ -241,11 +241,14 @@ namespace duct{
   }
     
   void Cell::updateNf(){
-    TRACE(15,"Cell::setNf()");
-    for(auto var: vars)
-      var->updateNf();
+    TRACE(15,"Cell::updateNf()");
+    ml_.updateNf();
+    rho_.updateNf();
+    T_.updateNf();
+    p_.updateNf();
     Tw_.updateNf();
     Ts_.updateNf();
+    mu_.updateNf();
   }
   void Cell::setRes(const vd& res){
     TRACE(10,"Cell::setRes(), i="<< i);

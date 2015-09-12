@@ -158,37 +158,38 @@ namespace duct{
       vd m=0.5*(v.ml()()+v.mr()());
 
       // Only zero in right top
-      // dmat row(1,Ns,fillwith::zeros); row(0,0)=1;
-      // d xi,xj,xk,Wi,Wj,Wk;
-      // if(v.left()&&v.right()){
-      // 	xi=v.vx;
-      // 	xj=v.left()->vx;
-      // 	xk=v.right()->vx;
-      // 	std::tie(Wi,Wj,Wk)=wfacs(xi,xj,xk);
-      // 	dQsf+=JacCol(v.Tw(),-Wi*(Q*m)*row);
-      // 	dQsf+=JacCol(v.TwL(),-Wj*(Q*m)*row);
-      // 	dQsf+=JacCol(v.TwR(),-Wk*(Q*m)*row);      
-      // }
-      // else if(!v.left()&&v.right()){
-      // 	// Leftmost cell
-      // 	xi=v.vx;
-      // 	xj=v.right()->vx;
-      // 	xk=v.right()->right()->vx;
-      // 	std::tie(Wi,Wj,Wk)=wfacs(xi,xj,xk);
-      // 	dQsf+=JacCol(v.Tw(),-Wi*(Q*m)*row);
-      // 	dQsf+=JacCol(v.TwR(),-Wj*(Q*m)*row);
-      // 	dQsf+=JacCol(v.right()->TwR(),-Wk*(Q*m)*row);      
-      // }
-      // else{
-      // 	// Rightmost cell
-      // 	xi=v.vx;
-      // 	xj=v.left()->vx;
-      // 	xk=v.left()->left()->vx;
-      // 	std::tie(Wi,Wj,Wk)=wfacs(xi,xj,xk);
-      // 	dQsf+=JacCol(v.Tw(),-Wi*(Q*m)*row);
-      // 	dQsf+=JacCol(v.TwL(),-Wj*(Q*m)*row);
-      // 	dQsf+=JacCol(v.left()->TwL(),-Wk*(Q*m)*row);      
-      // }
+      dmat row(1,Ns,fillwith::zeros); row(0,0)=1;
+      d xi,xj,xk,Wi,Wj,Wk;
+      if(v.left()&&v.right()){
+      	xi=v.vx;
+      	xj=v.left()->vx;
+      	xk=v.right()->vx;
+      	std::tie(Wi,Wj,Wk)=wfacs(xi,xj,xk);
+	// VARTRACE(80,-Wi*(Q*m)*row);
+      	dQsf+=JacCol(v.Tw(),-Wi*(Q*m)*row);
+      	dQsf+=JacCol(v.TwL(),-Wj*(Q*m)*row);
+      	dQsf+=JacCol(v.TwR(),-Wk*(Q*m)*row);      
+      }
+      else if(!v.left()&&v.right()){
+      	// Leftmost cell
+      	xi=v.vx;
+      	xj=v.right()->vx;
+      	xk=v.right()->right()->vx;
+      	std::tie(Wi,Wj,Wk)=wfacs(xi,xj,xk);
+      	dQsf+=JacCol(v.Tw(),-Wi*(Q*m)*row);
+      	dQsf+=JacCol(v.TwR(),-Wj*(Q*m)*row);
+      	dQsf+=JacCol(v.right()->TwR(),-Wk*(Q*m)*row);      
+      }
+      else{
+      	// Rightmost cell
+      	xi=v.vx;
+      	xj=v.left()->vx;
+      	xk=v.left()->left()->vx;
+      	std::tie(Wi,Wj,Wk)=wfacs(xi,xj,xk);
+      	dQsf+=JacCol(v.Tw(),-Wi*(Q*m)*row);
+      	dQsf+=JacCol(v.TwL(),-Wj*(Q*m)*row);
+      	dQsf+=JacCol(v.left()->TwL(),-Wk*(Q*m)*row);      
+      }
     }  //   t->hasSolid() || t->isInsulated()
     return dQsf;
   }

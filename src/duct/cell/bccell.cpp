@@ -20,9 +20,7 @@ namespace duct{
 
   BcCell::BcCell(us i,const Duct& t):
     Cell(i,t)
-  {}
-  void BcCell::init(const Cell* left,const Cell* right){
-    TRACE(10,"BcCell::init(const Cell* left,const Cell* right)");
+  {
     rhobc_=var(*gc,gc->rho0());
     Tbc_=var(*gc,gc->T0());
     Tsbc_=var(*gc,gc->T0());
@@ -30,7 +28,21 @@ namespace duct{
     ubc_=var(*gc);
     mubc_=var(*gc);
     mHbc_=var(*gc);
-    Cell::init(left,right);
+}
+  void BcCell::init(const Cell* left,const Cell* right){
+    TRACE(10,"BcCell::init(const Cell* left,const Cell* right)");
+    Cell::init(left,right);    
+  }
+  void BcCell::updateNf(){
+    TRACE(15,"BcCell::updateNf()");
+    Cell::updateNf();
+    rhobc_.updateNf();
+    Tbc_.updateNf();
+    Tsbc_.updateNf();
+    pbc_.updateNf();
+    ubc_.updateNf();
+    mubc_.updateNf();
+    mHbc_.updateNf();
   }
   vd BcCell::extrapolateQuant(Varnr v) const {
     TRACE(5,"BcCell::extrapolateQuant()");

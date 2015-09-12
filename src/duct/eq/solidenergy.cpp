@@ -9,7 +9,7 @@
 #define fDFT (v.gc->fDFT)
 #define DDTfd (v.gc->DDTfd)
 #define Ns (v.gc->Ns())
-
+#define ENERGY_SCALE (1.0/(solid->rho(v.gc->T0())*solid->c(v.gc->T0())))
 
 namespace duct{
   using tasystem::Jacobian;
@@ -88,8 +88,8 @@ namespace duct{
     d rhoc=solid->rho(v.Ts()(0))*solid->c(v.Ts()(0));
     VARTRACE(10,v.vVs*rhoc*DDTfd*v.Ts()()+QR()-QL());
     vd vdeeye(Ns,fillwith::zeros); vdeeye(0)=1;
-    return v.vVs*rhoc*DDTfd*v.Ts()()+QR()-QL()	\
-	+(v.xr-v.xl)*t->heatSource().Qsf(v)-Qin*vdeeye;
+    return (v.vVs*rhoc*DDTfd*v.Ts()()+QR()-QL()		\
+	    +(v.xr-v.xl)*t->heatSource().Qsf(v)-Qin*vdeeye)*ENERGY_SCALE;
   }
   JacRow SolidEnergy::jac() const {
     TRACE(15,"SolidEnergy::jac()");
@@ -100,14 +100,15 @@ namespace duct{
     jac+=dQR();
     jac+=(dQL()*=-1);
     jac+=(t->heatSource().dQsf(v)*=(v.xr-v.xl));
-
+    jac*=ENERGY_SCALE;
     return jac;
   }
   
   void SolidEnergy::domg(vd& domg) const {
     TRACE(15,"SolidEnergy::domg()");
     d rhoc=solid->rho(v.Ts()(0))*solid->c(v.Ts()(0));
-    domg.subvec(dofnr,dofnr+Ns-1)=(v.vVs*rhoc/v.gc->getomg())*DDTfd*v.Ts()();
+    domg.subvec(dofnr,dofnr+Ns-1)=ENERGY_SCALE*\
+      ((v.vVs*rhoc/v.gc->getomg())*DDTfd*v.Ts()());
   }
   vd SolidEnergy::QR() const {
     TRACE(15,"SolidEnergy::QR()");

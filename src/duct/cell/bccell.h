@@ -31,7 +31,7 @@ namespace duct{
 
     // Fluid cross-sectional area at bc
     virtual  const d& Sfbc() const=0;
-
+    virtual void updateNf();
     // Return mass flow at the cell wall
     virtual const tasystem::var& mbc() const=0;
     // Return velocity at the cell wall

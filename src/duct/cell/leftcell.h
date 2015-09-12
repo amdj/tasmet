@@ -16,7 +16,7 @@ namespace duct{
     // For the pressure, we only do not assert that a cell is
     // located on the left...
     // virtual const tasystem::var& pL() const {return pL_;}
-
+    void updateNf();
     const d& Sfbc() const {return Sfl;}
     // OVerloaded virtuals from BcCell
     void show(us detailnr=1) const;

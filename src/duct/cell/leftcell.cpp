@@ -14,13 +14,16 @@ namespace duct{
   }
   void LeftCell::init(const Cell* left,const Cell* right){
     TRACE(10,"LeftCell::init()");
-    BcCell::init(left,right);
     assert(!left);
     assert(right);
+    BcCell::init(left,right);
   }
   void LeftCell::show(us detailnr) const{
     cout << "------------- LeftCell ----------\n";
     Cell::show(detailnr);
   }
-
+  void LeftCell::updateNf(){
+    TRACE(15,"LeftCell::updateNf()");
+    BcCell::updateNf();
+  }
 } // namespace duct
