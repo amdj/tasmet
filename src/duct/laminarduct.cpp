@@ -9,10 +9,7 @@
 
 #include "laminarduct.h"
 #include "bccell.h"
-#include "solid.h"
-#include "solidenergy.h"
 #include "soltw.h"
-
 
 #include "globalconf.h"
 #include "geom.h"
@@ -27,83 +24,49 @@
 // each gridpoint. More precisely, in the final solution the
 // continuity, momentum, energy and a suitable equation of state
 // should hold.
-using tasystem::Globalconf;
-using tasystem::TaSystem;
-using tasystem::var;
+
 
 namespace duct {
-  LaminarDuct::LaminarDuct(const Geom& geom,const string& solid):
-    LaminarDuct(geom)
-  {
-    setSolid(solid);
-  }
+  using tasystem::Globalconf;
+  using tasystem::TaSystem;
+  using tasystem::var;
 
-  LaminarDuct::LaminarDuct(const Geom& geom,d Tl,d Tr):
+  LaminarDuct::LaminarDuct(const Geom& geom,d Twl,d Twr):
     LaminarDuct(geom)
   {
-    this->Tl=Tl;
-    this->Tr=Tr;
+    // DO SOMETHING with Tinit!
+    if(Twr<0)
+      Twr=Twl;
+    d L=geom.L();
+    const vd& vx=geom.vx_vec();
+    Tinit=Twl+(Twr-Twl)*vx/L;
   }
   LaminarDuct::LaminarDuct(const LaminarDuct& o,const TaSystem& sys):
     Duct(o,sys),
     laminardrag(*this),
     hopkinsheat(*this),
     insulated(o.insulated),
-    Tl(o.Tl),
-    Tr(o.Tr),
-    Qsin(o.Qsin)
+    Tinit(o.Tinit)
   {
     TRACE(15,"LaminarDuct::LaminarDuct(copy)");
-    if(o.solid)
-      solid=new solids::Solid(*o.solid);
-    d L=geom().L();
-    if(Tl<0)
-      Tl=gc->T0();
-    if(Tr<0)
-      Tr=gc->T0();
-    d T;
-    assert(cells.size()>0);
-    const vd& vx=geom().vx_vec();
-    // Tmirror=Tl+(Tr-Tl)*math_common::skewsine(xv/L);
-    vd Tmirror=Tl+(Tr-Tl)*vx/L;
-
-    for(auto& cell : cells){
-      tasystem::var Tvar(*gc,Tmirror(cell->i));
-      // cell->setResVar(Varnr::Ts,Tvar);      
-      // cell->setResVar(Varnr::Tw,Tvar);      
-      // cell->setResVar(Varnr::T,Tvar);
-    }  // // Set time-avg data to make solving bit easier
-
-  }
-  void LaminarDuct::setSolid(const string& solidname,d ksfrac) {
-    TRACE(15,"LaminarDuct::setSolid()");
-    if(solid)			// Delete old solid
-      delete solid;
-    if(isInsulated())
-      throw MyError("Error: insulated duct cannot contain solid."
-		    " See user guide for more information");
-    solid=new solids::Solid(solidname);
+    if(Tinit.size()>0){
+      assert(cells.size()>0);
+      for(auto& cell : cells){
+	tasystem::var Tvar(*gc,Tinit(cell->i));
+	cell->setResVar(Varnr::Ts,Tvar);      
+	cell->setResVar(Varnr::Tw,Tvar);      
+	cell->setResVar(Varnr::T,Tvar);
+      }  // // Set time-avg data to make solving bit easier
+    }
   }
   void LaminarDuct::init() {
     TRACE(45,"LaminarDuct::init()");
     Duct::init();
   }
-  void LaminarDuct::setQsin(d Qsin) {
-    TRACE(15,"LaminarDuct::setQsin()");
-    if(!hasSolid())
-       throw MyError("Solid heat input cannot be set, because no solid is set");
-    this->Qsin=Qsin;
-  }
   void LaminarDuct::show(us s) const {
     TRACE(15,"LaminarDuct::show()");
+    cout << "Laminar Duct\n";
     Duct::show(s);
-    string sol;
-    if(solid)
-      sol=*solid;		// Operator string converts solid to a
-				// certain type name.
-    else
-      sol="none";
-    cout << "Solid in system: " << sol << "\n";
   }
   LaminarDuct::LaminarDuct(const Geom& geom):
     Duct(geom),
@@ -113,17 +76,23 @@ namespace duct {
     // Fill vector of gridpoints with data:
     TRACE(13,"LaminarDuct constructor()...");
   }
-  const solids::Solid& LaminarDuct::getSolid() const{
-    if(hasSolid())
-      return *solid;
-    else
-      throw MyError("LaminarDuct does not have a solid!");
+  void LaminarDuct::setInsulated(bool ins){
+    TRACE(15,"LaminarDuct::setInsulated()");
+    if(ins && hasSolid())
+      throw MyError("When a solid is present such as in a Stack type of duct,"
+		    " the Duct cannot be set to insulate.");
+    insulated=ins;
   }
   void LaminarDuct::setVarsEqs(Cell& c) const {
     TRACE(15,"LaminarDuct::setVarsEqs()");
     Duct::setVarsEqs(c);
 
-    if(hasSolid() || isInsulated()){
+    // Both when insulated as when a solid is present (in case *this
+    // is of type Stack), the wall temperature is a dependent
+    // variable. The SolTw equation deals with what equation it need
+    // to solve in which case.
+    if(isInsulated() || hasSolid()){
+
       auto& eqs=c.getEqs();
       auto& vars=c.getVars();
 
@@ -132,38 +101,9 @@ namespace duct {
       // variables to solve for.
       vars.push_back(&const_cast<var&>(c.Tw()));
       eqs.insert({EqType::SolTwEq,new SolTw(c,*this)});
-      d Lduct=geom().L();
-      if(hasSolid()) {
-	vars.push_back(&const_cast<var&>(c.Ts()));
-	eqs.insert({EqType::Sol,new SolidEnergy(c,solid)});
-
-	d Lcell=c.xr-c.xl;
-	d Qsincell=Qsin*Lcell/Lduct;
-	static_cast<SolidEnergy*>(c.getEqs().at(EqType::Sol))->setQin(Qsincell);
-
-	if((!c.left()) || (!c.right())) {
-	  // Downcast as we know the cells at the boundaries are BcCells
-	  auto& d=static_cast<BcCell&>(c);
-	  vars.push_back(&const_cast<var&>(d.Tsbc()));
-	}
-      } // hasSolid()
-    }	// hasSold() || isInsulated()
+    }	// isInsulated() || hasSolid()
   }
-  LaminarDuct::~LaminarDuct(){
-    TRACE(15,"~LaminarDuct()");
-    delete solid;
-  }
-  // vd LaminarDuct::dragCoefVec(us freqnr) const{
-  //   TRACE(15,"LaminarDuct::drag_vec()");
-  //   vd dragcoef(getNCells());
-  //   var drag_varcoef(*gc);
-  //   for(us i=0;i<dragcoef.size();i++){
-  //     const Cell& cell=getCell(i);
-  //     drag_varcoef.setadata(laminardrag.ComplexResistancecoef(cell));
-  //     dragcoef(i)=drag_varcoef(freqnr);
-  //   }
-  //   return dragcoef;
-  // }
+  LaminarDuct::~LaminarDuct(){ }
   
 } /* namespace duct */
 

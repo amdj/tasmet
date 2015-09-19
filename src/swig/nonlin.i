@@ -50,6 +50,7 @@
   #include "cell.h"
   #include "isentropictube.h"
   #include "laminarduct.h"
+  #include "stack.h"
 
   // Solver
   #include "solverconfiguration.h"
@@ -133,6 +134,8 @@ void setTASMETTracer(int);
 %include "duct.h"
 %include "isentropictube.h"
 %include "laminarduct.h"
+%include "ductwithsolid.h"
+%include "stack.h"
 
  // System
 %include "tasystem.h"

@@ -153,6 +153,11 @@ namespace duct{
     dQsf+=JacCol(v.ml(),-0.5*dTwdx*Q);
     dQsf+=JacCol(v.mr(),-0.5*dTwdx*Q);    
 
+    // When insulated, assume that the time-averaged wall temperature
+    // equals the time-averaged fluid temperature and a heat flow of zero.
+
+    // When a solid is present, we also take the derivative to the
+    // wall temperature.
     if(t->hasSolid() || t->isInsulated()){
       dQsf+=JacCol(v.Tw(),v.vSf*H11);
       vd m=0.5*(v.ml()()+v.mr()());

@@ -11,7 +11,7 @@
 #include "jacrow.h"
 #include "laminarduct.h"
 #include "geom.h"
-
+#include "stack.h"
 namespace duct {
   using tasystem::Jacobian;
   using tasystem::JacRow;
@@ -23,7 +23,7 @@ namespace duct {
     duct=&t;
     if(duct->hasSolid()){
       assert(!duct->isInsulated());
-      solid=&t.getSolid();
+      solid=&static_cast<const Stack&>(t).getSolid();
       h=new SolidH(t.geom().shape());
     }
   }
