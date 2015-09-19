@@ -190,6 +190,18 @@ User's guide
 \end_layout
 
 \begin_layout Chapter
+Release notes
+\end_layout
+
+\begin_layout Itemize
+Ducts with solids cannot yet be connected to ConnectorVolumes
+\end_layout
+
+\begin_layout Itemize
+Ducts with solids cannot yet be connected to Pistons
+\end_layout
+
+\begin_layout Chapter
 Introduction
 \end_layout
 
