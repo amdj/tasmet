@@ -201,6 +201,10 @@ Stacks cannot yet be connected to ConnectorVolumes
 Stacks cannot yet be connected to Pistons
 \end_layout
 
+\begin_layout Itemize
+VelocityBc does not work yet.
+\end_layout
+
 \begin_layout Chapter
 Introduction
 \end_layout
