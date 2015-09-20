@@ -29,6 +29,9 @@ namespace duct {
     TRACE(15,"DuctWithSolid::DuctWithSolid()");
     solid = new solids::Solid(*o.solid);
   }
+  DuctWithSolid::~DuctWithSolid(){
+    delete solid;
+  }
   void DuctWithSolid::setVarsEqs(Cell& c) const {
     TRACE(15,"DuctWithSolid::setVarsEqs()");
     auto& eqs=c.getEqs();
@@ -51,9 +54,6 @@ namespace duct {
       vars.push_back(&const_cast<var&>(d.Tsbc()));
     }
 
-  }
-  DuctWithSolid::~DuctWithSolid(){
-    delete solid;
   }
   void DuctWithSolid::setQsin(d Qsin) {
     TRACE(15,"DuctWithSolid::setQsin()");

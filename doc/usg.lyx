@@ -78,7 +78,7 @@
 \graphics default
 \default_output_format default
 \output_sync 1
-\bibtex_command default
+\bibtex_command bibtex
 \index_command default
 \paperfontsize default
 \spacing single
@@ -164,6 +164,33 @@ begin{titlingpage}
 titleM
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename fig/tasys_artist.eps
+	width 50text%
+
+\end_inset
+
+
+\family typewriter
+\size huge
+
+\begin_inset Newline newline
+\end_inset
+
+Version 1.0
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
 \begin_layout Plain Layout
 
 
@@ -190,56 +217,77 @@ User's guide
 \end_layout
 
 \begin_layout Chapter
-Release notes
-\end_layout
-
-\begin_layout Itemize
-Stacks cannot yet be connected to ConnectorVolumes
-\end_layout
-
-\begin_layout Itemize
-Stacks cannot yet be connected to Pistons
-\end_layout
-
-\begin_layout Itemize
-VelocityBc does not work yet.
-\end_layout
-
-\begin_layout Chapter
 Introduction
 \end_layout
 
 \begin_layout Standard
 Welcome to the user's guide of the ThermoAcoustic System Modeling Environment
  Twente, or TASMET.
- TASMET is a computer guide to model thermoacoustic (TA) engines, refrigerators
- and combined systems.
- The main ideas of this code are developed as part of my PhD work
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-bron
+ TASMET is a computer code to model thermoacoustic (TA) engines, refrigerators
+ and combined systems by providing nonlinear models for laminar/turbulent
+ oscillating flow in ducts, heat exchangers and stacks/regenerators.
+ A coupling to the mechanical and electrical domain is provided with a piston
+ model.
 \end_layout
+
+\begin_layout Standard
+The nonlinear sub-models can be connected to form a model of a complete
+ TA or Stirling system.
+ The main ideas of this code are developed as part of my PhD work 
+\begin_inset Quotes eld
+\end_inset
+
+
+\noun on
+Numerical Modeling of Thermoacoustic Systems
+\begin_inset Quotes erd
+\end_inset
+
+
+\noun default
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "jong_numerical_2015"
 
 \end_inset
 
 .
- I hope this code will be of use for future projects.
 \end_layout
 
 \begin_layout Standard
-TASMET is a computer code for nonlinear modeling of TA systems.
- The code has been developed with a strong focus on computational cost.
- This has led 
+The code has been developed with a strong focus on computational cost.
+ Hence, it uses an efficient modeling technique, called the Nonlinear Frequency
+ Domain (NLFD) method, to directly simulate the periodic steady state of
+ a TA system.
 \end_layout
 
 \begin_layout Standard
-The code is OPEN SOURCE...
+The modular design makes it easy to create any system for which a similar
+ model can be made using the DELTAEC computer code.
+ The main differences between TaSMET and other TA modeling computer codes
+ are
 \end_layout
 
-\begin_layout Standard
-bla bla python, C++
+\begin_layout Itemize
+Open source and free to use.
+ As the author is aware of the possibilities created by using open source
+ codes, the choice of publishing this computer code as open source was not
+ a hard choice.
+\end_layout
+
+\begin_layout Itemize
+Fast modeling in the nonlinear regime.
+\end_layout
+
+\begin_layout Itemize
+No graphical user interface (GUI), but the Python programming language as
+ modeling glue.
+ GUI's require a considerable time to implement, but they do not add any
+ fundamental features.
+ As we provide all modeling classes in Python, the user can therefore decide
+ whether he still wants a GUI.
+ 
 \end_layout
 
 \begin_layout Section
@@ -247,11 +295,12 @@ Purpose of this code
 \end_layout
 
 \begin_layout Itemize
-More in-depth insight in behavior of TA systems
+Expand modeling capabilities of DeltaEC to the nonlinear regime -> More
+ detailed modeling of nonlinear effects
 \end_layout
 
 \begin_layout Itemize
-More detailed modeling of nonlinear effects
+More in-depth insight in behavior of TA systems
 \end_layout
 
 \begin_layout Standard
@@ -314,11 +363,23 @@ TaSMET
 Bug reporting and contributing
 \end_layout
 
-\begin_layout Standard
---
+\begin_layout Section
+Release notes
 \end_layout
 
-\begin_layout Section
+\begin_layout Itemize
+Stacks cannot yet be connected to ConnectorVolumes
+\end_layout
+
+\begin_layout Itemize
+Stacks cannot yet be connected to Pistons
+\end_layout
+
+\begin_layout Itemize
+VelocityBc does not work yet.
+\end_layout
+
+\begin_layout Chapter
 Basic ideas
 \end_layout
 
@@ -327,7 +388,8 @@ With
 \noun on
 TaSMET
 \noun default
-, the periodic steady-state of a TA system is modeled.
+, the periodic steady-state of a TA system is simulated using a numerical
+ model.
 \end_layout
 
 \begin_layout Chapter
@@ -541,6 +603,17 @@ Hofler's refrigerator (Hofler1)
 
 \begin_layout Standard
 In this section, 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "bib/TaSMET"
+options "plain"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Part
@@ -3876,6 +3949,7 @@ Create a PhaseConstraint object:
 \end_layout
 
 \begin_layout Verbatim
+
 	pc=PhaseConstraint(Varnr, freqnr, left)
 \end_layout
 
@@ -3884,6 +3958,7 @@ Apply this contraint to a segment which can accept them, for example a Tube:
 \end_layout
 
 \begin_layout Verbatim
+
 	t1.setPhaseConstraint(pc)
 \end_layout
 
@@ -3904,6 +3979,10 @@ Tube segments
 
 \begin_layout Section
 Tube
+\end_layout
+
+\begin_layout Standard
+--
 \end_layout
 
 \end_body
