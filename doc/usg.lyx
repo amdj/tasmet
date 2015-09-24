@@ -367,18 +367,6 @@ Bug reporting and contributing
 Release notes
 \end_layout
 
-\begin_layout Itemize
-Stacks cannot yet be connected to ConnectorVolumes
-\end_layout
-
-\begin_layout Itemize
-Stacks cannot yet be connected to Pistons
-\end_layout
-
-\begin_layout Itemize
-VelocityBc does not work yet.
-\end_layout
-
 \begin_layout Chapter
 Basic ideas
 \end_layout

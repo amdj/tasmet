@@ -4,7 +4,7 @@ from os.path import isfile
 sys.path.append('.')
 from PyQt4 import QtCore, QtGui
 from tasmet_main_ui import Ui_TASMET
-from TASMET import *
+from .. import *
 from tasmet_modelclass import TaSMETModel
 
 class StartQT4(QtGui.QMainWindow):
@@ -159,7 +159,7 @@ class StartQT4(QtGui.QMainWindow):
         self.model.T0=T0
         self.model.p0=p0
 
-def run():
+def runTaSMETGUI():
     app = QtGui.QApplication(sys.argv)
     myapp = StartQT4()
     myapp.show()

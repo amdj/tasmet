@@ -3,22 +3,22 @@
 # The TaSMET code
 #=========
 
-# AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/ src)
-AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/volume volume)
-AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/mech mech)
-AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/seg seg)
-AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/sol sol)
-AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/sys sys)
-AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/var var)
-AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/duct/geom/grid grid)
-AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/duct/eq eq)
-AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/duct/eq/solid solideq)
-AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/duct duct)
-AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/duct/geom geom)
-AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/duct/drag drag)
-AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/duct/cell cell)
-AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/duct/heat heat)
-AUX_SOURCE_DIRECTORy(${PROJECT_SOURCE_DIR}/src/duct/connectors connectors)
+AUX_SOURCE_DIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/ src)
+AUX_SOURCE_DIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/volume volume)
+AUX_SOURCE_DIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/mech mech)
+AUX_SOURCE_DIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/seg seg)
+AUX_SOURCE_DIRECTORy(${CMAKE_CURRENT_SOURCE_DIR}/sol sol)
+AUX_SOURCE_DIRECTORy(${CMAKE_CURRENT_SOURCE_DIR}/sys sys)
+AUX_SOURCE_DIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/var var)
+AUX_SOURCE_DIRECTORy(${CMAKE_CURRENT_SOURCE_DIR}/duct/geom/grid grid)
+AUX_SOURCE_DIRECTORy(${CMAKE_CURRENT_SOURCE_DIR}/duct/eq eq)
+AUX_SOURCE_DIRECTORy(${CMAKE_CURRENT_SOURCE_DIR}/duct/eq/solid solideq)
+AUX_SOURCE_DIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/duct duct)
+AUX_SOURCE_DIRECTORy(${CMAKE_CURRENT_SOURCE_DIR}/duct/geom geom)
+AUX_SOURCE_DIRECTORy(${CMAKE_CURRENT_SOURCE_DIR}/duct/drag drag)
+AUX_SOURCE_DIRECTORy(${CMAKE_CURRENT_SOURCE_DIR}/duct/cell cell)
+AUX_SOURCE_DIRECTORy(${CMAKE_CURRENT_SOURCE_DIR}/duct/heat heat)
+AUX_SOURCE_DIRECTORy(${CMAKE_CURRENT_SOURCE_DIR}/duct/connectors connectors)
 
 set (nonlinear_SRC
   ${src}
@@ -44,22 +44,22 @@ include_directories(
   ${ARMADILLO_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/common/src
   ${PROJECT_SOURCE_DIR}/common/src/swig
-  ${PROJECT_SOURCE_DIR}/src
-  ${PROJECT_SOURCE_DIR}/src/sys
-  ${PROJECT_SOURCE_DIR}/src/mech
-  ${PROJECT_SOURCE_DIR}/src/sol
-  ${PROJECT_SOURCE_DIR}/src/seg
-  ${PROJECT_SOURCE_DIR}/src/var
-  ${PROJECT_SOURCE_DIR}/src/volume
-  ${PROJECT_SOURCE_DIR}/src/duct
-  ${PROJECT_SOURCE_DIR}/src/duct/geom
-  ${PROJECT_SOURCE_DIR}/src/duct/geom/grid
-  ${PROJECT_SOURCE_DIR}/src/duct/drag
-  ${PROJECT_SOURCE_DIR}/src/duct/connectors
-  ${PROJECT_SOURCE_DIR}/src/duct/cell
-  ${PROJECT_SOURCE_DIR}/src/duct/eq
-  ${PROJECT_SOURCE_DIR}/src/duct/eq/solid
-  ${PROJECT_SOURCE_DIR}/src/duct/heat
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/sys
+  ${CMAKE_CURRENT_SOURCE_DIR}/mech
+  ${CMAKE_CURRENT_SOURCE_DIR}/sol
+  ${CMAKE_CURRENT_SOURCE_DIR}/seg
+  ${CMAKE_CURRENT_SOURCE_DIR}/var
+  ${CMAKE_CURRENT_SOURCE_DIR}/volume
+  ${CMAKE_CURRENT_SOURCE_DIR}/duct
+  ${CMAKE_CURRENT_SOURCE_DIR}/duct/geom
+  ${CMAKE_CURRENT_SOURCE_DIR}/duct/geom/grid
+  ${CMAKE_CURRENT_SOURCE_DIR}/duct/drag
+  ${CMAKE_CURRENT_SOURCE_DIR}/duct/connectors
+  ${CMAKE_CURRENT_SOURCE_DIR}/duct/cell
+  ${CMAKE_CURRENT_SOURCE_DIR}/duct/eq
+  ${CMAKE_CURRENT_SOURCE_DIR}/duct/eq/solid
+  ${CMAKE_CURRENT_SOURCE_DIR}/duct/heat
   )
 link_directories(${PROJECT_SOURCE_DIR}/common)
 # For a shared lib:
@@ -68,14 +68,27 @@ add_library(nonlin_lib  ${nonlinear_SRC})
 
 target_link_libraries(nonlin_lib common_src)
 
-set_source_files_properties(${PROJECT_SOURCE_DIR}/src/swig/nonlin.i
+set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/swig/nonlin.i
   PROPERTIES CPLUSPLUS ON)
-swig_add_module(tasmet python ${PROJECT_SOURCE_DIR}/src/swig/nonlin.i)
+swig_add_module(tasmet python ${CMAKE_CURRENT_SOURCE_DIR}/swig/nonlin.i)
 
 set(SWIG_MODULE_nonlin_FILE_nonlin_EXTRA_DEPS
-  ${PROJECT_SOURCE_DIR}/src/common/swig_files/arma_numpy.i
+  ${CMAKE_CURRENT_SOURCE_DIR}/common/swig_files/arma_numpy.i
 )
 swig_link_libraries(tasmet nonlin_lib common_src ${PYTHON_LIBRARIES}
   ${ARMADILLO_LIBRARIES})
 set_source_files_properties( ${swig_generated_file_fullname}
       PROPERTIES COMPILE_FLAGS "-Wno-missing-field-initializers -Wno-self-assign -Wno-#warnings")
+
+# Install swig files to the right place
+install(TARGETS _tasmet
+  DESTINATION ${PYTHON_SITE_PACKAGES}/${PROJECT_NAME})
+install(FILES ${CMAKE_BINARY_DIR}/src/tasmet.py
+  DESTINATION ${PYTHON_SITE_PACKAGES}/${PROJECT_NAME})
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/python/__init__.py
+  DESTINATION ${PYTHON_SITE_PACKAGES}/${PROJECT_NAME})
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/python/post
+  DESTINATION ${PYTHON_SITE_PACKAGES}/${PROJECT_NAME})
+# install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/python/gui
+#   DESTINATION ${PYTHON_SITE_PACKAGES}/${PROJECT_NAME})
+

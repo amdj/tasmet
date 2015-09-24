@@ -2,14 +2,14 @@
 cmake_minimum_required (VERSION 3.2)
 project(TaSMET)
 
+set(PACKAGE_VERSION 1.0)
+
 # Tracer name (name of the variable)
 add_definitions(-DTRACERNAME=TaSMETTracer)
-
-# This is the common code (gas and solid libs, etc)
-add_subdirectory(${PROJECT_SOURCE_DIR}/common)
+add_definitions(-DTRACER_IN_COMMON)
 
 #==================
-# Compiler settings
+# Compiler settings ======
 #==================
 
 # If we would like to cache the compilation process, please activate these settings
@@ -70,15 +70,14 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -march=native -mtune=native -fopenmp
 #Debug mode
 # set(CMAKE_GCC "${CMAKE_GCC} -g -ggdb")
 
-#==================
-# Required packages
-#==================
-
 # For importing find directives for Cmake
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/common/cmake_tools)
 
 # Python
 find_package(PythonLibs REQUIRED)
+
+# Find the site_packages directory of python
+execute_process(COMMAND python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 # Initialize swig
 find_package(SWIG REQUIRED)
@@ -89,6 +88,20 @@ SET(CMAKE_SWIG_FLAGS -py3 -Wall -DSWIG_PYTHON)
 find_package(Armadillo REQUIRED)
 add_definitions(-DARMA_USE_SUPERLU -DARMA_USE_CXX11 -DARMA_USE_BLAS -DARMA_USE_LAPACK)
 
+# ==================== Compile the code in common and src
+
+# This is the common code (gas and solid libs, etc)
+add_subdirectory(${PROJECT_SOURCE_DIR}/common)
 
 # Add the code subdirectory
 add_subdirectory(${PROJECT_SOURCE_DIR}/src)
+
+# ================================== Installation
+
+# Install common files
+install(FILES ${PROJECT_SOURCE_DIR}/common/_common.so
+  DESTINATION ${PYTHON_SITE_PACKAGES}/${PROJECT_NAME}/common)
+install(FILES ${PROJECT_SOURCE_DIR}/common/__init__.py
+  DESTINATION ${PYTHON_SITE_PACKAGES}/${PROJECT_NAME}/common)
+install(FILES ${PROJECT_SOURCE_DIR}/common/common.py
+  DESTINATION ${PYTHON_SITE_PACKAGES}/${PROJECT_NAME}/common)

@@ -147,12 +147,5 @@ void setTASMETTracer(int);
 %include "solver.h"
 
 %pythoncode{
-import sys,os
-
-sys.path.append(os.path.join(os.path.dirname(__file__),'src/gui'))
-import tasmet_main
-
-if __name__=='__main__':
-    tasmet_main.run()
   
 }
