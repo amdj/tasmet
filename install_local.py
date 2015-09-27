@@ -58,12 +58,10 @@ for swigfile in swigfiles:
 if sp.call(['cp',cparg,'-r',curdir+'/src/python/.',TaSMETpath])!=0:
         print("Error while copying python files to their destination.")    
 
-    
 # Add TaSMET to PYTHONPATH, if not already.
-# print(sys.path)
 if not TaSMETpath in sys.path:
     print(TaSMETpath + ' not yet in PYTHONPATH. Appending it.')
     with open(home+'/.bashrc', 'a') as bashrc:
         bashrc.write('PYTHONPATH=PYTHONPATH:'+TaSMETpath+'\n')
-
-
+    print('PYTHONPATH updated. Please close this session to reload the updated PYTHONPATH.")
+print("Installation completed.")
