@@ -1,9 +1,16 @@
 #!/usr/bin/python
+# Author: J.A. de Jong
 
 # This script can be used to install TaSMET on a user-basis (a local
 # install). The script will create a directory $HOME/bin/TaSMET, copy/link the
 # installation to this directory and finally update the PYTHONPATH variable in
 # .bashrc.
+
+# We assume the following is present:
+# - A .bashrc file
+# cmake and make
+# A valid compiler, and all other prerequisites of TaSMET (see documentation).
+
 
 import sys,os,subprocess as sp,multiprocessing as mp
 # ####################  Configuration    
