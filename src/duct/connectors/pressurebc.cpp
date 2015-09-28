@@ -88,31 +88,7 @@ namespace duct{
     vd error(getNEqs());
     const BcCell& cell=t->bcCell(pos);
 
-    vd errorM(Ns,fillwith::zeros);
-    if(pos==Pos::left)    {
-      d Wddt=cell.vx;
-      errorM+=Wddt*DDTfd*cell.mbc()();
-      errorM+=cell.vSf*cell.p()();
-      errorM-=cell.Sfl*p_prescribed();
-      errorM+=cell.mu()();       // 
-      errorM-=cell.extrapolateQuant(Varnr::mu);
-      #ifndef NODRAG
-      errorM+=Wddt*(t->dragResistance().drag(cell));
-      #endif
-    }
-    else{
-      d Wddt=cell.xr-cell.vx;
-      errorM+=Wddt*DDTfd*cell.mbc()();
-      errorM-=cell.vSf*cell.p()();
-      errorM+=cell.Sfr*p_prescribed();
-      errorM-=cell.mu()();
-      errorM+=cell.extrapolateQuant(Varnr::mu);      
-      #ifndef NODRAG
-      errorM+=Wddt*(t->dragResistance().drag(cell));
-      #endif
-    }
-    // Momentum equation
-    error.subvec(0,Ns-1)=errorM;
+    error.subvec(0,Ns-1)=cell.pbc()()-p_prescribed();
 
     // Extrapolation of enthalpy flow
     error.subvec(Ns,2*Ns-1)=-cell.mHbc()();
@@ -128,31 +104,10 @@ namespace duct{
     TRACE(8,"PressureBc::jac()");
 
     const BcCell& cell=t->bcCell(pos);
-    // Momentum equation Jacobian
-    if(pos==Pos::left)    {
-      d Wddt=cell.vx;
-      JacRow jacr(firsteqnr,4);
-      jacr+=JacCol(cell.mbc(),Wddt*DDTfd);
-      jacr+=JacCol(cell.p(),cell.vSf*eye);
-      jacr+=JacCol(cell.mu(),eye);
-      jacr+=-cell.dExtrapolateQuant(Varnr::mu);
-      #ifndef NODRAG
-      jacr+=(t->dragResistance().dDrag(cell)*=Wddt);
-      #endif  // NODRAG
-      jac+=jacr;
-    }
-    else{
-      d Wddt=cell.xr-cell.vx;
-      JacRow jacr(firsteqnr,4);
-      jacr+=JacCol(cell.mbc(),Wddt*DDTfd);
-      jacr+=JacCol(cell.p(),-cell.vSf*eye);
-      jacr+=JacCol(cell.mu(),-eye);
-      jacr+=cell.dExtrapolateQuant(Varnr::mu);
-      #ifndef NODRAG
-      jacr+=(t->dragResistance().dDrag(cell)*=Wddt);
-      #endif  // NODRAG
-      jac+=jacr;
-    }
+    JacRow presjac(firsteqnr,1);
+    presjac+=JacCol(cell.pbc(),eye);
+    jac+=presjac;
+    
     // Prescribed enthalpy flow.
     JacRow enthalpy_extrapolated_jac(firsteqnr+Ns,3);
     enthalpy_extrapolated_jac+=cell.dExtrapolateQuant(Varnr::mH);
