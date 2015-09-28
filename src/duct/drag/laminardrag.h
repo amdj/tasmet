@@ -21,10 +21,12 @@ namespace duct{
 
       // Overloaded virtuals
       vd drag(const Cell& cell) const;
+      tasystem::JacRow dDrag(const Cell&) const;	       
+
+    private:
       dmat dm(const Cell&) const;		// Derivative of drag resistance
       // to volume flow
     
-    private:
       // Returns a complex vector of size Ns with drag resistance
       // coefficients for every nonzero frequency (1..Nf)
       vc ComplexResistancecoef(const Cell&) const;

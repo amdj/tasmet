@@ -21,7 +21,7 @@
 #include "weightfactors.h"
 #include "duct.h"
 #include "jacrow.h"
-
+#include "heat.h"
 
 #define iDFT (v.gc->iDFT)
 #define fDFT (v.gc->fDFT)

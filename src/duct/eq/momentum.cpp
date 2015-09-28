@@ -6,7 +6,6 @@
 #include "jacrow.h"
 #include "var.h"
 #include "momentum.h"
-
 #include "drag.h"
 
 #ifdef NODRAG
@@ -88,7 +87,7 @@ namespace duct{
 
  
     #ifndef NODRAG
-    jac+=JacCol(v.ml(),Wddt*t->dragResistance().dm(v));
+    jac+=(t->dragResistance().dDrag(v)*=Wddt);
     #endif
    
     return jac;

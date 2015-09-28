@@ -22,6 +22,10 @@ namespace duct{
     WeightFactors(const Cell& c);
     void show() const;
   };
+
+  // weightfactors for interpolating to cell wall (left side of cell)
+  std::tuple<d,d> weightFactorsWall(const Cell& c);
+
   // anonymous weightfactors for extrapolation from cell walls at
   // interior to cell wall at end of duct.
   std::tuple<d,d> BcWeightFactorsW(const Cell& c);

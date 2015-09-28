@@ -5,7 +5,8 @@ Created on March 31, 2014
 @author: anne
 '''
 from .tasmet import AdiabaticWall,AutoBoundaryLayer,BoundaryLayer,\
-     ConeTube,ConnectorVolume,CylindricalTube,EngineSystem,TaSystem,\
+     ConeTube,ConnectorVolume,CylindricalTube,DuctConnector,\
+     EngineSystem,TaSystem,\
      Globalconf,Globalconf_airSTP,Globalconf_heliumSTP,Grid,\
      ImpedanceBc,IsentropicTube,IsoTWall,LaminarDuct,MechBc,PhaseConstraint,\
      Piston,PistonConfiguration,PressureBc,SolProgress,Solver,SolverConfiguration,\
@@ -27,6 +28,7 @@ from .tasmet import AdiabaticWall,AutoBoundaryLayer,BoundaryLayer,\
      Varnr_u,\
      Varnr_x,\
      VelocityBc,\
+     VertPlates,\
      clearConsole,\
      doIter,\
      left,\

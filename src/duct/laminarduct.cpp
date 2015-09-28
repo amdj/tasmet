@@ -14,6 +14,10 @@
 #include "globalconf.h"
 #include "geom.h"
 #include "var.h"
+
+#include "laminardrag.h"
+#include "hopkinsheat.h"
+
 // Tried to keep the method definition a bit in order in which a
 // duct is created, including all its components. First a duct is
 // created, which has a geometry and a pointer to the global
@@ -43,11 +47,11 @@ namespace duct {
   }
   LaminarDuct::LaminarDuct(const LaminarDuct& o,const TaSystem& sys):
     Duct(o,sys),
-    laminardrag(*this),
-    hopkinsheat(*this),
     insulated(o.insulated),
     Tinit(o.Tinit)
   {
+    laminardrag=new drag::LaminarDragResistance(*this);
+    hopkinsheat=new HopkinsHeatSource(*this);
     TRACE(15,"LaminarDuct::LaminarDuct(copy)");
     if(Tinit.size()>0){
       assert(cells.size()>0);
@@ -69,9 +73,7 @@ namespace duct {
     Duct::show(s);
   }
   LaminarDuct::LaminarDuct(const Geom& geom):
-    Duct(geom),
-    laminardrag(*this),
-    hopkinsheat(*this)
+    Duct(geom)
   {
     // Fill vector of gridpoints with data:
     TRACE(13,"LaminarDuct constructor()...");
@@ -103,7 +105,11 @@ namespace duct {
       eqs.insert({EqType::SolTwEq,new SolTw(c,*this)});
     }	// isInsulated() || hasSolid()
   }
-  LaminarDuct::~LaminarDuct(){ }
+  
+  LaminarDuct::~LaminarDuct(){
+    delete laminardrag;
+    delete hopkinsheat;
+  }
   
 } /* namespace duct */
 

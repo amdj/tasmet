@@ -12,6 +12,10 @@
 #include "laminarduct.h"
 #include "geom.h"
 #include "stack.h"
+
+#include "heat.h"
+
+
 namespace duct {
   using tasystem::Jacobian;
   using tasystem::JacRow;

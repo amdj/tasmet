@@ -5,6 +5,7 @@
 #include "constants.h"
 #include "state.h"
 #include "duct.h"
+#include "drag.h"
 
 #define fDFT (gc->fDFT)
 #define iDFT (gc->iDFT)
@@ -136,7 +137,7 @@ namespace duct{
       jacr+=JacCol(cell.mu(),eye);
       jacr+=-cell.dExtrapolateQuant(Varnr::mu);
       #ifndef NODRAG
-      jacr+=JacCol(cell.ml(),Wddt*(t->dragResistance().dm(cell)));
+      jacr+=(t->dragResistance().dDrag(cell)*=Wddt);
       #endif  // NODRAG
       jac+=jacr;
     }
@@ -148,7 +149,7 @@ namespace duct{
       jacr+=JacCol(cell.mu(),-eye);
       jacr+=cell.dExtrapolateQuant(Varnr::mu);
       #ifndef NODRAG
-      jacr+=JacCol(cell.mr(),Wddt*(t->dragResistance().dm(cell)));
+      jacr+=(t->dragResistance().dDrag(cell)*=Wddt);
       #endif  // NODRAG
       jac+=jacr;
     }

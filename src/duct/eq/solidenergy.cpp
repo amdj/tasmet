@@ -4,6 +4,7 @@
 #include "duct.h"
 #include "solid.h"
 #include "weightfactors.h"
+#include "heat.h"
 
 #define iDFT (v.gc->iDFT)
 #define fDFT (v.gc->fDFT)

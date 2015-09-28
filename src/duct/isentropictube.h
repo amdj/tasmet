@@ -11,7 +11,8 @@
 
 #include "vtypes.h"
 #include "duct.h"
-
+#include "drag.h"
+#include "heat.h"
 
 namespace duct{
 

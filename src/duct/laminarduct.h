@@ -12,9 +12,6 @@
 #define LAMINARDUCT_H__
 #include "duct.h"
 #include "vtypes.h"
-#include "laminardrag.h"
-#include "hopkinsheat.h"
-
 
 namespace duct{
   #ifndef SWIG
@@ -26,10 +23,16 @@ namespace duct{
   %catches(std::exception,...) LaminarDuct::setInsulated(bool i);
   #endif
 
+  #ifndef SWIG
+  namespace drag {
+    class DragResistance;
+  } // namespace drag
+  #endif
+
   class LaminarDuct:virtual public Duct
   {
-    drag::LaminarDragResistance laminardrag;
-    HopkinsHeatSource hopkinsheat;
+    drag::DragResistance* laminardrag=nullptr;
+    HeatSource* hopkinsheat=nullptr;
     // If isolated, no time-averaged heat transfer is allowed between
     // duct and
     bool insulated=false;
@@ -57,8 +60,8 @@ namespace duct{
     void show(us) const;
 
     void setVarsEqs(Cell& c) const;
-    const HeatSource& heatSource() const { return hopkinsheat;}
-    virtual const drag::DragResistance& dragResistance() const {return laminardrag;}
+    const HeatSource& heatSource() const {return *hopkinsheat;}
+    const drag::DragResistance& dragResistance() const {return *laminardrag;}
     #endif
 
   };

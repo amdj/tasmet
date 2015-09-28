@@ -10,8 +10,6 @@
 #define DUCT_H_
 #include "seg.h"
 #include "constants.h"
-#include "drag.h"
-#include "heat.h"
 
 namespace tasystem{
   class Jacobian;
@@ -21,7 +19,10 @@ namespace tasystem{
 namespace duct{
   #ifndef SWIG
   SPOILNAMESPACE
-  class DragResistance;
+  namespace drag {
+    class DragResistance;    
+  } // namespace drag
+
   class HeatSource;
   class Cell;
   class Geom;
@@ -148,6 +149,8 @@ namespace duct{
     const Cell& operator[](us i) const;
     virtual const drag::DragResistance& dragResistance() const=0;
     virtual const HeatSource& heatSource() const=0;
+    // Tortuosity factor in momentum equation
+    virtual d ktort(us cellnr) const {return 1.0;}
     #endif
   private:
     void cleanup_cells();

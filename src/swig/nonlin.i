@@ -133,8 +133,8 @@ void setTASMETTracer(int);
 %include "cell.h"
 %include "duct.h"
 %include "isentropictube.h"
-%include "laminarduct.h"
 %include "ductwithsolid.h"
+%include "laminarduct.h"
 %include "stack.h"
 
  // System

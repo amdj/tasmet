@@ -1,49 +1,25 @@
 #include "duct.h"
-#include "cell.h"
+#include "bccell.h"
 #include "laminardrag.h"
 #include "geom.h"
 #include "math_constants.h"
+#include "jacrow.h"
 
 namespace duct{
   namespace drag {
     using math_common::sq2;
     using rottfuncs::RottFuncs;
-  
-    // Resistance force for laminar flow for the zero-frequency.   
-    inline d mu(const Cell& v) {
-      d T0;
-      if(v.left()) {
-      d wim1,wi; std::tie(wim1,wi)=wf(v);
-      T0=wi*v.T()(0)+wim1*v.TL()(0);	// Time-averaged
-                                                // temperature at the
-                                                // cell wall
-      }
-      else {
-        T0=v.T()(0);	// Time-averaged temperature at the cell wall
-      }
-      return v.gc->gas().mu(T0);
-    }
-    inline d rho(const Cell& v) {
-      d T0,p0;
-      if(v.left()) {
-        d wim1,wi; std::tie(wim1,wi)=wf(v);
-        T0=wi*v.T()(0)+wim1*v.TL()(0);	// Time-averaged temperature at the cell wall
-        p0=v.gc->p0()+wi*v.p()(0)+wim1*v.p()(0);	// Time-averaged temperature at the cell wall
-      }
-      else {
-        T0=v.T()(0);	// Time-averaged temperature at the cell wall
-        p0=v.gc->p0()+v.p()(0);	// Time-averaged temperature at the cell wall
-      }
-      return v.gc->gas().rho(T0,p0);
-    }
+    using tasystem::JacRow;
+    using tasystem::JacCol;
+
     // Resistance force for laminar flow for the zero-frequency. 
     d zerodrag_vert(const Cell& v){
       TRACE(5,"zerodrag_vert");
-      return 3*mu(v)/(rho(v)*pow(v.rhl,2));
+      return 3*DragResistance::mu0(v)/(DragResistance::rho0(v)*pow(v.rhl,2));
     }
     d zerodrag_circ(const Cell& v){
       TRACE(5,"zerodrag_circ");
-      return 2*mu(v)/(rho(v)*pow(v.rhl,2));
+      return 2*DragResistance::mu0(v)/(DragResistance::rho0(v)*pow(v.rhl,2));
     }
     d zerodrag_inviscid(const Cell& v){
       TRACE(5,"zerodrag_inviscid");
@@ -72,7 +48,6 @@ namespace duct{
       d operator()(const Cell& v) const {
         return (*zerodrag_funptr)(v);
       }
-
     };
 
 
@@ -95,6 +70,10 @@ namespace duct{
       vd drag=dm(v)*v.ml()();
       return drag; 		// No momentum scale here, since this is already done in dUi!!!!
     }
+    JacRow LaminarDragResistance::dDrag(const Cell& v) const {
+      TRACE(15,"LaminarDragResistance::dDrag()");
+      return JacRow(-1,JacCol(v.ml(),dm(v)));
+    }
     dmat LaminarDragResistance::dm(const Cell& v) const { // Derivative of drag resistance to velocity
       TRACE(10,"LaminarDragResistance::dUi()");
       vc CResistance=ComplexResistancecoef(v);
@@ -102,7 +81,6 @@ namespace duct{
       resistance.setadata(CResistance);
       return resistance.freqMultiplyMat();
     }
-
     vc LaminarDragResistance::ComplexResistancecoef(const Cell& v) const {
       TRACE(0,"LaminarDragResistance::ComplexResistancecoef()");
       const us& Nf=v.gc->Nf();

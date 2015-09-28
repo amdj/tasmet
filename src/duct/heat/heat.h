@@ -13,6 +13,7 @@ namespace duct{
   // Stub for a DragResistance class
   class HeatSource{
   public:
+    virtual ~HeatSource(){}
     // Returns heat flow from solid to fluid in W/m of duct length. Should be added
     // possitively to heat balance of fluid and negatively to heat
     // balance of solid

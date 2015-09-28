@@ -43,6 +43,16 @@ namespace duct{
     cout << "WrR     :"<<WrR<<"\n";
 
   }
+  tuple<d,d> weightFactorsWall(const Cell& v){
+    assert(v.left());
+    const d& xim1=v.left()->vx;
+    const d& xi=v.vx;
+    const d& xl=v.xl;
+    const d wim1=(xi-xl)/(xi-xim1);
+
+    return make_tuple(wim1,1-wim1);
+  }
+
   tuple<d,d> BcWeightFactorsW(const Cell& v){
     TRACE(15,"BcWeightfactorsW");
     assert((!v.left() && v.right()) || (v.left() && !v.right()));
