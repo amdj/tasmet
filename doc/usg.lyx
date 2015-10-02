@@ -1477,6 +1477,10 @@ Overview
 \end_layout
 
 \begin_layout Subsection
+Viscous resistance
+\end_layout
+
+\begin_layout Subsection
 Wall temperature prescribed
 \end_layout
 
@@ -2169,6 +2173,85 @@ Duct
 Q_{s,1} & = & Q_{s,2}\\
 T_{s,1} & = & T_{s,2}
 \end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+StackedScreenRegenator
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+k_{\mathrm{tort}}\left(\frac{\partial m}{\partial t}+\frac{\partial mu}{\partial x}\right)+\frac{\partial p}{\partial x}+\mathcal{R}=0
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $k_{\mathrm{tort}}$
+\end_inset
+
+not given, it is computed according to Eq.
+ (14) of Swift and Ward:
+\begin_inset Formula 
+\begin{equation}
+k_{\mathrm{tort}}=1+\frac{\left(1-\phi\right)^{2}}{2\left(2\phi-1\right)}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathcal{R}=-\frac{1}{2}\frac{f}{r_{h}}m|u|
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+With
+\begin_inset Formula 
+\begin{equation}
+Re=\frac{4\rho|u|r_{h}}{\mu}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Using
+\begin_inset Formula 
+\begin{equation}
+f=\frac{c_{1}}{Re}+c_{2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Filling in:
+\begin_inset Formula 
+\begin{equation}
+\mathcal{R}=S_{f}\left(\frac{c_{1}\mu}{8r_{h}^{2}}\frac{m}{\rho}+\frac{c_{2}}{2r_{h}}\mathrm{sgn}\left(m\right)mu\right)
+\end{equation}
 
 \end_inset
 
@@ -3937,7 +4020,6 @@ Create a PhaseConstraint object:
 \end_layout
 
 \begin_layout Verbatim
-
 	pc=PhaseConstraint(Varnr, freqnr, left)
 \end_layout
 
@@ -3946,7 +4028,6 @@ Apply this contraint to a segment which can accept them, for example a Tube:
 \end_layout
 
 \begin_layout Verbatim
-
 	t1.setPhaseConstraint(pc)
 \end_layout
 

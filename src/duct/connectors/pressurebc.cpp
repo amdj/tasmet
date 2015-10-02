@@ -112,8 +112,6 @@ namespace duct{
     JacRow enthalpy_extrapolated_jac(firsteqnr+Ns,3);
     enthalpy_extrapolated_jac+=cell.dExtrapolateQuant(Varnr::mH);
     enthalpy_extrapolated_jac+=JacCol(cell.mHbc(),-eye);
-    // enthalpy_extrapolated_jac+=JacCol(cell.mbc(),fDFT*diagmat(cp(cell)*cell.Tbc().tdata())*iDFT);
-    // enthalpy_extrapolated_jac+=JacCol(cell.Tbc(),fDFT*diagmat(cp(cell)*cell.mbc().tdata())*iDFT);
     jac+=enthalpy_extrapolated_jac;
 
     // Prescribed temperature Jacobian part
