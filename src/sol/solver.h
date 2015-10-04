@@ -12,7 +12,6 @@
 #define SOLVER_H
 
 #include "solverconfiguration.h"
-#include "vtypes.h"
 #include <memory>
 #include <thread>
 #include <cassert>

@@ -9,5 +9,6 @@ cmake_install.cmake
 doc/html
 doc/latex
 doc/usg.pdf
-tasmet.py
+TaSMET.py
+*.pyc
 tasmet_main_ui.py

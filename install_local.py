@@ -52,8 +52,8 @@ curdir=os.getcwd()
 
 swigfiles=[['common/_common.so','common/_common.so'],\
        ['common/common.py','common/common.py'],\
-       ['src/_tasmet.so','_tasmet.so'],\
-       ['src/tasmet.py','tasmet.py']]
+       ['src/_TaSMET.so','_TaSMET.so'],\
+       ['src/TaSMET.py','TaSMET.py']]
 if link is True:
     cparg='-sf'
 else:

@@ -18,7 +18,7 @@ namespace duct {
     // and DuctWithSolid
     Duct(geom),
     // 
-    DuctWithSolid(solidstr),
+    DuctWithSolid(geom,solidstr),
     LaminarDuct(geom)
   {
     TRACE(15,"Stack::Stack()");
@@ -27,7 +27,7 @@ namespace duct {
   }
   Stack::Stack(const Stack& o,const TaSystem& sys):
     Duct(o,sys),
-    DuctWithSolid(o),
+    DuctWithSolid(o,sys),
     LaminarDuct(o,sys)
   {
     TRACE(15,"Stack::Stack(copy)");

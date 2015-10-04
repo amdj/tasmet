@@ -1,4 +1,4 @@
-%module(docstring="TASMET nonlinear thermoacoustic code") tasmet
+%module(docstring="TASMET nonlinear thermoacoustic code") TaSMET
 %{
   #define PY_ARRAY_UNIQUE_SYMBOL npy_array
   #define SWIG_FILE_WITH_INIT

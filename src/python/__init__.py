@@ -4,7 +4,7 @@ Created on March 31, 2014
 
 @author: anne
 '''
-from .tasmet import AdiabaticWall,AutoBoundaryLayer,BoundaryLayer,\
+from .TaSMET import AdiabaticWall,AutoBoundaryLayer,BoundaryLayer,\
      ConeTube,ConnectorVolume,CylindricalTube,DuctConnector,\
      EngineSystem,TaSystem,\
      Globalconf,Globalconf_airSTP,Globalconf_heliumSTP,Grid,\

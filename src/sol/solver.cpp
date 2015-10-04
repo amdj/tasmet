@@ -1,5 +1,5 @@
-#include "solver.h"
 #include <Python.h>
+#include "solver.h"
 #include "constants.h"
 #include "tasystem.h"
 #include "vtypes.h"

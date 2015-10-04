@@ -5,7 +5,7 @@
 // Description:
 //
 //////////////////////////////////////////////////////////////////////
-
+#include "Python.h"
 #include "velocitybc.h"
 
 #include "weightfactors.h"
@@ -14,7 +14,7 @@
 #include "bccell.h"
 #include "jacobian.h"
 #include "pycallback.h"
-#include "Python.h"
+
 
 #define fDFT (gc->fDFT)
 #define iDFT (gc->iDFT)

@@ -204,11 +204,11 @@ namespace mech {
     // ************************************************************
     // Equation of motion of the piston
     error.subvec(eqnr,eqnr+Ns-1)=\
-      pc.M*DDTfd*DDTfd*xp_()\      // "Inertia" force
-      +pc.Cm*DDTfd*xp_()\          // Damping force
-      +pc.Km*xp_()\                // Spring force
-      -pl_()*pc.Sl\                // "Pushes"
-      +pr_()*pc.Sr\                // "Pushes back"
+      pc.M*DDTfd*DDTfd*xp_()      // "Inertia" force
+      +pc.Cm*DDTfd*xp_()          // Damping force
+      +pc.Km*xp_()                // Spring force
+      -pl_()*pc.Sl                // "Pushes"
+      +pr_()*pc.Sr                // "Pushes back"
       -Fp_();                   // "External force on piston
 
     eqnr+=Ns;
@@ -258,8 +258,8 @@ namespace mech {
     // ************************************************************
     // Energy consrvation left side
     error.subvec(eqnr,eqnr+Ns-1)=gamfac*DDTfd*fDFT*(plt%Vlt)
-      +fDFT*(plt%dVldtt)\ // Work contribution to change in
-                                  \  // energy
+      +fDFT*(plt%dVldtt) // Work contribution to change in
+                                    // energy
       +mHl_();            // Enthalpy flow out of segment
 
     if(!leftConnected){
@@ -277,8 +277,8 @@ namespace mech {
     // ************************************************************
     // Energy consrvation right side
     error.subvec(eqnr,eqnr+Ns-1)=gamfac*DDTfd*fDFT*(prt%Vrt)
-      +fDFT*(prt%dVrdtt)\ // Work contribution to change in
-      \  // energy
+      +fDFT*(prt%dVrdtt) // Work contribution to change in
+      // energy
       +mHr_();            // Enthalpy flow out of segment
 
     if(!rightConnected){

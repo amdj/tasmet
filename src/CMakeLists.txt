@@ -70,20 +70,32 @@ target_link_libraries(nonlin_lib common_src)
 
 set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/swig/nonlin.i
   PROPERTIES CPLUSPLUS ON)
-swig_add_module(tasmet python ${CMAKE_CURRENT_SOURCE_DIR}/swig/nonlin.i)
+swig_add_module(TaSMET python ${CMAKE_CURRENT_SOURCE_DIR}/swig/nonlin.i)
 
-set(SWIG_MODULE_nonlin_FILE_nonlin_EXTRA_DEPS
+set(SWIG_MODULE_TaSMET_FILE_nonlin_EXTRA_DEPS
   ${CMAKE_CURRENT_SOURCE_DIR}/common/swig_files/arma_numpy.i
 )
-swig_link_libraries(tasmet nonlin_lib common_src ${PYTHON_LIBRARIES}
+swig_link_libraries(TaSMET nonlin_lib common_src ${PYTHON_LIBRARIES}
   ${ARMADILLO_LIBRARIES})
-set_source_files_properties( ${swig_generated_file_fullname}
-      PROPERTIES COMPILE_FLAGS "-Wno-missing-field-initializers -Wno-self-assign -Wno-#warnings")
 
+# To stop letting the compiler complain about the generated files by Swig
+set(SWIG_COMMON_COMPILE_FLAGS "-Wno-missing-field-initializers -Wno-self-assign -Wno-#warnings")
+
+if(${CMAKE_CXX_COMPILER} STREQUAL "g++")
+  message("Using gcc compiler")
+  set_source_files_properties( ${swig_generated_file_fullname}
+    PROPERTIES COMPILE_FLAGS "${SWIG_COMMON_COMPILE_FLAGS} ")
+
+elseif(${CMAKE_CXX_COMPILER} STREQUAL "clang++")
+  set_source_files_properties( ${swig_generated_file_fullname}
+    PROPERTIES COMPILE_FLAGS  " ${SWIG_COMMON_COMPILE_FLAGS} ")
+
+endif(${CMAKE_CXX_COMPILER} STREQUAL "g++")
+  
 # Install swig files to the right place
-install(TARGETS _tasmet
+install(TARGETS _TaSMET
   DESTINATION ${PYTHON_SITE_PACKAGES}/${PROJECT_NAME})
-install(FILES ${CMAKE_BINARY_DIR}/src/tasmet.py
+install(FILES ${CMAKE_BINARY_DIR}/src/TaSMET.py
   DESTINATION ${PYTHON_SITE_PACKAGES}/${PROJECT_NAME})
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/python/__init__.py
   DESTINATION ${PYTHON_SITE_PACKAGES}/${PROJECT_NAME})

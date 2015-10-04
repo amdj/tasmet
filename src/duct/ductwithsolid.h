@@ -21,18 +21,21 @@ namespace solids{
   class Solid;
 }
   #ifdef SWIG
-  %catches(std::exception,...) DuctWithSolid::DuctWithSolid(const string& solid);
+%catches(std::exception,...) DuctWithSolid::DuctWithSolid(const Geom&,const string& solid,d ksfrac=1.0);
   %catches(std::exception,...) DuctWithSolid::setQsin(d Qsin);
   #endif
 
 namespace duct {
+  class Geom;
+  
   class DuctWithSolid: virtual public Duct{
     const solids::Solid* solid=nullptr;
     d Qsin=0;			// Heat input into the solid
     d ksfrac;			// Input foezelfactor for conduction
+  protected:
+    DuctWithSolid(const DuctWithSolid& o,const tasystem::TaSystem& sys);
   public:
-    DuctWithSolid(const string& solid,d ksfrac=1.0);
-    DuctWithSolid(const DuctWithSolid&);
+    DuctWithSolid(const Geom&,const string& solid,d ksfrac=1.0);
     ~DuctWithSolid();
     // This one overrides Duct's hasSolid(), which would return false
     bool hasSolid() const {return true;}

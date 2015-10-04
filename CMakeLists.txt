@@ -1,36 +1,46 @@
 # CMakeList.txt for TaSMET
 cmake_minimum_required (VERSION 3.2)
 project(TaSMET)
-
 set(PACKAGE_VERSION 1.0)
+message("Running Cmake for TaSMET version ${PACKAGE_VERSION}")
+
+# Set the Python version to link against
+set(TaSMET_PY_VERSION "2.7")
+# set(TaSMET_PY_VERSION "3.5m")
 
 # Tracer name (name of the variable)
 add_definitions(-DTRACERNAME=TaSMETTracer)
-add_definitions(-DTRACER_IN_COMMON)
+# add_definitions(-DTRACER_IN_COMMON)
 
+
+MESSAGE("Python major version: ${TaSMET_PY_MAJOR_VERSION}")
+  
 #==================
 # Compiler settings ======
 #==================
 
-# If we would like to cache the compilation process, please activate these settings
-SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
-SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache) 
-
 # SET THE COMPILER
-# set(CMAKE_CXX_COMPILER "g++")
-set(CMAKE_CXX_COMPILER "clang++")
+set(CMAKE_CXX_COMPILER "g++")
+# set(CMAKE_CXX_COMPILER "clang++")
 
-# Choose some compilation settings
-set(CMAKE_CLANG "${CMAKE_CLANG} -Woverloaded-virtual ")
-# set(CMAKE_GCC "${CMAKE_GCC} -Wno-unused-function  -ffunction-sections\
-#  -fdata-sections -Wno-unused-local-typedefs -Wno-empty-body\
-# -Wno-unused-but-set-variable\
-# -Wno-return-local-addr -Wno-cpp \
-# ")
+# Always required make flags in case of both compilers
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pipe -fPIC -Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-address ")
 
-# set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_GCC}")
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CLANG}")
+message("Compiler chosen: " ${CMAKE_CXX_COMPILER})
+if(${CMAKE_CXX_COMPILER} STREQUAL "g++")
+  message("Compiler chosen: " ${CMAKE_CXX_COMPILER})
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-function  -ffunction-sections \
+ -fdata-sections -Wno-unused-local-typedefs -Wno-empty-body \
+-Wno-unused-but-set-variable \
+-Wno-return-local-addr -Wno-cpp ")
+
+elseif(${CMAKE_CXX_COMPILER} STREQUAL "clang++")
+  message("Compiler chosen: " ${CMAKE_CXX_COMPILER})
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Woverloaded-virtual" )  
+
+endif(${CMAKE_CXX_COMPILER} STREQUAL "g++")
+
+# Stop letting Numpy complain about its API
 add_definitions(-DNPY_NO_DEPRECATED_API=NPY_1_4_API_VERSION)
 
 #=====================
@@ -70,19 +80,41 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -march=native -mtune=native -fopenmp
 #Debug mode
 # set(CMAKE_GCC "${CMAKE_GCC} -g -ggdb")
 
+
+# ##########################
+# Finding the presence of the prerequisites
+# ##########################
+
+
 # For importing find directives for Cmake
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/common/cmake_tools)
 
-# Python
+# ##########################
+# Python #####################
+# ##########################
+
+if(TaSMET_PY_VERSION)
+  # Find major version from version string
+  string(REGEX MATCH "^." TaSMET_PY_MAJOR_VERSION ${TaSMET_PY_VERSION})
+  set(PYTHON_LIBRARY "/usr/lib/libpython${TaSMET_PY_VERSION}.so")
+  set(PYTHON_INCLUDE_DIR "/usr/include/python${TaSMET_PY_VERSION}/")  
+endif(TaSMET_PY_VERSION)
 find_package(PythonLibs REQUIRED)
 
 # Find the site_packages directory of python
-execute_process(COMMAND python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND python${TaSMET_PY_VERSION} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+# ################################
 # Initialize swig
+# ################################
+
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
-SET(CMAKE_SWIG_FLAGS -py3 -Wall -DSWIG_PYTHON)
+
+SET(CMAKE_SWIG_FLAGS  -Wall -DSWIG_PYTHON)
+if(${TaSMET_PY_MAJOR_VERSION}=="3")
+  SET(CMAKE_SWIG_FLAGS  ${CMAKE_SWIG_FLAGS} -py${TaSMET_PY_MAJOR_VERSION})  
+endif(${TaSMET_PY_MAJOR_VERSION}=="3")
 
 # Armadillo
 find_package(Armadillo REQUIRED)
@@ -105,3 +137,5 @@ install(FILES ${PROJECT_SOURCE_DIR}/common/__init__.py
   DESTINATION ${PYTHON_SITE_PACKAGES}/${PROJECT_NAME}/common)
 install(FILES ${PROJECT_SOURCE_DIR}/common/common.py
   DESTINATION ${PYTHON_SITE_PACKAGES}/${PROJECT_NAME}/common)
+
+# Rest of the files is installed from src/CMakeLists.txt

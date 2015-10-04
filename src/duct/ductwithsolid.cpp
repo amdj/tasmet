@@ -13,16 +13,22 @@
 #include "var.h"
 #include "geom.h"
 
+namespace tasystem {
+  class TaSystem;
+} // namespace tasystem
 namespace duct {
   using tasystem::var;
-
-  DuctWithSolid::DuctWithSolid(const string& solidstr,d ksfrac):
+  using tasystem::TaSystem;
+  
+  DuctWithSolid::DuctWithSolid(const Geom& geom,const string& solidstr,d ksfrac):
+    Duct(geom),
     ksfrac(ksfrac)
   {
     TRACE(15,"DuctWithSolid::DuctWithSolid()");
     solid = new solids::Solid(solidstr);    
   }
-  DuctWithSolid::DuctWithSolid(const DuctWithSolid& o):
+  DuctWithSolid::DuctWithSolid(const DuctWithSolid& o,const TaSystem& sys):
+    Duct(o,sys),
     Qsin(o.Qsin),
     ksfrac(o.ksfrac)
   {

@@ -6,6 +6,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 // #define TRACERPLUS 20
+#include "Python.h"
 #include "impedancebc.h"
 #include "weightfactors.h"
 
@@ -13,7 +14,6 @@
 #include "bccell.h"
 #include "jacobian.h"
 #include "pycallback.h"
-#include "Python.h"
 #define fDFT (gc->fDFT)
 #define iDFT (gc->iDFT)
 #define DDTfd (gc->DDTfd)
