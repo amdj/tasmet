@@ -363,10 +363,6 @@ TaSMET
 Bug reporting and contributing
 \end_layout
 
-\begin_layout Section
-Release notes
-\end_layout
-
 \begin_layout Chapter
 Basic ideas
 \end_layout
@@ -378,38 +374,6 @@ TaSMET
 \noun default
 , the periodic steady-state of a TA system is simulated using a numerical
  model.
-\end_layout
-
-\begin_layout Chapter
-Installation guide
-\end_layout
-
-\begin_layout Itemize
-A working compiler (LLVM), GCC
-\end_layout
-
-\begin_layout Itemize
-Armadillo linear algebra package, including LAPACK and BLAS
-\end_layout
-
-\begin_layout Itemize
-Git
-\end_layout
-
-\begin_layout Itemize
-Linux
-\end_layout
-
-\begin_layout Standard
-Optional but highly recommended
-\end_layout
-
-\begin_layout Itemize
-Matplotlib, scipy, numpy
-\end_layout
-
-\begin_layout Itemize
-IPython notebook/qtconsole
 \end_layout
 
 \begin_layout Chapter

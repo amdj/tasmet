@@ -1,5 +1,5 @@
 # CMakeList.txt for TaSMET
-cmake_minimum_required (VERSION 3.2)
+cmake_minimum_required (VERSION 2.8)
 project(TaSMET)
 set(PACKAGE_VERSION 0.1)
 message("Running Cmake for TaSMET version ${PACKAGE_VERSION}")
