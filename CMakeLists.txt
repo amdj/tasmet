@@ -29,10 +29,7 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pipe -fPIC -Wall -Wextra -W
 message("Compiler chosen: " ${CMAKE_CXX_COMPILER})
 if(${CMAKE_CXX_COMPILER} STREQUAL "g++")
   message("Compiler chosen: " ${CMAKE_CXX_COMPILER})
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-function  -ffunction-sections \
- -fdata-sections -Wno-unused-local-typedefs -Wno-empty-body \
--Wno-unused-but-set-variable \
--Wno-return-local-addr -Wno-cpp ")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-function  -ffunction-sections -fdata-sections -Wno-unused-local-typedefs -Wno-empty-body -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp ")
 
 elseif(${CMAKE_CXX_COMPILER} STREQUAL "clang++")
   message("Compiler chosen: " ${CMAKE_CXX_COMPILER})
