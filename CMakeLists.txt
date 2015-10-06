@@ -1,11 +1,11 @@
 # CMakeList.txt for TaSMET
 cmake_minimum_required (VERSION 3.2)
 project(TaSMET)
-set(PACKAGE_VERSION 1.0)
+set(PACKAGE_VERSION 0.1)
 message("Running Cmake for TaSMET version ${PACKAGE_VERSION}")
 
 # Set the Python version to link against
-set(TaSMET_PY_VERSION "2.7")
+# set(TaSMET_PY_VERSION "2.7")
 # set(TaSMET_PY_VERSION "3.5m")
 
 # Tracer name (name of the variable)
