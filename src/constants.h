@@ -55,7 +55,10 @@ namespace constants {
 #endif
 
 // Variables and their names
-enum class Varnr{
+// Unfortunately to let the code compile with Swig v 2.0, strongly
+// typed enums are not supported. Therefore this is a normal
+// enumerated type and not an enum class.
+enum Varnr {
   none,                         // None
     rho,                        // Density
     m,                          // Mass flow (rho*U)
