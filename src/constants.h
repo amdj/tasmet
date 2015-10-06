@@ -39,7 +39,6 @@ namespace constants {
   const d p0=101325;
   const d T0=293.15;
 
-  #ifndef SWIG
   // These variable numbers are important, as they determine the
   // position of these variables in the array in cell.h
   // const int rho=1;
@@ -50,8 +49,6 @@ namespace constants {
   // Number of variables
   const int nvars_reserve=7;
   const int neqs_reserve=7;
-  #endif
-
   
 } // namespace constants
 
@@ -101,9 +98,6 @@ namespace duct{
     else
       return "right";
   }
-  #endif
-  
-  #ifndef SWIG
   
   enum EqType{
     Con,			// Continuity
