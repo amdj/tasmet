@@ -40,8 +40,10 @@ namespace segment{
     const tasystem::Globalconf* gc=nullptr;	// Global configuration of the system
     SegConBase();
     SegConBase(const SegConBase&,const tasystem::TaSystem&);
+    #ifndef SWIG
     SegConBase(const SegConBase&)=delete;
     SegConBase& operator=(const SegConBase&)=delete;
+    #endif // ifndef SWIG
   public:
     virtual ~SegConBase(){}
 

@@ -48,8 +48,14 @@ namespace duct {
     
     tasystem::var p_,T_,rho_;
     ConnectorVolume(const tasystem::TaSystem&,const ConnectorVolume& other);
-  public:
+    #ifndef SWIG
     ConnectorVolume(const ConnectorVolume& other)=delete;
+    ConnectorVolume& operator=(const ConnectorVolume& other)=delete;    
+    #endif // ifndef SWIG
+
+
+  public:
+
     ConnectorVolume(d volume);
     ~ConnectorVolume();
     segment::Seg* copy(const tasystem::TaSystem& s) const {

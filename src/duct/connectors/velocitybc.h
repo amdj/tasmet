@@ -29,10 +29,13 @@ namespace duct{
                                 // compression/expansion 
     tasystem::var u_p;          // Prescribed velocity
     VelocityBc(const VelocityBc& other,const tasystem::TaSystem&);
+    #ifndef SWIG
+    VelocityBc& operator=(const VelocityBc&)=delete;
+    VelocityBc(const VelocityBc&)=delete;
+    #endif // ifndef SWIG
   public:
     // u is prescribed velocity field
     VelocityBc(const string& segid,Pos pos,const tasystem::var& u,d T0=constants::T0,bool arbitrateMass=false);
-    VelocityBc(const VelocityBc&)=delete;
     virtual ~VelocityBc();
 
     segment::Connector* copy(const tasystem::TaSystem& s) const { return new VelocityBc(*this,s);}

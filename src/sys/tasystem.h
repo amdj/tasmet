@@ -71,11 +71,15 @@ namespace tasystem{
 
     std::map<string,segment::Seg*> segs;		
     std::map<string,segment::Connector*> connectors;    // Yes, connectors are just like segments
+    #ifndef SWIG
+    TaSystem& operator=(const TaSystem& other)=delete;
+    #endif // ifndef SWIG
+    TaSystem(const TaSystem& o);
   public:
     TaSystem(): Globalconf(Globalconf::airSTP(0,100)){}
     TaSystem(const Globalconf& g);
-    TaSystem(const TaSystem& o);
-    TaSystem& operator=(const TaSystem& other)=delete;
+
+
 
     // Set globalconf configuration. Applies updateNf as well.
     void setGc(const Globalconf& gc);

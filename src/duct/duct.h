@@ -47,13 +47,14 @@ namespace duct{
 
   protected:
     // Copy constructor
+    #ifndef SWIG
     Duct(const Duct& other)=delete;
+    Duct& operator=(const Duct&)=delete; // no copies allowed
+    #endif // ifndef SWIG
     Duct(const Duct& other,const tasystem::TaSystem& sys);
     Duct(const Geom& geom);
-    Duct& operator=(const Duct&)=delete; // no copies allowed
   public:
     virtual ~Duct();          // Define this class as abstract
-
     void init();		// Initialize Duct
 
     // Push the right variables and equations

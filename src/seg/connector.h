@@ -17,8 +17,10 @@ namespace segment{
   class Connector:public SegConBase{
   protected:
     Connector():SegConBase(){}
-    Connector(const Connector&)=delete;
+    #ifndef SWIG
     Connector& operator=(const Connector&)=delete;
+    Connector(const Connector&)=delete;
+    #endif // ifndef SWIG
     Connector(const Connector& o,const tasystem::TaSystem& sys):SegConBase(o,sys){}
   public:
     virtual ~Connector(){}

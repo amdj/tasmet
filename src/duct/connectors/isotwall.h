@@ -27,7 +27,10 @@ namespace duct{
     PrescribeQty Tsbc;
 
     bool arbitrateMass=false;
-  private:
+    #ifndef SWIG
+    IsoTWall(const IsoTWall& o)=delete;
+    IsoTWall& operator=(const IsoTWall&) =delete;
+    #endif // ifndef SWIG
     IsoTWall(const IsoTWall& o,const tasystem::TaSystem&);
   public:
     // segid: segment number to apply this b.c. to. Position: left or
@@ -39,10 +42,9 @@ namespace duct{
     // provide
     IsoTWall(const string& segid,Pos position,const tasystem::var& Tbc
              ,bool arbitrateMass=false);
-    IsoTWall(const IsoTWall& o)=delete;
     virtual segment::Connector* copy(const tasystem::TaSystem& sys) const {
       return new IsoTWall(*this,sys);}
-    IsoTWall& operator=(const IsoTWall&) =delete;
+
     virtual ~IsoTWall(){}
     int arbitrateMassEq() const;
 

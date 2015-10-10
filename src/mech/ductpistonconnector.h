@@ -51,7 +51,10 @@ namespace mech{
     
   public:
     DuctPistonConnector(const string& ductid,Pos ductpos,const string& pistonid,Pos pistonpos,d KDuctPiston=0,d KPistonDuct=0);
+    #ifndef SWIG
     DuctPistonConnector(const DuctPistonConnector&)=delete;
+    DuctPistonConnector& operator=(const DuctPistonConnector&)=delete;
+    #endif // ifndef SWIG
     DuctPistonConnector(const DuctPistonConnector&,const tasystem::TaSystem&);    
     virtual segment::Connector* copy(const tasystem::TaSystem& s) const {return new DuctPistonConnector(*this,s);}
     ~DuctPistonConnector(){}

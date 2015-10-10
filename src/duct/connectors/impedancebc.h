@@ -37,7 +37,10 @@ namespace duct{
     // pyfunc is impedance function, which should return a complex
     // number as a function of omega: z=Z(omega)
     ImpedanceBc(const string& segid,Pos pos,PyObject* pyfunc,d T0=constants::T0);
+    #ifndef SWIG
     ImpedanceBc(const ImpedanceBc&)=delete;
+    ImpedanceBc& operator=(const ImpedanceBc&)=delete;
+    #endif // ifndef SWIG
     virtual ~ImpedanceBc();
 
     segment::Connector* copy(const tasystem::TaSystem& s) const { return new ImpedanceBc(*this,s);}

@@ -53,7 +53,10 @@ namespace duct{
     us firsteqnr;
   public:
     DuctConnector(const string& seg1,Pos pos1,const string& seg2,Pos pos2,d K1to2=0,d K2to1=0);
+    #ifndef SWIG
     DuctConnector(const DuctConnector&)=delete;
+    DuctConnector& operator=(const DuctConnector&)=delete;
+    #endif // ifndef SWIG
     DuctConnector(const DuctConnector&,const tasystem::TaSystem&);    
     virtual segment::Connector* copy(const tasystem::TaSystem& s) const {return new DuctConnector(*this,s);}
     ~DuctConnector(){}

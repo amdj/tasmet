@@ -20,7 +20,11 @@ namespace duct {
     Stack(const Geom& geom,const string& solid);
     Stack(const Stack&,const tasystem::TaSystem&);
     ~Stack();
+    #ifndef SWIG
     Stack& operator=(const Stack&)=delete;
+    Stack(const Stack&)=delete;
+    #endif // ifndef SWIG
+
 
     #ifndef SWIG
     segment::Seg* copy(const tasystem::TaSystem& s) const {return new Stack(*this,s);}

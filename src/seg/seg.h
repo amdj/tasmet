@@ -12,8 +12,10 @@ namespace segment{
   protected:
     Seg();
     Seg(const Seg& o,const tasystem::TaSystem& s): SegConBase(o,s){}
+    #ifndef SWIG
     Seg(const Seg& o)=delete;
     Seg& operator=(const Seg&)=delete;
+    #endif // ifndef SWIG
   public:
     virtual segment::Seg* copy(const tasystem::TaSystem&) const=0;
     virtual ~Seg(){}            // We do not own the gc instance

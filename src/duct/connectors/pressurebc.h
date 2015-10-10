@@ -35,15 +35,18 @@ namespace duct{
     PrescribeQty prescribeT;			// Temperature boundary condition
     PrescribeQty prescribeTs;			// Solid temperature boundary condition
     PressureBc(const PressureBc& other,const tasystem::TaSystem&);
-  public:
+    #ifndef SWIG
     PressureBc& operator=(const PressureBc&)=delete;
+    PressureBc(const PressureBc& other)=delete;
+    #endif // ifndef SWIG
+  public:
+
     // Set all variables
     PressureBc(const string& segid,Pos position,const tasystem::var& p,const tasystem::var& Ts,const tasystem::var& T);
     // Assume solid temperature constant at gc.T0;
     PressureBc(const string& segid,Pos position,const tasystem::var& p,const tasystem::var& Ts); 
     // Assume above and adiabatic compresion/expansion
     PressureBc(const string& segid,Pos position,const tasystem::var& p);
-    PressureBc(const PressureBc& other)=delete;
 
     segment::Connector* copy(const tasystem::TaSystem& s) const { return new PressureBc(*this,s);}
     virtual vd error() const;

@@ -45,8 +45,10 @@ namespace duct{
   public:
     LaminarDuct(const Geom& geom,d TwL,d Twr=-1);
     LaminarDuct(const Geom& geom);
+    #ifndef SWIG
     LaminarDuct(const LaminarDuct&)=delete;
     LaminarDuct& operator=(const LaminarDuct&)=delete;    
+    #endif // ifndef SWIG
     virtual ~LaminarDuct();
 
     // Set and get the insulated flag.

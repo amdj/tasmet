@@ -20,8 +20,10 @@ namespace duct{
   {
     drag::DragResistance nodrag;
     HeatSource noheat;
+    #ifndef SWIG
     IsentropicTube& operator=(const IsentropicTube&) =delete;    
     IsentropicTube(const IsentropicTube&)=delete;
+    #endif // ifndef SWIG
     IsentropicTube(const IsentropicTube&,const tasystem::TaSystem&);
   public:
     IsentropicTube(const Geom& geom);

@@ -58,8 +58,12 @@ namespace mech {
 
     
     Piston(const tasystem::TaSystem&,const Piston& other);
-  public:
+    #ifndef SWIG
     Piston(const Piston& other)=delete;
+    Piston& operator=(const Piston& other)=delete;    
+    #endif // ifndef SWIG
+  public:
+
     Piston(const PistonConfiguration& pc):
       Seg(),
       pc(pc)

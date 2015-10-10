@@ -21,12 +21,14 @@ namespace duct{
     PrescribeQty enthalpyflowzero;
     bool arbitrateMass;
   public:
+    #ifndef SWIG
+    AdiabaticWall& operator=(const AdiabaticWall&)=delete;
+    AdiabaticWall(const AdiabaticWall& o)=delete;
+    #endif // ifndef SWIG
     AdiabaticWall(const string& segid,Pos position,bool arbitrateMass=false);
   private:
     AdiabaticWall(const AdiabaticWall& o,const tasystem::TaSystem& sys);
   public:
-    AdiabaticWall& operator=(const AdiabaticWall&)=delete;
-    AdiabaticWall(const AdiabaticWall& o)=delete;
 
     int arbitrateMassEq() const;
     virtual ~AdiabaticWall(){}

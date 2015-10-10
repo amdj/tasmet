@@ -29,7 +29,9 @@ namespace tasystem{
     EngineSystem(const Globalconf& gc);
     EngineSystem(const EngineSystem&);
     EngineSystem(const TaSystem&); // Copy from base class
+    #ifndef SWIG
     EngineSystem& operator=(const EngineSystem&)=delete;
+    #endif // ifndef SWIG
     virtual TaSystem* copy() const {return new EngineSystem(*this);}
 
     // Overloaded virtuals:
