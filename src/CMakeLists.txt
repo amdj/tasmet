@@ -79,18 +79,25 @@ swig_link_libraries(TaSMET nonlin_lib common_src ${PYTHON_LIBRARIES}
   ${ARMADILLO_LIBRARIES})
 
 # To stop letting the compiler complain about the generated files by Swig
-set(SWIG_COMMON_COMPILE_FLAGS "-Wno-missing-field-initializers -Wno-self-assign -Wno-#warnings")
 
 if(${CMAKE_CXX_COMPILER} STREQUAL "g++")
+
   message("Using gcc compiler")
-  set_source_files_properties( ${swig_generated_file_fullname}
-    PROPERTIES COMPILE_FLAGS "${SWIG_COMMON_COMPILE_FLAGS} ")
+
+  set(SWIG_COMMON_COMPILE_FLAGS "-Wno-missing-field-initializers")
+  # Swig wrapper file compile flags
 
 elseif(${CMAKE_CXX_COMPILER} STREQUAL "clang++")
-  set_source_files_properties( ${swig_generated_file_fullname}
-    PROPERTIES COMPILE_FLAGS  " ${SWIG_COMMON_COMPILE_FLAGS} ")
+
+  message("Using clang++ compiler")
+
+  # Swig wrapper file compile flags
+  set(SWIG_COMMON_COMPILE_FLAGS "-Wno-missing-field-initializers -Wno-self-assign -Wno-#warnings")
 
 endif(${CMAKE_CXX_COMPILER} STREQUAL "g++")
+
+set_source_files_properties( ${swig_generated_file_fullname}
+  PROPERTIES COMPILE_FLAGS "${SWIG_COMMON_COMPILE_FLAGS} ")
   
 # Install swig files to the right place
 install(TARGETS _TaSMET
