@@ -101,17 +101,19 @@ find_package(PythonLibs REQUIRED)
 # Find the site_packages directory of python
 execute_process(COMMAND python${TaSMET_PY_VERSION} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+# For release version we decided not to depend on Swig anymore, but instead provide the
+# wrapper file directly.
 # ################################
 # Initialize swig
 # ################################
 
-find_package(SWIG REQUIRED)
-include(${SWIG_USE_FILE})
+# find_package(SWIG REQUIRED)
+# include(${SWIG_USE_FILE})
 
-SET(CMAKE_SWIG_FLAGS  -Wall -DSWIG_PYTHON)
-if(${TaSMET_PY_MAJOR_VERSION}=="3")
-  SET(CMAKE_SWIG_FLAGS  ${CMAKE_SWIG_FLAGS} -py${TaSMET_PY_MAJOR_VERSION})  
-endif(${TaSMET_PY_MAJOR_VERSION}=="3")
+# SET(CMAKE_SWIG_FLAGS  -Wall -DSWIG_PYTHON)
+# if(${TaSMET_PY_MAJOR_VERSION}=="3")
+#   SET(CMAKE_SWIG_FLAGS  ${CMAKE_SWIG_FLAGS} -py${TaSMET_PY_MAJOR_VERSION})  
+# endif(${TaSMET_PY_MAJOR_VERSION}=="3")
 
 # Armadillo
 find_package(Armadillo REQUIRED)

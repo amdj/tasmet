@@ -2,13 +2,11 @@ CMakeCache.txt
 CMakeFiles
 Makefile
 *.so
-nonlinPYTHON_wrap.cxx
 *.a
 __pycache__
 cmake_install.cmake
 doc/html
 doc/latex
 doc/usg.pdf
-TaSMET.py
 *.pyc
 tasmet_main_ui.py
