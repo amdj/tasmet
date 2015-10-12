@@ -64,11 +64,19 @@ include_directories(
 link_directories(${PROJECT_SOURCE_DIR}/common)
 # For a shared lib:
 # add_library(nonlin_lib SHARED ${nonlinear_SRC})
-add_library(_TaSMET  SHARED ${nonlinear_SRC} nonlinPYTHON_wrap.cxx)
-# Remove the 'lib' part in the file name
-set_target_properties(_TaSMET PROPERTIES PREFIX "")
+add_library(nonlin_lib  ${nonlinear_SRC})
 
-target_link_libraries(_TaSMET common_src)
+target_link_libraries(nonlin_lib common_src)
+
+set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/swig/nonlin.i
+  PROPERTIES CPLUSPLUS ON)
+swig_add_module(TaSMET python ${CMAKE_CURRENT_SOURCE_DIR}/swig/nonlin.i)
+
+set(SWIG_MODULE_TaSMET_FILE_nonlin_EXTRA_DEPS
+  ${CMAKE_CURRENT_SOURCE_DIR}/common/swig_files/arma_numpy.i
+)
+swig_link_libraries(TaSMET nonlin_lib common_src ${PYTHON_LIBRARIES}
+  ${ARMADILLO_LIBRARIES})
 
 # To stop letting the compiler complain about the generated files by Swig
 
@@ -88,9 +96,8 @@ elseif(${CMAKE_CXX_COMPILER} STREQUAL "clang++")
 
 endif(${CMAKE_CXX_COMPILER} STREQUAL "g++")
 
-set_source_files_properties( nonlinPYTHON_wrap.cxx
+set_source_files_properties( ${swig_generated_file_fullname}
   PROPERTIES COMPILE_FLAGS "${SWIG_COMMON_COMPILE_FLAGS} ")
-
   
 # Install swig files to the right place
 install(TARGETS _TaSMET
