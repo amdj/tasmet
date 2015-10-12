@@ -5,7 +5,7 @@ set(PACKAGE_VERSION 0.1)
 message("Running Cmake for TaSMET version ${PACKAGE_VERSION}")
 
 # Set the Python version to link against. If this is not set, Cmake tries to find it automatically.
-set(TaSMET_PY_VERSION "2.7")
+# set(TaSMET_PY_VERSION "2.7")
 # set(TaSMET_PY_VERSION "3.5m")
 
 # Tracer name (name of the variable)
