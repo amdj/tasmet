@@ -4,7 +4,7 @@ project(TaSMET)
 set(PACKAGE_VERSION 0.1)
 message("Running Cmake for TaSMET version ${PACKAGE_VERSION}")
 
-# Set the Python version to link against
+# Set the Python version to link against. If this is not set, Cmake tries to find it automatically.
 # set(TaSMET_PY_VERSION "2.7")
 # set(TaSMET_PY_VERSION "3.5m")
 
@@ -13,8 +13,6 @@ add_definitions(-DTRACERNAME=TaSMETTracer)
 # add_definitions(-DTRACER_IN_COMMON)
 
 
-MESSAGE("Python major version: ${TaSMET_PY_MAJOR_VERSION}")
-  
 #==================
 # Compiler settings ======
 #==================
@@ -26,7 +24,7 @@ set(CMAKE_CXX_COMPILER "g++")
 # Always required make flags in case of both compilers
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pipe -fPIC -Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-address ")
 
-message("Compiler chosen: " ${CMAKE_CXX_COMPILER})
+
 if(${CMAKE_CXX_COMPILER} STREQUAL "g++")
   message("Compiler chosen: " ${CMAKE_CXX_COMPILER})
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-function  -ffunction-sections -fdata-sections -Wno-unused-local-typedefs -Wno-empty-body -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp ")
@@ -92,15 +90,19 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/common/cmake_to
 
 if(TaSMET_PY_VERSION)
   # Find major version from version string
-  string(REGEX MATCH "^." TaSMET_PY_MAJOR_VERSION ${TaSMET_PY_VERSION})
   set(PYTHON_LIBRARY "/usr/lib/libpython${TaSMET_PY_VERSION}.so")
   set(PYTHON_INCLUDE_DIR "/usr/include/python${TaSMET_PY_VERSION}")  
   set(PYTHON_INCLUDE_DIRS "/usr/include/python${TaSMET_PY_VERSION}")  
+
 endif(TaSMET_PY_VERSION)
+message("Python include dirs: ${PYTHON_INCLUDE_DIRS}")
+
 find_package(PythonLibs REQUIRED)
+string(REGEX MATCH "^." TaSMET_PY_MAJOR_VERSION ${PYTHONLIBS_VERSION_STRING})
+MESSAGE("Python major version: ${TaSMET_PY_MAJOR_VERSION}")  
 
 # Find the site_packages directory of python
-execute_process(COMMAND python${TaSMET_PY_VERSION} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND python${TaSMET_PY_MAJOR_VERSION} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 # ################################
 # Initialize swig
@@ -116,7 +118,7 @@ endif(${TaSMET_PY_MAJOR_VERSION}=="3")
 
 # Armadillo
 find_package(Armadillo REQUIRED)
-add_definitions(-DARMA_USE_SUPERLU -DARMA_USE_CXX11 -DARMA_USE_BLAS -DARMA_USE_LAPACK)
+add_definitions(-DARMA_USE_SUPERLU -DARMA_USE_CXX11)
 
 # ==================== Compile the code in common and src
 
