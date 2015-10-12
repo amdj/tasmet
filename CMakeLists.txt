@@ -24,7 +24,7 @@ set(CMAKE_CXX_COMPILER "g++")
 # Always required make flags in case of both compilers
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pipe -fPIC -Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-address ")
 
-message("Compiler chosen: " ${CMAKE_CXX_COMPILER})
+
 if(${CMAKE_CXX_COMPILER} STREQUAL "g++")
   message("Compiler chosen: " ${CMAKE_CXX_COMPILER})
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-function  -ffunction-sections -fdata-sections -Wno-unused-local-typedefs -Wno-empty-body -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp ")
@@ -118,7 +118,7 @@ endif(${TaSMET_PY_MAJOR_VERSION}=="3")
 
 # Armadillo
 find_package(Armadillo REQUIRED)
-add_definitions(-DARMA_USE_SUPERLU -DARMA_USE_CXX11 -DARMA_USE_BLAS -DARMA_USE_LAPACK)
+add_definitions(-DARMA_USE_SUPERLU -DARMA_USE_CXX11)
 
 # ==================== Compile the code in common and src
 
