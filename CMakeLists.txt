@@ -94,7 +94,8 @@ if(TaSMET_PY_VERSION)
   # Find major version from version string
   string(REGEX MATCH "^." TaSMET_PY_MAJOR_VERSION ${TaSMET_PY_VERSION})
   set(PYTHON_LIBRARY "/usr/lib/libpython${TaSMET_PY_VERSION}.so")
-  set(PYTHON_INCLUDE_DIR "/usr/include/python${TaSMET_PY_VERSION}/")  
+  set(PYTHON_INCLUDE_DIR "/usr/include/python${TaSMET_PY_VERSION}")  
+  set(PYTHON_INCLUDE_DIRS "/usr/include/python${TaSMET_PY_VERSION}")  
 endif(TaSMET_PY_VERSION)
 find_package(PythonLibs REQUIRED)
 
