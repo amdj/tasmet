@@ -4,9 +4,9 @@
 #include "continuity.h"
 #include "weightfactors.h"
 
-#define iDFT (v.gc->iDFT)
-#define fDFT (v.gc->fDFT)
-#define DDTfd (v.gc->DDTfd)
+#define iDFT (v.gc->iDFT())
+#define fDFT (v.gc->fDFT())
+#define DDTfd (v.gc->DDTfd())
 #define Ns (v.gc->Ns())
 namespace duct{
 

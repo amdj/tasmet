@@ -2,8 +2,8 @@
 #include "jacrow.h"
 #include "isentropic.h"
 
-#define iDFT (v.gc->iDFT)
-#define fDFT (v.gc->fDFT)
+#define iDFT (v.gc->iDFT())
+#define fDFT (v.gc->fDFT())
 
 namespace duct{
   using tasystem::Jacobian;

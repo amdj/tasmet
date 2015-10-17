@@ -9,8 +9,8 @@
 #include "exception.h"
 #define Ns (gc_->Ns())
 #define Nf (gc_->Nf())
-#define fDFT (gc_->fDFT)
-#define iDFT (gc_->iDFT)
+#define fDFT (gc_->fDFT())
+#define iDFT (gc_->iDFT())
 
 namespace tasystem {
 
@@ -52,9 +52,9 @@ namespace tasystem {
     gc_(&gc)
  {
     TRACE(0,"var::var(const Globalconf& gc, double initval)");
-    tdata_=vd(Ns);
-    adata_=vd(Ns);
-    settdata(initval);
+    tdata_=initval*ones(Ns);
+    adata_=zeros(Ns);
+    adata_(0)=initval;
   }
   var::var(const Globalconf& gc,const vd& data,bool adata)
     :var(gc)
@@ -144,7 +144,8 @@ namespace tasystem {
   // Set methods
   void var::setadata(us freqnr,d val) { //Set result for specific frequency zero,real one, -imag one, etc
     TRACE(-2,"var::setadata("<<freqnr<<","<<val<<")");
-    assert(freqnr<Ns);
+    if(freqnr>=Ns)
+      throw MyError("Tried to change a value beyond length of the vector");
     adata_[freqnr]=val;
     tdata_=iDFT*adata_;
   }
@@ -170,8 +171,8 @@ namespace tasystem {
   }
   void var::settdata(double val) {
     TRACE(0,"var::settdata(double val)");
-    for (auto it = tdata_.begin(); it != tdata_.end(); ++it) {
-      (*it)=val;
+    for (auto& td: tdata_) {
+      td=val;
     }
     adata_=fDFT*tdata_;
   }
@@ -215,7 +216,7 @@ namespace tasystem {
   //Get a tasystem which is the time derivative of the current one
   var var::ddt() const {
     var result(*(this->gc_));
-    vd newadata=gc_->DDTfd*adata_;
+    vd newadata=gc_->DDTfd()*adata_;
     result.setadata(newadata);
     return result;
   }

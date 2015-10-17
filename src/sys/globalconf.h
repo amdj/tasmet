@@ -31,8 +31,8 @@ namespace tasystem{
   class Globalconf{
     d omg;		// The "base" frequency in rad/s
     us Nf_;			// Number of frequencies to solve for
-    us Ns_;			// Corresponding number of time samples
     d T0_,p0_;			/* Reference temperature and pressure (used to initialize a lot of variables. */
+    dmat fDFT_,iDFT_,DDTfd_;
     gases::Gas gas_;
     // d Wfo_=0;			// First order 'upwind' factor. If
 				// Wfo=-1, interpolation is done from
@@ -45,8 +45,8 @@ namespace tasystem{
     static Globalconf airSTP(us Nf,d freq);
     static Globalconf heliumSTP(us Nf,d freq);
     
-    const us& Nf() const {return Nf_;}
-    const us& Ns() const {return Ns_;}    
+    us Nf() const {return Nf_;}
+    us Ns() const {return 2*Nf_+1;}    
 
     ~Globalconf(){TRACE(-5,"~Globalconf()");}
     d getomg() const {return omg;}
@@ -58,21 +58,17 @@ namespace tasystem{
     d deltanu0min() const{ return deltanu0()/sqrt((d) (max<us>(1,Nf())));}
     d T0() const {return T0_;}
     d p0() const {return p0_;}
-    // d getWfo() const {return Wfo_;}
-    // void setWfo(d Wf) {Wfo_=Wf;}    
-    void setNf(us);
+
     #ifndef SWIG
     void set(us Nf,d freq);	// Set data for new frequency and
     // number of samples
     #endif
+    void setNf(us Nf);
     void setomg(d omg);
     void setfreq(d freq);
-    dmat iDFT; //inverse discrete Fourier transform matrix
-    dmat fDFT; //forward discrete Fourier transform matrix
-    dmat DDTfd;//Derivative in frequency domain
-    dmat DDTtd;//Derivative in time domain
-    dmat ddt; //Derivative matrix only nonzero frequency components
-    dmat iddt; //Inverse of derivative matrix only nonzero frequency components
+    const dmat& iDFT() const {return iDFT_;} //inverse discrete Fourier transform matrix
+    const dmat& fDFT() const {return fDFT_;} //forward discrete Fourier transform matrix
+    const dmat& DDTfd() const {return DDTfd_;}//Derivative in frequency domain
 
     void setGas(const string& mat){gas_=gases::Gas(mat);}
     const gases::Gas& gas() const {return gas_;}    
@@ -80,14 +76,9 @@ namespace tasystem{
     void show() const;
 
   protected:
-
-    void updateiDFT();
-    void updatefDFT();
-    void updateiomg();
-
+    void update();
     d oldomg; //Previous omega
   private:
-
   }; /* Class Globalconf */
 }    // namespace tasystem
 

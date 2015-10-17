@@ -6,9 +6,9 @@
 #include "weightfactors.h"
 #include "heat.h"
 
-#define iDFT (v.gc->iDFT)
-#define fDFT (v.gc->fDFT)
-#define DDTfd (v.gc->DDTfd)
+#define iDFT (v.gc->iDFT())
+#define fDFT (v.gc->fDFT())
+#define DDTfd (v.gc->DDTfd())
 #define Ns (v.gc->Ns())
 #define ENERGY_SCALE (1.0/(solid->rho(v.gc->T0())*solid->c(v.gc->T0())))
 

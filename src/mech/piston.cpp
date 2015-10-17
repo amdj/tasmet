@@ -10,9 +10,9 @@
 #include "jacobian.h"
 #include "staticmsg.h"
 
-#define fDFT (gc->fDFT)
-#define iDFT (gc->iDFT)
-#define DDTfd (gc->DDTfd)
+#define fDFT (gc->fDFT())
+#define iDFT (gc->iDFT())
+#define DDTfd (gc->DDTfd())
 
 #define Ns (gc->Ns())
 #define Nf (gc->Nf())

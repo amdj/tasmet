@@ -5,8 +5,8 @@
 
 // #define STATE_SCALE (1)
 #define STATE_SCALE (1/v.gc->p0())
-#define iDFT (v.gc->iDFT)
-#define fDFT (v.gc->fDFT)
+#define iDFT (v.gc->iDFT())
+#define fDFT (v.gc->fDFT())
 
 // #define STATE_SCALE (1)
 namespace duct{
