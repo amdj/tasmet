@@ -17,8 +17,8 @@ add_definitions(-DTRACERNAME=TaSMETTracer)
 #====================================================
 
 # SET THE COMPILER
-# set(CMAKE_CXX_COMPILER "g++")
-set(CMAKE_CXX_COMPILER "clang++")
+set(CMAKE_CXX_COMPILER "g++")
+# set(CMAKE_CXX_COMPILER "clang++")
 
 # Always required make flags in case of both compilers
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pipe -fPIC -Wall -Wextra -Wno-unused-parameter -Wno-unused-variable  ")
