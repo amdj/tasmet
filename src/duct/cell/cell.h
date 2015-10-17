@@ -84,6 +84,7 @@ namespace duct {
     us geti() const {return i;}
     Equation* Eq(EqType et) {return eqs.at(et);}
     // Momentum flow at vertex position
+    #endif
     const tasystem::var& mu() const {return mu_;}
     const tasystem::var& ml() const {return ml_;}
     // const tasystem::var& mHl() const {return mHl_;}
@@ -119,6 +120,7 @@ namespace duct {
     const tasystem::var& TwL() const {assert(left_); return left_->Tw();}
     const tasystem::var& TwR() const {assert(right_); return right_->Tw();}
 
+    #ifndef SWIG
     // Resets all higher harmonics. Can throw
     void resetHarmonics();
 
@@ -130,12 +132,14 @@ namespace duct {
     // Set result vector to res
     virtual void setRes(const vd& res);
 
-
+    #endif
     // Compute the error for all equations on this gridpoint
     vd error() const;
                                       
+    
     // const methods
     virtual void show(us detailnr=1) const;
+    #ifndef SWIG
     vd errorAt(us i) const;
 
     virtual void jac(tasystem::Jacobian& tofill) const;		       // Fill complete Jacobian for this node
@@ -145,13 +149,13 @@ namespace duct {
                                                  // leftductcell and
                                                  // rightductcell!
     
-    virtual vd getRes() const;			  // Extract current result
                                           // vector
     d getValue(Varnr,us freqnr) const;
 
     #endif
     // Exposed to SWIG
     tasystem::var getValue(Varnr) const;
+    virtual vd getRes() const;			  // Extract current result
     #ifndef SWIG
     virtual void updateNf();
 
@@ -159,15 +163,6 @@ namespace duct {
     // pressure) addings in the equations.
     // d Htot() const { return e.Htot();}
     d getMass() const;
-
-    // These virtual functions are required such that boundary
-    // condition sources can be added in a later stage by inheriting
-    // from this Cell. By default these sources are not a
-    // function of the dependent variables. That is why we do not have
-    // to add Jacobian terms.
-    virtual vd csource() const;	// Continuity source
-    virtual vd msource() const;	// Momentum source
-    virtual vd esource() const;	// Energy source
     #endif
   };				// Cell class
   

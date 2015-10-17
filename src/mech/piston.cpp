@@ -76,9 +76,9 @@ namespace mech {
     mHr_=var(*gc);
     
     if(!leftConnected && massL<0)
-      massL=rhol_(0)*pc.V0l;
+      massL=gc->rho0()*pc.V0l;
     if(!rightConnected && massR<0)
-      massR=rhor_(0)*pc.V0r;
+      massR=gc->rho0()*pc.V0r;
   }
   Piston::~Piston(){}
   void Piston::setEqNrs(us firsteqnr){
@@ -281,7 +281,7 @@ namespace mech {
       // energy
       +mHr_();            // Enthalpy flow out of segment
 
-    if(!rightConnected){
+    // if(!rightConnected){
       // Overwrite time-average part with constraint on time-average
       // internal energy, by fixing the time-averaged temperature
       error(eqnr)=Tr_()(0)-T0;
@@ -290,7 +290,7 @@ namespace mech {
       // error.subvec(eqnr,eqnr+Ns-1)=pr_()/p0;
       // error(eqnr)+=1;
       // error.subvec(eqnr,eqnr+Ns-1)+=-fDFT*pow(rhor_.tdata()/rho0,gamma);
-    }
+    // }
     eqnr+=Ns;
 
     // Specific gas constant
@@ -431,6 +431,8 @@ namespace mech {
         enl+=JacCol(Tl_,enlmat_T);          
 
       }
+      VARTRACE(50,enlmat_pl);
+      VARTRACE(50,enlmat_x);
       enl+=JacCol(mHl_,eye);
       enl+=JacCol(pl_,enlmat_pl);
       enl+=JacCol(xp_,enlmat_x);    
@@ -453,7 +455,7 @@ namespace mech {
       enrmat_pr+=fDFT*diagmat(dVrdtt)*iDFT;
       enrmat_x+=-fDFT*diagmat(pc.Sr*prt)*iDFT*DDTfd;
     
-      if(!rightConnected) {
+      // if(!rightConnected) {
         // Overwrite time-average part with constraint on time-average
         // internal energy, by fixing the time-averaged temperature
         dmat enrmat_T(Ns,Ns,fillwith::zeros);
@@ -463,10 +465,14 @@ namespace mech {
         enrmat_pr.row(0).zeros();
         enrmat_x.row(0).zeros();
 
+      VARTRACE(50,enrmat_T);
         // Add Jacobian terms corresponding to left temperature
         enr+=JacCol(Tr_,enrmat_T);          
 
-      }
+      // }
+      VARTRACE(50,enrmat_pr);
+      VARTRACE(50,enrmat_x);
+
       enr+=JacCol(mHr_,eye);
       enr+=JacCol(pr_,enrmat_pr);
       enr+=JacCol(xp_,enrmat_x);    
@@ -526,12 +532,23 @@ namespace mech {
   }
   void Piston::dmtotdx(vd& dmtotdx) const {
     TRACE(15,"void Piston::dmtotdx()");
-    if(leftConnected){}
-      
-    //   us rholdof=rhol.getDofNr();
-    //   dmtotdx.subvec(rholdof,rholdof+Ns-1)=
-    WARN("Not finished code");
-    assert(false);
+    if(leftConnected){
+      us rhodof=rhol_.getDofNr();
+      us xdof=xp_.getDofNr();
+      dmtotdx.subvec(rhodof,rhodof+Ns-1)=(fDFT.row(0)*			\
+					  diagmat(pc.V0l+pc.Sl*xp_.tdata()*iDFT)).t();
+      dmtotdx.subvec(xdof,xdof+Ns-1)=(fDFT.row(0)*			\
+					  diagmat(pc.Sl*rhol_.tdata()*iDFT)).t();
+    }
+    if(rightConnected){
+      us rhodof=rhor_.getDofNr();
+      us xdof=xp_.getDofNr();
+      dmtotdx.subvec(rhodof,rhodof+Ns-1)=(fDFT.row(0)*			\
+					  diagmat(pc.V0r-pc.Sr*xp_.tdata())*iDFT).t();
+      dmtotdx.subvec(xdof,xdof+Ns-1)=(fDFT.row(0)*			\
+				      diagmat(-pc.Sr*rhor_.tdata())*iDFT).t();
+    }
+
   }
   void Piston::domg(vd& domg) const{
     TRACE(15,"void Piston::domg()");

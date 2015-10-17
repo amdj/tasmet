@@ -39,8 +39,6 @@ namespace duct{
     error+=v.mr()();
     error-=v.ml()();
 
-    // (Boundary) source term
-    error+=v.csource();
     return error;
   }
   void Continuity::domg(vd& domg_) const{

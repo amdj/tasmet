@@ -14,9 +14,9 @@
 #include "duct.h"
 #include "bccell.h"
 
-#define fDFT (gc->fDFT)
-#define iDFT (gc->iDFT)
-#define DDTfd (gc->DDTfd)
+#define fDFT (gc->fDFT())
+#define iDFT (gc->iDFT())
+#define DDTfd (gc->DDTfd())
 
 #define Ns (gc->Ns())
 #define Nf (gc->Nf())
@@ -40,13 +40,27 @@ namespace duct {
     t=&sys.getDuct(segid);
     c=&(t->bcCell(position));
   }
-  ConnectorVolume::ConnectorVolume(const tasystem::TaSystem& sys,const ConnectorVolume& other):
+
+  ConnectorVolume::ConnectorVolume(d volume,bool arbitrateMass):
+    volume(volume),
+    arbitrateMass(arbitrateMass)
+  {
+    TRACE(15,"ConnectorVolume::ConnectorVolume()");
+    if(volume<=0)
+      throw MyError(msg("Given volume invalid, should be larger than 0. Given volume: %0.2f",volume));
+  }
+  ConnectorVolume::~ConnectorVolume(){
+    TRACE(0,"ConnectorVolume::~ConnectorVolume()");
+  }
+  ConnectorVolume::ConnectorVolume(const tasystem::TaSystem& sys,\
+				   const ConnectorVolume& other):
     Seg(other,sys),
     volume(other.volume),
     ductConnections(other.ductConnections),
-    pistonConnections(other.pistonConnections)
+    pistonConnections(other.pistonConnections),
+    arbitrateMass(other.arbitrateMass)
   {
-    TRACE(15,"ConnectorVolume::ConnectorVolume()");
+    TRACE(15,"ConnectorVolume::ConnectorVolume(copy)");
     // Initialize all variables
     p_=var(*gc);
     T_=var(*gc,gc->T0());
@@ -55,7 +69,7 @@ namespace duct {
     // Check if list of connections is not empty
     if(ductConnections.size()+pistonConnections.size()==0)
       throw MyError("No connections made with this volume. At least one connection is required");
-
+    
     // Check if all pistons are really pistons
     // for(Connection& con:pistonConnections){
     //   try{
@@ -89,15 +103,11 @@ namespace duct {
     assert(false);
     // pistonConnections.push_back(Connection(segid,pos));    
   }
-  ConnectorVolume::ConnectorVolume(d volume):
-    volume(volume)
-  {
-    TRACE(15,"ConnectorVolume::ConnectorVolume()");
-    if(volume<=0)
-      throw MyError(msg("Given volume invalid, should be larger than 0. Given volume: %0.2f",volume));
-  }
-  ConnectorVolume::~ConnectorVolume(){
-    TRACE(0,"ConnectorVolume::~ConnectorVolume()");
+  int ConnectorVolume::arbitrateMassEq() const {
+    if(arbitrateMass)
+      return firsteqnr;
+    else
+      return -1;
   }
   void ConnectorVolume::setEqNrs(us firsteqnr){
     TRACE(15,"us ConnectorVolume::setEqNrs()");

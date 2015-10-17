@@ -6,6 +6,7 @@ Created on March 31, 2014
 '''
 from .TaSMET import AdiabaticWall,AutoBoundaryLayer,BoundaryLayer,\
      ConeTube,ConnectorVolume,CylindricalTube,DuctConnector,\
+     DuctPistonConnector,\
      EngineSystem,TaSystem,\
      Globalconf,Globalconf_airSTP,Globalconf_heliumSTP,Grid,\
      ImpedanceBc,IsentropicTube,IsoTWall,LaminarDuct,MechBc,PhaseConstraint,\

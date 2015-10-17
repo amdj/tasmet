@@ -16,7 +16,6 @@
 #include "pycallback.h"
 
 
-#define DDTfd (gc->DDTfd)
 #define fDFT (gc->fDFT())
 #define iDFT (gc->iDFT())
 #define DDTfd (gc->DDTfd())

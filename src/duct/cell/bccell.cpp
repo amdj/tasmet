@@ -21,6 +21,8 @@ namespace duct{
   BcCell::BcCell(us i,const Duct& t):
     Cell(i,t)
   {
+    TRACE(80,"BcCell::BcCell()");
+
     rhobc_=var(*gc,gc->rho0());
     Tbc_=var(*gc,gc->T0());
     Tsbc_=var(*gc,gc->T0());

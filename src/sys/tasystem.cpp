@@ -54,8 +54,13 @@ namespace tasystem{
   TaSystem& TaSystem::operator+=(const Seg& s){
     TRACE(24,"TaSystem::operator+=(Seg)");
     hasInit=false;
+    if(segs.find(s.getID())!=segs.end()){
+      throw  MyError(ermsg(
+			   "Segment with id %s already present in the system",s.getID().c_str()));
+    }
     segs[s.getID()]=s.copy(*this);
     segs[s.getID()]->setNumber(nSegs()-1);
+      
     return *this;
   }
   TaSystem& TaSystem::operator+=(const Connector& c){

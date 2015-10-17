@@ -84,7 +84,7 @@ if(${CMAKE_CXX_COMPILER} STREQUAL "g++")
 
   message("Using gcc compiler")
 
-  set(SWIG_COMMON_COMPILE_FLAGS "-Wno-missing-field-initializers")
+  set(SWIG_COMMON_COMPILE_FLAGS "-Wno-missing-field-initializers -Wno-cpp")
   # Swig wrapper file compile flags
 
 elseif(${CMAKE_CXX_COMPILER} STREQUAL "clang++")

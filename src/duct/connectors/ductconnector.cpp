@@ -122,7 +122,7 @@ namespace duct {
     // Fourth equation: continuity of total enthalpy
     error.subvec(Ns*nr,Ns*(nr+1)-1)=\
       fDFT*(cp*T0tbc+0.5*pow(u0tbc,2)-cp*T1tbc-0.5*pow(u1tbc,2));
-    // fDFT*(kappaSft%(T0t-T1t)/dx)\
+    // fDFT*(kappaSft%(T0t-T1t)/dx)
     // -out[0]*bccells[0]->extrapolateQuant(Varnr::Q);
     nr++;      
 

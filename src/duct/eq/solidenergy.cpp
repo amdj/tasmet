@@ -96,7 +96,7 @@ namespace duct{
     TRACE(15,"SolidEnergy::jac()");
     JacRow jac(dofnr,5);
     d rhoc=solid->rho(v.Ts()(0))*solid->c(v.Ts()(0));
-    VARTRACE(40,v.vVs);
+    VARTRACE(10,v.vVs);
     jac+=JacCol(v.Ts(),v.vVs*rhoc*DDTfd);
     jac+=dQR();
     jac+=(dQL()*=-1);

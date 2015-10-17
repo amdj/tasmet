@@ -12,9 +12,9 @@
 #warning Drag is turned off!
 #endif
 
-#define iDFT (v.gc->iDFT)
-#define fDFT (v.gc->fDFT)
-#define DDTfd (v.gc->DDTfd)
+#define iDFT (v.gc->iDFT())
+#define fDFT (v.gc->fDFT())
+#define DDTfd (v.gc->DDTfd())
 #define Ns (v.gc->Ns())
 #define eye (arma::eye(Ns,Ns))
 
@@ -66,8 +66,7 @@ namespace duct{
     assert(t);
     error+=Wddt*t->dragResistance().drag(v);
     #endif
-    // (Boundary) source term
-    error+=v.msource();
+
     return error;
   }
   JacRow Momentum::jac() const {

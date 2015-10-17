@@ -127,7 +127,7 @@ namespace mech {
 
 
     // ***** Fifth equation: something with pressure
-    error.subvec(4*Ns,5*Ns-1)=ductcell.extrapolateQuant(Varnr::p)\
+    error.subvec(4*Ns,5*Ns-1)=ductcell.pbc()()	\
       -piston->p(pistonPos)();
     return error;
   }
@@ -190,7 +190,7 @@ namespace mech {
 
     // ***** Fifth equation: something with pressure
     JacRow pispjac(firsteqnr+4*Ns,3);
-    pispjac+=ductcell.dExtrapolateQuant(Varnr::p);
+    pispjac+=JacCol(ductcell.pbc(),eye);
     pispjac+=JacCol(piston->p(pistonPos),-eye);
     jac+=pispjac;
   }
@@ -199,7 +199,7 @@ namespace mech {
     this->firsteqnr=firsteqnr;
   }
   us DuctPistonConnector::getNEqs() const{
-    TRACE(35,"us DuctPistonConnector::getNEqs()");
+    TRACE(15,"us DuctPistonConnector::getNEqs()");
     return 5*Ns;
   }
   void DuctPistonConnector::updateNf() {
