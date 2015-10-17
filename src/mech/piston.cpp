@@ -262,7 +262,7 @@ namespace mech {
                                     // energy
       +mHl_();            // Enthalpy flow out of segment
 
-    if(!leftConnected){
+    // if(!leftConnected){
       // Overwrite time-average part with constraint on time-average
       // internal energy, by fixing the time-averaged temperature
       error(eqnr)=Tl_()(0)-T0;
@@ -271,7 +271,7 @@ namespace mech {
       // error.subvec(eqnr,eqnr+Ns-1)=pl_()/p0;
       // error(eqnr)+=1;
       // error.subvec(eqnr,eqnr+Ns-1)+=-fDFT*pow(rhol_.tdata()/rho0,gamma);
-    }
+    // }
     eqnr+=Ns;
 
     // ************************************************************
@@ -417,7 +417,7 @@ namespace mech {
       enlmat_pl+=fDFT*diagmat(dVldtt)*iDFT;
       enlmat_x+=fDFT*diagmat(pc.Sl*plt)*iDFT*DDTfd;
     
-      if(!leftConnected) {
+      // if(!leftConnected) {
         // Overwrite time-average part with constraint on time-average
         // internal energy, by fixing the time-averaged temperature
         dmat enlmat_T(Ns,Ns,fillwith::zeros);
@@ -430,9 +430,8 @@ namespace mech {
         // Add Jacobian terms corresponding to left temperature
         enl+=JacCol(Tl_,enlmat_T);          
 
-      }
-      VARTRACE(50,enlmat_pl);
-      VARTRACE(50,enlmat_x);
+      // }
+
       enl+=JacCol(mHl_,eye);
       enl+=JacCol(pl_,enlmat_pl);
       enl+=JacCol(xp_,enlmat_x);    
@@ -465,13 +464,11 @@ namespace mech {
         enrmat_pr.row(0).zeros();
         enrmat_x.row(0).zeros();
 
-      VARTRACE(50,enrmat_T);
+
         // Add Jacobian terms corresponding to left temperature
         enr+=JacCol(Tr_,enrmat_T);          
 
       // }
-      VARTRACE(50,enrmat_pr);
-      VARTRACE(50,enrmat_x);
 
       enr+=JacCol(mHr_,eye);
       enr+=JacCol(pr_,enrmat_pr);
