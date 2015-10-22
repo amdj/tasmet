@@ -110,16 +110,16 @@ namespace duct {
       return -1;
   }
   void ConnectorVolume::setEqNrs(us firsteqnr){
-    TRACE(15,"us ConnectorVolume::setEqNrs()");
+    TRACE(50,"us ConnectorVolume::setEqNrs()");
     this->firsteqnr=firsteqnr;
   }
   void ConnectorVolume::setDofNrs(us firstdof) {
     TRACE(15,"void ConnectorVolume::setDofNrs()");
     us dof=firstdof;
 
-    rho_.setDofNr(dof); dof+=Ns;
-    T_.setDofNr(dof); dof+=Ns;
-    p_.setDofNr(dof); dof+=Ns;
+    rho_.setDofNr(dof); 
+    T_.setDofNr(dof+Ns); 
+    p_.setDofNr(dof+2*Ns);
     
   }
   us ConnectorVolume::getNEqs() const {
@@ -196,8 +196,7 @@ namespace duct {
       d sign=(con.position==Pos::left?1:-1);
       error.subvec(eqnr,eqnr+Ns-1)+=sign*con.c->mbc()();
     }
-    // Mass flow contribution from connected pistons
-    // NOT YET DONE
+
     eqnr+=Ns;
     
     // ************************************************************
@@ -206,19 +205,20 @@ namespace duct {
     // Energy flow contribution from connected ducts
     for(const DuctConnection& con: ductConnections){
       assert(con.c&&con.t);
-      // Flow out of the volume is defined positive
-      d sign=(con.position==Pos::left?1:-1);
-      error.subvec(eqnr,eqnr+Ns-1)+=sign*con.c->mHbc()();
-      error.subvec(eqnr,eqnr+Ns-1)+=sign*con.c->extrapolateQuant(Varnr::Q);
+      // Flow out of the volume is defined positive, hence flow out of
+      // tube should be subtracted
+      d sign=(con.position==Pos::left?-1:1);
+      error.subvec(eqnr,eqnr+Ns-1)+=-sign*con.c->mHbc()();
+      error.subvec(eqnr,eqnr+Ns-1)+=-sign*con.c->extrapolateQuant(Varnr::Q);
     }
-    // Energy flow contribution from connected pistons
-    // NOT YET DONE
+
     eqnr+=Ns;    
 
     // ************************************************************
     // Equation of state
     error.subvec(eqnr,eqnr+Ns-1)=p_()-fDFT*(Tt%rhot*Rs);
     error(eqnr)+=p0;
+
     eqnr+=Ns;
 
     // ************************************************************
@@ -278,7 +278,7 @@ namespace duct {
       continuityeq+=JacCol(con.c->mbc(),sign*eye);
     }
     // Mass flow contribution from connected pistons
-    // NOT YET DONE
+
     jac+=continuityeq;
     eqnr+=Ns;
 
@@ -295,7 +295,7 @@ namespace duct {
       energyeq+=(con.c->dExtrapolateQuant(Varnr::Q)*=sign);
     }
     // Energy flow contribution from connected pistons
-    // NOT YET DONE
+
     jac+=energyeq;
     eqnr+=Ns;
 

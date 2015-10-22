@@ -123,7 +123,9 @@ namespace duct{
     // Derivative of dofs to frequency
     void domg(vd& tofill) const;
     // Obtain result vector
+    #endif
     vd getRes() const;
+    #ifndef SWIG
     // Fill Jacobian submatrix
     void jac(tasystem::Jacobian& tofill) const;
     // Set result vector

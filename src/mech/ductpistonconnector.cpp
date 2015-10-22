@@ -123,7 +123,7 @@ namespace mech {
                            (pTt-tTt));
 
     error.subvec(3*Ns,4*Ns-1)=Qpistontoduct\
-      -signduct*ductcell.extrapolateQuant(Varnr::Q);
+      +signduct*ductcell.extrapolateQuant(Varnr::Q);
 
 
     // ***** Fifth equation: something with pressure
@@ -185,11 +185,11 @@ namespace mech {
                          fDFT*(Sf/Lcon)*diagmat(kappat)*iDFT);
     QisQjac+=JacCol(ductcell.Tbc(),                             \
                          -fDFT*(Sf/Lcon)*diagmat(kappat)*iDFT);
-    QisQjac+=(ductcell.dExtrapolateQuant(Varnr::Q)*=-signduct);
+    QisQjac+=(ductcell.dExtrapolateQuant(Varnr::Q)*=signduct);
     jac+=QisQjac;
 
     // ***** Fifth equation: something with pressure
-    JacRow pispjac(firsteqnr+4*Ns,3);
+    JacRow pispjac(firsteqnr+4*Ns,2);
     pispjac+=JacCol(ductcell.pbc(),eye);
     pispjac+=JacCol(piston->p(pistonPos),-eye);
     jac+=pispjac;

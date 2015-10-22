@@ -195,6 +195,8 @@ namespace tasystem{
     checkInit();
     cout << "########################## Showing TaSystem...\n";
     cout << "Showing Global configuration...\n";
+    if(arbitrateMassEq>=0)
+      cout << "Mass is arbitrated by replacing equation " << arbitrateMassEq << ".\n";
     Globalconf::show();
     if(detailnr>0){
       for(auto con:connectors){

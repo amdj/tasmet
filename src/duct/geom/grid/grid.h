@@ -23,7 +23,7 @@ namespace duct{
     d L;                        // Only changeable by constructor
     vd x;
   public:
-    Grid(us gp,d L) throw(std::exception);
+    Grid(us gp,d L);
     // Copy constructor can just copy all
     Grid(const Grid& g);
     ~Grid();

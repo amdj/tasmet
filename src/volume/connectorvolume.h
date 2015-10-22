@@ -89,7 +89,9 @@ namespace duct {
     virtual us getNDofs() const;
     virtual d getMass() const;
     // ------------------------------
+    #endif
     virtual vd getRes() const; // Get a result vector
+    #ifndef SWIG
     virtual void domg(vd&) const;	// Derivative of error w.r.t. base frequency.
     virtual void setRes(const vd& res);  // Setting result vector
     virtual void dmtotdx(vd&) const; // Derivative of current fluid mass in

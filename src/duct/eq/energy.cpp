@@ -8,9 +8,9 @@
 
 // #define TRACERPLUS 20
 // #define ENERGY_SCALE (1/v.gc->rho0/v.gc->c0)
-#define ENERGY_SCALE (1.0/v.gc->p0())
+// #define ENERGY_SCALE (1.0/v.gc->p0())
 // #define ENERGY_SCALE (1.0/100)
-// #define ENERGY_SCALE (1.0)
+#define ENERGY_SCALE (1.0)
 // #define TRACERPLUS 15
 #ifdef NOHEAT
 #warn Heat turned off!!

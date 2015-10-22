@@ -16,7 +16,7 @@
 namespace mech {
   
   #ifdef SWIG
-  %catches(std::exception,...) Piston::Piston(const PistonConfiguration& pc);
+  %catches(std::exception,...) Piston::Piston(const PistonConfiguration& pc,bool arbitrateMass=false);
   #endif // SWIG
 
   struct PistonConfiguration{
@@ -55,7 +55,7 @@ namespace mech {
     // Prescribed mean temperature in the volumes. Can be set using
     // setT0().
     d T0=-1;
-
+    bool arbitrateMass=false;
     
     Piston(const tasystem::TaSystem&,const Piston& other);
     #ifndef SWIG
@@ -64,9 +64,10 @@ namespace mech {
     #endif // ifndef SWIG
   public:
 
-    Piston(const PistonConfiguration& pc):
+    Piston(const PistonConfiguration& pc,bool arbitrateMass=false):
       Seg(),
-      pc(pc)
+      pc(pc),
+      arbitrateMass(arbitrateMass)
     {
       TRACE(15,"Piston()");
     }
@@ -90,7 +91,7 @@ namespace mech {
     const tasystem::var& rhor() const {return rhor_;}
     const tasystem::var& Tl() const {return Tl_;}
     const tasystem::var& Tr() const {return Tr_;}
-
+    int arbitrateMassEq() const;
     // Post-processing the left and right volume (vars)
     tasystem::var Vl() const;
     tasystem::var Vr() const;
@@ -114,7 +115,9 @@ namespace mech {
     virtual us getNDofs() const;
     virtual d getMass() const;
     // ------------------------------
+    #endif
     virtual vd getRes() const; // Get a result vector
+    #ifndef SWIG
     virtual void domg(vd&) const;	// Derivative of error w.r.t. base frequency.
     virtual void setRes(const vd& res);  // Setting result vector
     virtual void dmtotdx(vd&) const; // Derivative of current fluid mass in

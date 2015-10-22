@@ -52,7 +52,8 @@ namespace mech {
   Piston::Piston(const tasystem::TaSystem& sys,const Piston& other):
     Seg(other,sys),
     pc(other.pc),
-    T0(other.T0)
+    T0(other.T0),
+    arbitrateMass(other.arbitrateMass)
   {
     TRACE(15,"Piston::Piston()");
 
@@ -81,6 +82,21 @@ namespace mech {
       massR=gc->rho0()*pc.V0r;
   }
   Piston::~Piston(){}
+  int Piston::arbitrateMassEq() const {
+    TRACE(15,"Piston::arbitrateMassEq()");
+    VARTRACE(80,firsteqnr);
+    VARTRACE(80,Ns);    
+    if(arbitrateMass){
+      if(leftConnected)
+	return firsteqnr+Ns;
+      else if(rightConnected)
+	return firsteqnr+4*Ns;
+      else
+	return -1;
+    }
+    else
+      return -1;
+  }
   void Piston::setEqNrs(us firsteqnr){
     TRACE(15,"us Piston::setEqNrs()");
     this->firsteqnr=firsteqnr;
@@ -237,7 +253,7 @@ namespace mech {
     // Mass conservation right side
     if(!rightConnected){
       assert(massR>0);
-      error.subvec(eqnr,eqnr+Ns-1)=fDFT*(rhor_.tdata()%(pc.V0r-xp_.tdata()*pc.Sr));
+      error.subvec(eqnr,eqnr+Ns-1)=fDFT*(rhort%Vrt);
       error(eqnr)-=massR;
 
       // Not connected right side, so set mr to zero
@@ -349,6 +365,7 @@ namespace mech {
     eomjac+=JacCol(pl_,-pc.Sl*eye);
     eomjac+=JacCol(pr_,pc.Sr*eye);
     jac+=eomjac;
+
     eqnr+=Ns;
 
     // ************************************************************
@@ -356,7 +373,7 @@ namespace mech {
     if(!leftConnected){
       JacRow mcljac(eqnr,2);
       mcljac+=JacCol(rhol_,fDFT*diagmat(Vlt)*iDFT);
-      mcljac+=JacCol(xp_,fDFT*diagmat(rhol_.tdata()*pc.Sl)*iDFT);
+      mcljac+=JacCol(xp_,fDFT*diagmat(rholt*pc.Sl)*iDFT);
       jac+=mcljac;
 
       // Not connected to leftside so ml to zero

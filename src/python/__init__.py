@@ -34,6 +34,6 @@ from .TaSMET import AdiabaticWall,AutoBoundaryLayer,BoundaryLayer,\
      doIter,\
      left,\
      right,\
-     setTASMETTracer,\
+     setTaSMETTracer,\
      var
      
