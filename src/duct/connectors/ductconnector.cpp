@@ -49,8 +49,8 @@ namespace duct {
     K2to1(o.K2to1)
   {
     
-    bccells[0]=&sys.getDuct(segids[0]).bcCell(pos[0]);
-    bccells[1]=&sys.getDuct(segids[1]).bcCell(pos[1]);
+    bccells[0]=&asDuct(*sys.getSeg(segids[0])).bcCell(pos[0]);
+    bccells[1]=&asDuct(*sys.getSeg(segids[1])).bcCell(pos[1]);
     assert(bccells[0]&&bccells[1]);
 
     if(pos[0]==Pos::left) 

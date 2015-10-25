@@ -159,10 +159,8 @@ namespace duct{
     void cleanup_cells();
   };				// Duct class
 
-  #ifndef SWIG  
-  inline Duct& asDuct(segment::Seg& s){return dynamic_cast<Duct&>(s);}
-  inline const Duct& asDuct_const(const segment::Seg& s){return dynamic_cast<const Duct&>(s);}
-  #endif
+  inline const Duct& asDuct(const segment::Seg& s){return dynamic_cast<const Duct&>(s);}
+
 } /* namespace duct */
 
 #endif /* DUCT_H_ */

@@ -204,6 +204,9 @@ namespace duct{
       case Varnr::mH:                 // Volume flown
         return var(*gc,0.5*(Energy::mHl(*this)+Energy::mHr(*this)));
         break;
+      case Varnr::mEkin:
+        return var(*gc,0.5*(Energy::mEkinl(*this)+Energy::mEkinr(*this)));	
+	break;
       case Varnr::Qs:
       	if(eqs.find(EqType::Sol)!=eqs.end()){
 	  const SolidEnergy* e=static_cast<const SolidEnergy*>(eqs.at(EqType::Sol));

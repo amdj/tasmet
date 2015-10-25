@@ -75,6 +75,7 @@ enum class Varnr {
     F,                 // A mechanical domain force [N]
     x,                // A mechanical displacement [m]
     Z,                 // A mechanical impedance [N/m]
+    mEkin	       // Kinetic energy flow (Watts)
     };
 
 #ifndef SWIG

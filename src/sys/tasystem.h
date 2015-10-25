@@ -8,8 +8,8 @@
 // Jacobian.
 
 #pragma once
-#ifndef _SYSTEM_H_
-#define _SYSTEM_H_
+#ifndef _TASYSTEM_H_
+#define _TASYSTEM_H_
 
 #include <memory>
 #include "vtypes.h"
@@ -20,14 +20,6 @@
 namespace segment{
   class Seg;
   class Connector;
-}
-namespace mech {
-  class Piston;
-} // namespace mech
-
-namespace duct{
-  class Duct;
-  class ConnectorVolume;
 }
 #endif
 
@@ -120,9 +112,6 @@ namespace tasystem{
     // void delseg(us n); // Not yet implemented.  Delete a segment
     // from the system (we have to determine how elaborated the API
     // has to be.)
-    const duct::Duct& getDuct(const string& ID) const;
-    const duct::ConnectorVolume& getConnnectorVolume(const string& ID) const;
-    const mech::Piston& getPiston(const string& ID) const;
     us getNDofs() const;	// Compute DOFS in system, set     
     us getNEqs() const;    
 
@@ -141,5 +130,5 @@ namespace tasystem{
   
 } // namespace tasystem
 
-#endif /* _SYSTEM_H_ */
+#endif /* _TASYSTEM_H_ */
 

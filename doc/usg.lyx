@@ -1875,7 +1875,6 @@ Create a PhaseConstraint object:
 \end_layout
 
 \begin_layout Verbatim
-
 	pc=PhaseConstraint(Varnr, freqnr, left)
 \end_layout
 
@@ -1884,7 +1883,6 @@ Apply this contraint to a segment which can accept them, for example a Tube:
 \end_layout
 
 \begin_layout Verbatim
-
 	t1.setPhaseConstraint(pc)
 \end_layout
 
@@ -4232,7 +4230,7 @@ Piston volume energy conservation
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\frac{\partial}{\partial t}\left(\frac{p}{\gamma-1}V\right)+p\frac{\partial V}{\partial t}+mc_{p}T=0
+\frac{\mathrm{d}}{\mathrm{d}t}\left(\frac{p_{r}}{\gamma-1}V_{r}\right)+p_{r}\frac{\mathrm{d}V_{r}}{\mathrm{d}t}+mH_{r}=0
 \end{equation}
 
 \end_inset
@@ -4241,14 +4239,44 @@ Piston volume energy conservation
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 To isentropic (and no mass flow):
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{d}\left(\frac{p_{r}}{\gamma-1}V_{r}\right)+p_{r}\mathrm{d}V_{r}=0=\frac{\mathrm{d}p_{r}}{p_{r}\left(\gamma-1\right)}+\frac{1}{\gamma-1}\frac{\mathrm{d}V_{r}}{V_{r}}+\frac{\mathrm{d}V_{r}}{V_{r}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{\mathrm{d}p_{r}}{p_{r}}+\gamma\frac{\mathrm{d}V_{r}}{V_{r}}=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{p}{p_{0}}=\left(\frac{V_{0}}{V}\right)^{\gamma}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
 \begin_inset Formula 
 \[
 \frac{dp}{p}=-\gamma\frac{dV}{V}
 \]
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 

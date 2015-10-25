@@ -31,6 +31,8 @@ namespace duct{
     static vd mHl(const Cell&);
     // Total enthalpy flow through righ cell wall
     static vd mHr(const Cell&);
+    static vd mEkinl(const Cell&);
+    static vd mEkinr(const Cell&);
     static tasystem::JacRow dmHl(const Cell&);
     static tasystem::JacRow dmHr(const Cell&);
 

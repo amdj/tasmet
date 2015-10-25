@@ -20,7 +20,6 @@
   #include "tasystem.h"
   #include "enginesystem.h"
 
-  #include "boundarylayer.h"
   #include "geom.h"
   #include "conetube.h"
 
@@ -124,7 +123,6 @@ void setTaSMETTracer(int);
 %include "connectorvolume.h"
  // Ducts
 %include "grid.h"
-%include "boundarylayer.h"
 %include "geom.h"
  // Geom instances
 %include "conetube.h"

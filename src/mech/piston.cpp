@@ -35,6 +35,10 @@ namespace mech {
       M(M),Sr(Sr),Sl(Sl),Km(Km),Cm(Cm),V0l(V0l),V0r(V0r),
       Stl(Stl),Str(Str)
     {
+      if(V0l<=0)
+	throw MyError("Illegal value for V0l given");
+      if(V0r<=0)
+	throw MyError("Illegal value for V0r given");
       // If Stl is undefined, we make it a cylinder
       if(Stl<0){
         d L=V0l/Sl;
@@ -86,9 +90,6 @@ namespace mech {
     mHr_=var(*gc);
     if(massL<0)
       massL=gc->rho0()*pc.V0l;
-    VARTRACE(50,massL);
-    VARTRACE(50,pc.V0l);
-    VARTRACE(50,gc->rho0());
     if(massR<0)
       massR=gc->rho0()*pc.V0r;
   }

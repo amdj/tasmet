@@ -153,25 +153,39 @@ namespace duct{
   inline vd TmidRt(const Cell& v,const WeightFactors& w){
     return w.WrR*v.TR().tdata() + w.WrL*v.T().tdata();
   }
-  inline vd mEkinL(const Cell& v,const WeightFactors& w) {
-    TRACE(15,"mEkinL()");
-    const vd& rhoLt=v.rhoL().tdata();
-    const vd& rhot=v.rho().tdata();
+  vd Energy::mEkinl(const Cell& v) {
+    TRACE(15,"Energy::mEkinL()");
+    vd rholt;
     d Sfl=v.Sfl;
-    vd rholt=w.WlL*rhoLt+w.WlR*rhot;
+    if(v.left()){
+      const WeightFactors w=WeightFactors(v);    
+      const vd& rhoLt=v.rhoL().tdata();
+      const vd& rhot=v.rho().tdata();
+      rholt=w.WlL*rhoLt+w.WlR*rhot;
+    }
+    else{
+      rholt=static_cast<const BcCell&>(v).rhobc().tdata();
+    }
     return fDFT*(pow(v.ml().tdata(),3)/pow(Sfl*rholt,2));
+
   }
-  inline vd mEkinR(const Cell& v,const WeightFactors& w) {
-    TRACE(15,"mEkinR()");
-    const vd& rhoRt=v.right()->rho().tdata();
-    const vd& rhot=v.rho().tdata();
+  vd Energy::mEkinr(const Cell& v) {
+    TRACE(15,"mEkinr()");
     d Sfr=v.Sfr;
-    vd rhort=w.WrR*rhoRt+w.WrL*rhot;
+    vd rhort;
+    if(v.right()){
+      const WeightFactors w=WeightFactors(v);    
+      const vd& rhoRt=v.right()->rho().tdata();
+      const vd& rhot=v.rho().tdata();
+      rhort=w.WrR*rhoRt+w.WrL*rhot;
+    }
+    else
+      rhort=static_cast<const BcCell&>(v).rhobc().tdata();
     return fDFT*(pow(v.mr().tdata(),3)/pow(Sfr*rhort,2));
   }  
-  inline JacRow dmEkinL(const Cell& v,const WeightFactors& w){
-    TRACE(15,"dmEkinL()");
-    JacRow dmEkinL(-1,4);
+  inline JacRow dmEkinl(const Cell& v,const WeightFactors& w){
+    TRACE(15,"dmEkinl()");
+    JacRow dmEkinl(-1,4);
 
     const vd& rhot=v.rho().tdata();
     const vd& rhoLt=v.rhoL().tdata();
@@ -181,21 +195,21 @@ namespace duct{
     vd rholt_sq=(pow((w.WlL*rhoLt+w.WlR*rhot),2));
     vd rholt_tr=pow(w.WlL*rhoLt+w.WlR*rhot,3);
     const vd& mlt=v.ml().tdata();
-    dmEkinL+=JacCol(v.ml(),fDFT*diagmat(1.5*pow(mlt,2)/\
+    dmEkinl+=JacCol(v.ml(),fDFT*diagmat(1.5*pow(mlt,2)/\
 					(rholt_sq*Sflsq))*iDFT);
     
-    dmEkinL+=JacCol(v.rho(),-fDFT*\
+    dmEkinl+=JacCol(v.rho(),-fDFT*\
 		    diagmat(w.WlR*pow(mlt,3)/	\
 			    (rholt_tr*Sflsq))*iDFT);
-    dmEkinL+=JacCol(v.rhoL(),-fDFT*\
+    dmEkinl+=JacCol(v.rhoL(),-fDFT*\
 		    diagmat(w.WlL*pow(mlt,3)/	\
 			    (rholt_tr*Sflsq))*iDFT);
     
-    return dmEkinL;
+    return dmEkinl;
   }
-  inline JacRow dmEkinR(const Cell& v,const WeightFactors& w){
-    TRACE(15,"dmEkinR()");
-    JacRow dmEkinR(-1,3);
+  inline JacRow dmEkinr(const Cell& v,const WeightFactors& w){
+    TRACE(15,"dmEkinr()");
+    JacRow dmEkinr(-1,3);
     const vd& rhot=v.rho().tdata();
     const vd& rhoRt=v.rhoR().tdata();
     const vd& mrt=v.mr().tdata();
@@ -203,14 +217,14 @@ namespace duct{
     d Sfrsq=pow(Sfr,2);
     vd rhortsq=pow(w.WrR*rhoRt+w.WrL*rhot,2);
     vd rhort_tr=pow(w.WrR*rhoRt+w.WrL*rhot,3);      
-    dmEkinR+=JacCol(v.mr(),fDFT*\
+    dmEkinr+=JacCol(v.mr(),fDFT*\
 		    diagmat(1.5*pow(mrt,2)/(rhortsq*Sfrsq))*iDFT);
 
-    dmEkinR+=JacCol(v.rho(),-fDFT*\
+    dmEkinr+=JacCol(v.rho(),-fDFT*\
 		    diagmat(w.WrL*pow(mrt,3)/(rhort_tr*Sfrsq))*iDFT);
-    dmEkinR+=JacCol(v.rhoR(),-fDFT*\
+    dmEkinr+=JacCol(v.rhoR(),-fDFT*\
 		    diagmat(w.WrR*pow(mrt,3)/(rhort_tr*Sfrsq))*iDFT);
-    return dmEkinR;
+    return dmEkinr;
   }
   vd Energy::mHl(const Cell& v) {
     TRACE(15,"Energy::mHl()");
@@ -222,7 +236,7 @@ namespace duct{
       // TRACE(20,TmidLt(v,w));
       vd mHl=fDFT*(cp0*TmidLt(v,w)%v.ml().tdata());
       // ******************** Kinetic energy part
-      mHl+=mEkinL(v,w);
+      mHl+=mEkinl(v);
       return mHl;
     }
     else
@@ -237,7 +251,7 @@ namespace duct{
       d cp0=cp(v);
       vd mHr=fDFT*(cp0*TmidRt(v,w)%v.mr().tdata());
       // ******************** Kinetic energy part
-      mHr+=mEkinR(v,w);
+      mHr+=mEkinr(v);
     
       return mHr;
     }
@@ -257,7 +271,7 @@ namespace duct{
       dmHl+=JacCol(v.T(),fDFT*diagmat(cp0*w.WlR*mltdata)*iDFT );
       dmHl+=JacCol(v.TL(),fDFT*diagmat(cp0*w.WlL*mltdata)*iDFT );
       // ******************** Kinetic energy part
-      dmHl+=dmEkinL(v,w);
+      dmHl+=dmEkinl(v,w);
       return dmHl;
     }
     else
@@ -279,7 +293,7 @@ namespace duct{
       dmHr+=JacCol(v.T(),fDFT*diagmat(cp0*w.WrL*mrtdata)*iDFT);
       dmHr+=JacCol(v.TR(),fDFT*diagmat(cp0*w.WrR*mrtdata)*iDFT);
       // ******************** Kinetic energy part
-      dmHr+=dmEkinR(v,w);
+      dmHr+=dmEkinr(v,w);
       return dmHr;
     }
     else

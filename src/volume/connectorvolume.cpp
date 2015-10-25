@@ -37,7 +37,7 @@ namespace duct {
 
   void DuctConnection::setPtr(const TaSystem& sys){
     TRACE(15,"DuctConnection::getPtr()");
-    t=&sys.getDuct(segid);
+    t=&duct::asDuct(*sys.getSeg(segid));
     c=&(t->bcCell(position));
   }
 

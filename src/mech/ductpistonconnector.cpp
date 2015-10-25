@@ -63,10 +63,10 @@ namespace mech {
     KPistonDuct(other.KPistonDuct)
   {
     TRACE(15,"DuctPistonConnector::DuctPistonConnector()");
-    if((piston=&sys.getPiston(pistonid))==nullptr){
+    if((piston=&asPiston(*sys.getSeg(pistonid)))==nullptr){
       throw MyError(msg("Segment %s is not of type Piston",pistonid.c_str()));
     }
-    if((duct=&sys.getDuct(ductid))==nullptr){
+    if((duct=&duct::asDuct(*sys.getSeg(ductid)))==nullptr){
       throw MyError(msg("Segment %g is not of type Duct",ductid.c_str()));
     }
     
@@ -104,25 +104,10 @@ namespace mech {
       signduct*ductcell.extrapolateQuant(Varnr::Q)\
       +piston->mH(pistonPos)();    
 
-    // ***** Fourth equation: conduction to (from) piston equals
-    // ***** conduction from duct
+    // ***** Fourth equation: conduction from piston to equals
+    // ***** conduction to duct
 
-   // Compute conduction path length
-    d Lcon=pistonPos==Pos::left?pc.V0l/pc.Sl:pc.V0r/pc.Sr;
-    // Compute cross sectional area of duct exit
-    d Sf=ductcell.Sfbc();
-    // Temperature of gas in piston volume in time domain
-    const vd& pTt=piston->T(pistonPos).tdata();
-    // Temperature of gas at duct boundary in time domain
-    const vd& tTt=ductcell.Tbc().tdata();
-    // Kappa of piston in time domain.
-    vd kappat=gc->gas().kappa(pTt);
-
-
-    vd Qpistontoduct=fDFT*((Sf/Lcon)*kappat%\
-                           (pTt-tTt));
-
-    error.subvec(3*Ns,4*Ns-1)=Qpistontoduct\
+     error.subvec(3*Ns,4*Ns-1)=Qpt()
       +signduct*ductcell.extrapolateQuant(Varnr::Q);
 
 
@@ -175,16 +160,8 @@ namespace mech {
     // ***** Fourth equation: conduction to (from) piston equals
     // ***** conduction from duct
 
-    // Compute conduction path length
-    d Lcon=(pistonPos==Pos::left)?pc.V0l/pc.Sl:pc.V0r/pc.Sr;
-    // Compute cross sectional area of duct exit
-    d Sf=ductcell.Sfbc();
-
     JacRow QisQjac(firsteqnr+3*Ns,3);
-    QisQjac+=JacCol(piston->T(pistonPos),                       \
-                         fDFT*(Sf/Lcon)*diagmat(kappat)*iDFT);
-    QisQjac+=JacCol(ductcell.Tbc(),                             \
-                         -fDFT*(Sf/Lcon)*diagmat(kappat)*iDFT);
+    QisQjac+=dQpt();
     QisQjac+=(ductcell.dExtrapolateQuant(Varnr::Q)*=signduct);
     jac+=QisQjac;
 
@@ -193,6 +170,52 @@ namespace mech {
     pispjac+=JacCol(ductcell.pbc(),eye);
     pispjac+=JacCol(piston->p(pistonPos),-eye);
     jac+=pispjac;
+  }
+  vd DuctPistonConnector::Qpt() const {
+    TRACE(15,"DuctPistonConnector::Qpt()");
+    // Return the heat flow from the piston to the tube
+    const duct::BcCell& ductcell=duct->bcCell(ductPos);
+    const PistonConfiguration& pc=piston->getPc();
+
+
+   // Compute conduction path length
+    d Lcon=pistonPos==Pos::left?pc.V0l/pc.Sl:pc.V0r/pc.Sr;
+    // Compute cross sectional area of duct exit
+    d Sf=ductcell.Sfbc();
+
+    // Temperature of gas in piston volume in time domain
+    const vd& pTt=piston->T(pistonPos).tdata();
+    // Temperature of gas at duct boundary in time domain
+    const vd& tTt=ductcell.Tbc().tdata();
+    // Kappa of piston in time domain.
+    vd kappat=gc->gas().kappa(pTt);
+
+    return fDFT*((Sf/Lcon)*kappat%(pTt-tTt));
+  }
+  JacRow DuctPistonConnector::dQpt() const {
+    TRACE(15,"DuctPistonConnector::dQpt()");
+
+    const duct::BcCell& ductcell=duct->bcCell(ductPos);
+    const PistonConfiguration& pc=piston->getPc();
+
+   // Compute conduction path length
+    d Lcon=pistonPos==Pos::left?pc.V0l/pc.Sl:pc.V0r/pc.Sr;
+    // Compute cross sectional area of duct exit
+    d Sf=ductcell.Sfbc();
+
+    // Temperature of gas in piston volume in time domain
+    const vd& pTt=piston->T(pistonPos).tdata();
+    // Temperature of gas at duct boundary in time domain
+    const vd& tTt=ductcell.Tbc().tdata();
+    // Kappa of piston in time domain.
+    vd kappat=gc->gas().kappa(pTt);
+
+    JacRow dQpt(-1,2);
+    dQpt+=JacCol(piston->T(pistonPos),				\
+                         fDFT*(Sf/Lcon)*diagmat(kappat)*iDFT);
+    dQpt+=JacCol(ductcell.Tbc(),                             \
+                         -fDFT*(Sf/Lcon)*diagmat(kappat)*iDFT);
+    return dQpt;
   }
   void DuctPistonConnector::setEqNrs(us firsteqnr){
     TRACE(15,"vd DuctPistonConnector::setEqNrs()");

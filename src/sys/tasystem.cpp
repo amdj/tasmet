@@ -315,15 +315,6 @@ namespace tasystem{
     for(auto seg: segs)
       seg.second->resetHarmonics();
   }
-  const duct::Duct& TaSystem::getDuct(const string& id)  const {
-    return dynamic_cast<const duct::Duct&>(*segs.at(id));
-  }
-  const duct::ConnectorVolume& TaSystem::getConnnectorVolume(const string& id)  const {
-    return dynamic_cast<const duct::ConnectorVolume&>(*segs.at(id));
-  }
-  const mech::Piston& TaSystem::getPiston(const string& id)  const {
-    return dynamic_cast<const mech::Piston&>(*segs.at(id));
-  }
   void TaSystem::setRes(const vd& Res){
     checkInit();
     TRACE(14,"TaSystem::SetRes(vd res)");

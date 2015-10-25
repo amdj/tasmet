@@ -16,6 +16,7 @@
 namespace mech {
   
   #ifdef SWIG
+  %catches(std::exception,...) PistonConfiguration::PistonConfiguration(d Sl,d Sr,d V0l,d V0r,d M,d Km,d Cm,d Stl=-1,d Str=-1);
   %catches(std::exception,...) Piston::Piston(const PistonConfiguration& pc,bool arbitrateMass=false);
   #endif // SWIG
 
@@ -118,6 +119,10 @@ namespace mech {
     #endif
 
   };
+  inline const Piston& asPiston(const segment::Seg& s){
+    return dynamic_cast<const Piston&>(s);
+  }
+
   
 } // namespace mech
 

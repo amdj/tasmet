@@ -11,6 +11,9 @@ from .TaSMET import AdiabaticWall,\
      Globalconf,Globalconf_airSTP,Globalconf_heliumSTP,LinearGrid,BlGrid,\
      ImpedanceBc,IsentropicTube,IsoTWall,LaminarDuct,MechBc,PhaseConstraint,\
      Piston,PistonConfiguration,PressureBc,SolProgress,Solver,SolverConfiguration,\
+     asDuctPistonConnector,\
+     asDuct,\
+     asPiston,\
      Stack,\
      Varnr_F,\
      Varnr_Q,\
@@ -21,6 +24,7 @@ from .TaSMET import AdiabaticWall,\
      Varnr_U,\
      Varnr_Z,\
      Varnr_m,\
+     Varnr_mEkin,\
      Varnr_mH,\
      Varnr_mu,\
      Varnr_none,\
