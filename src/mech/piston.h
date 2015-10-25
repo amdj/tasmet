@@ -57,20 +57,13 @@ namespace mech {
     d T0=-1;
     bool arbitrateMass=false;
     
-    Piston(const tasystem::TaSystem&,const Piston& other);
     #ifndef SWIG
     Piston(const Piston& other)=delete;
     Piston& operator=(const Piston& other)=delete;    
     #endif // ifndef SWIG
+    Piston(const tasystem::TaSystem&,const Piston& other);
   public:
-
-    Piston(const PistonConfiguration& pc,bool arbitrateMass=false):
-      Seg(),
-      pc(pc),
-      arbitrateMass(arbitrateMass)
-    {
-      TRACE(15,"Piston()");
-    }
+    Piston(const PistonConfiguration& pc,bool arbitrateMass=false);
     ~Piston();
     segment::Seg* copy(const tasystem::TaSystem& s) const {
       return new Piston(s,*this);

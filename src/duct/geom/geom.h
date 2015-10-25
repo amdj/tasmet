@@ -5,7 +5,6 @@
 #include "constants.h"
 #include "vtypes.h"
 #include "localgeom.h"
-#include "grid.h"
 
 
 namespace duct {
@@ -14,23 +13,19 @@ namespace duct {
   #endif
 
   class Geom{
-    Grid grid_;
-
     Geom& operator=(const Geom& other);
+    vd x_;			// The grid
     bool blapprox=false;
     bool prismatic=true;
-
-
   protected:
-    Geom(const Grid& g,bool blapprox=false,bool prismatic=true);
-
+    Geom(const vd& x,bool blapprox=false,bool prismatic=true);
+    Geom(const Geom&);
   public:
     virtual ~Geom(){}
     #ifndef SWIG
     LocalGeom localGeom(us i) const;	// Get a local geometry for a
                                         // certain cell
     #endif
-    const Grid& grid() const{return grid_;}
     virtual void show() const=0;
     virtual d S(us i) const=0;		 // Cross sectional area as a function of x
     virtual d phi(us i) const=0;		 // Volume porosity at position of cell walls
@@ -45,9 +40,9 @@ namespace duct {
     bool isBlApprox() const {return blapprox;}
 
     us nCells() const {return x().size()-1;}
-    const vd& x() const {return grid_.getx();}
+    const vd& x() const {return x_;}
     d x(us i) const {return x()(i);}
-    d L() const {return grid_.getL();}
+    d L() const {return *(x_.end()-1);}
     us gp() const {return x().size();}
     d Sleft() const {return S(0);}
     d Sright() const {return S(nCells());}

@@ -221,10 +221,10 @@ namespace duct {
   vd Duct::getValueT(Varnr v,d timeinst) const{
     TRACE(15,"Duct::getValueT()");
     vd res=getValue(v,0);	// Time-averaged part
-    // omega*T=2*pi
+    d omg=gc->getomg();
     us Nf=gc->Nf();
     for(us i=1; i<Nf+1 ;i++){
-      res+=real(getValueC(v,i)*exp((2.0*I*number_pi)*((d) i)*timeinst));
+      res+=real(getValueC(v,i)*exp((omg*I)*((d) i)*timeinst));
     }
     return res;
   }

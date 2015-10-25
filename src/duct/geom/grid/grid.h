@@ -13,44 +13,40 @@ namespace duct{
   SPOILNAMESPACE
   #endif
   #ifdef SWIG
-
+  // %catc
   #endif
 
-  class BoundaryLayer;
   class Grid{
-    BoundaryLayer *bL=nullptr,*bR=nullptr;
-    us gp;                      // Only changeable by constructor
-    d L;                        // Only changeable by constructor
-    vd x;
   public:
-    Grid(us gp,d L);
-    // Copy constructor can just copy all
-    Grid(const Grid& g);
-    ~Grid();
+    Grid& operator=(const Grid& g)=delete;
+    virtual vd getx() const=0;
+    virtual ~Grid(){}
+  };
 
-    #ifndef SWIG
-    Grid& operator=(const Grid& g);
-    #endif
-    // In these functions, we give the number of gridpoints (n) in the
-    // boundary layer, plus the size of the layer (Lbl)
+  class LinearGrid:public Grid{
+    us gp;
+    d L;			// Length of the Duct
+  public:
+    LinearGrid(us gp,d L);
+    LinearGrid(const LinearGrid& g):LinearGrid(g.gp,g.L){}
+    vd getx() const {return linspace(0,L,gp);}
+  };
 
-    // left boundary
-    void setLeftBl(const BoundaryLayer& blleft); // Exponential growing
-    // right boundary
-    void setRightBl(const BoundaryLayer& blright); // Exponential growing
+  // Boundary layer grid.
+  // L: length of grid
+  // dxb: boundary layer grid spacing (minimal grid spacing)
+  // xb: boundary layer tickness
+  // dxmid: spacing in the middle part
+  
 
-    bool isLeftBl() const { return bL?true:false;}
-    bool isRightBl() const { return bR?true:false;}
-    d getL() const {return L;}
-    const vd& getx() const{return x;}
-    us getgp() const {return gp;}
-  private:
-    void makex();
-    void makeLeftBl();
-    void makeRightBl();
-   };
+  class BlGrid:public Grid{
+    d L,dxb,dxmid;
+  public:
+    BlGrid(d L,d dxb,d dxmid);
+    vd getx() const;
+  };
 
- } // namespace duct
+} // namespace duct
 
 #endif /* _GRID_H_ */
 

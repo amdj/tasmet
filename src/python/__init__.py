@@ -4,11 +4,11 @@ Created on March 31, 2014
 
 @author: anne
 '''
-from .TaSMET import AdiabaticWall,AutoBoundaryLayer,BoundaryLayer,\
+from .TaSMET import AdiabaticWall,\
      ConeTube,ConnectorVolume,CylindricalTube,DuctConnector,\
      DuctPistonConnector,\
      EngineSystem,TaSystem,\
-     Globalconf,Globalconf_airSTP,Globalconf_heliumSTP,Grid,\
+     Globalconf,Globalconf_airSTP,Globalconf_heliumSTP,LinearGrid,BlGrid,\
      ImpedanceBc,IsentropicTube,IsoTWall,LaminarDuct,MechBc,PhaseConstraint,\
      Piston,PistonConfiguration,PressureBc,SolProgress,Solver,SolverConfiguration,\
      Stack,\

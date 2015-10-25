@@ -4,7 +4,7 @@
 namespace duct{
 
 
-  ConeTube::ConeTube(const Grid& g,d r1,d r2,bool blapprox) throw(std::exception)
+  ConeTube::ConeTube(const vd& g,d r1,d r2,bool blapprox) 
     :Geom(g,blapprox),rL(r1),rR(r2){
     TRACE(15,"ConeTube::ConeTube()");
     if(r1 <=0 || r2 <= 0)
@@ -28,7 +28,7 @@ namespace duct{
   }
 
 
-  CylindricalTube::CylindricalTube(const Grid& g,d r,bool blapprox):ConeTube(g,r,r,blapprox){
+  CylindricalTube::CylindricalTube(const vd& g,d r,bool blapprox):ConeTube(g,r,r,blapprox){
     setPrismatic(true);
   }
   void CylindricalTube::show() const{
