@@ -4235,12 +4235,20 @@ Piston volume energy conservation
 
 \end_inset
 
+or
+\begin_inset Formula 
+\[
+\frac{\mathrm{d}}{\mathrm{d}t}\left(\frac{p_{r}}{\gamma-1}V_{r}\right)-\frac{\mathrm{d}x_{p}}{\mathrm{d}t}S_{r}p_{r}+mH_{r}=0
+\]
+
+\end_inset
+
 
 \end_layout
 
 \begin_layout Standard
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
 To isentropic (and no mass flow):
