@@ -43,7 +43,9 @@ namespace segment{
     virtual us getNDofs() const=0;
     virtual d getMass() const=0;
     // ------------------------------
+    #endif
     virtual vd getRes() const=0; // Get a result vector
+    #ifndef SWIG    
     virtual void domg(vd&) const=0;	// Derivative of error w.r.t. base frequency.
     virtual void setRes(const vd& res)=0;  // Setting result vector
     virtual void dmtotdx(vd&) const=0; // Derivative of current fluid mass in

@@ -54,8 +54,13 @@ namespace tasystem{
   TaSystem& TaSystem::operator+=(const Seg& s){
     TRACE(24,"TaSystem::operator+=(Seg)");
     hasInit=false;
+    if(segs.find(s.getID())!=segs.end()){
+      throw  MyError(ermsg(
+			   "Segment with id %s already present in the system",s.getID().c_str()));
+    }
     segs[s.getID()]=s.copy(*this);
     segs[s.getID()]->setNumber(nSegs()-1);
+      
     return *this;
   }
   TaSystem& TaSystem::operator+=(const Connector& c){
@@ -190,6 +195,8 @@ namespace tasystem{
     checkInit();
     cout << "########################## Showing TaSystem...\n";
     cout << "Showing Global configuration...\n";
+    if(arbitrateMassEq>=0)
+      cout << "Mass is arbitrated by replacing equation " << arbitrateMassEq << ".\n";
     Globalconf::show();
     if(detailnr>0){
       for(auto con:connectors){
@@ -307,15 +314,6 @@ namespace tasystem{
     assert(!segs.empty());
     for(auto seg: segs)
       seg.second->resetHarmonics();
-  }
-  const duct::Duct& TaSystem::getDuct(const string& id)  const {
-    return dynamic_cast<const duct::Duct&>(*segs.at(id));
-  }
-  const duct::ConnectorVolume& TaSystem::getConnnectorVolume(const string& id)  const {
-    return dynamic_cast<const duct::ConnectorVolume&>(*segs.at(id));
-  }
-  const mech::Piston& TaSystem::getPiston(const string& id)  const {
-    return dynamic_cast<const mech::Piston&>(*segs.at(id));
   }
   void TaSystem::setRes(const vd& Res){
     checkInit();

@@ -21,6 +21,8 @@ namespace duct {
   #endif // SWIG
   
   #ifndef SWIG
+  // Helper struct which is used to contain the ducts and pistons
+  // which are connected to a ConnectorVolume
   struct Connection{
     std::string segid;
     Pos position;
@@ -28,6 +30,7 @@ namespace duct {
   };
   class Duct;
   class BcCell;
+
   struct DuctConnection:public Connection{
     const Duct* t=nullptr;
     const BcCell* c=nullptr;
@@ -38,13 +41,16 @@ namespace duct {
 
   struct PistonConnection:public Connection{};
   #endif
+
   class ConnectorVolume: public segment::Seg {
     us firsteqnr;               // First equation of this segment
     d volume;                   // The fluid volume
-
     // Vector containing all Duct connections
     std::vector<DuctConnection> ductConnections;
     std::vector<PistonConnection> pistonConnections;
+
+    bool arbitrateMass=false;	// Whether this segment arbitrates the
+				// mass in the total system.
     
     tasystem::var p_,T_,rho_;
     ConnectorVolume(const tasystem::TaSystem&,const ConnectorVolume& other);
@@ -55,12 +61,12 @@ namespace duct {
 
 
   public:
-
-    ConnectorVolume(d volume);
+    ConnectorVolume(d volume,bool arbitrateMass=false);
     ~ConnectorVolume();
     segment::Seg* copy(const tasystem::TaSystem& s) const {
       return new ConnectorVolume(s,*this);
     }
+    int arbitrateMassEq() const;
     const tasystem::var& p() const {return p_;}
     const tasystem::var& rho() const {return rho_;}
     const tasystem::var& T() const {return T_;}
@@ -83,7 +89,9 @@ namespace duct {
     virtual us getNDofs() const;
     virtual d getMass() const;
     // ------------------------------
+    #endif
     virtual vd getRes() const; // Get a result vector
+    #ifndef SWIG
     virtual void domg(vd&) const;	// Derivative of error w.r.t. base frequency.
     virtual void setRes(const vd& res);  // Setting result vector
     virtual void dmtotdx(vd&) const; // Derivative of current fluid mass in

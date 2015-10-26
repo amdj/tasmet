@@ -1,16 +1,19 @@
 #include "geom.h"
-#include "grid.h"
 #include <assert.h>
 
 namespace duct{
 
   
-  Geom::Geom(const Grid& grid,bool blapprox,bool prismatic):
-    grid_(grid),
+  Geom::Geom(const vd& grid,bool blapprox,bool prismatic):
+    x_(grid),
     blapprox(blapprox),
     prismatic(prismatic)
   {}
-
+  Geom::Geom(const Geom& o):
+    x_(o.x_),
+    blapprox(o.blapprox),
+    prismatic(o.prismatic)
+  {}
   // void Geom::show() const{
   //   cout << "No effort done to show geom\n";
   // }

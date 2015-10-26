@@ -12,22 +12,21 @@ message("Running Cmake for TaSMET version ${PACKAGE_VERSION}")
 add_definitions(-DTRACERNAME=TaSMETTracer)
 # add_definitions(-DTRACER_IN_COMMON)
 
-
-#==================
-# Compiler settings ======
-#==================
+#====================================================
+# Compiler settings ************************************************
+#====================================================
 
 # SET THE COMPILER
-set(CMAKE_CXX_COMPILER "g++")
-# set(CMAKE_CXX_COMPILER "clang++")
+# set(CMAKE_CXX_COMPILER "g++")
+set(CMAKE_CXX_COMPILER "clang++")
 
 # Always required make flags in case of both compilers
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pipe -fPIC -Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-address ")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pipe -fPIC -Wall -Wextra -Wno-unused-parameter -Wno-unused-variable  ")
 
 
 if(${CMAKE_CXX_COMPILER} STREQUAL "g++")
   message("Compiler chosen: " ${CMAKE_CXX_COMPILER})
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-function  -ffunction-sections -fdata-sections -Wno-unused-local-typedefs -Wno-empty-body -Wno-unused-but-set-variable -Wno-return-local-addr -Wno-cpp ")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -ffunction-sections -fdata-sections -Wno-unused-local-typedefs")
 
 elseif(${CMAKE_CXX_COMPILER} STREQUAL "clang++")
   message("Compiler chosen: " ${CMAKE_CXX_COMPILER})
@@ -38,13 +37,25 @@ endif(${CMAKE_CXX_COMPILER} STREQUAL "g++")
 # Stop letting Numpy complain about its API
 add_definitions(-DNPY_NO_DEPRECATED_API=NPY_1_4_API_VERSION)
 
-#=====================
-# Optimized code flags
-#=====================
+#==================================================
+# Optimized code flags *******************************************
+#==================================================
+
+#Debug mode
+# set(CMAKE_CXX_FLAGS  "${CMAKE_CXX)FLAGS} -g -ggdb")
 
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -march=native -mtune=native -fopenmp")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -march=native -mtune=native")
 # set(CMAKE_CLANG "${CMAKE_GCC} -march=native -mtune=native -fopenmp")
+
+# To disable bound checking on std::vector, and to disable assertions
+# add_definitions(-DNDEBUG)
+
+# To increase speed on Armadillo
+# add_definitions(-DARMA_NO_DEBUG)
+
+# Disable traces
+# add_definitions(-DTRACER=0)
 
 # Pre-allocation size for matrices. Very important setting to tune the
 # code in case we know that we are going to run with certain sizes of matrices and vectors. For Nf=6, set this to (2*Nf+1)^2=169
@@ -62,18 +73,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -march=native -mtune=native -fopenmp
 # For Nf=12: 625
 # Watch out! Setting prealloc too high can give too much overhead for smaller Nf's
 # add_definitions(-DARMA_MAT_PREALLOC=625)
-
-# To disable bound checking on std::vector, and to disable assertions
-# add_definitions(-DNDEBUG)
-
-# To increase speed on Armadillo
-# add_definitions(-DARMA_NO_DEBUG)
-
-# Disable traces
-# add_definitions(-DTRACER=0)
-
-#Debug mode
-# set(CMAKE_GCC "${CMAKE_GCC} -g -ggdb")
 
 
 # ##########################

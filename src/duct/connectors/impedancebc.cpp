@@ -14,9 +14,9 @@
 #include "bccell.h"
 #include "jacobian.h"
 #include "pycallback.h"
-#define fDFT (gc->fDFT)
-#define iDFT (gc->iDFT)
-#define DDTfd (gc->DDTfd)
+#define fDFT (gc->fDFT())
+#define iDFT (gc->iDFT())
+#define DDTfd (gc->DDTfd())
 
 #define Ns (gc->Ns())
 #define Nf (gc->Nf())

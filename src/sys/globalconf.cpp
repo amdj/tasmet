@@ -25,6 +25,7 @@ namespace tasystem{
 
     p0_=p0;
     T0_=T0;
+
     // Initialize FFT matrices
     set(Nf,freq);
     TRACE(10,"Globalconf constructor done");
@@ -41,78 +42,42 @@ namespace tasystem{
     cout << "------- c0:            : " << c0() << "\n";
 
   }
-  void Globalconf::setNf(us Nf){
-    set(Nf,this->omg/2/number_pi);
-  }
   void Globalconf::set(us Nf,d freq){
     TRACE(15,"Globalconf::set(Nf_,freq)");
     //ctor
     this->Nf_=Nf;
-    Ns_=2*Nf_+1;
+    this->omg=2*number_pi*freq;
+    us Ns=this->Ns();
     // Reinitialize all operators
-    iDFT=zeros<dmat>(Ns_,Ns_);
-    fDFT=zeros<dmat>(Ns_,Ns_);
+    iDFT_=zeros<dmat>(Ns,Ns);
+    fDFT_=zeros<dmat>(Ns,Ns);
 
-    DDTfd=zeros<dmat>(Ns_,Ns_);
-    DDTtd=zeros<dmat>(Ns_,Ns_);
-    ddt=zeros<dmat>(Ns_-1,Ns_-1);
-    iddt=zeros<dmat>(Ns_-1,Ns_-1);
-    updateiDFT();
-    updatefDFT();
-
-    setfreq(freq);
-
-    TRACE(-1,"fDFT:" << fDFT);
-  }
-  void Globalconf::setfreq(d freq){setomg(2*number_pi*freq);}
-  void Globalconf::setomg(d omg)  {
-    TRACE(15,"Globalconf::setomg()");
-    
-    this->omg=omg;
-    oldomg=omg;
-    updateiomg();
-  }
-  void Globalconf::updatefDFT(){
-    fDFT.row(0).fill(1.0/double(Ns_));
+    DDTfd_=zeros<dmat>(Ns,Ns);
+    fDFT_.row(0).fill(1.0/double(Ns));
 
     for(us i=1;i<=Nf_;i++){
-      for(us j=0; j<Ns_;j++){
+      for(us j=0; j<Ns;j++){
         //Row i+1 (cosine components)
-        fDFT(2*i-1,j)=2.0*cos(2.0*number_pi*double(i)*double(j)/double(Ns_))/double(Ns_);
+        fDFT_(2*i-1,j)=2.0*cos(2.0*number_pi*double(i)*double(j)/double(Ns))/double(Ns);
         //Row i (sine components)
-        fDFT(2*i,j)=-2.0*sin(2.0*number_pi*double(i)*double(j)/double(Ns_))/double(Ns_);
+        fDFT_(2*i,j)=-2.0*sin(2.0*number_pi*double(i)*double(j)/double(Ns))/double(Ns);
       }
     }
-  }
-  void Globalconf::updateiDFT(){
-    TRACE(10,"Globalconf::updateiDFT()");
-    
-    iDFT.col(0).fill(1.0);	// Steady part
-    for(us k=0;k<Ns_;k++){
+    iDFT_.col(0).fill(1.0);	// Steady part
+    for(us k=0;k<Ns;k++){
       for (us n=1;n<=Nf_;n++){
-        iDFT(k,2*n-1)=cos(2.0*number_pi*double(n)*double(k)/Ns_);
-        iDFT(k,2*n)=-sin(2.0*number_pi*double(n)*double(k)/Ns_);
+        iDFT_(k,2*n-1)=cos(2.0*number_pi*double(n)*double(k)/Ns);
+        iDFT_(k,2*n)=-sin(2.0*number_pi*double(n)*double(k)/Ns);
       }
     }
-  }
-  void Globalconf::updateiomg(){
-    TRACE(15,"Globalconf::updateiomg()");
-    if(Nf_!=0){
-      for(us i=1;i<=Nf_;i++){
-        DDTfd(2*i-1,2*i  )=-double(i)*omg;
-        DDTfd(2*i  ,2*i-1)=double(i)*omg;
-      }
-      DDTtd=iDFT*DDTfd*fDFT;
-      ddt=DDTfd.submat(1,1,Ns_-1,Ns_-1);
-      //cout << "ddt:" << ddt << endl;
-      iddt=inv(ddt);
+    for(us i=1;i<=Nf_;i++){
+      DDTfd_(2*i-1,2*i  )=-double(i)*omg;
+      DDTfd_(2*i  ,2*i-1)=double(i)*omg;
     }
-    else{
-      DDTfd(0,0)=0;
-    }
+
   }
-  
-
-
+  void Globalconf::setNf(us Nf){set(Nf,getfreq());}  
+  void Globalconf::setfreq(d freq){set(Nf(),freq);}
+  void Globalconf::setomg(d omg)  {set(Nf(),omg/(2*number_pi));}
 
 } // Namespace tasystem

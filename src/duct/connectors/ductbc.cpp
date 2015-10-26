@@ -2,6 +2,7 @@
 #include "tasystem.h"
 #include "duct.h"
 #include "exception.h"
+#include "duct.h"
 
 namespace duct{
   using tasystem::TaSystem;
@@ -14,7 +15,7 @@ namespace duct{
   {
     this->sys=&sys;
     try{
-      t=&sys.getDuct(segid);
+      t=&asDuct(*sys.getSeg(segid));
     }
     catch(const std::exception& b){
       WARN("Seg id" << segid << " is not a Duct! Initialization of DuctBc failed.");

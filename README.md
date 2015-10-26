@@ -18,6 +18,13 @@ the User's guide provided with the code.
 
 [Wiki]: https://github.com/amdj/tasmet/wiki
 
+## Example models
+Example models for TaSMET will be provided in a different repository:
+[tasmet_examples][ta_ex]
+
+
+[ta_ex]: https://github.com/amdj/tasmet_examples
+
 
 ## Release notes version 0.1
 - Stacks cannot yet be connected to ConnectorVolumes

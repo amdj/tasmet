@@ -10,9 +10,9 @@
 #include "cell.h"
 #include "jacrow.h"
 
-#define iDFT (v.gc->iDFT)
-#define fDFT (v.gc->fDFT)
-#define DDTfd (v.gc->DDTfd)
+#define iDFT (v.gc->iDFT())
+#define fDFT (v.gc->fDFT())
+#define DDTfd (v.gc->DDTfd())
 
 namespace duct {
   using tasystem::JacRow;

@@ -15,9 +15,9 @@
 #include "jacobian.h"
 #include "energy.h"
 
-#define fDFT (gc->fDFT)
-#define iDFT (gc->iDFT)
-#define DDTfd (gc->DDTfd)
+#define fDFT (gc->fDFT())
+#define iDFT (gc->iDFT())
+#define DDTfd (gc->DDTfd())
 
 #define Ns (gc->Ns())
 #define eye (arma::eye(Ns,Ns))
@@ -49,8 +49,8 @@ namespace duct {
     K2to1(o.K2to1)
   {
     
-    bccells[0]=&sys.getDuct(segids[0]).bcCell(pos[0]);
-    bccells[1]=&sys.getDuct(segids[1]).bcCell(pos[1]);
+    bccells[0]=&asDuct(*sys.getSeg(segids[0])).bcCell(pos[0]);
+    bccells[1]=&asDuct(*sys.getSeg(segids[1])).bcCell(pos[1]);
     assert(bccells[0]&&bccells[1]);
 
     if(pos[0]==Pos::left) 
@@ -122,7 +122,7 @@ namespace duct {
     // Fourth equation: continuity of total enthalpy
     error.subvec(Ns*nr,Ns*(nr+1)-1)=\
       fDFT*(cp*T0tbc+0.5*pow(u0tbc,2)-cp*T1tbc-0.5*pow(u1tbc,2));
-    // fDFT*(kappaSft%(T0t-T1t)/dx)\
+    // fDFT*(kappaSft%(T0t-T1t)/dx)
     // -out[0]*bccells[0]->extrapolateQuant(Varnr::Q);
     nr++;      
 

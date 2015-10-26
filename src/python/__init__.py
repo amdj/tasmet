@@ -4,12 +4,16 @@ Created on March 31, 2014
 
 @author: anne
 '''
-from .TaSMET import AdiabaticWall,AutoBoundaryLayer,BoundaryLayer,\
+from .TaSMET import AdiabaticWall,\
      ConeTube,ConnectorVolume,CylindricalTube,DuctConnector,\
+     DuctPistonConnector,\
      EngineSystem,TaSystem,\
-     Globalconf,Globalconf_airSTP,Globalconf_heliumSTP,Grid,\
+     Globalconf,Globalconf_airSTP,Globalconf_heliumSTP,LinearGrid,BlGrid,\
      ImpedanceBc,IsentropicTube,IsoTWall,LaminarDuct,MechBc,PhaseConstraint,\
      Piston,PistonConfiguration,PressureBc,SolProgress,Solver,SolverConfiguration,\
+     asDuctPistonConnector,\
+     asDuct,\
+     asPiston,\
      Stack,\
      Varnr_F,\
      Varnr_Q,\
@@ -20,6 +24,7 @@ from .TaSMET import AdiabaticWall,AutoBoundaryLayer,BoundaryLayer,\
      Varnr_U,\
      Varnr_Z,\
      Varnr_m,\
+     Varnr_mEkin,\
      Varnr_mH,\
      Varnr_mu,\
      Varnr_none,\
@@ -33,6 +38,6 @@ from .TaSMET import AdiabaticWall,AutoBoundaryLayer,BoundaryLayer,\
      doIter,\
      left,\
      right,\
-     setTASMETTracer,\
+     setTaSMETTracer,\
      var
      

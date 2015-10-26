@@ -15,9 +15,8 @@
 namespace tasystem {
   #ifndef SWIG
   SPOILNAMESPACE
-
+  
   class var;			// Forward declaration
-  ostream& operator<< (ostream& out,var& v);
   var operator*(const double&,const var&);
   // var operator+(const d&,const var&);
 
@@ -25,7 +24,12 @@ namespace tasystem {
   #ifdef SWIG
   %catches(std::exception,...) var::var(const tasystem::Globalconf&); 
   %catches(std::exception,...) var::var(const tasystem::Globalconf&,double); 
-  %catches(std::exception,...) var::var(const tasystem::Globalconf&,const vd& data,bool adata=true);
+  %catches(std::exception,...) var::var(const tasystem::Globalconf&,const vd& data,bool adata=true); 
+  %catches(std::exception,...) var::setadata(const vd& values);
+  %catches(std::exception,...) var::settdata(double value);
+  %catches(std::exception,...) var::settdata(const vd& values);
+  %catches(std::exception,...) var::setadata(us freq,double val);
+  %catches(std::exception,...) var::setadata(const vc& values);
   #endif
   class var {
     #ifndef SWIG

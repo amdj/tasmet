@@ -6,9 +6,9 @@
 #include "weightfactors.h"
 #include "heat.h"
 
-#define iDFT (v.gc->iDFT)
-#define fDFT (v.gc->fDFT)
-#define DDTfd (v.gc->DDTfd)
+#define iDFT (v.gc->iDFT())
+#define fDFT (v.gc->fDFT())
+#define DDTfd (v.gc->DDTfd())
 #define Ns (v.gc->Ns())
 #define ENERGY_SCALE (1.0/(solid->rho(v.gc->T0())*solid->c(v.gc->T0())))
 
@@ -96,7 +96,7 @@ namespace duct{
     TRACE(15,"SolidEnergy::jac()");
     JacRow jac(dofnr,5);
     d rhoc=solid->rho(v.Ts()(0))*solid->c(v.Ts()(0));
-    VARTRACE(40,v.vVs);
+    VARTRACE(10,v.vVs);
     jac+=JacCol(v.Ts(),v.vVs*rhoc*DDTfd);
     jac+=dQR();
     jac+=(dQL()*=-1);

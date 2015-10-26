@@ -15,8 +15,14 @@ namespace duct{
  protected:
    d SL,SR,rL,rR;
  public:
-   ConeTube(const Grid& g,d r1,d r2,bool blapprox=true) throw(std::exception);
-   ConeTube(const ConeTube& t): ConeTube(t.grid(),t.rL,t.rR,t.isBlApprox()){}
+   ConeTube(const vd& g,d r1,d r2,bool blapprox=true);
+   ConeTube(const ConeTube& t):
+     Geom(t),
+     SL(t.SL),
+     SR(t.SR),
+     rL(t.rL),
+     rR(t.rR)
+   {}
    virtual d S(us i) const;
    virtual d phi(us i) const {return 1.0;}
    virtual d rh(us i) const;
@@ -28,8 +34,8 @@ namespace duct{
   class CylindricalTube:public ConeTube{
     
   public:
-    CylindricalTube(const Grid& g,d r,bool blapprox=true);
-    CylindricalTube(const CylindricalTube& t):CylindricalTube(t.grid(),t.rL,t.isBlApprox()){}
+    CylindricalTube(const vd& g,d r,bool blapprox=true);
+    CylindricalTube(const CylindricalTube& t):CylindricalTube(t.x(),t.rL,t.isBlApprox()){}
     virtual Geom* copy() const {return new CylindricalTube(*this);}
     virtual void show() const;
   };

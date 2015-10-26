@@ -46,13 +46,13 @@ namespace duct{
     rhr=geom.rh(i+1);
     
     // Intialize the variables for the right number of harmonics.
-    ml_=var(*gc);
     rho_=var(*gc);    
+    ml_=var(*gc);
+    mu_=var(*gc);
     T_=var(*gc);
     p_=var(*gc);
     Tw_=var(*gc);
     Ts_=var(*gc);
-    mu_=var(*gc);
 
     // Initialize temperature and density variables to something sane
     T_.setadata(0,gc->T0());
@@ -146,6 +146,7 @@ namespace duct{
     vd res(getNDofs());
 
     for(us k=0;k<nvars;k++){
+      // VARTRACE(60,*vars[k]);
       res.subvec(k*Ns,k*Ns+Ns-1)=(*vars[k])();
     }
     return res;
@@ -203,6 +204,9 @@ namespace duct{
       case Varnr::mH:                 // Volume flown
         return var(*gc,0.5*(Energy::mHl(*this)+Energy::mHr(*this)));
         break;
+      case Varnr::mEkin:
+        return var(*gc,0.5*(Energy::mEkinl(*this)+Energy::mEkinr(*this)));	
+	break;
       case Varnr::Qs:
       	if(eqs.find(EqType::Sol)!=eqs.end()){
 	  const SolidEnergy* e=static_cast<const SolidEnergy*>(eqs.at(EqType::Sol));
@@ -210,6 +214,12 @@ namespace duct{
 	}
 	else
 	  return var(*gc,0);
+      case Varnr::F:
+	throw MyError("Cell does not contain a force variable.");
+      case Varnr::x:
+	throw MyError("Cell does not contain a piston position variable.");
+      case Varnr::Z:
+	throw MyError("Not yet implemented");
       case Varnr::Q:                 // Volume flown
         return var(*gc,0.5*(Energy::QL(*this)+Energy::QR(*this)));
         break;
@@ -270,17 +280,6 @@ namespace duct{
       // TRACE(5,"Equation "<< k <<"... succesfully obtained Jacobian");
     }
   }  
-  vd Cell::csource() const {
-    TRACE(4,"Cell::csource()");
-    return zeros(Ns);}
-  vd Cell::msource() const {
-    TRACE(4,"Cell::msource()");
-    return zeros(Ns);}
-  vd Cell::esource() const {
-    TRACE(4,"Cell::esource()");
-    vd esource=zeros(Ns);
-    return esource;
-  }    
   void Cell::show(us detailnr) const{
     cout << "----------------- Cell " << i << "----\n";
     if(detailnr>=4){    

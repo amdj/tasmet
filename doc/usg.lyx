@@ -184,7 +184,7 @@ titleM
 \begin_inset Newline newline
 \end_inset
 
-Version 1.0
+Version 0.1
 \end_layout
 
 \begin_layout Standard
@@ -213,7 +213,7 @@ LatexCommand tableofcontents
 \end_layout
 
 \begin_layout Part
-User's guide
+Tutorial
 \end_layout
 
 \begin_layout Chapter
@@ -221,9 +221,17 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-Welcome to the user's guide of the ThermoAcoustic System Modeling Environment
- Twente, or TASMET.
- TASMET is a computer code to model thermoacoustic (TA) engines, refrigerators
+Welcome to the user's guide of the Thermoacoustic System Modeling Environment
+ Twente, or 
+\noun on
+TaSMET
+\noun default
+.
+ 
+\noun on
+TaSMET
+\noun default
+ is a computer code to model thermoacoustic (TA) engines, refrigerators
  and combined systems by providing nonlinear models for laminar/turbulent
  oscillating flow in ducts, heat exchangers and stacks/regenerators.
  A coupling to the mechanical and electrical domain is provided with a piston
@@ -265,8 +273,11 @@ The code has been developed with a strong focus on computational cost.
 \begin_layout Standard
 The modular design makes it easy to create any system for which a similar
  model can be made using the DELTAEC computer code.
- The main differences between TaSMET and other TA modeling computer codes
- are
+ The main differences between 
+\noun on
+TaSMET
+\noun default
+ and other TA modeling computer codes are
 \end_layout
 
 \begin_layout Itemize
@@ -287,7 +298,8 @@ No graphical user interface (GUI), but the Python programming language as
  fundamental features.
  As we provide all modeling classes in Python, the user can therefore decide
  whether he still wants a GUI.
- 
+ Using Matplotlib, we can plot everything we want and by building post-processin
+g scripts we can derive any results from the solved model.
 \end_layout
 
 \begin_layout Section
@@ -315,17 +327,7 @@ TaSMET
 \noun on
 DELTAEC
 \noun default
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-bron
-\end_layout
-
-\end_inset
-
-.
+ code.
  A great deal of inspiration of 
 \noun on
 TaSMET
@@ -334,33 +336,21 @@ TaSMET
 \noun on
 DELTAEC
 \noun default
- is 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-ddd
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-GUI or not?
-\end_layout
-
-\begin_layout Standard
-This release version of 
-\noun on
-TaSMET
-\noun default
- does not provide a graphical user interface to the code.
+ is designed.
 \end_layout
 
 \begin_layout Section
 Bug reporting and contributing
+\end_layout
+
+\begin_layout Standard
+If you are interested in working and contributing to 
+\noun on
+TaSMET
+\noun default
+, please contact me by email.
+ My email address is anne(at)amdj(dot)nl.
+ I am looking forward to cooperate!
 \end_layout
 
 \begin_layout Chapter
@@ -478,7 +468,7 @@ TaSMET
  A short overview of these segments is given below.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Subsection
 
 \noun on
 Duct
@@ -533,6 +523,8 @@ Piston
  used.
  The front and back volume are assumed to be small compared to the wavelength,
  because no momentum equation is solved for the gas volumes.
+ A reference of this class is given in Sec.
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -542,7 +534,38 @@ ConnectorVolume
 \end_layout
 
 \begin_layout Standard
-...
+A 
+\noun on
+ConnectorVolume
+\noun default
+ is used to connect multiple 
+\noun on
+Ducts
+\noun default
+ together.
+ This allows for 'branching' of multiple 
+\noun on
+Ducts
+\noun default
+ and it is an essential feature of traveling wave thermoacoustic engines.
+ A 
+\noun on
+ConnectorVolume
+\noun default
+ with only one 
+\noun on
+Duct
+\noun default
+ connected to it serves as a 
+\begin_inset Quotes eld
+\end_inset
+
+compliance
+\begin_inset Quotes erd
+\end_inset
+
+, i.e.
+ an expansion volume in which the fluid motion is brought to rest.
 \end_layout
 
 \begin_layout Section
@@ -569,7 +592,1372 @@ options "plain"
 \end_layout
 
 \begin_layout Part
-Reference
+The API
+\end_layout
+
+\begin_layout Chapter
+
+\noun on
+Duct
+\end_layout
+
+\begin_layout Section
+Geometry
+\end_layout
+
+\begin_layout Chapter
+
+\noun on
+Piston
+\end_layout
+
+\begin_layout Section
+Introduction
+\noun on
+
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Piston_ref"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename fig/piston.eps
+	width 80text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Piston
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:piston_overview"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+An overview of the model of a 
+\noun on
+Piston
+\noun default
+ is schematically shown in Figure (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:piston_overview"
+
+\end_inset
+
+).
+ A 
+\noun on
+Duct 
+\noun default
+can be connected on both the front, as well as on the back side of the 
+\noun on
+Piston
+\noun default
+.
+ This way, the segment has been made flexible.
+ The following geometrical, and mechanical parameters are required for the
+ model:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="10" columns="4">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="left" valignment="top" width="60text%">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Symbol
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Token
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Meaning
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Unit
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $S_{l}$
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+Sl
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Piston surface area on the left side 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+m
+\begin_inset Formula $^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $S_{r}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+Sr
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Piston surface area on the right side
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+m
+\begin_inset Formula $^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $V_{o,l}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+V0l
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Left volume.
+ Note: the left volume should be defined with a size such that at the minimum
+ 
+\begin_inset Formula $x$
+\end_inset
+
+, the volume does not become negative!
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+m
+\begin_inset Formula $^{3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $V_{0,r}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+V0r
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Right volume.
+ Note: the right volume should be defined such that for the maximum piston
+ excursion 
+\begin_inset Formula $x$
+\end_inset
+
+, the volume does not become negative!
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+m
+\begin_inset Formula $^{3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $M$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+M
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Total moving mass of the piston
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+kg
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $K_{m}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+Km
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Piston spring constant
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+N/m
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $C_{m}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+Cm
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Piston damping
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+N
+\begin_inset Formula $\cdot$
+\end_inset
+
+s/m
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $S_{t,l}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+Stl
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Total contact area of the fluid with the solid in the left volume.
+ This variable is used to compute the thermal relaxation dissipation in
+ the piston volume.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+m
+\begin_inset Formula $^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $S_{t,r}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+Str
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Total contact area of the fluid with the solid in the right volume.
+ This variable is used to compute the thermal relaxation dissipation in
+ the piston volume.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+m
+\begin_inset Formula $^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Overview of all the parameters required for the Piston model.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To initialize a 
+\noun on
+Piston, 
+\noun default
+first a helper 
+\noun on
+struct
+\noun default
+ needs to be defined, called the 
+\noun on
+PistonConfiguration.
+ 
+\noun default
+The initialization of a 
+\noun on
+PistonConfiguration
+\noun default
+ is
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pc=PistonConfiguration(Sl,Sr,V0l,V0r,M,Km,Cm,Stl,Str)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+ Then we can build a new 
+\noun on
+Piston
+\noun default
+ segment with
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+p=Piston(pc)
+\end_layout
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Section
+DuctPistonConnector
+\end_layout
+
+\begin_layout Standard
+The 
+\noun on
+DuctistonConnector
+\noun default
+ connects a Piston segment to a Tube.
+ The following syntax is used to initialize a 
+\noun on
+DuctPistonConnector:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+tpc=DuctPistonConnector(id_duct,duct_pos,id_piston,piston_pos,KDuctPiston,KPisto
+nDuct)
+\end_layout
+
+\end_inset
+
+, where the id's are strings by which a 
+\noun on
+Duct
+\noun default
+ or a 
+\noun on
+Piston
+\noun default
+ is identified.
+\end_layout
+
+\begin_layout Subsection
+Piston energy balance
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+mH_{p}+Q_{p\rightarrow t}+s\cdot mH_{t}=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Mechanical boundary conditions
+\end_layout
+
+\begin_layout Subsection
+
+\noun on
+MechBc
+\end_layout
+
+\begin_layout Standard
+Using a 
+\noun on
+MechBc,
+\noun default
+ a simple boundary condition can be set on the mechanical domain of the
+ 
+\noun on
+Piston
+\noun default
+.
+ It can be used to set either an external force, the piston displacement,
+ or a mechanical impedance.
+ The syntax is
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+m=MechBc(piston_id,contraint_var,boundary_condition)
+\end_layout
+
+\end_inset
+
+, where 
+\family typewriter
+boundary_condition
+\family default
+ is the b.c.
+ 
+\family typewriter
+var
+\family default
+ object, and 
+\family typewriter
+constraint_var
+\family default
+ is either 
+\family typewriter
+Varnr_x, Varnr_F,
+\family default
+ or
+\family typewriter
+ Varnr_Z.
+
+\family default
+ The latter induces the boundary condition to solve
+\begin_inset Formula 
+\begin{equation}
+F-Zx=0,
+\end{equation}
+
+\end_inset
+
+and can be used to model a passive electrical domain.
+\end_layout
+
+\begin_layout Subsection
+VCMNetwork
+\end_layout
+
+\begin_layout Standard
+The current version does not yet provide this model.
+ In a future version we will provide a voice coil motor (VCM) network to
+ the list of segments.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+To include the model of the electrical domain, it is 
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="4">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top" width="60text%">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $L$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+L
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Voice coil inductance
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+H
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $R_{e}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Re
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Electrical current resistance
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\Omega$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $Bl$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Bl
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Motor constant (Newton per Amp or Volt per meter).
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $N/A$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+Connecting it all together
+\end_layout
+
+\begin_layout Chapter
+A system
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+- A system comprises all segments in a physical sense
+\end_layout
+
+\begin_layout Standard
+- A system : amount of mass
+\end_layout
+
+\begin_layout Standard
+- Number of harmonics to solve for
+\end_layout
+
+\begin_layout Section
+
+\noun on
+TaSystem
+\end_layout
+
+\begin_layout Standard
+A 
+\noun on
+TaSystem 
+\noun default
+is a class which initializes and contains all segments and connectors.
+ The TaSystem provides basic information about the nonlinear system of equations
+ which has to be solved to obtain the value of all dependent variables in
+ the individual segments.
+ A 
+\noun on
+TaSystem
+\noun default
+ object is created with
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+import TaSMET
+\end_layout
+
+\begin_layout Plain Layout
+
+gc=TaSMET.Globalconf(...)
+\end_layout
+
+\begin_layout Plain Layout
+
+sys=TaSMET.TaSystem(gc)
+\end_layout
+
+\end_inset
+
+Then individual segments can be added to a 
+\noun on
+TaSystem
+\noun default
+ by
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+sys+=seg1
+\end_layout
+
+\begin_layout Plain Layout
+
+sys+=seg2
+\end_layout
+
+\begin_layout Plain Layout
+
+sys+=...
+\end_layout
+
+\begin_layout Plain Layout
+
+sys+=con1
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Mass conservation
+\end_layout
+
+\begin_layout Section
+EngineSystem
+\end_layout
+
+\begin_layout Standard
+The EngineSystem class solves for the unknown frequency as well.
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+m
+\end_layout
+
+\begin_layout Standard
+We define a new system of equations in which the fundamental frequency is
+ added as unknown and the timing constraint as an equation.
+ So the augmented solution vector is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{y}=\left(\mathbf{x},\omega\right),
+\end{equation}
+
+\end_inset
+
+and the augmented residual is
+\begin_inset Formula 
+\begin{equation}
+\mathbf{M}=\left(\mathbf{L}(\mathbf{x}),p_{\mathrm{cd}}\right),
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $p_{\mathrm{cd}}$
+\end_inset
+
+denotes the phase constraint degree of freedom.
+\end_layout
+
+\begin_layout Standard
+To search for the solution, Newton iterations are done using the Jacobian
+ of the augmented residual operator 
+\begin_inset Formula $\mathbf{M}$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+\delta\mathbf{y}=-\frac{\mathrm{d}\mathbf{M}}{\mathrm{d}\mathbf{y}}^{-1}\cdot\mathbf{M},
+\end{equation}
+
+\end_inset
+
+where
+\begin_inset Formula 
+\begin{equation}
+\frac{\mathbf{\mathrm{d}}\mathbf{M}}{\mathrm{d}\mathbf{y}}=\left[\begin{array}{cc}
+\frac{\partial\mathbf{L}}{\partial\mathbf{x}} & \frac{\partial\mathbf{L}}{\partial\omega}\\
+\frac{\partial p_{\mathrm{cd}}}{\partial\mathbf{x}} & 0
+\end{array}\right].\label{eq:newjac}
+\end{equation}
+
+\end_inset
+
+In Eq.
+\begin_inset space ~
+\end_inset
+
+(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:newjac"
+
+\end_inset
+
+), 
+\begin_inset Formula $\frac{\partial p_{\mathrm{cd}}}{\partial\mathbf{x}}$
+\end_inset
+
+ is a single row which is zero everywhere, but is one at the global degree
+ of freedom number corresponding to 
+\begin_inset Formula $\Im\left(\tilde{p}_{1}(x=0)\right)$
+\end_inset
+
+.
+ The column 
+\begin_inset Formula $\frac{\partial\mathbf{L}}{\partial\omega}$
+\end_inset
+
+, is the sensitivity of the residual to a change in frequency.
+ For brevity we only show the semi-discrete form of these sensitivities.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Due to the normalization of the time-derivative matrix t
+\end_layout
+
+\end_inset
+
+These sensitivities can
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ easily
+\end_layout
+
+\end_inset
+
+ be derived from the governing equations.
+\end_layout
+
+\begin_layout Standard
+For the continuity equation this sensitivity is
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\mathbf{L}_{c,i}}{\partial\omega}=V_{f}\check{\mathbf{D}}\cdot\tilde{\boldsymbol{\rho}}_{i}.
+\end{equation}
+
+\end_inset
+
+For the momentum and energy equation, however, we neglect the sensitivity
+ to the operators 
+\begin_inset Formula $\boldsymbol{\tilde{\mathcal{D}}}$
+\end_inset
+
+,
+\begin_inset Formula $\boldsymbol{\tilde{\mathcal{H}}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\boldsymbol{\tilde{\mathcal{Q}}}$
+\end_inset
+
+, so for the momentum equation we use
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\mathbf{L}_{m,L}}{\partial\omega}\simeq\left(x_{i}-x_{i-1}\right)\check{\mathbf{D}}\cdot\boldsymbol{\mathcal{F}}\cdot\tilde{\mathbf{m}},
+\end{equation}
+
+\end_inset
+
+and for the energy equation
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\mathbf{L}_{e,i}}{\partial\omega}\simeq\check{\mathbf{D}}\cdot\left(\frac{S_{f}}{\gamma-1}\tilde{\mathbf{p}}_{i}+\left(x_{R}-x_{L}\right)\left(\mathbf{mu}\right)_{i}\right),
+\end{equation}
+
+\end_inset
+
+and finally for the equation of state
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\mathbf{L}_{s,i}}{\partial\omega}=\mathbf{0}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Setting a phase constraint
+\end_layout
+
+\begin_layout Itemize
+Create a PhaseConstraint object:
+\end_layout
+
+\begin_layout Verbatim
+	pc=PhaseConstraint(Varnr, freqnr, left)
+\end_layout
+
+\begin_layout Itemize
+Apply this contraint to a segment which can accept them, for example a Tube:
+\end_layout
+
+\begin_layout Verbatim
+	t1.setPhaseConstraint(pc)
+\end_layout
+
+\begin_layout Itemize
+	And you're done.
+ Note: only one phase constraint can be used in an EngineSystem.
+ For a TaSystem, the phase constraint is ignored.
+ 
+\end_layout
+
+\begin_layout Standard
+--
+\end_layout
+
+\begin_layout Chapter
+The 
+\noun on
+Solver
+\noun default
+ class
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+..
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+sc=TaSMET.SolverConfiguration()
+\end_layout
+
+\begin_layout Plain Layout
+
+sc.setFunTol(...)
+\end_layout
+
+\begin_layout Plain Layout
+
+sc.setRelTol(...)
+\end_layout
+
+\begin_layout Plain Layout
+
+sol=TaSMET.Solver(sc)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+sol.Solve(sys)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Solver statistics
+\end_layout
+
+\begin_layout Part
+Model reference
 \end_layout
 
 \begin_layout Chapter
@@ -2144,7 +3532,9 @@ T_{s,1} & = & T_{s,2}
 \end_layout
 
 \begin_layout Section
-StackedScreenRegenator
+
+\noun on
+Regenerator
 \end_layout
 
 \begin_layout Standard
@@ -2766,67 +4156,41 @@ Prescribed velocity, adiabatic compression/expansion.
 \end_layout
 
 \begin_layout Chapter
-Transducers
-\end_layout
-
-\begin_layout Section
 Piston
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula $V_{f}$
+For the piston, the equation of motion
+\begin_inset Formula 
+\begin{equation}
+M\frac{\mathrm{d}^{2}x}{\mathrm{d}t^{2}}+C_{m}\frac{\mathrm{d}x}{\mathrm{d}t}+K_{m}x=S_{l}p_{l}-S_{r}p_{r}+F
+\end{equation}
+
 \end_inset
 
- front volume
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula $V_{b}$
+is solved, where 
+\begin_inset Formula $F$
 \end_inset
 
- back volume
-\end_layout
+ is the external force applied to the Piston.
+ This external force can be either boundary condition, or applied by electromagn
+etic interaction.
+ For both the right as well as the left volume, conservation of mass, energy
+ and the thermal equation of state is solved.
+ The continuity equations are
+\begin_inset Formula 
+\begin{eqnarray}
+\frac{\partial\rho_{r}\left(V_{0r}-xS_{r}\right)}{\partial t}+m_{f} & = & 0,\\
+\frac{\partial\rho_{l}\left(V_{0l}+xS_{l}\right)}{\partial t}+m_{l} & = & 0,
+\end{eqnarray}
 
-\begin_layout Standard
-Piston(M,Sf,Sb,V0f,V0b,Km)
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
 Piston volume mass conservation
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename fig/piston.eps
-	width 80text%
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Piston
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -2847,13 +4211,6 @@ p_{l},T_{l},\rho_{l} &  & m_{l},mH_{l}
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula 
-\[
-m\frac{\partial^{2}x}{\partial t^{2}}+C_{m}\frac{\partial x}{\partial t}+K_{m}x+p_{r}S_{r}-p_{l}S_{l}-F=0
-\]
-
-\end_inset
-
 and
 \begin_inset Formula 
 \begin{eqnarray}
@@ -2864,15 +4221,6 @@ p_{l}-\rho_{l}R_{s}T_{l} & = & 0
 \end_inset
 
 and
-\begin_inset Formula 
-\begin{eqnarray}
-\frac{\partial\rho_{r}\left(V_{0r}-xS_{r}\right)}{\partial t}+m_{f} & = & 0\\
-\frac{\partial\rho_{l}\left(V_{0l}+xS_{l}\right)}{\partial t}+m_{l} & = & 0
-\end{eqnarray}
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsection
@@ -2882,8 +4230,16 @@ Piston volume energy conservation
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\frac{\partial}{\partial t}\left(\frac{p}{\gamma-1}V\right)+p\frac{\partial V}{\partial t}+mc_{p}T=0
+\frac{\mathrm{d}}{\mathrm{d}t}\left(\frac{p_{r}}{\gamma-1}V_{r}\right)+p_{r}\frac{\mathrm{d}V_{r}}{\mathrm{d}t}+mH_{r}=0
 \end{equation}
+
+\end_inset
+
+or
+\begin_inset Formula 
+\[
+\frac{\mathrm{d}}{\mathrm{d}t}\left(\frac{p_{r}}{\gamma-1}V_{r}\right)-\frac{\mathrm{d}x_{p}}{\mathrm{d}t}S_{r}p_{r}+mH_{r}=0
+\]
 
 \end_inset
 
@@ -2891,14 +4247,44 @@ Piston volume energy conservation
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
 To isentropic (and no mass flow):
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{d}\left(\frac{p_{r}}{\gamma-1}V_{r}\right)+p_{r}\mathrm{d}V_{r}=0=\frac{\mathrm{d}p_{r}}{p_{r}\left(\gamma-1\right)}+\frac{1}{\gamma-1}\frac{\mathrm{d}V_{r}}{V_{r}}+\frac{\mathrm{d}V_{r}}{V_{r}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{\mathrm{d}p_{r}}{p_{r}}+\gamma\frac{\mathrm{d}V_{r}}{V_{r}}=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{p}{p_{0}}=\left(\frac{V_{0}}{V}\right)^{\gamma}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
 \begin_inset Formula 
 \[
 \frac{dp}{p}=-\gamma\frac{dV}{V}
 \]
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -2939,7 +4325,7 @@ Mass in piston volumes
 The time-averaged amount of mass in a piston volume is
 \begin_inset Formula 
 \[
-m=\mathcal{F}_{0}\cdot\left[\mathbf{\rho}\circ(V_{0}\pm S\mathbf{x})\right]
+m=\mathcal{F}_{0}\cdot\left[(V_{0}\pm S\mathbf{x})\circ\mathbf{\rho}\right]
 \]
 
 \end_inset
@@ -2952,7 +4338,7 @@ where
  Therefore, 
 \begin_inset Formula 
 \begin{equation}
-\frac{\partial m}{\partial\hat{\boldsymbol{\rho}}}=\mathcal{F}_{0}\cdot\left[(V_{0}\pm S\mathbf{x})\cdot\boldsymbol{\mathcal{F}}^{-1}\right]
+\frac{\partial m}{\partial\hat{\boldsymbol{\rho}}}=\mathcal{F}_{0}\cdot\left[\mathrm{diag}(V_{0}\pm S\mathbf{x})\cdot\boldsymbol{\mathcal{F}}^{-1}\right]
 \end{equation}
 
 \end_inset
@@ -3708,30 +5094,6 @@ The SimpleTubeConnector can connect two Tube segments together.
 \end_layout
 
 \begin_layout Section
-TubePistonConnector
-\end_layout
-
-\begin_layout Standard
-The TubePistonConnector connects a Piston segment to a Tube.
- Using this connector, the 
-\end_layout
-
-\begin_layout Subsection
-Piston energy balance
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-mH_{p}+Q_{p\rightarrow t}+s\cdot mH_{t}=0
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
 Transition of kinetic energy to heat
 \end_layout
 
@@ -3799,223 +5161,7 @@ Systems
 \end_layout
 
 \begin_layout Section
-TaSystem
-\end_layout
 
-\begin_layout Section
-EngineSystem
-\end_layout
-
-\begin_layout Standard
-The EngineSystem class solves for the unknown frequency as well.
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-m
-\end_layout
-
-\begin_layout Standard
-We define a new system of equations in which the fundamental frequency is
- added as unknown and the timing constraint as an equation.
- So the augmented solution vector is
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{equation}
-\mathbf{y}=\left(\mathbf{x},\omega\right),
-\end{equation}
-
-\end_inset
-
-and the augmented residual is
-\begin_inset Formula 
-\begin{equation}
-\mathbf{M}=\left(\mathbf{L}(\mathbf{x}),p_{\mathrm{cd}}\right),
-\end{equation}
-
-\end_inset
-
-where 
-\begin_inset Formula $p_{\mathrm{cd}}$
-\end_inset
-
-denotes the phase constraint degree of freedom.
-\end_layout
-
-\begin_layout Standard
-To search for the solution, Newton iterations are done using the Jacobian
- of the augmented residual operator 
-\begin_inset Formula $\mathbf{M}$
-\end_inset
-
-:
-\begin_inset Formula 
-\begin{equation}
-\delta\mathbf{y}=-\frac{\mathrm{d}\mathbf{M}}{\mathrm{d}\mathbf{y}}^{-1}\cdot\mathbf{M},
-\end{equation}
-
-\end_inset
-
-where
-\begin_inset Formula 
-\begin{equation}
-\frac{\mathbf{\mathrm{d}}\mathbf{M}}{\mathrm{d}\mathbf{y}}=\left[\begin{array}{cc}
-\frac{\partial\mathbf{L}}{\partial\mathbf{x}} & \frac{\partial\mathbf{L}}{\partial\omega}\\
-\frac{\partial p_{\mathrm{cd}}}{\partial\mathbf{x}} & 0
-\end{array}\right].\label{eq:newjac}
-\end{equation}
-
-\end_inset
-
-In Eq.
-\begin_inset space ~
-\end_inset
-
-(
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:newjac"
-
-\end_inset
-
-), 
-\begin_inset Formula $\frac{\partial p_{\mathrm{cd}}}{\partial\mathbf{x}}$
-\end_inset
-
- is a single row which is zero everywhere, but is one at the global degree
- of freedom number corresponding to 
-\begin_inset Formula $\Im\left(\tilde{p}_{1}(x=0)\right)$
-\end_inset
-
-.
- The column 
-\begin_inset Formula $\frac{\partial\mathbf{L}}{\partial\omega}$
-\end_inset
-
-, is the sensitivity of the residual to a change in frequency.
- For brevity we only show the semi-discrete form of these sensitivities.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Due to the normalization of the time-derivative matrix t
-\end_layout
-
-\end_inset
-
-These sensitivities can
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
- easily
-\end_layout
-
-\end_inset
-
- be derived from the governing equations.
-\end_layout
-
-\begin_layout Standard
-For the continuity equation this sensitivity is
-\begin_inset Formula 
-\begin{equation}
-\frac{\partial\mathbf{L}_{c,i}}{\partial\omega}=V_{f}\check{\mathbf{D}}\cdot\tilde{\boldsymbol{\rho}}_{i}.
-\end{equation}
-
-\end_inset
-
-For the momentum and energy equation, however, we neglect the sensitivity
- to the operators 
-\begin_inset Formula $\boldsymbol{\tilde{\mathcal{D}}}$
-\end_inset
-
-,
-\begin_inset Formula $\boldsymbol{\tilde{\mathcal{H}}}$
-\end_inset
-
- and 
-\begin_inset Formula $\boldsymbol{\tilde{\mathcal{Q}}}$
-\end_inset
-
-, so for the momentum equation we use
-\begin_inset Formula 
-\begin{equation}
-\frac{\partial\mathbf{L}_{m,L}}{\partial\omega}\simeq\left(x_{i}-x_{i-1}\right)\check{\mathbf{D}}\cdot\boldsymbol{\mathcal{F}}\cdot\tilde{\mathbf{m}},
-\end{equation}
-
-\end_inset
-
-and for the energy equation
-\begin_inset Formula 
-\begin{equation}
-\frac{\partial\mathbf{L}_{e,i}}{\partial\omega}\simeq\check{\mathbf{D}}\cdot\left(\frac{S_{f}}{\gamma-1}\tilde{\mathbf{p}}_{i}+\left(x_{R}-x_{L}\right)\left(\mathbf{mu}\right)_{i}\right),
-\end{equation}
-
-\end_inset
-
-and finally for the equation of state
-\begin_inset Formula 
-\begin{equation}
-\frac{\partial\mathbf{L}_{s,i}}{\partial\omega}=\mathbf{0}.
-\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Setting a phase constraint
-\end_layout
-
-\begin_layout Itemize
-Create a PhaseConstraint object:
-\end_layout
-
-\begin_layout Verbatim
-	pc=PhaseConstraint(Varnr, freqnr, left)
-\end_layout
-
-\begin_layout Itemize
-Apply this contraint to a segment which can accept them, for example a Tube:
-\end_layout
-
-\begin_layout Verbatim
-	t1.setPhaseConstraint(pc)
-\end_layout
-
-\begin_layout Itemize
-	And you're done.
- Note: only one phase constraint can be used in an EngineSystem.
- For a TaSystem, the phase constraint is ignored.
- 
-\end_layout
-
-\begin_layout Part
-The API
-\end_layout
-
-\begin_layout Chapter
-Tube segments
-\end_layout
-
-\begin_layout Section
-Tube
-\end_layout
-
-\begin_layout Standard
---
 \end_layout
 
 \end_body

@@ -13,7 +13,9 @@
 #include "connector.h"
 #include "constants.h"
 
-
+namespace tasystem {
+  class JacRow;
+} // namespace tasystem
 namespace duct {
   
   #ifndef SWIG
@@ -58,6 +60,12 @@ namespace mech{
     DuctPistonConnector(const DuctPistonConnector&,const tasystem::TaSystem&);    
     virtual segment::Connector* copy(const tasystem::TaSystem& s) const {return new DuctPistonConnector(*this,s);}
     ~DuctPistonConnector(){}
+
+    vd Qpt() const;
+    #ifndef SWIG
+    tasystem::JacRow dQpt() const;
+    #endif
+    
     virtual vd error() const;
     #ifndef SWIG
     virtual void setEqNrs(us firstdofnr);
@@ -69,6 +77,10 @@ namespace mech{
     vd kappaSft() const;
     #endif
   };
+
+  inline const DuctPistonConnector& asDuctPistonConnector(const segment::Connector& c){
+    return dynamic_cast<const DuctPistonConnector&>(c);
+  }
 
 } // namespace mech
 

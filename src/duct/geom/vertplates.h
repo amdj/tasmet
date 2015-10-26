@@ -21,8 +21,14 @@ namespace duct{
   protected:
     d S_=-1,phi_=1,rh_=-1;
   public:
-    VertPlates(const Grid& g,d S,d phi,d y0,bool blapprox=false);
-    VertPlates(const VertPlates& t):VertPlates(t.grid(),t.S_,t.phi_,t.rh_,t.isBlApprox()){} 
+    VertPlates(const vd& grid,d S,d phi,d y0,bool blapprox=false);
+    VertPlates(const VertPlates& t):
+      Geom(t),
+      S_(t.S_),
+      phi_(t.phi_),
+      rh_(t.rh_)
+    {}
+
     virtual Geom* copy() const {return new VertPlates(*this);}
     virtual void show() const;
     string shape() const {return "vert";}
@@ -31,36 +37,10 @@ namespace duct{
     virtual d rh(us i) const {return rh_;}		 // Hydraulic radius
     virtual ~VertPlates(){}
   };
-  #ifndef SWIG
-  class Transition{
-    Pos pos;
-    d perc;
-  public:
-    Transition(Pos position,d perc);
-    Pos Position() const {return pos;}
-    d percd_other(d x_ov_L) const;    // (Decimal) percentage of transition
-  };
-
-  
-  class TransitionVertPlates:public VertPlates{
-    Transition transition;
-    d S_other,phi_other,rh_other,perc;
-  public:
-    TransitionVertPlates(const Grid&,d S,d phi,d y0,Pos TransitionSide,\
-                         const Geom& other,Pos sideofremote,d perc=10,\
-                         bool blapprox=false);
-    virtual Geom* copy() const {return new TransitionVertPlates(*this);}
-    virtual void show() const;
-    virtual ~TransitionVertPlates(){}
-    virtual d S(us i) const;		 // Cross sectional area as a function of x
-    virtual d phi(us i) const;		 // Volume porosity at position of
-                                     // cell walls
-    // TEST!!!!!!!!!!!!!!!!!!!
-    virtual d rh(us i) const;		 // Volume porosity at position of cell walls
-  };
-  #endif
- 
 
 } // namespace duct
 
 #endif /* _GEOMHELPERS_H_ */
+
+
+

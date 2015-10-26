@@ -123,7 +123,9 @@ namespace duct{
     // Derivative of dofs to frequency
     void domg(vd& tofill) const;
     // Obtain result vector
+    #endif
     vd getRes() const;
+    #ifndef SWIG
     // Fill Jacobian submatrix
     void jac(tasystem::Jacobian& tofill) const;
     // Set result vector
@@ -157,10 +159,8 @@ namespace duct{
     void cleanup_cells();
   };				// Duct class
 
-  #ifndef SWIG  
-  inline Duct& asDuct(segment::Seg& s){return dynamic_cast<Duct&>(s);}
-  inline const Duct& asDuct_const(const segment::Seg& s){return dynamic_cast<const Duct&>(s);}
-  #endif
+  inline const Duct& asDuct(const segment::Seg& s){return dynamic_cast<const Duct&>(s);}
+
 } /* namespace duct */
 
 #endif /* DUCT_H_ */

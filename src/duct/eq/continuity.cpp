@@ -4,9 +4,9 @@
 #include "continuity.h"
 #include "weightfactors.h"
 
-#define iDFT (v.gc->iDFT)
-#define fDFT (v.gc->fDFT)
-#define DDTfd (v.gc->DDTfd)
+#define iDFT (v.gc->iDFT())
+#define fDFT (v.gc->fDFT())
+#define DDTfd (v.gc->DDTfd())
 #define Ns (v.gc->Ns())
 namespace duct{
 
@@ -39,8 +39,6 @@ namespace duct{
     error+=v.mr()();
     error-=v.ml()();
 
-    // (Boundary) source term
-    error+=v.csource();
     return error;
   }
   void Continuity::domg(vd& domg_) const{

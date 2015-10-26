@@ -14,9 +14,9 @@
 #include "duct.h"
 #include "bccell.h"
 
-#define fDFT (gc->fDFT)
-#define iDFT (gc->iDFT)
-#define DDTfd (gc->DDTfd)
+#define fDFT (gc->fDFT())
+#define iDFT (gc->iDFT())
+#define DDTfd (gc->DDTfd())
 
 #define Ns (gc->Ns())
 #define Nf (gc->Nf())
@@ -37,16 +37,30 @@ namespace duct {
 
   void DuctConnection::setPtr(const TaSystem& sys){
     TRACE(15,"DuctConnection::getPtr()");
-    t=&sys.getDuct(segid);
+    t=&duct::asDuct(*sys.getSeg(segid));
     c=&(t->bcCell(position));
   }
-  ConnectorVolume::ConnectorVolume(const tasystem::TaSystem& sys,const ConnectorVolume& other):
+
+  ConnectorVolume::ConnectorVolume(d volume,bool arbitrateMass):
+    volume(volume),
+    arbitrateMass(arbitrateMass)
+  {
+    TRACE(15,"ConnectorVolume::ConnectorVolume()");
+    if(volume<=0)
+      throw MyError(msg("Given volume invalid, should be larger than 0. Given volume: %0.2f",volume));
+  }
+  ConnectorVolume::~ConnectorVolume(){
+    TRACE(0,"ConnectorVolume::~ConnectorVolume()");
+  }
+  ConnectorVolume::ConnectorVolume(const tasystem::TaSystem& sys,\
+				   const ConnectorVolume& other):
     Seg(other,sys),
     volume(other.volume),
     ductConnections(other.ductConnections),
-    pistonConnections(other.pistonConnections)
+    pistonConnections(other.pistonConnections),
+    arbitrateMass(other.arbitrateMass)
   {
-    TRACE(15,"ConnectorVolume::ConnectorVolume()");
+    TRACE(15,"ConnectorVolume::ConnectorVolume(copy)");
     // Initialize all variables
     p_=var(*gc);
     T_=var(*gc,gc->T0());
@@ -55,7 +69,7 @@ namespace duct {
     // Check if list of connections is not empty
     if(ductConnections.size()+pistonConnections.size()==0)
       throw MyError("No connections made with this volume. At least one connection is required");
-
+    
     // Check if all pistons are really pistons
     // for(Connection& con:pistonConnections){
     //   try{
@@ -89,27 +103,23 @@ namespace duct {
     assert(false);
     // pistonConnections.push_back(Connection(segid,pos));    
   }
-  ConnectorVolume::ConnectorVolume(d volume):
-    volume(volume)
-  {
-    TRACE(15,"ConnectorVolume::ConnectorVolume()");
-    if(volume<=0)
-      throw MyError(msg("Given volume invalid, should be larger than 0. Given volume: %0.2f",volume));
-  }
-  ConnectorVolume::~ConnectorVolume(){
-    TRACE(0,"ConnectorVolume::~ConnectorVolume()");
+  int ConnectorVolume::arbitrateMassEq() const {
+    if(arbitrateMass)
+      return firsteqnr;
+    else
+      return -1;
   }
   void ConnectorVolume::setEqNrs(us firsteqnr){
-    TRACE(15,"us ConnectorVolume::setEqNrs()");
+    TRACE(50,"us ConnectorVolume::setEqNrs()");
     this->firsteqnr=firsteqnr;
   }
   void ConnectorVolume::setDofNrs(us firstdof) {
     TRACE(15,"void ConnectorVolume::setDofNrs()");
     us dof=firstdof;
 
-    rho_.setDofNr(dof); dof+=Ns;
-    T_.setDofNr(dof); dof+=Ns;
-    p_.setDofNr(dof); dof+=Ns;
+    rho_.setDofNr(dof); 
+    T_.setDofNr(dof+Ns); 
+    p_.setDofNr(dof+2*Ns);
     
   }
   us ConnectorVolume::getNEqs() const {
@@ -186,8 +196,7 @@ namespace duct {
       d sign=(con.position==Pos::left?1:-1);
       error.subvec(eqnr,eqnr+Ns-1)+=sign*con.c->mbc()();
     }
-    // Mass flow contribution from connected pistons
-    // NOT YET DONE
+
     eqnr+=Ns;
     
     // ************************************************************
@@ -196,19 +205,20 @@ namespace duct {
     // Energy flow contribution from connected ducts
     for(const DuctConnection& con: ductConnections){
       assert(con.c&&con.t);
-      // Flow out of the volume is defined positive
-      d sign=(con.position==Pos::left?1:-1);
-      error.subvec(eqnr,eqnr+Ns-1)+=sign*con.c->mHbc()();
-      error.subvec(eqnr,eqnr+Ns-1)+=sign*con.c->extrapolateQuant(Varnr::Q);
+      // Flow out of the volume is defined positive, hence flow out of
+      // tube should be subtracted
+      d sign=(con.position==Pos::left?-1:1);
+      error.subvec(eqnr,eqnr+Ns-1)+=-sign*con.c->mHbc()();
+      error.subvec(eqnr,eqnr+Ns-1)+=-sign*con.c->extrapolateQuant(Varnr::Q);
     }
-    // Energy flow contribution from connected pistons
-    // NOT YET DONE
+
     eqnr+=Ns;    
 
     // ************************************************************
     // Equation of state
     error.subvec(eqnr,eqnr+Ns-1)=p_()-fDFT*(Tt%rhot*Rs);
     error(eqnr)+=p0;
+
     eqnr+=Ns;
 
     // ************************************************************
@@ -268,7 +278,7 @@ namespace duct {
       continuityeq+=JacCol(con.c->mbc(),sign*eye);
     }
     // Mass flow contribution from connected pistons
-    // NOT YET DONE
+
     jac+=continuityeq;
     eqnr+=Ns;
 
@@ -285,7 +295,7 @@ namespace duct {
       energyeq+=(con.c->dExtrapolateQuant(Varnr::Q)*=sign);
     }
     // Energy flow contribution from connected pistons
-    // NOT YET DONE
+
     jac+=energyeq;
     eqnr+=Ns;
 

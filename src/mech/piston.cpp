@@ -10,9 +10,9 @@
 #include "jacobian.h"
 #include "staticmsg.h"
 
-#define fDFT (gc->fDFT)
-#define iDFT (gc->iDFT)
-#define DDTfd (gc->DDTfd)
+#define fDFT (gc->fDFT())
+#define iDFT (gc->iDFT())
+#define DDTfd (gc->DDTfd())
 
 #define Ns (gc->Ns())
 #define Nf (gc->Nf())
@@ -35,6 +35,10 @@ namespace mech {
       M(M),Sr(Sr),Sl(Sl),Km(Km),Cm(Cm),V0l(V0l),V0r(V0r),
       Stl(Stl),Str(Str)
     {
+      if(V0l<=0)
+	throw MyError("Illegal value for V0l given");
+      if(V0r<=0)
+	throw MyError("Illegal value for V0r given");
       // If Stl is undefined, we make it a cylinder
       if(Stl<0){
         d L=V0l/Sl;
@@ -48,11 +52,21 @@ namespace mech {
         Str=Sr+L*circumference;
       }
     }
+  Piston::Piston(const PistonConfiguration& pc,bool arbitrateMass):
+      Seg(),
+      pc(pc),
+      arbitrateMass(arbitrateMass)
+    {
+      TRACE(15,"Piston()");
+    }
 
   Piston::Piston(const tasystem::TaSystem& sys,const Piston& other):
     Seg(other,sys),
     pc(other.pc),
-    T0(other.T0)
+    T0(other.T0),
+    arbitrateMass(other.arbitrateMass),
+    massL(other.massL),
+    massR(other.massR)
   {
     TRACE(15,"Piston::Piston()");
 
@@ -74,13 +88,27 @@ namespace mech {
     rhor_=var(*gc,gc->rho0());
     mHl_=var(*gc);
     mHr_=var(*gc);
-    
-    if(!leftConnected && massL<0)
-      massL=rhol_(0)*pc.V0l;
-    if(!rightConnected && massR<0)
-      massR=rhor_(0)*pc.V0r;
+    if(massL<0)
+      massL=gc->rho0()*pc.V0l;
+    if(massR<0)
+      massR=gc->rho0()*pc.V0r;
   }
   Piston::~Piston(){}
+  int Piston::arbitrateMassEq() const {
+    TRACE(15,"Piston::arbitrateMassEq()");
+    VARTRACE(80,firsteqnr);
+    VARTRACE(80,Ns);    
+    if(arbitrateMass){
+      if(leftConnected)
+	return firsteqnr+Ns;
+      else if(rightConnected)
+	return firsteqnr+4*Ns;
+      else
+	return -1;
+    }
+    else
+      return -1;
+  }
   void Piston::setEqNrs(us firsteqnr){
     TRACE(15,"us Piston::setEqNrs()");
     this->firsteqnr=firsteqnr;
@@ -237,7 +265,7 @@ namespace mech {
     // Mass conservation right side
     if(!rightConnected){
       assert(massR>0);
-      error.subvec(eqnr,eqnr+Ns-1)=fDFT*(rhor_.tdata()%(pc.V0r-xp_.tdata()*pc.Sr));
+      error.subvec(eqnr,eqnr+Ns-1)=fDFT*(rhort%Vrt);
       error(eqnr)-=massR;
 
       // Not connected right side, so set mr to zero
@@ -349,6 +377,7 @@ namespace mech {
     eomjac+=JacCol(pl_,-pc.Sl*eye);
     eomjac+=JacCol(pr_,pc.Sr*eye);
     jac+=eomjac;
+
     eqnr+=Ns;
 
     // ************************************************************
@@ -356,7 +385,7 @@ namespace mech {
     if(!leftConnected){
       JacRow mcljac(eqnr,2);
       mcljac+=JacCol(rhol_,fDFT*diagmat(Vlt)*iDFT);
-      mcljac+=JacCol(xp_,fDFT*diagmat(rhol_.tdata()*pc.Sl)*iDFT);
+      mcljac+=JacCol(xp_,fDFT*diagmat(rholt*pc.Sl)*iDFT);
       jac+=mcljac;
 
       // Not connected to leftside so ml to zero
@@ -431,6 +460,7 @@ namespace mech {
         enl+=JacCol(Tl_,enlmat_T);          
 
       }
+
       enl+=JacCol(mHl_,eye);
       enl+=JacCol(pl_,enlmat_pl);
       enl+=JacCol(xp_,enlmat_x);    
@@ -463,10 +493,12 @@ namespace mech {
         enrmat_pr.row(0).zeros();
         enrmat_x.row(0).zeros();
 
+
         // Add Jacobian terms corresponding to left temperature
         enr+=JacCol(Tr_,enrmat_T);          
 
       }
+
       enr+=JacCol(mHr_,eye);
       enr+=JacCol(pr_,enrmat_pr);
       enr+=JacCol(xp_,enrmat_x);    
@@ -526,12 +558,23 @@ namespace mech {
   }
   void Piston::dmtotdx(vd& dmtotdx) const {
     TRACE(15,"void Piston::dmtotdx()");
-    if(leftConnected){}
-      
-    //   us rholdof=rhol.getDofNr();
-    //   dmtotdx.subvec(rholdof,rholdof+Ns-1)=
-    WARN("Not finished code");
-    assert(false);
+    if(leftConnected){
+      us rhodof=rhol_.getDofNr();
+      us xdof=xp_.getDofNr();
+      dmtotdx.subvec(rhodof,rhodof+Ns-1)=(fDFT.row(0)*			\
+					  diagmat(pc.V0l+pc.Sl*xp_.tdata()*iDFT)).t();
+      dmtotdx.subvec(xdof,xdof+Ns-1)=(fDFT.row(0)*			\
+					  diagmat(pc.Sl*rhol_.tdata()*iDFT)).t();
+    }
+    if(rightConnected){
+      us rhodof=rhor_.getDofNr();
+      us xdof=xp_.getDofNr();
+      dmtotdx.subvec(rhodof,rhodof+Ns-1)=(fDFT.row(0)*			\
+					  diagmat(pc.V0r-pc.Sr*xp_.tdata())*iDFT).t();
+      dmtotdx.subvec(xdof,xdof+Ns-1)=(fDFT.row(0)*			\
+				      diagmat(-pc.Sr*rhor_.tdata())*iDFT).t();
+    }
+
   }
   void Piston::domg(vd& domg) const{
     TRACE(15,"void Piston::domg()");

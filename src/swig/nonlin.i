@@ -20,7 +20,6 @@
   #include "tasystem.h"
   #include "enginesystem.h"
 
-  #include "boundarylayer.h"
   #include "geom.h"
   #include "conetube.h"
 
@@ -60,7 +59,7 @@
 
   // A small wrapper for this function, as TRACERNAME is not
   // substituted by its macro value in SWIG.
-  inline void setTASMETTracer(int t) {
+  inline void setTaSMETTracer(int t) {
     tracer::setTracer<TRACERNAME>(t);
   }
 
@@ -80,7 +79,7 @@ typedef std::complex<double> c;
 
 void clearConsole();
 // To change the tracing noisyness
-void setTASMETTracer(int);
+void setTaSMETTracer(int);
 
 
 %include "std_string.i"
@@ -124,7 +123,6 @@ void setTASMETTracer(int);
 %include "connectorvolume.h"
  // Ducts
 %include "grid.h"
-%include "boundarylayer.h"
 %include "geom.h"
  // Geom instances
 %include "conetube.h"
