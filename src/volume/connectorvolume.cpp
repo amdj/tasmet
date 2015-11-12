@@ -233,7 +233,7 @@ namespace duct {
 
       // Second equation: total pressure in duct equals total pressure
       // in volume
-      VARTRACE(45,fDFT*(ptbc-pt));
+      // VARTRACE(45,fDFT*(ptbc-pt));
       error.subvec(eqnr,eqnr+Ns-1)=fDFT*(ptbc-pt);
       // error.subvec(eqnr,eqnr+Ns-1)=fDFT*(ptbc%facM0-pt);
       eqnr+=Ns;
@@ -250,7 +250,7 @@ namespace duct {
       // OUTFLOW from the DUCT is defined POSITIVE
       d sign=(con.position==Pos::left?-1:1);
 
-      VARTRACE(45,fDFT*((Sf/Lcon)*kappat%(Tt-con.c->Tbc().tdata())));
+      // VARTRACE(45,fDFT*((Sf/Lcon)*kappat%(Tt-con.c->Tbc().tdata())));
       error.subvec(eqnr,eqnr+Ns-1)=\
 	// Heat flow from volume to duct
 	fDFT*((Sf/Lcon)*kappat%(Tt-con.c->Tbc().tdata()))+	\
