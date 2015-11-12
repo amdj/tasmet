@@ -19,8 +19,10 @@ the User's guide provided with the code.
 [Wiki]: https://github.com/amdj/tasmet/wiki
 
 ## Example models
-Example models for TaSMET will be provided in a different repository:
-[tasmet_examples][ta_ex]
+
+Example models for TaSMET will be provided in the
+[tasmet_examples][ta_ex] repository.
+
 
 
 [ta_ex]: https://github.com/amdj/tasmet_examples

@@ -2133,17 +2133,6 @@ where
 .
 \end_layout
 
-\begin_layout Subsection
-First order second order factor
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula $W_{fo}$
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
 \begin_inset Note Note
 status collapsed
@@ -2302,6 +2291,30 @@ cell
 \end_inset
 
  with left and right walls which are at the corresponding vertices.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Check units:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left[\frac{\partial m}{\partial t}\right]=\frac{kg}{s^{2}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left[S_{f}\frac{\partial p}{\partial x}\right]=m^{2}\frac{N}{m^{2}m}=\frac{N}{m}=\frac{kgm}{s^{2}m}=\frac{kg}{s^{2}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2343,8 +2356,28 @@ Accompanied, we use an equation to compute
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\frac{\left(\frac{1}{2}\left(1-W_{\mathrm{fo}}\right)m_{l}^{2}+\frac{1}{2}\left(1+W_{\mathrm{fo}}\right)m_{r}^{2}\right)}{\rho_{i}S_{f,i}}-\left(mu\right)_{i}=0
+\frac{1}{2}\frac{m_{l}^{2}+m_{r}^{2}}{\rho_{i}S_{f,i}}-\left(mu\right)_{i}=0
 \end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+\frac{1}{4}\left(m_{l}+m_{r}\right)\left(m_{l}+m_{r}\right)
+\]
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -2366,10 +2399,10 @@ Since
 
 The energy equation can be written as
 \begin_inset Note Note
-status collapsed
+status open
 
 \begin_layout Plain Layout
-\begin_inset Formula $\frac{\partial}{\partial t}\left(S_{f}\rho E\right)+\frac{\partial}{\partial x}\left(mH\right)-\frac{\partial}{\partial x}\left(\kappa\frac{\partial T}{\partial x}\right)=Q_{in}$
+\begin_inset Formula $\frac{\partial}{\partial t}\left(S_{f}\rho E\right)+\frac{\partial}{\partial x}\left(mH\right)-\frac{\partial}{\partial x}\left(\kappa S_{f}\frac{\partial T}{\partial x}\right)=Q_{in}$
 \end_inset
 
 

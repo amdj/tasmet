@@ -207,16 +207,16 @@ namespace duct {
       assert(con.c&&con.t);
       // Flow out of the volume is defined positive, hence flow out of
       // tube should be subtracted
-      d sign=(con.position==Pos::left?-1:1);
-      error.subvec(eqnr,eqnr+Ns-1)+=-sign*con.c->mHbc()();
-      error.subvec(eqnr,eqnr+Ns-1)+=-sign*con.c->extrapolateQuant(Varnr::Q);
+      d sign=(con.position==Pos::left?1:-1);
+      error.subvec(eqnr,eqnr+Ns-1)+=sign*con.c->mHbc()();
+      error.subvec(eqnr,eqnr+Ns-1)+=sign*con.c->extrapolateQuant(Varnr::Q);
     }
 
     eqnr+=Ns;    
 
     // ************************************************************
     // Equation of state
-    error.subvec(eqnr,eqnr+Ns-1)=p_()-fDFT*(Tt%rhot*Rs);
+    error.subvec(eqnr,eqnr+Ns-1)=p_()-fDFT*(Rs*Tt%rhot);
     error(eqnr)+=p0;
 
     eqnr+=Ns;
@@ -233,7 +233,9 @@ namespace duct {
 
       // Second equation: total pressure in duct equals total pressure
       // in volume
-      error.subvec(eqnr,eqnr+Ns-1)=fDFT*(ptbc%facM0-pt);
+      VARTRACE(45,fDFT*(ptbc-pt));
+      error.subvec(eqnr,eqnr+Ns-1)=fDFT*(ptbc-pt);
+      // error.subvec(eqnr,eqnr+Ns-1)=fDFT*(ptbc%facM0-pt);
       eqnr+=Ns;
 
       // Third equation: conduction from duct to volume
@@ -248,6 +250,7 @@ namespace duct {
       // OUTFLOW from the DUCT is defined POSITIVE
       d sign=(con.position==Pos::left?-1:1);
 
+      VARTRACE(45,fDFT*((Sf/Lcon)*kappat%(Tt-con.c->Tbc().tdata())));
       error.subvec(eqnr,eqnr+Ns-1)=\
 	// Heat flow from volume to duct
 	fDFT*((Sf/Lcon)*kappat%(Tt-con.c->Tbc().tdata()))+	\
@@ -323,10 +326,11 @@ namespace duct {
       // Second equation: total pressure in duct equals total pressure
       // in volume
       JacRow preseq(eqnr,2);
-      preseq+=JacCol(con.c->pbc(),fDFT*diagmat(facM0)*iDFT);
-      preseq+=JacCol(con.c->ubc(),fDFT*\
-		     diagmat(diff_facM0%(utbc/(cp*Ttbc)))	\
-		     *iDFT);      
+      preseq+=JacCol(con.c->pbc(),eye);
+      // preseq+=JacCol(con.c->pbc(),fDFT*diagmat(facM0)*iDFT);
+      // preseq+=JacCol(con.c->ubc(),fDFT*\
+		     // diagmat(diff_facM0%(utbc/(cp*Ttbc)))	\
+		     // *iDFT);      
       preseq+=JacCol(p_,-eye);
       jac+=preseq;
       eqnr+=Ns;
@@ -346,8 +350,8 @@ namespace duct {
       d sign=(con.position==Pos::left?-1:1);
 
       JacRow condeq(eqnr,4);
-      condeq+=JacCol(T_,fDFT*(Sf/Lcon)*diagmat(kappat)*iDFT);
-      condeq+=JacCol(con.c->Tbc(),-fDFT*(Sf/Lcon)*diagmat(kappat)*iDFT);
+      condeq+=JacCol(T_,fDFT*((Sf/Lcon)*diagmat(kappat))*iDFT);
+      condeq+=JacCol(con.c->Tbc(),-fDFT*((Sf/Lcon)*diagmat(kappat))*iDFT);
       condeq+=(con.c->dExtrapolateQuant(Varnr::Q)*=sign);
 
       jac+=condeq;

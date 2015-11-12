@@ -290,7 +290,7 @@ namespace mech {
                                     // energy
       +mHl_();            // Enthalpy flow out of segment
 
-    if(!leftConnected){
+    // if(!leftConnected){
       // Overwrite time-average part with constraint on time-average
       // internal energy, by fixing the time-averaged temperature
       error(eqnr)=Tl_()(0)-T0;
@@ -299,7 +299,7 @@ namespace mech {
       // error.subvec(eqnr,eqnr+Ns-1)=pl_()/p0;
       // error(eqnr)+=1;
       // error.subvec(eqnr,eqnr+Ns-1)+=-fDFT*pow(rhol_.tdata()/rho0,gamma);
-    }
+    // }
     eqnr+=Ns;
 
     // ************************************************************
@@ -309,7 +309,7 @@ namespace mech {
       // energy
       +mHr_();            // Enthalpy flow out of segment
 
-    if(!rightConnected){
+    // if(!rightConnected){
       // Overwrite time-average part with constraint on time-average
       // internal energy, by fixing the time-averaged temperature
       error(eqnr)=Tr_()(0)-T0;
@@ -318,7 +318,7 @@ namespace mech {
       // error.subvec(eqnr,eqnr+Ns-1)=pr_()/p0;
       // error(eqnr)+=1;
       // error.subvec(eqnr,eqnr+Ns-1)+=-fDFT*pow(rhor_.tdata()/rho0,gamma);
-    }
+    // }
     eqnr+=Ns;
 
     // Specific gas constant
@@ -446,7 +446,7 @@ namespace mech {
       enlmat_pl+=fDFT*diagmat(dVldtt)*iDFT;
       enlmat_x+=fDFT*diagmat(pc.Sl*plt)*iDFT*DDTfd;
     
-      if(!leftConnected) {
+      // if(!leftConnected) {
         // Overwrite time-average part with constraint on time-average
         // internal energy, by fixing the time-averaged temperature
         dmat enlmat_T(Ns,Ns,fillwith::zeros);
@@ -459,7 +459,7 @@ namespace mech {
         // Add Jacobian terms corresponding to left temperature
         enl+=JacCol(Tl_,enlmat_T);          
 
-      }
+      // }
 
       enl+=JacCol(mHl_,eye);
       enl+=JacCol(pl_,enlmat_pl);
@@ -483,7 +483,7 @@ namespace mech {
       enrmat_pr+=fDFT*diagmat(dVrdtt)*iDFT;
       enrmat_x+=-fDFT*diagmat(pc.Sr*prt)*iDFT*DDTfd;
     
-      if(!rightConnected) {
+      // if(!rightConnected) {
         // Overwrite time-average part with constraint on time-average
         // internal energy, by fixing the time-averaged temperature
         dmat enrmat_T(Ns,Ns,fillwith::zeros);
@@ -497,7 +497,7 @@ namespace mech {
         // Add Jacobian terms corresponding to left temperature
         enr+=JacCol(Tr_,enrmat_T);          
 
-      }
+      // }
 
       enr+=JacCol(mHr_,eye);
       enr+=JacCol(pr_,enrmat_pr);

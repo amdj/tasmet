@@ -14,6 +14,7 @@ from .TaSMET import AdiabaticWall,\
      asDuctPistonConnector,\
      asDuct,\
      asPiston,\
+     asConnectorVolume,\
      Stack,\
      Varnr_F,\
      Varnr_Q,\

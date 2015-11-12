@@ -13,6 +13,9 @@
 #include "var.h"
 #include "constants.h"
 
+#ifdef SWIG
+%catches(std::exception,...) duct::asConnnectorVolume(const segment::Seg&);
+#endif // SWIG
 
 namespace duct {
 
@@ -100,6 +103,10 @@ namespace duct {
 
   };
   
+  inline const ConnectorVolume& asConnectorVolume(const segment::Seg& s){
+    return dynamic_cast<const ConnectorVolume&>(s);
+  }
+
 } // namespace duct
 
 #endif // CONNECTORVOLUME_H
